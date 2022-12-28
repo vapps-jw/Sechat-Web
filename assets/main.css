@@ -1,0 +1,8 @@
+.sechat-link-clear {
+  text-decoration: none;
+  color: inherit;
+}
+
+.sechat-blur-image {
+  filter: blur(4px);
+}
