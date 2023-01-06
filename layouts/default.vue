@@ -1,6 +1,5 @@
 <template>
   <v-app id="main-view">
-    <DefaultNav />
     <v-main>
       <NuxtLoadingIndicator />
       <slot />
