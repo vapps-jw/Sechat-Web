@@ -1,7 +1,12 @@
-const useUserData = () => {
-  const profile = useState<UserProfile>("userProfile", () => new UserProfile());
+export const useUserData = () => {
+  const userData = useState<IUserProfile>("user", () => {
+    return {};
+  });
 
-  return { profile };
+  const setUserData = (user: IUserProfile) => {
+    console.log("setting iser profile", user);
+    userData.value = user;
+  };
+
+  return { userData, setUserData };
 };
-
-export default useUserData;

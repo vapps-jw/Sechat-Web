@@ -1,5 +1,5 @@
 <template>
-  <v-app id="main-view">
+  <v-app id="chat-view">
     <v-main>
       <NuxtLoadingIndicator color="#fdd835" />
       <slot />

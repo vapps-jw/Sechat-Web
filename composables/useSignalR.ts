@@ -1,7 +1,9 @@
-const useUserData = () => {
-  const profile = useState<UserProfile>("userProfile", () => new UserProfile());
+import * as signalR from "@microsoft/signalr";
 
-  return { profile };
+const useSignalR = () => {
+  let connection = new signalR.HubConnectionBuilder()
+    .withUrl("https://localhost:5100")
+    .build();
 };
 
-export default useUserData;
+export default useSignalR;

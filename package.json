@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --https --ssl-cert localhost.pem --ssl-key localhost-key.pem",
+    "dev": "nuxt dev --dotenv .env.development --https --ssl-cert localhost.pem --ssl-key localhost-key.pem",
     "dev-def": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@mdi/font": "^7.1.96",
+    "@microsoft/signalr": "^7.0.2",
+    "@nuxt/image-edge": "^1.0.0-27840416.dc1ed65",
     "sass": "^1.57.1",
     "vuetify": "^3.0.6"
   }
