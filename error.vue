@@ -1,17 +1,19 @@
 <template>
   <div>
     <p>Error</p>
-    <h1>{{ error.statusCode }}</h1>
-    <p></p>
-    <v-btn @click="handleError">Go Back </v-btn>
+    <h1>{{ error?.statusCode }}</h1>
+    <p>{{ error?.message }}</p>
+    <v-btn @click="handleError">Go Back</v-btn>
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 const error = useError();
 
 const handleError = () => {
-  navigateTo("/");
+  clearError({
+    redirect: "/",
+  });
 };
 </script>
 

@@ -8,6 +8,16 @@
           class="w-[300px] h-full"
         ></NuxtImg>
         <v-btn @click="printCookie">Print Cookie</v-btn>
+        <NuxtErrorBoundary>
+          <v-btn @click="throwClientSideError">Error</v-btn>
+          <template #error="{ error }">
+            <div>
+              <h1>Sorry Error</h1>
+              <code>{{ error }}</code>
+              <v-btn @click="handleClientError(error)">Go Back</v-btn>
+            </div>
+          </template>
+        </NuxtErrorBoundary>
         <v-divider class="my-4"></v-divider>
         <client-only>
           <div v-if="userData.isSignedIn.value">
@@ -41,6 +51,17 @@ const printCookie = () => {
   const cookie = useCookie("sechat-id");
 
   console.log(cookie.value);
+};
+
+const throwClientSideError = () => {
+  throw createError({
+    statusCode: 400,
+    message: "upsie wopsie",
+  });
+};
+
+const handleClientError = (error: any) => {
+  error.value = null;
 };
 </script>
 

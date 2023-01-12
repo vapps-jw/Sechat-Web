@@ -40,6 +40,7 @@ export const useUserData = () => {
       throw createError({
         ...loginError.value,
         statusMessage: "Sing in Failed",
+        statusCode: loginError.value.statusCode,
       });
     }
 
@@ -68,7 +69,8 @@ export const useUserData = () => {
     if (loginError.value) {
       throw createError({
         ...loginError.value,
-        statusMessage: "Logout Failed",
+        statusCode: loginError.value.statusCode,
+        statusMessage: "Sign Out Failed",
       });
     }
     setUserData({});
