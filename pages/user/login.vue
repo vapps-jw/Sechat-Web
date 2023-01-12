@@ -9,12 +9,17 @@
       label="Password"
       v-model="credentials.password"
     ></v-text-field>
-    <v-btn @click="login">Sign In</v-btn>
+    <v-btn
+      @click="
+        async () => await signIn(credentials.username, credentials.password)
+      "
+      >Sign In</v-btn
+    >
   </div>
 </template>
 
 <script setup lang="ts">
-const { setUserData } = useUserData();
+const { signIn } = useUserData();
 const config = useRuntimeConfig();
 
 interface ICredentials {
@@ -23,48 +28,6 @@ interface ICredentials {
 }
 
 const credentials = reactive<ICredentials>({ username: "", password: "" });
-
-const login = async () => {
-  const { error: loginError } = await useFetch(
-    `${config.public.apiBase}/account/login`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      credentials: "include",
-      body: {
-        username: credentials.username,
-        password: credentials.password,
-      },
-    }
-  );
-
-  if (loginError.value) {
-    throw createError({
-      ...loginError.value,
-      statusMessage: "--> Login Failed",
-    });
-  }
-
-  const { data: newProfile, error: profileFetchError } =
-    await useFetch<IUserProfile>(`${config.public.apiBase}/user/get-profile`, {
-      credentials: "include",
-    });
-
-  if (profileFetchError.value) {
-    throw createError({
-      ...profileFetchError.value,
-      statusMessage: "--> Profile Fetch Failed",
-    });
-  }
-
-  setUserData(newProfile.value);
-  if (newProfile.value) {
-    console.log("navigating to chat");
-    navigateTo("/chat");
-  }
-};
 </script>
 
 <style scoped></style>
