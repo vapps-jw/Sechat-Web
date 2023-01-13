@@ -28,4 +28,8 @@ export default defineNuxtConfig({
       ],
     },
   },
+  routeRules: {
+    // Render these routes with SPA
+    "/chat/**": { ssr: false },
+  },
 });
