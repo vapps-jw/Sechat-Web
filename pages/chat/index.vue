@@ -11,6 +11,8 @@
 
     <v-btn @click="() => chatApi.getRooms()">Pull Rooms</v-btn>
 
+    <v-btn @click="() => signalr.closeConnection()">Close connection</v-btn>
+
     <v-divider class="ma-5"></v-divider>
     <div class="d-flex justify-center">
       <v-card width="300px">
@@ -40,10 +42,10 @@ const signalr = useSignalR();
 const chatApi = useChatApi();
 const chatStore = useChatStore();
 
-onMounted(() => {
+onMounted(async () => {
   console.log("--> Chat mounted");
   signalr.openConnection();
-  //chatApi.getRooms();
+  await chatApi.getRooms();
 });
 
 const test = () => {

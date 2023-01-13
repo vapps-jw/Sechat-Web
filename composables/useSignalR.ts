@@ -1,25 +1,60 @@
 import * as signalR from "@microsoft/signalr";
 
 export const useSignalR = () => {
+  enum SignalRState {
+    Connected = "Connected",
+    Disconnected = "Disconnected",
+  }
+
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
   const chatApi = useChatApi();
 
-  const connection = new signalR.HubConnectionBuilder()
-    .withUrl(`${config.public.apiBase}/chat-hub`)
-    .build();
+  const createNewConnection = () => {
+    return new signalR.HubConnectionBuilder()
+      .withUrl(`${config.public.apiBase}/chat-hub`)
+      .withAutomaticReconnect()
+      .build();
+  };
+
+  const connection = useState<signalR.HubConnection>("signalRConnection", () =>
+    createNewConnection()
+  );
+
+  const closeConnection = () => {
+    if (connection.value === null) {
+      console.log("--> There is no connection");
+      return;
+    }
+
+    if (connection.value.state === "Connected") {
+      setTimeout(() => {
+        connection.value.stop().then(function () {
+          console.log("--> Connection is closing");
+          connection.value = null;
+        });
+      }, 100);
+    }
+  };
 
   const handleIncomingMessage = (message: IMessage) => {
     console.log("--> Incoming Message", message);
   };
 
   const openConnection = () => {
-    console.log("--> Opening connection, state:", connection.state);
-    if (connection.state === "Disconnected") {
-      connection.start().then(() => {
+    if (connection.value === null) {
+      connection.value = createNewConnection();
+    }
+
+    if (connection.value.state !== "Connected") {
+      connection.value = createNewConnection();
+      connection.value.onclose(async () => {
+        await console.log("--> Connection Closed");
+      });
+      connection.value.start().then(() => {
         console.log("--> Connection Started");
-        connection.send("LogConnection", { message: "we're connected" });
-        console.log("--> Connection state:", connection.state);
+        connection.value.send("LogConnection", { message: "we're connected" });
+        console.log("--> Connection state:", connection.value.state);
       });
       return;
     }
@@ -27,28 +62,28 @@ export const useSignalR = () => {
   };
 
   const startListeningForMessages = () => {
-    console.log("--> Connection state:", connection.state);
-    if (connection.state === "Disconnected") {
+    console.log("--> Connection state:", connection.value.state);
+    if (connection.value.state === "Disconnected") {
       console.log("--> Cant lisen for messages");
       return;
     }
 
-    connection.on("send_message", handleIncomingMessage);
+    connection.value.on("send_message", handleIncomingMessage);
   };
 
   const stopListeningForMessages = () => {
-    console.log("--> Connection state:", connection.state);
-    if (connection.state === "Disconnected") {
-      console.log("--> Cant lisen for messages");
+    console.log("--> Connection state:", connection.value.state);
+    if (connection.value.state === "Disconnected") {
+      console.log("--> Cant listen for messages");
       return;
     }
 
-    connection.off("send_message", handleIncomingMessage);
+    connection.value.off("send_message", handleIncomingMessage);
   };
 
   const connectToRooms = () => {
-    console.log("--> Connection state:", connection.state);
-    if (connection.state === "Disconnected") {
+    console.log("--> Connection state:", connection.value.state);
+    if (connection.value.state === "Disconnected") {
       console.log("--> Cant connect to Rooms");
       return;
     }
@@ -59,7 +94,7 @@ export const useSignalR = () => {
     }
 
     console.log("--> Connecting to Rooms", chatStore.rooms.value?.length);
-    connection
+    connection.value
       .invoke("ConnectToRooms", {
         RoomIds: chatStore.rooms.value.map((r) => r.id),
       })
@@ -69,14 +104,22 @@ export const useSignalR = () => {
   };
 
   const createRoom = (name: string) => {
-    console.log("--> Connection state:", connection.state);
-    console.log("--> Creating room", name);
-    connection.invoke("CreateRoom", { RoomName: name }).then((newRoom) => {
-      console.log("--> New room created", newRoom);
-      const chatStore = useChatStore();
-      chatStore.addRoom(newRoom);
-    });
+    console.log("--> Connection state:", connection.value.state);
+    console.log("--> Creating room:", name);
+    connection.value
+      .invoke("CreateRoom", { RoomName: name })
+      .then((newRoom) => {
+        console.log("--> New room created", newRoom);
+        const chatStore = useChatStore();
+        chatStore.addRoom(newRoom);
+      });
   };
 
-  return { openConnection, createRoom };
+  return {
+    openConnection,
+    createRoom,
+    closeConnection,
+    startListeningForMessages,
+    stopListeningForMessages,
+  };
 };

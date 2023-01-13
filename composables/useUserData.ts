@@ -6,10 +6,9 @@ export const useUserData = () => {
 
   const config = useRuntimeConfig();
 
-  const setUserData = (user: IUserProfile) => {
+  const setUserData = (user: IUserProfile | null) => {
     console.log("--> Setting User Data in the State", user);
-    userData.value = user;
-    if (userData.value.userId) {
+    if (user !== null) {
       isSignedIn.value = true;
       console.log("--> Logged In");
       return;
@@ -74,7 +73,7 @@ export const useUserData = () => {
         statusMessage: "Sign Out Failed",
       });
     }
-    setUserData({});
+    setUserData(null);
   };
 
   const register = async (username: string, password: string) => {};
@@ -90,7 +89,7 @@ export const useUserData = () => {
       );
 
     if (profileFetchError.value) {
-      setUserData({});
+      setUserData(null);
       return;
     }
 
