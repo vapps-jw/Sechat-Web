@@ -21,7 +21,7 @@
               v-for="item in chatStore.rooms.value"
               :key="item.id"
               :title="item.name"
-              subtitle="..."
+              :subtitle="item.messages.length"
             ></v-list-item>
           </v-list>
         </v-card-text>

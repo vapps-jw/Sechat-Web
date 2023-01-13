@@ -8,7 +8,7 @@ interface INewRoomCreateMessage {
 }
 
 interface IRoom {
-  id?: number;
+  id?: string;
   name?: string;
   messages?: IMessage[];
   members?: IMemeber[];
@@ -29,4 +29,10 @@ interface IMemeber {
   id?: string;
   userName?: string;
   lastActivity?: Date;
+}
+
+interface ISentMessage {
+  senderId?: string;
+  text?: string;
+  roomId?: string;
 }
