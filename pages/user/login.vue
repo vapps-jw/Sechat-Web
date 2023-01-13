@@ -9,12 +9,22 @@
       label="Password"
       v-model="credentials.password"
     ></v-text-field>
-    <v-btn
-      @click="
-        async () => await signIn(credentials.username, credentials.password)
-      "
-      >Sign In</v-btn
-    >
+
+    <NuxtErrorBoundary>
+      <v-btn
+        @click="
+          async () => await signIn(credentials.username, credentials.password)
+        "
+        >Sign In</v-btn
+      >
+      <template #error="{ error }">
+        <div>
+          <h1>Sorry Error</h1>
+          <code>{{ error }}</code>
+          <v-btn @click="handleClientError(error)">Go Back</v-btn>
+        </div>
+      </template>
+    </NuxtErrorBoundary>
   </div>
 </template>
 
@@ -28,6 +38,10 @@ interface ICredentials {
 }
 
 const credentials = reactive<ICredentials>({ username: "", password: "" });
+
+const handleClientError = (error: any) => {
+  error.value = null;
+};
 </script>
 
 <style scoped></style>

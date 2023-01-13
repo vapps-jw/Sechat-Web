@@ -7,19 +7,20 @@ export const useUserData = () => {
   const config = useRuntimeConfig();
 
   const setUserData = (user: IUserProfile) => {
-    console.log("--> setting user profile", user);
+    console.log("--> Setting User Data in the State", user);
     userData.value = user;
     if (userData.value.userId) {
       isSignedIn.value = true;
-      console.log("--> logged in");
+      console.log("--> Logged In");
       return;
     }
     isSignedIn.value = false;
-    console.log("--> not logged in");
+    console.log("--> Not Logged In");
+    navigateTo("/");
   };
 
   const signIn = async (username: string, password: string) => {
-    console.log("--> signing in");
+    console.log("--> Signing In");
 
     const { error: loginError } = await useFetch(
       `${config.public.apiBase}/account/login`,
@@ -47,13 +48,13 @@ export const useUserData = () => {
     await getUserData();
 
     if (userData.value) {
-      console.log("--> navigating to chat");
+      console.log("--> Navigating to Chat");
       navigateTo("/chat");
     }
   };
 
   const signOut = async () => {
-    console.log("--> signing out");
+    console.log("--> Signing Out");
 
     const { error: loginError } = await useFetch(
       `${config.public.apiBase}/account/logout`,
