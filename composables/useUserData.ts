@@ -67,13 +67,11 @@ export const useUserData = () => {
     );
 
     if (loginError.value) {
-      throw createError({
-        ...loginError.value,
-        statusCode: loginError.value.statusCode,
-        statusMessage: "Sign Out Failed",
-      });
+      console.error("--> No server not responsed for Sign Out");
+    } else {
+      setUserData(null);
     }
-    setUserData(null);
+    navigateTo("/");
   };
 
   const register = async (username: string, password: string) => {};
@@ -89,10 +87,10 @@ export const useUserData = () => {
       );
 
     if (profileFetchError.value) {
+      console.error("--> Fetch user profile Error");
       setUserData(null);
       return;
     }
-
     setUserData(newProfile.value);
   };
 

@@ -7,7 +7,6 @@
           alt=""
           class="w-[300px] h-full"
         ></NuxtImg>
-        <v-btn @click="printCookie">Print Cookie</v-btn>
         <NuxtErrorBoundary>
           <v-btn @click="throwClientSideError">Error</v-btn>
           <template #error="{ error }">
@@ -46,12 +45,6 @@
 
 <script setup lang="ts">
 const userData = useUserData();
-
-const printCookie = () => {
-  const cookie = useCookie("sechat-id");
-
-  console.log(cookie.value);
-};
 
 const throwClientSideError = () => {
   throw createError({

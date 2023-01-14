@@ -1,10 +1,10 @@
 import * as signalR from "@microsoft/signalr";
 
 export const useSignalR = () => {
-  enum SignalRState {
-    Connected = "Connected",
-    Disconnected = "Disconnected",
-  }
+  const SignalRState = {
+    Connected: "Connected",
+    Disconnected: "Disconnected",
+  };
 
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
@@ -27,7 +27,7 @@ export const useSignalR = () => {
       return;
     }
 
-    if (connection.value.state === "Connected") {
+    if (connection.value.state === SignalRState.Connected) {
       setTimeout(() => {
         connection.value.stop().then(function () {
           console.log("--> Connection is closing");
@@ -46,7 +46,7 @@ export const useSignalR = () => {
       connection.value = createNewConnection();
     }
 
-    if (connection.value.state !== "Connected") {
+    if (connection.value.state !== SignalRState.Connected) {
       connection.value = createNewConnection();
       connection.value.onclose(async () => {
         await console.log("--> Connection Closed");
@@ -63,7 +63,7 @@ export const useSignalR = () => {
 
   const startListeningForMessages = () => {
     console.log("--> Connection state:", connection.value.state);
-    if (connection.value.state === "Disconnected") {
+    if (connection.value.state === SignalRState.Disconnected) {
       console.log("--> Cant lisen for messages");
       return;
     }
@@ -73,7 +73,7 @@ export const useSignalR = () => {
 
   const stopListeningForMessages = () => {
     console.log("--> Connection state:", connection.value.state);
-    if (connection.value.state === "Disconnected") {
+    if (connection.value.state === SignalRState.Disconnected) {
       console.log("--> Cant listen for messages");
       return;
     }
@@ -83,7 +83,7 @@ export const useSignalR = () => {
 
   const connectToRooms = () => {
     console.log("--> Connection state:", connection.value.state);
-    if (connection.value.state === "Disconnected") {
+    if (connection.value.state === SignalRState.Disconnected) {
       console.log("--> Cant connect to Rooms");
       return;
     }
@@ -112,6 +112,14 @@ export const useSignalR = () => {
         console.log("--> New room created", newRoom);
         const chatStore = useChatStore();
         chatStore.addRoom(newRoom);
+      })
+      .catch((err) => {
+        if (err.message.indexOf("auth_expired") > 0) {
+          console.log("--> Auth cookie expored");
+          navigateTo("/user/login");
+        } else {
+          throw err;
+        }
       });
   };
 
