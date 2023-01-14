@@ -6,6 +6,12 @@ export const useSignalR = () => {
     Disconnected: "Disconnected",
   };
 
+  const SignalRHubMethods = {
+    SendMessage: "MessageIncoming",
+    ConnectToRooms: "ConnectToRooms",
+    CreateRoom: "CreateRoom",
+  };
+
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
   const chatApi = useChatApi();
@@ -62,13 +68,12 @@ export const useSignalR = () => {
   };
 
   const startListeningForMessages = () => {
-    console.log("--> Connection state:", connection.value.state);
     if (connection.value.state === SignalRState.Disconnected) {
-      console.log("--> Cant lisen for messages");
+      console.log("--> Cant listen for messages", connection.value.state);
       return;
     }
 
-    connection.value.on("send_message", handleIncomingMessage);
+    connection.value.on(SignalRHubMethods.SendMessage, handleIncomingMessage);
   };
 
   const stopListeningForMessages = () => {
@@ -78,7 +83,7 @@ export const useSignalR = () => {
       return;
     }
 
-    connection.value.off("send_message", handleIncomingMessage);
+    connection.value.off(SignalRHubMethods.SendMessage, handleIncomingMessage);
   };
 
   const connectToRooms = () => {
@@ -95,7 +100,7 @@ export const useSignalR = () => {
 
     console.log("--> Connecting to Rooms", chatStore.rooms.value?.length);
     connection.value
-      .invoke("ConnectToRooms", {
+      .invoke(SignalRHubMethods.ConnectToRooms, {
         RoomIds: chatStore.rooms.value.map((r) => r.id),
       })
       .then((result) => {
@@ -107,13 +112,14 @@ export const useSignalR = () => {
     console.log("--> Connection state:", connection.value.state);
     console.log("--> Creating room:", name);
     connection.value
-      .invoke("CreateRoom", { RoomName: name })
+      .invoke(SignalRHubMethods.CreateRoom, { RoomName: name })
       .then((newRoom) => {
         console.log("--> New room created", newRoom);
         const chatStore = useChatStore();
         chatStore.addRoom(newRoom);
       })
       .catch((err) => {
+        // todo: make auth work or remove it
         if (err.message.indexOf("auth_expired") > 0) {
           console.log("--> Auth cookie expored");
           navigateTo("/user/login");
@@ -121,6 +127,19 @@ export const useSignalR = () => {
           throw err;
         }
       });
+  };
+
+  const sendMessage = (message: string) => {
+    console.log("--> Connection state:", connection.value.state);
+    console.log("--> Sending message:", message);
+    connection.value.send("");
+
+    //connection.send('SendMessage', {message, room: currentRoom})
+
+    // message DTO
+    // public string SenderId { get; set; } = string.Empty;
+    // public string Text { get; set; } = string.Empty;
+    // public string RoomId { get; set; } = string.Empty;
   };
 
   return {

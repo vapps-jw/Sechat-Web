@@ -1,34 +1,33 @@
 <template>
   <div>
-    <p>chat</p>
-    <v-btn to="/">Go to Home</v-btn>
+    <v-card>
+      <v-tabs
+        v-model="chatStore.activeChatTab.value"
+        centered
+        stacked
+        fixed-tabs
+      >
+        <v-tab value="messages">
+          <v-icon>mdi-chat-processing</v-icon>
+          Messages
+        </v-tab>
 
-    <v-btn @click="test">Open connection</v-btn>
+        <v-tab value="rooms">
+          <v-icon>mdi-forum</v-icon>
+          Rooms
+        </v-tab>
 
-    <v-divider class="ma-5"></v-divider>
-
-    <v-btn @click="() => signalr.createRoom('new room')">Create Room</v-btn>
-
-    <v-btn @click="() => chatApi.getRooms()">Pull Rooms</v-btn>
-
-    <v-btn @click="() => signalr.closeConnection()">Close connection</v-btn>
-
-    <v-divider class="ma-5"></v-divider>
-    <div class="d-flex justify-center">
-      <v-card width="300px">
-        <v-card-title class="text-xs-h6">Rooms</v-card-title>
-        <v-card-text>
-          <v-list lines="one">
-            <v-list-item
-              v-for="item in chatStore.rooms.value"
-              :key="item.id"
-              :title="item.name"
-              :subtitle="item.messages.length"
-            ></v-list-item>
-          </v-list>
-        </v-card-text>
-      </v-card>
-    </div>
+        <v-tab value="settings">
+          <v-icon>mdi-cogs</v-icon>
+          Settings
+        </v-tab>
+      </v-tabs>
+      <v-window v-model="chatStore.activeChatTab.value">
+        <v-window-item value="messages"> <ChatMessages /> </v-window-item>
+        <v-window-item value="rooms"> <ChatRooms /> </v-window-item>
+        <v-window-item value="settings"> <ChatSettings /> </v-window-item>
+      </v-window>
+    </v-card>
   </div>
 </template>
 
@@ -47,10 +46,6 @@ onMounted(async () => {
   signalr.openConnection();
   await chatApi.getRooms();
 });
-
-const test = () => {
-  signalr.openConnection();
-};
 </script>
 
 <style scoped></style>
