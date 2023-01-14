@@ -15,7 +15,6 @@ interface IRoom {
   creatorId?: string;
   lastActivity?: Date;
   created?: Date;
-  selected?: boolean;
 }
 
 interface IMessage {

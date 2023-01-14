@@ -1,11 +1,15 @@
 <template>
   <div>
-    <v-card class="mx-auto" max-width="600">
+    <v-card class="mx-auto" max-width="800">
       <v-list lines="two">
         <v-list-item
+          class="my-1"
           v-for="room in chatStore.rooms.value"
+          @click="chatStore.selectRoom(room)"
           :key="room.id"
           :title="room.name"
+          active-color="primary"
+          :value="room"
           :subtitle="
             new Date(room.lastActivity).toLocaleString(
               appStore.localLanguage.value
@@ -34,21 +38,6 @@
 <script setup lang="ts">
 const chatStore = useChatStore();
 const appStore = useAppStore();
-
-const files = [
-  {
-    color: "blue",
-    icon: "mdi-clipboard-text",
-    subtitle: "Jan 20, 2014",
-    title: "Vacation itinerary",
-  },
-  {
-    color: "amber",
-    icon: "mdi-gesture-tap-button",
-    subtitle: "Jan 10, 2014",
-    title: "Kitchen remodel",
-  },
-];
 </script>
 
 <style scoped></style>

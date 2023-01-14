@@ -12,8 +12,8 @@ export const useChatStore = () => {
 
   const loadRooms = (data: IRoom[]) => {
     console.log("--> Adding room to the Store", data);
-    data.forEach((r) => (r.selected = false));
     rooms.value = data;
+    sortRooms();
   };
 
   const clearRooms = () => {
@@ -21,5 +21,28 @@ export const useChatStore = () => {
     rooms.value = [];
   };
 
-  return { rooms, addRoom, clearRooms, loadRooms, activeChatTab, activeRoom };
+  const sortRooms = () => {
+    rooms.value = rooms.value.sort(function (a, b) {
+      return a.lastActivity > b.lastActivity
+        ? 1
+        : a.lastActivity < b.lastActivity
+        ? -1
+        : 0;
+    });
+  };
+
+  const selectRoom = (room: IRoom) => {
+    activeRoom.value = room.id;
+  };
+
+  return {
+    rooms,
+    activeChatTab,
+    activeRoom,
+    addRoom,
+    clearRooms,
+    loadRooms,
+    sortRooms,
+    selectRoom,
+  };
 };

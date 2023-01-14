@@ -6,3 +6,9 @@
 .sechat-blur-image {
   filter: blur(4px);
 }
+
+.sechat-sticky-tabs-bar {
+  position: -webkit-sticky;
+  position: sticky;
+  z-index: 2;
+}
