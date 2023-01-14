@@ -6,7 +6,14 @@ export default defineNuxtConfig({
       apiBase: process.env.API_BASE_URL || "/api",
     },
   },
-  modules: ["@nuxt/image-edge"],
+  modules: ["@nuxt/image-edge", "@nuxtjs/i18n"],
+  i18n: {
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: "i18n_redirected",
+      redirectOn: "root", // recommended
+    },
+  },
   css: [
     "vuetify/lib/styles/main.sass",
     "@mdi/font/css/materialdesignicons.min.css",

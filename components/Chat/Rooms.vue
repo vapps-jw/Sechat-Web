@@ -6,7 +6,11 @@
           v-for="room in chatStore.rooms.value"
           :key="room.id"
           :title="room.name"
-          :subtitle="new Date(room.lastActivity).toLocaleString()"
+          :subtitle="
+            new Date(room.lastActivity).toLocaleString(
+              appStore.localLanguage.value
+            )
+          "
         >
           <template v-slot:prepend>
             <v-avatar color="amber">
@@ -29,6 +33,7 @@
 
 <script setup lang="ts">
 const chatStore = useChatStore();
+const appStore = useAppStore();
 
 const files = [
   {
