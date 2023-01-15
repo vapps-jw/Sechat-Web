@@ -3,7 +3,7 @@ export const useChatStore = () => {
     return [];
   });
   const activeChatTab = useState<string>("activeChatTab", () => "");
-  const activeRoom = useState<string>("activeChatRoom", () => "");
+  const activeRoom = useState<IRoom>("activeChatRoom", () => null);
 
   const addRoom = (room: IRoom) => {
     console.log("--> Adding room to the Store", room.name);
@@ -32,7 +32,16 @@ export const useChatStore = () => {
   };
 
   const selectRoom = (room: IRoom) => {
-    activeRoom.value = room.id;
+    console.log("--> Room selected", room);
+    if (!activeRoom.value) {
+      activeRoom.value = room;
+      return;
+    }
+    if (room.id == activeRoom.value.id) {
+      activeRoom.value = null;
+      return;
+    }
+    activeRoom.value = room;
   };
 
   return {

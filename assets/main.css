@@ -3,12 +3,25 @@
   color: inherit;
 }
 
-.sechat-blur-image {
-  filter: blur(4px);
+.v-card {
+  height: 90vh;
+  display: flex !important;
+  flex-direction: column;
 }
 
-.sechat-sticky-tabs-bar {
-  position: -webkit-sticky;
-  position: sticky;
-  z-index: 2;
+.v-card-text {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.sechat-message-input {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  z-index: 100;
+  opacity: 1;
+}
+
+html {
+  overflow: hidden !important;
 }

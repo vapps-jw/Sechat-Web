@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <v-card class="mx-auto" max-width="800">
       <v-list lines="two">
         <v-list-item
@@ -32,7 +32,7 @@
         </v-list-item>
       </v-list>
     </v-card>
-  </div>
+  </v-container>
 </template>
 
 <script setup lang="ts">

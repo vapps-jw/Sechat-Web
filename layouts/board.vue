@@ -1,7 +1,6 @@
 <template>
   <v-app id="chat-view">
     <v-main>
-      <NuxtLoadingIndicator color="#fdd835" />
       <slot />
     </v-main>
   </v-app>
