@@ -26,6 +26,8 @@ html {
   overflow: hidden !important;
 }
 
+/* Scroll Bar Start */
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
@@ -45,3 +47,5 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* Scroll Bar End */

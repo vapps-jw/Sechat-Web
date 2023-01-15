@@ -7,10 +7,10 @@
           >Room: {{ chatStore.activeRoom.value.name }}</v-toolbar-title
         >
       </v-toolbar>
-      <v-card-text ref="chatView">
-        <v-list ref="chat" id="logs" v-if="chatStore.activeRoom.value">
+      <v-card-text ref="chatView" id="chatView" class="ma-0 pa-0">
+        <v-list v-if="chatStore.activeRoom.value.messages">
           <v-list-item
-            class="my-2"
+            class="mb-5"
             v-for="message in chatStore.activeRoom.value.messages"
             :title="message.text"
             :subtitle="`${message.nameSentBy} on ${new Date(
@@ -31,7 +31,6 @@
 
 <script setup lang="ts">
 const chatStore = useChatStore();
-const chatView = ref<HTMLInputElement | null>(null);
 const signalR = useSignalR();
 const appStore = useAppStore();
 
@@ -40,12 +39,15 @@ const msg = ref("");
 const pushMessage = () => {
   signalR.sendMessage(msg.value);
   msg.value = "";
+  scrollToBottom();
+};
 
-  if (chatView.value) {
-    console.log("--> Scrolling", chatView);
-    chatView.value.scrollTop = chatView.value.scrollHeight;
+const scrollToBottom = () => {
+  const chatSection = document.getElementById("chatView");
+  if (chatSection) {
+    setTimeout(() => {
+      chatSection.scrollTop = chatSection.scrollHeight;
+    }, 0);
   }
 };
 </script>
-
-<style scoped></style>
