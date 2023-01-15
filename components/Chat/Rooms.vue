@@ -1,6 +1,15 @@
 <template>
   <v-container>
     <v-card class="mx-auto" max-width="800">
+      <v-toolbar>
+        <v-btn icon="mdi-menu"></v-btn>
+
+        <v-toolbar-title>Tu zrobic guzik na dodawanie roomow</v-toolbar-title>
+
+        <v-spacer></v-spacer>
+
+        <v-btn icon="mdi-magnify"></v-btn>
+      </v-toolbar>
       <v-list lines="two">
         <v-list-item
           class="my-1"

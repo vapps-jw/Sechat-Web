@@ -1,6 +1,10 @@
 import * as signalR from "@microsoft/signalr";
 
 export const useSignalR = () => {
+  const config = useRuntimeConfig();
+  const chatStore = useChatStore();
+  const userData = useUserData();
+
   const SignalRState = {
     Connected: "Connected",
     Disconnected: "Disconnected",
@@ -11,10 +15,6 @@ export const useSignalR = () => {
     ConnectToRooms: "ConnectToRooms",
     CreateRoom: "CreateRoom",
   };
-
-  const config = useRuntimeConfig();
-  const chatStore = useChatStore();
-  const chatApi = useChatApi();
 
   const createNewConnection = () => {
     return new signalR.HubConnectionBuilder()
@@ -132,7 +132,19 @@ export const useSignalR = () => {
   const sendMessage = (message: string) => {
     console.log("--> Connection state:", connection.value.state);
     console.log("--> Sending message:", message);
-    connection.value.send("");
+
+    let randomId = Math.floor(Math.random() * 999999);
+    const newMessage: IMessage = {
+      id: randomId,
+      idSentBy: userData.userData.value.userId,
+      nameSentBy: "test-user",
+      created: new Date(),
+      text: message,
+    };
+
+    chatStore.activeRoom.value.messages.push(newMessage);
+
+    //connection.value.send("");
 
     //connection.send('SendMessage', {message, room: currentRoom})
 
@@ -148,5 +160,6 @@ export const useSignalR = () => {
     closeConnection,
     startListeningForMessages,
     stopListeningForMessages,
+    sendMessage,
   };
 };
