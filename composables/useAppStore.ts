@@ -4,5 +4,18 @@ export const useAppStore = () => {
     () => useI18n().locale.value
   );
 
-  return { localLanguage };
+  const snackbarData = useState<ISanckbar>("snackbarData", () => {
+    return {
+      snackbar: false,
+      text: "",
+      timeout: 2000,
+      color: "",
+    };
+  });
+
+  const showSnackbar = (data: ISanckbar) => {
+    snackbarData.value = data;
+  };
+
+  return { localLanguage, snackbarData, showSnackbar };
 };

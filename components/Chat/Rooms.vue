@@ -6,10 +6,7 @@
           >{{ chatStore.rooms.value.length }} Rooms</v-toolbar-title
         >
         <v-spacer></v-spacer>
-        <v-btn
-          icon="mdi-forum-plus-outline"
-          @click="() => signalr.createRoom('new room')"
-        ></v-btn>
+        <chat-dialogs-add-room />
       </v-toolbar>
       <v-list lines="two">
         <v-list-item
@@ -53,6 +50,8 @@ const chatStore = useChatStore();
 const appStore = useAppStore();
 const userData = useUserData();
 const config = useRuntimeConfig();
+
+const addRoomForm = ref<boolean>(false);
 
 const deleteRoom = async (roomId: string) => {
   console.log("--> Deleting room", roomId);

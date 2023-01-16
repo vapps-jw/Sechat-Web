@@ -45,7 +45,7 @@ const pushMessage = () => {
 };
 
 const messages = computed(() => {
-  console.log("--> Active room ID", [chatStore.activeRoomId]);
+  console.log("--> Active room ID", [chatStore.activeRoomId.value]);
   if (!chatStore.activeRoomId.value) {
     console.log("--> Computed messages triggered", []);
     return [];
