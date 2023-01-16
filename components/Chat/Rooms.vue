@@ -2,13 +2,14 @@
   <v-container>
     <v-card class="mx-auto" max-width="800">
       <v-toolbar>
-        <v-btn icon="mdi-menu"></v-btn>
-
-        <v-toolbar-title>Tu zrobic guzik na dodawanie roomow</v-toolbar-title>
-
+        <v-toolbar-title
+          >{{ chatStore.rooms.value.length }} Rooms</v-toolbar-title
+        >
         <v-spacer></v-spacer>
-
-        <v-btn icon="mdi-magnify"></v-btn>
+        <v-btn
+          icon="mdi-forum-plus-outline"
+          @click="() => signalr.createRoom('new room')"
+        ></v-btn>
       </v-toolbar>
       <v-list lines="two">
         <v-list-item
@@ -25,18 +26,20 @@
             )
           "
         >
-          <template v-slot:prepend>
+          <!-- <template v-slot:prepend>
             <v-avatar color="amber">
               <v-icon color="white">"mdi-clipboard-text"</v-icon>
             </v-avatar>
-          </template>
+          </template> -->
 
           <template v-slot:append>
             <v-btn
-              color="grey-lighten-1"
-              icon="mdi-information"
-              variant="text"
+              @click="async () => await deleteRoom(room.id)"
+              v-if="room.creatorId === userData.userProfile.value.userId"
+              icon="mdi-delete"
+              color="error"
             ></v-btn>
+            <v-btn icon="mdi-exit-to-app" class="ma-2" color="warning"></v-btn>
           </template>
         </v-list-item>
       </v-list>
@@ -45,8 +48,30 @@
 </template>
 
 <script setup lang="ts">
+const signalr = useSignalR();
 const chatStore = useChatStore();
 const appStore = useAppStore();
+const userData = useUserData();
+const config = useRuntimeConfig();
+
+const deleteRoom = async (roomId: string) => {
+  console.log("--> Deleting room", roomId);
+  const { error: deleteError } = await useFetch(
+    `${config.public.apiBase}/chat/delete-room/?roomId=${roomId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (deleteError.value) {
+    throw createError({
+      ...deleteError.value,
+      statusMessage: "Failed to delete",
+      statusCode: deleteError.value.statusCode,
+    });
+  }
+};
 </script>
 
 <style scoped></style>

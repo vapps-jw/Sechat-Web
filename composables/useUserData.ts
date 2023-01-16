@@ -1,5 +1,5 @@
 export const useUserData = () => {
-  const userData = useState<IUserProfile>("userProfile", () => {
+  const userProfile = useState<IUserProfile>("userProfile", () => {
     return {};
   });
   const isSignedIn = useState("isSignedIn", () => false);
@@ -9,13 +9,13 @@ export const useUserData = () => {
   const setUserData = (user: IUserProfile | null) => {
     console.log("--> Setting User Data in the State", user);
     if (user !== null) {
+      userProfile.value = user;
       isSignedIn.value = true;
       console.log("--> Logged In");
       return;
     }
     isSignedIn.value = false;
     console.log("--> Not Logged In");
-    navigateTo("/");
   };
 
   const signIn = async (username: string, password: string) => {
@@ -46,7 +46,7 @@ export const useUserData = () => {
 
     await getUserData();
 
-    if (userData.value) {
+    if (userProfile.value) {
       console.log("--> Navigating to Chat");
       navigateTo("/chat");
     }
@@ -92,10 +92,11 @@ export const useUserData = () => {
       return;
     }
     setUserData(newProfile.value);
+    console.warn("--> User profile", userProfile.value);
   };
 
   return {
-    userData,
+    userProfile,
     isSignedIn,
     signOut,
     getUserData,

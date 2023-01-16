@@ -6,12 +6,14 @@
         <v-toolbar-title
           >Room: {{ chatStore.activeRoom.value.name }}</v-toolbar-title
         >
+        <v-spacer></v-spacer>
+        <v-btn icon="mdi-account-plus"></v-btn>
       </v-toolbar>
-      <v-card-text ref="chatView" id="chatView" class="ma-0 pa-0">
-        <v-list v-if="chatStore.activeRoom.value.messages">
+      <v-card-text id="chatView" class="ma-0 pa-0">
+        <v-list>
           <v-list-item
             class="mb-5"
-            v-for="message in chatStore.activeRoom.value.messages"
+            v-for="message in messages"
             :title="message.text"
             :subtitle="`${message.nameSentBy} on ${new Date(
               message.created
@@ -30,6 +32,7 @@
 </template>
 
 <script setup lang="ts">
+import { scrollToBottom } from "@/utilities/documentFunctions";
 const chatStore = useChatStore();
 const signalR = useSignalR();
 const appStore = useAppStore();
@@ -37,17 +40,22 @@ const appStore = useAppStore();
 const msg = ref("");
 
 const pushMessage = () => {
-  signalR.sendMessage(msg.value);
+  signalR.sendMessage(msg.value, chatStore.activeRoomId.value);
   msg.value = "";
-  scrollToBottom();
 };
 
-const scrollToBottom = () => {
-  const chatSection = document.getElementById("chatView");
-  if (chatSection) {
-    setTimeout(() => {
-      chatSection.scrollTop = chatSection.scrollHeight;
-    }, 0);
+const messages = computed(() => {
+  console.log("--> Active room ID", [chatStore.activeRoomId]);
+  if (!chatStore.activeRoomId.value) {
+    console.log("--> Computed messages triggered", []);
+    return [];
   }
-};
+  console.log("--> Computed messages triggered - with values");
+  return chatStore.activeRoom.value.messages;
+});
+
+watch(messages, () => {
+  console.log("--> Scrolling");
+  scrollToBottom("chatView");
+});
 </script>

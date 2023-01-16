@@ -30,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { scrollToBottom } from "@/utilities/documentFunctions";
 definePageMeta({
   layout: "board",
   middleware: ["authenticated"],
@@ -41,8 +42,15 @@ const chatStore = useChatStore();
 
 onMounted(async () => {
   console.log("--> Chat mounted");
-  signalr.openConnection();
   await chatApi.getRooms();
+  signalr.openConnection();
+});
+
+watch(chatStore.activeChatTab, () => {
+  if (chatStore.activeChatTab.value === "messages" && chatStore.activeRoomId) {
+    console.log("--> Scrolling");
+    scrollToBottom("chatView");
+  }
 });
 </script>
 

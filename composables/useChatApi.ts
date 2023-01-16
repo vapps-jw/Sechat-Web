@@ -4,7 +4,6 @@ export const useChatApi = () => {
 
   const getRooms = async () => {
     console.log("--> Getting Rooms");
-
     const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
       `${config.public.apiBase}/chat/get-my-rooms`,
       {

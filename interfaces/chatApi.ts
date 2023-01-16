@@ -22,6 +22,7 @@ interface IMessage {
   idSentBy?: string;
   nameSentBy?: string;
   text?: string;
+  roomId?: string;
   created?: Date;
 }
 
@@ -32,7 +33,10 @@ interface IMemeber {
 }
 
 interface ISentMessage {
-  senderId?: string;
   text?: string;
+  roomId?: string;
+}
+
+interface IRoomIdMessage {
   roomId?: string;
 }

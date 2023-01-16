@@ -8,12 +8,16 @@ export const useSignalR = () => {
   const SignalRState = {
     Connected: "Connected",
     Disconnected: "Disconnected",
+    Connecting: "Connecting",
   };
 
   const SignalRHubMethods = {
-    SendMessage: "MessageIncoming",
+    SendMessage: "SendMessage",
     ConnectToRooms: "ConnectToRooms",
+    ConnectToRoom: "ConnectToRoom",
     CreateRoom: "CreateRoom",
+    MessageIncoming: "MessageIncoming",
+    RoomDeleted: "RoomDeleted",
   };
 
   const createNewConnection = () => {
@@ -27,84 +31,105 @@ export const useSignalR = () => {
     createNewConnection()
   );
 
-  const closeConnection = () => {
-    if (connection.value === null) {
-      console.log("--> There is no connection");
-      return;
-    }
-
-    if (connection.value.state === SignalRState.Connected) {
-      setTimeout(() => {
-        connection.value.stop().then(function () {
-          console.log("--> Connection is closing");
-          connection.value = null;
-        });
-      }, 100);
-    }
-  };
-
-  const handleIncomingMessage = (message: IMessage) => {
-    console.log("--> Incoming Message", message);
-  };
-
-  const openConnection = () => {
+  const openConnection = async () => {
     if (connection.value === null) {
       connection.value = createNewConnection();
     }
 
     if (connection.value.state !== SignalRState.Connected) {
       connection.value = createNewConnection();
-      connection.value.onclose(async () => {
-        await console.log("--> Connection Closed");
+      connection.value.onclose(() => {
+        _offIncomingMessage();
+        _offRoomDeletedEvent();
+        console.log("--> Connection Closed");
       });
-      connection.value.start().then(() => {
-        console.log("--> Connection Started");
-        connection.value.send("LogConnection", { message: "we're connected" });
-        console.log("--> Connection state:", connection.value.state);
-      });
-      return;
+
+      await connection.value.start();
+
+      if (connection.value.state === SignalRState.Connected) {
+        console.log("--> Connection established");
+        _connectToRooms(chatStore.rooms.value.map((r) => r.id));
+        _onIncomingMessage();
+        _onRoomDeletedEvent();
+        return;
+      }
+
+      throw createError({ statusCode: 404, statusMessage: "Page Not Found" });
     }
     console.log("--> Already Connected");
   };
 
-  const startListeningForMessages = () => {
-    if (connection.value.state === SignalRState.Disconnected) {
-      console.log("--> Cant listen for messages", connection.value.state);
-      return;
-    }
-
-    connection.value.on(SignalRHubMethods.SendMessage, handleIncomingMessage);
+  const _onRoomDeletedEvent = () => {
+    console.log("--> Connecting RoomDeleted event");
+    connection.value.on(
+      SignalRHubMethods.RoomDeleted,
+      chatStore.handleDeleteRoom
+    );
   };
 
-  const stopListeningForMessages = () => {
-    console.log("--> Connection state:", connection.value.state);
-    if (connection.value.state === SignalRState.Disconnected) {
-      console.log("--> Cant listen for messages");
-      return;
-    }
-
-    connection.value.off(SignalRHubMethods.SendMessage, handleIncomingMessage);
+  const _offRoomDeletedEvent = () => {
+    console.log("--> Disconnecting RoomDeleted event");
+    connection.value.off(
+      SignalRHubMethods.MessageIncoming,
+      chatStore.handleDeleteRoom
+    );
   };
 
-  const connectToRooms = () => {
-    console.log("--> Connection state:", connection.value.state);
-    if (connection.value.state === SignalRState.Disconnected) {
-      console.log("--> Cant connect to Rooms");
+  const _onIncomingMessage = () => {
+    console.log("--> Connecting SendMessage event");
+    connection.value.on(
+      SignalRHubMethods.MessageIncoming,
+      chatStore.handleIncomingMessage
+    );
+  };
+
+  const _offIncomingMessage = () => {
+    console.log("--> Disconnecting SendMessage event");
+    connection.value.off(
+      SignalRHubMethods.MessageIncoming,
+      chatStore.handleIncomingMessage
+    );
+  };
+
+  const _connectToRooms = (roomIds: string[]) => {
+    if (connection.value.state !== SignalRState.Connected) {
+      console.warn("--> Cant connect to Rooms");
       return;
     }
 
-    if (chatStore.rooms.value?.length == 0) {
+    if (roomIds.length == 0) {
       console.log("--> No rooms to connect with");
       return;
     }
 
-    console.log("--> Connecting to Rooms", chatStore.rooms.value?.length);
+    console.log("--> Connecting to Rooms", roomIds);
     connection.value
       .invoke(SignalRHubMethods.ConnectToRooms, {
-        RoomIds: chatStore.rooms.value.map((r) => r.id),
+        RoomIds: roomIds,
       })
       .then((result) => {
         console.log("--> Connected to rooms", result);
+      });
+  };
+
+  const _connectToRoom = (roomId: string) => {
+    if (connection.value.state !== SignalRState.Connected) {
+      console.warn("--> Cant connect to Rooms");
+      return;
+    }
+
+    if (!roomId) {
+      console.warn("--> Incorect Room Id");
+      return;
+    }
+
+    console.log("--> Connecting to Room", roomId);
+    connection.value
+      .invoke(SignalRHubMethods.ConnectToRoom, {
+        RoomId: roomId,
+      })
+      .then((result) => {
+        console.log("--> Connected to room", result);
       });
   };
 
@@ -113,10 +138,11 @@ export const useSignalR = () => {
     console.log("--> Creating room:", name);
     connection.value
       .invoke(SignalRHubMethods.CreateRoom, { RoomName: name })
-      .then((newRoom) => {
+      .then((newRoom: IRoom) => {
         console.log("--> New room created", newRoom);
         const chatStore = useChatStore();
         chatStore.addRoom(newRoom);
+        _connectToRoom(newRoom.id);
       })
       .catch((err) => {
         // todo: make auth work or remove it
@@ -129,37 +155,21 @@ export const useSignalR = () => {
       });
   };
 
-  const sendMessage = (message: string) => {
+  const sendMessage = (message: string, roomId: string) => {
     console.log("--> Connection state:", connection.value.state);
     console.log("--> Sending message:", message);
 
-    let randomId = Math.floor(Math.random() * 999999);
-    const newMessage: IMessage = {
-      id: randomId,
-      idSentBy: userData.userData.value.userId,
-      nameSentBy: "test-user",
-      created: new Date(),
+    const newMessage: ISentMessage = {
+      roomId: roomId,
       text: message,
     };
 
-    chatStore.activeRoom.value.messages.push(newMessage);
-
-    //connection.value.send("");
-
-    //connection.send('SendMessage', {message, room: currentRoom})
-
-    // message DTO
-    // public string SenderId { get; set; } = string.Empty;
-    // public string Text { get; set; } = string.Empty;
-    // public string RoomId { get; set; } = string.Empty;
+    connection.value.send(SignalRHubMethods.SendMessage, newMessage);
   };
 
   return {
     openConnection,
     createRoom,
-    closeConnection,
-    startListeningForMessages,
-    stopListeningForMessages,
     sendMessage,
   };
 };
