@@ -3,13 +3,24 @@
   color: inherit;
 }
 
-.v-card {
+/* .v-card {
   height: 90vh;
   display: flex !important;
   flex-direction: column;
 }
 
 .v-card-text {
+  flex-grow: 1;
+  overflow: auto;
+} */
+
+.sechat-v-card-full {
+  height: 90vh;
+  display: flex !important;
+  flex-direction: column;
+}
+
+.sechat-v-card-text-full {
   flex-grow: 1;
   overflow: auto;
 }

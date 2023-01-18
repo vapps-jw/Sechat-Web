@@ -1,7 +1,7 @@
 <template>
   <div v-if="!chatStore.activeRoom.value">Select a Room</div>
   <v-container v-else>
-    <v-card>
+    <v-card class="sechat-v-card-full">
       <v-toolbar>
         <v-toolbar-title
           >Room: {{ chatStore.activeRoom.value.name }}</v-toolbar-title
@@ -9,7 +9,7 @@
         <v-spacer></v-spacer>
         <v-btn icon="mdi-account-plus"></v-btn>
       </v-toolbar>
-      <v-card-text id="chatView" class="ma-0 pa-0">
+      <v-card-text id="chatView" class="ma-0 pa-0 sechat-v-card-text-full">
         <v-list>
           <v-list-item
             class="mb-5"

@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card class="mx-auto" max-width="800">
+    <v-card class="mx-auto sechat-v-card-full" max-width="800">
       <v-toolbar>
         <v-toolbar-title
           >{{ chatStore.rooms.value.length }} Rooms</v-toolbar-title
@@ -8,38 +8,52 @@
         <v-spacer></v-spacer>
         <chat-dialogs-add-room />
       </v-toolbar>
-      <v-list lines="two">
-        <v-list-item
-          class="my-1"
-          v-for="room in chatStore.rooms.value"
-          @click="chatStore.selectRoom(room)"
-          :key="room.id"
-          :title="room.name"
-          active-color="primary"
-          :value="room"
-          :subtitle="
-            new Date(room.lastActivity).toLocaleString(
-              appStore.localLanguage.value
-            )
-          "
-        >
-          <!-- <template v-slot:prepend>
-            <v-avatar color="amber">
-              <v-icon color="white">"mdi-clipboard-text"</v-icon>
-            </v-avatar>
-          </template> -->
+      <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
+        <v-list lines="two">
+          <v-list-item
+            class="my-1"
+            v-for="room in chatStore.rooms.value"
+            @click="chatStore.selectRoom(room)"
+            :key="room.id"
+            :title="room.name"
+            active-color="primary"
+            :value="room"
+            :subtitle="
+              new Date(room.lastActivity).toLocaleString(
+                appStore.localLanguage.value
+              )
+            "
+          >
+            <template v-slot:prepend>
+              <v-btn
+                size="small"
+                icon="mdi-account-plus"
+                color="success"
+                variant="outlined"
+                class="mr-2"
+              ></v-btn>
+            </template>
 
-          <template v-slot:append>
-            <v-btn
-              @click="async () => await deleteRoom(room.id)"
-              v-if="room.creatorId === userData.userProfile.value.userId"
-              icon="mdi-delete"
-              color="error"
-            ></v-btn>
-            <v-btn icon="mdi-exit-to-app" class="ma-2" color="warning"></v-btn>
-          </template>
-        </v-list-item>
-      </v-list>
+            <template v-slot:append>
+              <v-btn
+                @click="async () => await deleteRoom(room.id)"
+                v-if="room.creatorId === userData.userProfile.value.userId"
+                icon="mdi-delete"
+                color="error"
+                size="small"
+                variant="outlined"
+                class="mr-1"
+              ></v-btn>
+              <v-btn
+                size="small"
+                icon="mdi-exit-to-app"
+                color="warning"
+                variant="outlined"
+              ></v-btn>
+            </template>
+          </v-list-item>
+        </v-list>
+      </v-card-text>
     </v-card>
   </v-container>
 </template>
