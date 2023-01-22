@@ -24,7 +24,7 @@
           <v-list>
             <v-list-item
               class="my-1"
-              v-for="uc in chatStore.connections.value"
+              v-for="uc in chatStore.getConnections.value"
               :key="`${uc.invitedName}-${uc.inviterName}`"
               :title="uc.displayName"
             >
