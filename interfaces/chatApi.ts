@@ -47,7 +47,15 @@ interface IChatState {
 }
 
 interface IConnectionRequest {
-  inviter?: string;
-  invited?: string;
+  id?: number;
+  inviterName?: string;
+  invitedName?: string;
   approved?: boolean;
+  displayName?: string;
+  blocked?: boolean;
+  blockedBy?: string;
+}
+
+interface IResourceNumericId {
+  id?: number;
 }
