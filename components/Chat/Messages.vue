@@ -1,10 +1,10 @@
 <template>
-  <div v-if="!chatStore.activeRoom.value">Select a Room</div>
+  <div v-if="!chatStore.getActiveRoom.value">Select a Room</div>
   <v-container v-else>
     <v-card class="sechat-v-card-full">
       <v-toolbar>
         <v-toolbar-title
-          >Room: {{ chatStore.activeRoom.value.name }}</v-toolbar-title
+          >Room: {{ chatStore.getActiveRoom.value.name }}</v-toolbar-title
         >
         <v-spacer></v-spacer>
         <v-btn icon="mdi-account-plus"></v-btn>
@@ -51,7 +51,7 @@ const messages = computed(() => {
     return [];
   }
   console.log("--> Computed messages triggered - with values");
-  return chatStore.activeRoom.value.messages;
+  return chatStore.getActiveRoom.value.messages;
 });
 
 watch(messages, () => {

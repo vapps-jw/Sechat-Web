@@ -19,15 +19,15 @@ export const useChatStore = () => {
   const activeChatTab = useState<string>("activeChatTab", () => "");
   const activeRoomId = useState<string>("activeChatRoom", () => "");
 
-  const activeRoom = computed(() => {
-    return rooms.value.find((r) => r.id === activeRoomId.value);
+  const getActiveRoom = computed(() => {
+    return getRooms.value.find((r) => r.id === activeRoomId.value);
   });
 
-  const rooms = computed(() => {
+  const getRooms = computed(() => {
     return availableRooms.value;
   });
 
-  const connections = computed(() => {
+  const getConnections = computed(() => {
     return availableConnections.value;
   });
 
@@ -48,7 +48,7 @@ export const useChatStore = () => {
 
   const handleConnectionDelete = (message: IResourceNumericId) => {
     console.warn("--> Connection Delete Event", message);
-    availableConnections.value = connections.value.filter(
+    availableConnections.value = getConnections.value.filter(
       (uc) => uc.id !== message.id
     );
   };
@@ -83,7 +83,7 @@ export const useChatStore = () => {
 
   const addRoom = (room: IRoom) => {
     console.log("--> Adding room to the Store", room.name);
-    rooms.value.push(room);
+    getRooms.value.push(room);
   };
 
   const handleDeleteRoom = (message: IRoomIdMessage) => {
@@ -91,7 +91,9 @@ export const useChatStore = () => {
     if (activeRoomId.value === message.roomId) {
       activeRoomId.value = "";
     }
-    availableRooms.value = rooms.value.filter((r) => r.id !== message.roomId);
+    availableRooms.value = getRooms.value.filter(
+      (r) => r.id !== message.roomId
+    );
   };
 
   const loadRooms = (data: IRoom[]) => {
@@ -106,7 +108,7 @@ export const useChatStore = () => {
   };
 
   const sortRooms = () => {
-    availableRooms.value = rooms.value.sort(function (a, b) {
+    availableRooms.value = getRooms.value.sort(function (a, b) {
       return a.lastActivity < b.lastActivity
         ? 1
         : a.lastActivity > b.lastActivity
@@ -134,7 +136,7 @@ export const useChatStore = () => {
 
   const handleIncomingMessage = (message: IMessage) => {
     console.warn("--> Incoming Message", message);
-    const updatedRoom = rooms.value.find((r) => r.id === message.roomId);
+    const updatedRoom = getRooms.value.find((r) => r.id === message.roomId);
     updatedRoom.messages = [message, ...updatedRoom.messages].sort((a, b) =>
       a < b ? 1 : -1
     );
@@ -142,11 +144,11 @@ export const useChatStore = () => {
   };
 
   return {
-    rooms,
+    getRooms,
     activeChatTab,
     activeRoomId,
-    activeRoom,
-    connections,
+    getActiveRoom,
+    getConnections,
     addRoom,
     clearRooms,
     loadRooms,

@@ -10,7 +10,7 @@
         <v-list lines="two">
           <v-list-item
             class="my-1"
-            v-for="room in chatStore.rooms.value"
+            v-for="room in chatStore.getRooms.value"
             @click="chatStore.selectRoom(room)"
             :key="room.id"
             :title="room.name"
