@@ -35,15 +35,11 @@
             </template>
 
             <template v-slot:append>
-              <v-btn
-                @click="async () => await deleteRoom(room.id)"
+              <chat-dialogs-delete-room
                 v-if="room.creatorId === userData.userProfile.value.userId"
-                icon="mdi-delete"
-                color="error"
-                size="small"
-                variant="outlined"
-                class="mr-1"
-              ></v-btn>
+                :room="room"
+              />
+
               <v-btn
                 size="small"
                 icon="mdi-exit-to-app"
@@ -63,28 +59,8 @@ const signalr = useSignalR();
 const chatStore = useChatStore();
 const appStore = useAppStore();
 const userData = useUserData();
-const config = useRuntimeConfig();
 
 const addRoomForm = ref<boolean>(false);
-
-const deleteRoom = async (roomId: string) => {
-  console.log("--> Deleting room", roomId);
-  const { error: deleteError } = await useFetch(
-    `${config.public.apiBase}/chat/delete-room/?roomId=${roomId}`,
-    {
-      method: "DELETE",
-      credentials: "include",
-    }
-  );
-
-  if (deleteError.value) {
-    throw createError({
-      ...deleteError.value,
-      statusMessage: "Failed to delete",
-      statusCode: deleteError.value.statusCode,
-    });
-  }
-};
 </script>
 
 <style scoped></style>

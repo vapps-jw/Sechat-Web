@@ -24,5 +24,27 @@ export const useChatApi = () => {
     chatStore.loadRooms(rooms.value);
   };
 
-  return { getRooms };
+  const getState = async () => {
+    console.log("--> Getting State");
+    const { error: apiError, data: chatState } = await useFetch<IChatState>(
+      `${config.public.apiBase}/chat/get-state`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusMessage: "Failed to pull state",
+        statusCode: apiError.value.statusCode,
+      });
+    }
+
+    console.log("--> Rooms Fetched", chatState.value);
+    chatStore.loadRooms(chatState.value.rooms);
+  };
+
+  return { getRooms, getState };
 };

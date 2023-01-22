@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 const dialog = ref<boolean>(false);
+const signalR = useSignalR();
 
 const roomCreateForm = ref<HTMLFormElement>();
 const roomData = ref({
@@ -50,6 +51,8 @@ const createRoom = async () => {
     console.warn("--> Form not valid");
     return;
   }
+  signalR.createRoom(roomData.value.name);
+  dialog.value = false;
 };
 </script>
 

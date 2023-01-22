@@ -40,3 +40,7 @@ interface ISentMessage {
 interface IRoomIdMessage {
   roomId?: string;
 }
+
+interface IChatState {
+  rooms?: IRoom[];
+}
