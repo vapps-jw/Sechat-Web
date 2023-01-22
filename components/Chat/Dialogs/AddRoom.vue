@@ -41,7 +41,7 @@ const roomData = ref({
   nameRules: [
     (v) => !!v || "Room Name is required",
     (v) =>
-      (v && v.length <= 50) || "Room Name cant be longet than 50 characters",
+      (v && v.length <= 50) || "Room Name cant be longer than 50 characters",
   ],
 });
 
@@ -56,9 +56,4 @@ const createRoom = async () => {
 };
 </script>
 
-<style scoped>
-.dialog-bottom-transition-enter-active,
-.dialog-bottom-transition-leave-active {
-  transition: transform 0.2s ease-in-out;
-}
-</style>
+<style scoped></style>

@@ -10,10 +10,13 @@ export const useAppStore = () => {
       text: "",
       timeout: 2000,
       color: "",
+      icon: "",
+      iconColor: "",
     };
   });
 
   const showSnackbar = (data: ISanckbar) => {
+    console.log("--> Snackbar data", data);
     snackbarData.value = data;
   };
 

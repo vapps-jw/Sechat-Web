@@ -3,4 +3,6 @@ interface ISanckbar {
   text: string;
   timeout: number;
   color: string;
+  icon: string;
+  iconColor: string;
 }

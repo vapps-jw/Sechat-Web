@@ -55,12 +55,9 @@
 </template>
 
 <script setup lang="ts">
-const signalr = useSignalR();
 const chatStore = useChatStore();
 const appStore = useAppStore();
 const userData = useUserData();
-
-const addRoomForm = ref<boolean>(false);
 </script>
 
 <style scoped></style>

@@ -1,6 +1,15 @@
 <template>
   <div>
-    <v-snackbar v-model="appStore.snackbarData.value.snackbar" />
+    <v-snackbar
+      v-model="appStore.snackbarData.value.snackbar"
+      :color="appStore.snackbarData.value.color"
+      :timeout="appStore.snackbarData.value.timeout"
+    >
+      <v-icon :color="appStore.snackbarData.value.iconColor">{{
+        appStore.snackbarData.value.icon
+      }}</v-icon>
+      {{ appStore.snackbarData.value.text }}
+    </v-snackbar>
     <v-app-bar density="compact">
       <v-spacer></v-spacer>
       <v-tabs v-model="chatStore.activeChatTab.value" stacked centered>
@@ -14,9 +23,9 @@
           Rooms
         </v-tab>
 
-        <v-tab value="settings">
-          <v-icon>mdi-cogs</v-icon>
-          Settings
+        <v-tab value="profile">
+          <v-icon>mdi-account-details</v-icon>
+          Profile
         </v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
@@ -25,7 +34,7 @@
     <v-window v-model="chatStore.activeChatTab.value">
       <v-window-item value="messages"> <ChatMessages /> </v-window-item>
       <v-window-item value="rooms"> <ChatRooms /> </v-window-item>
-      <v-window-item value="settings"> <ChatSettings /> </v-window-item>
+      <v-window-item value="profile"> <ChatProfile /> </v-window-item>
     </v-window>
   </div>
 </template>
