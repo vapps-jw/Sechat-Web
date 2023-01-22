@@ -22,6 +22,7 @@ export const useChatApi = () => {
 
     console.log("--> State Fetched", chatState.value);
     chatStore.loadRooms(chatState.value.rooms);
+    chatStore.loadUserConnections(chatState.value.userConnections);
   };
 
   return { getState };

@@ -24,7 +24,11 @@
           <v-btn color="green-darken-1" variant="text" @click="dialog = false">
             Disagree
           </v-btn>
-          <v-btn color="green-darken-1" variant="text" @click="dialog = false">
+          <v-btn
+            color="green-darken-1"
+            variant="text"
+            @click="async () => await deleteRoom(props.room.id)"
+          >
             Agree
           </v-btn>
         </v-card-actions>

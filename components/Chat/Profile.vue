@@ -15,15 +15,12 @@
         ></v-btn>
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
-        <v-list>
+        <v-list flex align-center>
           <v-list-subheader>My Connections</v-list-subheader>
-          <v-list-item title="Friends">
+          <v-list-item title="Other Users">
             <template v-slot:append>
-              <ChatProfileFriendsTab />
+              <ChatProfileConnectionsTab />
             </template>
-          </v-list-item>
-          <v-list-item title="Blocked Users">
-            <template v-slot:append> </template>
           </v-list-item>
           <v-list-subheader color="error">Danger Zone</v-list-subheader>
         </v-list>
