@@ -24,6 +24,16 @@ export const useChatStore = () => {
     rooms.value.push(room);
   };
 
+  const handleConnectionRequestReceived = (
+    connectionRequest: IConnectionRequest
+  ) => {
+    console.warn("--> Connection Request Received", connectionRequest);
+  };
+
+  const handleUserConnectionChange = () => {
+    console.log("--> User Connection change");
+  };
+
   const handleIncomingMessage = (message: IMessage) => {
     console.warn("--> Incoming Message", message);
     const updatedRoom = rooms.value.find((r) => r.id === message.roomId);
@@ -88,5 +98,7 @@ export const useChatStore = () => {
     selectRoom,
     handleIncomingMessage,
     handleDeleteRoom,
+    handleConnectionRequestReceived,
+    handleUserConnectionChange,
   };
 };

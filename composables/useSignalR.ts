@@ -18,6 +18,7 @@ export const useSignalR = () => {
     CreateRoom: "CreateRoom",
     MessageIncoming: "MessageIncoming",
     RoomDeleted: "RoomDeleted",
+    ConnectionRequestReceived: "ConnectionRequestReceived",
   };
 
   const createNewConnection = () => {
@@ -41,6 +42,8 @@ export const useSignalR = () => {
       connection.value.onclose(() => {
         _offIncomingMessage();
         _offRoomDeletedEvent();
+        _offConnectionRequestReceivedEvent();
+        _offUserConnectionChangeEvent();
         console.log("--> Connection Closed");
       });
 
@@ -51,12 +54,30 @@ export const useSignalR = () => {
         _connectToRooms(chatStore.rooms.value.map((r) => r.id));
         _onIncomingMessage();
         _onRoomDeletedEvent();
+        _onConnectionRequestReceivedEvent();
+        _onUserConnectionChangeEvent();
         return;
       }
 
       throw createError({ statusCode: 404, statusMessage: "Page Not Found" });
     }
     console.log("--> Already Connected");
+  };
+
+  const _onUserConnectionChangeEvent = () => {
+    console.log("--> Connecting UserConnectionChange event");
+    connection.value.on(
+      SignalRHubMethods.RoomDeleted,
+      chatStore.handleDeleteRoom
+    );
+  };
+
+  const _offUserConnectionChangeEvent = () => {
+    console.log("--> Disconnecting UserConnectionChange event");
+    connection.value.on(
+      SignalRHubMethods.RoomDeleted,
+      chatStore.handleDeleteRoom
+    );
   };
 
   const _onRoomDeletedEvent = () => {
@@ -72,6 +93,22 @@ export const useSignalR = () => {
     connection.value.off(
       SignalRHubMethods.MessageIncoming,
       chatStore.handleDeleteRoom
+    );
+  };
+
+  const _onConnectionRequestReceivedEvent = () => {
+    console.log("--> Connecting ConnectionRequestReceived event");
+    connection.value.on(
+      SignalRHubMethods.ConnectionRequestReceived,
+      chatStore.handleConnectionRequestReceived
+    );
+  };
+
+  const _offConnectionRequestReceivedEvent = () => {
+    console.log("--> Disconnecting ConnectionRequestReceived event");
+    connection.value.off(
+      SignalRHubMethods.ConnectionRequestReceived,
+      chatStore.handleConnectionRequestReceived
     );
   };
 

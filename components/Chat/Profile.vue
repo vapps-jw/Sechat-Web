@@ -2,8 +2,17 @@
   <v-container>
     <v-card class="mx-auto sechat-v-card-full" max-width="800">
       <v-toolbar>
-        <v-toolbar-title> Profile</v-toolbar-title>
+        <v-toolbar-title>{{
+          userData.userProfile.value.userName
+        }}</v-toolbar-title>
         <v-spacer></v-spacer>
+        <v-btn
+          @click="backToHomePage"
+          size="small"
+          icon="mdi-location-exit"
+          color="warning"
+          variant="outlined"
+        ></v-btn>
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
         <v-list>
@@ -24,22 +33,10 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarIcons } from "~~/utilities/globalEnums";
+const userData = useUserData();
 
-const signalr = useSignalR();
-const chatApi = useChatApi();
-const chatStore = useChatStore();
-const appStore = useAppStore();
-
-const testSnackbar = () => {
-  appStore.showSnackbar({
-    snackbar: true,
-    text: "TEST",
-    timeout: 2000,
-    color: "warning",
-    icon: SnackbarIcons.Warning,
-    iconColor: "black",
-  });
+const backToHomePage = () => {
+  navigateTo("/");
 };
 </script>
 

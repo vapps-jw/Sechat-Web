@@ -29,8 +29,10 @@
 </template>
 
 <script setup lang="ts">
+import { SnackbarIcons } from "~~/utilities/globalEnums";
 const dialog = ref<boolean>(false);
-const signalR = useSignalR();
+const config = useRuntimeConfig();
+const appStore = useAppStore();
 
 const invitationCreateForm = ref<HTMLFormElement>();
 const invitaitonData = ref({
@@ -49,7 +51,43 @@ const createInvitation = async () => {
     console.warn("--> Form not valid");
     return;
   }
-  console.log("--> Create invitation");
+  console.log("--> Calling connection request");
+
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/user/connection-request`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      credentials: "include",
+      body: {
+        username: invitaitonData.value.name,
+      },
+    }
+  );
+
+  if (apiError.value) {
+    appStore.showSnackbar({
+      snackbar: true,
+      text: "Error sending Invitation",
+      timeout: 2000,
+      color: "error",
+      icon: SnackbarIcons.Error,
+      iconColor: "black",
+    });
+    dialog.value = false;
+    return;
+  }
+
+  appStore.showSnackbar({
+    snackbar: true,
+    text: "Invitation Sent",
+    timeout: 2000,
+    color: "success",
+    icon: SnackbarIcons.Success,
+    iconColor: "black",
+  });
   dialog.value = false;
 };
 </script>

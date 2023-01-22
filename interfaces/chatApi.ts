@@ -43,4 +43,11 @@ interface IRoomIdMessage {
 
 interface IChatState {
   rooms?: IRoom[];
+  userConnections?: IConnectionRequest[];
+}
+
+interface IConnectionRequest {
+  inviter?: string;
+  invited?: string;
+  approved?: boolean;
 }

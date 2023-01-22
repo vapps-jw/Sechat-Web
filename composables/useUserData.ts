@@ -86,11 +86,18 @@ export const useUserData = () => {
         }
       );
 
+    if (profileFetchError.value && profileFetchError.value.statusCode === 405) {
+      console.error("--> Not logged in - unauthorized");
+      setUserData(null);
+      return;
+    }
+
     if (profileFetchError.value) {
       console.error("--> Fetch user profile Error");
       setUserData(null);
       return;
     }
+
     setUserData(newProfile.value);
     console.warn("--> User profile", userProfile.value);
   };

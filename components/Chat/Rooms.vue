@@ -2,9 +2,7 @@
   <v-container>
     <v-card class="mx-auto sechat-v-card-full" max-width="800">
       <v-toolbar>
-        <v-toolbar-title
-          >{{ chatStore.rooms.value.length }} Rooms</v-toolbar-title
-        >
+        <v-toolbar-title>Rooms</v-toolbar-title>
         <v-spacer></v-spacer>
         <chat-dialogs-add-room />
       </v-toolbar>

@@ -53,7 +53,7 @@ const appStore = useAppStore();
 
 onMounted(async () => {
   console.log("--> Chat mounted");
-  await chatApi.getRooms();
+  await chatApi.getState();
   signalr.openConnection();
 });
 
