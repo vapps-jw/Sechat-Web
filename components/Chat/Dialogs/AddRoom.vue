@@ -34,6 +34,8 @@
 const dialog = ref<boolean>(false);
 const signalR = useSignalR();
 
+const emit = defineEmits(["roomCreateRequested"]);
+
 const roomCreateForm = ref<HTMLFormElement>();
 const roomData = ref({
   valid: true,
@@ -51,7 +53,8 @@ const createRoom = async () => {
     console.warn("--> Form not valid");
     return;
   }
-  signalR.createRoom(roomData.value.name);
+
+  emit("roomCreateRequested", roomData.value.name);
   dialog.value = false;
 };
 </script>

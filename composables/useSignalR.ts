@@ -54,7 +54,7 @@ export const useSignalR = () => {
 
       if (connection.value.state === SignalRState.Connected) {
         console.log("--> Connection established");
-        _connectToRooms(chatStore.rooms.value.map((r) => r.id));
+        _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
         _onIncomingMessage();
         _onRoomDeletedEvent();
         _onConnectionRequestReceivedEvent();
