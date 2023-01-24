@@ -25,7 +25,7 @@ export default defineNuxtConfig({
   app: {
     pageTransition: { name: "page", mode: "out-in" },
     head: {
-      title: "sechat",
+      title: "Sechat",
       link: [
         {
           rel: "icon",

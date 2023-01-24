@@ -1,3 +1,10 @@
+interface IResourceGuid {
+  id?: string;
+}
+
+interface IResourceId {
+  id?: number;
+}
 interface INewRoomCreateMessage {
   id?: string;
   name?: string;
@@ -36,11 +43,6 @@ interface ISentMessage {
   text?: string;
   roomId?: string;
 }
-
-interface IRoomIdMessage {
-  roomId?: string;
-}
-
 interface IChatState {
   rooms?: IRoom[];
   userConnections?: IConnectionRequest[];
@@ -56,6 +58,4 @@ interface IConnectionRequest {
   blockedBy?: string;
 }
 
-interface IResourceNumericId {
-  id?: number;
-}
+x;

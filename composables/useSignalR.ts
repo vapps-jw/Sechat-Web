@@ -171,7 +171,7 @@ export const useSignalR = () => {
     console.log("--> Connecting to Room", roomId);
     connection.value
       .invoke(SignalRHubMethods.ConnectToRoom, {
-        RoomId: roomId,
+        Id: roomId,
       })
       .then((result) => {
         console.log("--> Connected to room", result);

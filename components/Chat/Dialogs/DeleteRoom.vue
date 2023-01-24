@@ -12,24 +12,20 @@
         ></v-btn>
       </template>
       <v-card>
-        <v-card-title class="text-h5">
-          Delete Room: {{ props.room.name }}
+        <v-card-title class="text-h6 text-center">
+          Wanna delete {{ props.room.name }} ?
         </v-card-title>
-        <v-card-text
-          >Let Google help apps determine location. This means sending anonymous
-          location data to Google, even when no apps are running.</v-card-text
-        >
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="green-darken-1" variant="text" @click="dialog = false">
-            Disagree
+          <v-btn color="success" variant="text" @click="dialog = false">
+            Cancel
           </v-btn>
+          <v-spacer></v-spacer>
           <v-btn
-            color="green-darken-1"
+            color="error"
             variant="text"
             @click="async () => await deleteRoom(props.room.id)"
           >
-            Agree
+            Delete
           </v-btn>
         </v-card-actions>
       </v-card>

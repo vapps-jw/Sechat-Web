@@ -4,7 +4,7 @@
       <v-toolbar>
         <v-toolbar-title>Rooms</v-toolbar-title>
         <v-spacer></v-spacer>
-        <chat-dialogs-add-room @room-create-requested="createRoom" />
+        <chat-dialogs-create-room @room-create-requested="createRoom" />
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
         <v-list lines="two">

@@ -1,5 +1,10 @@
 <template>
-  <div v-if="!chatStore.getActiveRoom.value">Select a Room</div>
+  <v-container
+    v-if="!chatStore.getActiveRoom.value"
+    class="d-flex justify-center"
+  >
+    <p>Select a Room</p>
+  </v-container>
   <v-container v-else>
     <v-card class="sechat-v-card-full">
       <v-toolbar>

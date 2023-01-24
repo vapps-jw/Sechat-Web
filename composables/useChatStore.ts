@@ -46,7 +46,7 @@ export const useChatStore = () => {
     );
   };
 
-  const handleConnectionDelete = (message: IResourceNumericId) => {
+  const handleConnectionDelete = (message: IResourceId) => {
     console.warn("--> Connection Delete Event", message);
     availableConnections.value = getConnections.value.filter(
       (uc) => uc.id !== message.id
@@ -86,14 +86,12 @@ export const useChatStore = () => {
     getRooms.value.push(room);
   };
 
-  const handleDeleteRoom = (message: IRoomIdMessage) => {
+  const handleDeleteRoom = (message: IResourceGuid) => {
     console.warn("--> Handling Room Delete", message);
-    if (activeRoomId.value === message.roomId) {
+    if (activeRoomId.value === message.id) {
       activeRoomId.value = "";
     }
-    availableRooms.value = getRooms.value.filter(
-      (r) => r.id !== message.roomId
-    );
+    availableRooms.value = getRooms.value.filter((r) => r.id !== message.id);
   };
 
   const loadRooms = (data: IRoom[]) => {
