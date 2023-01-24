@@ -67,7 +67,7 @@
                   variant="outlined"
                 ></v-btn>
                 <v-btn
-                  @click="async () => deleteConnection(uc.displayName)"
+                  @click="async () => deleteConnection(uc.id)"
                   class="mx-2"
                   size="small"
                   icon="mdi-delete"
@@ -92,10 +92,10 @@ const userData = useUserData();
 const config = useRuntimeConfig();
 const appStore = useAppStore();
 
-const deleteConnection = async (otherUser: string) => {
-  console.log("--> Deleting connection", otherUser);
+const deleteConnection = async (id: number) => {
+  console.log("--> Deleting connection", id);
   const { error: deleteError } = await useFetch(
-    `${config.public.apiBase}/user/connection-delete/?userName=${otherUser}`,
+    `${config.public.apiBase}/user/connection-delete/?connectionId=${id}`,
     {
       method: "DELETE",
       credentials: "include",
