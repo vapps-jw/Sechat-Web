@@ -46,10 +46,10 @@ export const useChatStore = () => {
     );
   };
 
-  const handleConnectionDelete = (message: IResourceId) => {
-    console.warn("--> Connection Delete Event", message);
+  const handleConnectionDelete = (resourceId: IResourceId) => {
+    console.warn("--> Connection Delete Event", resourceId);
     availableConnections.value = getConnections.value.filter(
-      (uc) => uc.id !== message.id
+      (uc) => uc.id !== resourceId.id
     );
   };
 

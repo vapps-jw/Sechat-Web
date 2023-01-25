@@ -14,7 +14,7 @@
           <v-toolbar-title>Connections</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <ChatProfileAddConnection />
+            <ChatProfileAddConnection @invite-user="createInvitation" />
             <v-btn icon dark @click="dialog = false">
               <v-icon>mdi-close</v-icon>
             </v-btn>
@@ -92,6 +92,14 @@ const userData = useUserData();
 const config = useRuntimeConfig();
 const appStore = useAppStore();
 
+const isBusy = ref<boolean>(false);
+
+const blockConnection = () => {};
+
+const unblockConnection = () => {};
+
+const approveConnection = () => {};
+
 const deleteConnection = async (id: number) => {
   console.log("--> Deleting connection", id);
   const { error: deleteError } = await useFetch(
@@ -122,6 +130,47 @@ const deleteConnection = async (id: number) => {
     icon: SnackbarIcons.Success,
     iconColor: "black",
   });
+};
+
+const createInvitation = async (userName: string) => {
+  console.log("--> Calling connection request");
+
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/user/connection-request`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      credentials: "include",
+      body: {
+        username: userName,
+      },
+    }
+  );
+
+  if (apiError.value) {
+    appStore.showSnackbar({
+      snackbar: true,
+      text: "Error sending Invitation",
+      timeout: 2000,
+      color: "error",
+      icon: SnackbarIcons.Error,
+      iconColor: "black",
+    });
+    dialog.value = false;
+    return;
+  }
+
+  appStore.showSnackbar({
+    snackbar: true,
+    text: "Invitation Sent",
+    timeout: 2000,
+    color: "success",
+    icon: SnackbarIcons.Success,
+    iconColor: "black",
+  });
+  dialog.value = false;
 };
 </script>
 

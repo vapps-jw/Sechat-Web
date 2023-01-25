@@ -34,6 +34,8 @@ const dialog = ref<boolean>(false);
 const config = useRuntimeConfig();
 const appStore = useAppStore();
 
+const emit = defineEmits(["inviteUser"]);
+
 const invitationCreateForm = ref<HTMLFormElement>();
 const invitaitonData = ref({
   valid: true,
@@ -46,48 +48,14 @@ const invitaitonData = ref({
 });
 
 const createInvitation = async () => {
+  console.log("--> Sending invitation", invitaitonData.value.name);
   const { valid } = await invitationCreateForm.value?.validate();
   if (!valid) {
     console.warn("--> Form not valid");
     return;
   }
-  console.log("--> Calling connection request");
 
-  const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/user/connection-request`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      credentials: "include",
-      body: {
-        username: invitaitonData.value.name,
-      },
-    }
-  );
-
-  if (apiError.value) {
-    appStore.showSnackbar({
-      snackbar: true,
-      text: "Error sending Invitation",
-      timeout: 2000,
-      color: "error",
-      icon: SnackbarIcons.Error,
-      iconColor: "black",
-    });
-    dialog.value = false;
-    return;
-  }
-
-  appStore.showSnackbar({
-    snackbar: true,
-    text: "Invitation Sent",
-    timeout: 2000,
-    color: "success",
-    icon: SnackbarIcons.Success,
-    iconColor: "black",
-  });
+  emit("inviteUser", invitaitonData.value.name);
   dialog.value = false;
 };
 </script>
