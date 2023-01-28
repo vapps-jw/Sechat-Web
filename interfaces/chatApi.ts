@@ -43,10 +43,6 @@ interface ISentMessage {
   text?: string;
   roomId?: string;
 }
-interface IChatState {
-  rooms?: IRoom[];
-  userConnections?: IConnectionRequest[];
-}
 
 interface IConnectionRequest {
   id?: number;
@@ -57,5 +53,3 @@ interface IConnectionRequest {
   blocked?: boolean;
   blockedBy?: string;
 }
-
-x;
