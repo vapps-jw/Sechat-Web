@@ -7,20 +7,12 @@
         <chat-rooms-create-room @room-create-requested="createRoom" />
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
-        <v-list lines="two">
+        <v-list>
           <v-list-item
             class="my-1"
             v-for="room in chatStore.getRooms.value"
-            @click="chatStore.selectRoom(room)"
             :key="room.id"
             :title="room.name"
-            active-color="primary"
-            :value="room"
-            :subtitle="
-              new Date(room.lastActivity).toLocaleString(
-                appStore.localLanguage.value
-              )
-            "
           >
             <template v-slot:prepend>
               <v-btn
@@ -34,15 +26,21 @@
 
             <template v-slot:append>
               <chat-rooms-delete-room
-                @room-delete-requested="deleteRoom"
                 v-if="room.creatorId === userData.userProfile.value.userId"
+                @room-delete-requested="deleteRoom"
                 :room="room"
               />
-
               <v-btn
                 size="small"
                 icon="mdi-exit-to-app"
                 color="warning"
+                variant="outlined"
+              ></v-btn>
+              <v-btn
+                @click="chatStore.selectRoom(room)"
+                size="small"
+                icon="mdi-arrow-right"
+                color="success"
                 variant="outlined"
               ></v-btn>
             </template>

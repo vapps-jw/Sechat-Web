@@ -55,6 +55,7 @@ const createRoom = async () => {
   }
 
   emit("roomCreateRequested", roomData.value.name);
+  roomData.value.name = "";
   dialog.value = false;
 };
 </script>

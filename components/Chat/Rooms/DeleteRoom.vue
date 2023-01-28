@@ -17,7 +17,7 @@
         </v-card-title>
         <v-card-actions>
           <v-btn color="success" variant="text" @click="dialog = false">
-            Cancel
+            No
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn
@@ -25,7 +25,7 @@
             variant="text"
             @click="async () => await deleteRoom(props.room.id)"
           >
-            Delete
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
