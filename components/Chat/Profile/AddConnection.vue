@@ -29,10 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarIcons } from "~~/utilities/globalEnums";
 const dialog = ref<boolean>(false);
-const config = useRuntimeConfig();
-const appStore = useAppStore();
 
 const emit = defineEmits(["inviteUser"]);
 
