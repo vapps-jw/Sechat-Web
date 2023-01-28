@@ -1,6 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 
 export const useSignalR = () => {
+  const appStore = useAppStore();
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
   const userData = useUserData();
@@ -188,6 +189,7 @@ export const useSignalR = () => {
         const chatStore = useChatStore();
         chatStore.addRoom(newRoom);
         _connectToRoom(newRoom.id);
+        appStore.showSuccessSnackbar("Room created");
       })
       .catch((err) => {
         // todo: make auth work or remove it

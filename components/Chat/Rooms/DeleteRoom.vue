@@ -13,7 +13,7 @@
       </template>
       <v-card>
         <v-card-title class="text-h6 text-center">
-          Wanna delete {{ props.room.name }} ?
+          Wanna delete {{ props.room.name }}?
         </v-card-title>
         <v-card-actions>
           <v-btn color="success" variant="text" @click="dialog = false">
@@ -35,31 +35,17 @@
 
 <script setup lang="ts">
 const dialog = ref<boolean>(false);
-const config = useRuntimeConfig();
 
 interface PropsModel {
   room: IRoom;
 }
 
+const emit = defineEmits(["roomDeleteRequested"]);
 const props = defineProps<PropsModel>();
 
 const deleteRoom = async (roomId: string) => {
-  console.log("--> Deleting room", roomId);
-  const { error: deleteError } = await useFetch(
-    `${config.public.apiBase}/chat/delete-room/?roomId=${roomId}`,
-    {
-      method: "DELETE",
-      credentials: "include",
-    }
-  );
-
-  if (deleteError.value) {
-    throw createError({
-      ...deleteError.value,
-      statusMessage: "Failed to delete",
-      statusCode: deleteError.value.statusCode,
-    });
-  }
+  emit("roomDeleteRequested", roomId);
+  dialog.value = false;
 };
 </script>
 

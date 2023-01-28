@@ -33,7 +33,8 @@
             </template>
 
             <template v-slot:append>
-              <chat-dialogs-delete-room
+              <chat-rooms-delete-room
+                @room-delete-requested="deleteRoom"
                 v-if="room.creatorId === userData.userProfile.value.userId"
                 :room="room"
               />
@@ -57,10 +58,26 @@ const chatStore = useChatStore();
 const appStore = useAppStore();
 const userData = useUserData();
 const signalR = useSignalR();
+const config = useRuntimeConfig();
 
 const createRoom = async (newRoomName: string) => {
   console.log("--> Creating Room", newRoomName);
   signalR.createRoom(newRoomName);
+};
+
+const deleteRoom = async (roomId: string) => {
+  console.log("--> Deleting room", roomId);
+  const { error: deleteError } = await useFetch(
+    `${config.public.apiBase}/chat/delete-room/?roomId=${roomId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (deleteError.value) {
+    appStore.showErrorSnackbar("Room not deleted");
+  }
 };
 </script>
 

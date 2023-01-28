@@ -111,25 +111,11 @@ const deleteConnection = async (id: number) => {
   );
 
   if (deleteError.value) {
-    appStore.showSnackbar({
-      snackbar: true,
-      text: "Error on connection delete",
-      timeout: 2000,
-      color: "error",
-      icon: SnackbarIcons.Error,
-      iconColor: "black",
-    });
+    appStore.showErrorSnackbar("Connection not deleted");
     return;
   }
 
-  appStore.showSnackbar({
-    snackbar: true,
-    text: "Connection deleted",
-    timeout: 2000,
-    color: "success",
-    icon: SnackbarIcons.Success,
-    iconColor: "black",
-  });
+  appStore.showSuccessSnackbar("Connection deleted");
 };
 
 const createInvitation = async (userName: string) => {
@@ -150,27 +136,11 @@ const createInvitation = async (userName: string) => {
   );
 
   if (apiError.value) {
-    appStore.showSnackbar({
-      snackbar: true,
-      text: "Error sending Invitation",
-      timeout: 2000,
-      color: "error",
-      icon: SnackbarIcons.Error,
-      iconColor: "black",
-    });
-    dialog.value = false;
+    appStore.showErrorSnackbar("Error sending Invitation");
     return;
   }
 
-  appStore.showSnackbar({
-    snackbar: true,
-    text: "Invitation Sent",
-    timeout: 2000,
-    color: "success",
-    icon: SnackbarIcons.Success,
-    iconColor: "black",
-  });
-  dialog.value = false;
+  appStore.showSuccessSnackbar("Invitation Sent");
 };
 </script>
 
