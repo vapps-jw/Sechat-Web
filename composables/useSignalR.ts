@@ -21,7 +21,7 @@ export const useSignalR = () => {
     RoomDeleted: "RoomDeleted",
     ConnectionRequestReceived: "ConnectionRequestReceived",
     ConnectionDeleted: "ConnectionDeleted",
-    ConnectionChanged: "ConnectionChanged",
+    ConnectionUpdated: "ConnectionUpdated",
   };
 
   const createNewConnection = () => {
@@ -46,7 +46,7 @@ export const useSignalR = () => {
         _offIncomingMessage();
         _offRoomDeletedEvent();
         _offConnectionRequestReceivedEvent();
-        _offUserConnectionChangeEvent();
+        _offUserConnectionUpdatedEvent();
         _offUserConnectionDeleteEvent();
         console.log("--> Connection Closed");
       });
@@ -59,7 +59,7 @@ export const useSignalR = () => {
         _onIncomingMessage();
         _onRoomDeletedEvent();
         _onConnectionRequestReceivedEvent();
-        _onUserConnectionChangeEvent();
+        _onUserConnectionUpdatedEvent();
         _onUserConnectionDeleteEvent();
         return;
       }
@@ -87,19 +87,19 @@ export const useSignalR = () => {
     );
   };
 
-  const _onUserConnectionChangeEvent = () => {
-    console.log("--> Connecting UserConnectionChange event");
+  const _onUserConnectionUpdatedEvent = () => {
+    console.log("--> Connecting UserConnectionUpdated event");
     connection.value.on(
-      SignalRHubMethods.ConnectionChanged,
-      chatStore.handleUserConnectionChange
+      SignalRHubMethods.ConnectionUpdated,
+      chatStore.handleConnectionUpdated
     );
   };
 
-  const _offUserConnectionChangeEvent = () => {
+  const _offUserConnectionUpdatedEvent = () => {
     console.log("--> Disconnecting UserConnectionChange event");
     connection.value.off(
-      SignalRHubMethods.ConnectionChanged,
-      chatStore.handleUserConnectionChange
+      SignalRHubMethods.ConnectionUpdated,
+      chatStore.handleConnectionUpdated
     );
   };
 

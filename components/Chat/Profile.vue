@@ -16,12 +16,12 @@
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
         <v-list flex align-center>
-          <v-list-subheader>My Connections</v-list-subheader>
-          <v-list-item title="Other Users">
+          <v-list-item title="My Connections">
             <template v-slot:append>
               <ChatProfileConnectionsTab />
             </template>
           </v-list-item>
+          <v-divider class="mt-10" />
           <v-list-subheader color="error">Danger Zone</v-list-subheader>
         </v-list>
       </v-card-text>

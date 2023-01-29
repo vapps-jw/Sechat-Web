@@ -19,7 +19,7 @@ interface IRoom {
   name?: string;
   messages?: IMessage[];
   members?: IMemeber[];
-  creatorId?: string;
+  creatorName?: string;
   lastActivity?: Date;
   created?: Date;
 }
@@ -34,7 +34,6 @@ interface IMessage {
 }
 
 interface IMemeber {
-  id?: string;
   userName?: string;
   lastActivity?: Date;
 }
@@ -55,5 +54,5 @@ interface IConnectionRequest {
   approved?: boolean;
   displayName?: string;
   blocked?: boolean;
-  blockedBy?: string;
+  blockedByName?: string;
 }

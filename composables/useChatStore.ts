@@ -53,8 +53,8 @@ export const useChatStore = () => {
     );
   };
 
-  const handleUserConnectionChange = (data: IConnectionRequest) => {
-    console.log("--> User Connection change Event");
+  const handleConnectionUpdated = (data: IConnectionRequest) => {
+    console.log("--> User Connection Updated Event", data);
     if (data.invitedName === userData.userProfile.value.userName) {
       data.displayName = data.inviterName;
     } else {
@@ -62,7 +62,7 @@ export const useChatStore = () => {
     }
 
     availableConnections.value = [
-      ...availableConnections.value.filter((uc) => uc.id !== data.id),
+      ...getConnections.value.filter((uc) => uc.id !== data.id),
       data,
     ].sort((a, b) => a.invitedName.localeCompare(b.invitedName));
   };
@@ -155,7 +155,7 @@ export const useChatStore = () => {
     handleIncomingMessage,
     handleDeleteRoom,
     handleConnectionRequestReceived,
-    handleUserConnectionChange,
+    handleConnectionUpdated,
     loadUserConnections,
     handleConnectionDelete,
   };

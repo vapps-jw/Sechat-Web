@@ -9,7 +9,6 @@
       <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
         <v-list>
           <v-list-item
-            class="my-1"
             v-for="room in chatStore.getRooms.value"
             :key="room.id"
             :title="room.name"
@@ -26,8 +25,8 @@
 
             <template v-slot:append>
               <chat-rooms-delete-room
-                v-if="room.creatorId === userData.userProfile.value.userId"
-                @room-delete-requested="deleteRoom"
+                v-if="room.creatorName === userData.userProfile.value.userName"
+                @room-delete-requested="async () => await deleteRoom(room.id)"
                 :room="room"
               />
               <v-btn
@@ -35,6 +34,7 @@
                 icon="mdi-exit-to-app"
                 color="warning"
                 variant="outlined"
+                class="mr-2"
               ></v-btn>
               <v-btn
                 @click="chatStore.selectRoom(room)"
@@ -42,6 +42,7 @@
                 icon="mdi-arrow-right"
                 color="success"
                 variant="outlined"
+                class="mr-2"
               ></v-btn>
             </template>
           </v-list-item>
@@ -52,6 +53,8 @@
 </template>
 
 <script setup lang="ts">
+import { SnackbarMessages } from "~~/utilities/globalEnums";
+
 const chatStore = useChatStore();
 const appStore = useAppStore();
 const userData = useUserData();
@@ -74,8 +77,10 @@ const deleteRoom = async (roomId: string) => {
   );
 
   if (deleteError.value) {
-    appStore.showErrorSnackbar("Room not deleted");
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    return;
   }
+  appStore.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 

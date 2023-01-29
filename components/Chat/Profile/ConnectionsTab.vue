@@ -35,12 +35,16 @@
                 <v-icon v-else-if="uc.approved" color="success"
                   >mdi-check-bold</v-icon
                 >
-                <v-icon v-else color="warning">mdi-message-question</v-icon>
+                <v-icon v-else color="warning">mdi-help-circle-outline</v-icon>
               </template>
 
               <template v-slot:append>
                 <v-btn
-                  v-if="uc.blocked"
+                  v-if="
+                    uc.blocked &&
+                    uc.blockedByName === userData.userProfile.value.userName
+                  "
+                  @click="async () => allowConnection(uc.id)"
                   class="mx-2"
                   size="small"
                   icon="mdi-checkbox-marked-circle-outline"
@@ -49,6 +53,7 @@
                 ></v-btn>
                 <v-btn
                   v-else
+                  @click="async () => blockConnection(uc.id)"
                   class="mx-2"
                   size="small"
                   icon="mdi-block-helper"
@@ -60,6 +65,7 @@
                     !uc.approved &&
                     uc.invitedName === userData.userProfile.value.userName
                   "
+                  @click="async () => approveConnection(uc.id)"
                   class="mx-2"
                   size="small"
                   icon="mdi-check-bold"
@@ -84,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarIcons } from "~~/utilities/globalEnums";
+import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const dialog = ref<boolean>(false);
 const chatStore = useChatStore();
@@ -94,16 +100,73 @@ const appStore = useAppStore();
 
 const isBusy = ref<boolean>(false);
 
-const blockConnection = () => {};
+const blockConnection = async (id: number) => {
+  console.log("--> Calling connection block");
 
-const unblockConnection = () => {};
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/user/block-connection/?connectionId=${id}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      credentials: "include",
+    }
+  );
 
-const approveConnection = () => {};
+  if (apiError.value) {
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    return;
+  }
+  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+};
+
+const allowConnection = async (id: number) => {
+  console.log("--> Calling connection block");
+
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/user/allow-connection/?connectionId=${id}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      credentials: "include",
+    }
+  );
+
+  if (apiError.value) {
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    return;
+  }
+  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+};
+
+const approveConnection = async (id: number) => {
+  console.log("--> Calling connection approve");
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/user/approve-connection/?connectionId=${id}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      credentials: "include",
+    }
+  );
+
+  if (apiError.value) {
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    return;
+  }
+
+  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+};
 
 const deleteConnection = async (id: number) => {
   console.log("--> Deleting connection", id);
   const { error: deleteError } = await useFetch(
-    `${config.public.apiBase}/user/connection-delete/?connectionId=${id}`,
+    `${config.public.apiBase}/user/delete-connection/?connectionId=${id}`,
     {
       method: "DELETE",
       credentials: "include",
@@ -111,18 +174,18 @@ const deleteConnection = async (id: number) => {
   );
 
   if (deleteError.value) {
-    appStore.showErrorSnackbar("Connection not deleted");
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar("Connection deleted");
+  appStore.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const createInvitation = async (userName: string) => {
   console.log("--> Calling connection request");
 
   const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/user/connection-request`,
+    `${config.public.apiBase}/user/request-connection`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -136,11 +199,11 @@ const createInvitation = async (userName: string) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar("Error sending Invitation");
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar("Invitation Sent");
+  appStore.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 
