@@ -32,8 +32,6 @@
 
 <script setup lang="ts">
 const dialog = ref<boolean>(false);
-const signalR = useSignalR();
-
 const emit = defineEmits(["roomCreateRequested"]);
 
 const roomCreateForm = ref<HTMLFormElement>();

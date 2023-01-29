@@ -47,6 +47,11 @@ interface IChatState {
   userConnections?: IConnectionRequest[];
 }
 
+interface IRoomUpdate {
+  text?: string;
+  roomId?: string;
+}
+
 interface IConnectionRequest {
   id?: number;
   inviterName?: string;

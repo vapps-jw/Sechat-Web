@@ -30,7 +30,6 @@
 
 <script setup lang="ts">
 const dialog = ref<boolean>(false);
-
 const emit = defineEmits(["inviteUser"]);
 
 const invitationCreateForm = ref<HTMLFormElement>();
