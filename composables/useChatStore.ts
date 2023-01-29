@@ -23,12 +23,33 @@ export const useChatStore = () => {
     return getRooms.value.find((r) => r.id === activeRoomId.value);
   });
 
+  const getActiveRoomMessages = computed(() => {
+    if (!activeRoomId.value) {
+      return [];
+    }
+    return getRooms.value.find((r) => r.id === activeRoomId.value).messages;
+  });
+
+  const getActiveRoomMembers = computed(() => {
+    if (!activeRoomId.value) {
+      return [];
+    }
+    return getRooms.value.find((r) => r.id === activeRoomId.value).members;
+  });
+
   const getRooms = computed(() => {
     return availableRooms.value;
   });
 
   const getConnections = computed(() => {
     return availableConnections.value;
+  });
+
+  const getApprovedConnections = computed(() => {
+    const result = availableConnections.value.filter(
+      (uc) => !uc.blocked && uc.approved
+    );
+    return result;
   });
 
   // User Connections
@@ -86,6 +107,15 @@ export const useChatStore = () => {
     getRooms.value.push(room);
   };
 
+  const handleUpdateRoom = (room: IRoom) => {
+    console.log("--> User Room Updated Event", room);
+
+    availableRooms.value = [
+      ...availableRooms.value.filter((uc) => uc.id !== room.id),
+      room,
+    ].sort((a, b) => Number(a.lastActivity) - Number(b.lastActivity));
+  };
+
   const handleDeleteRoom = (message: IResourceGuid) => {
     console.warn("--> Handling Room Delete", message);
     if (activeRoomId.value === message.id) {
@@ -106,13 +136,9 @@ export const useChatStore = () => {
   };
 
   const sortRooms = () => {
-    availableRooms.value = getRooms.value.sort(function (a, b) {
-      return a.lastActivity < b.lastActivity
-        ? 1
-        : a.lastActivity > b.lastActivity
-        ? -1
-        : 0;
-    });
+    availableRooms.value = availableRooms.value.sort(
+      (a, b) => Number(a.lastActivity) - Number(b.lastActivity)
+    );
   };
 
   const selectRoom = (room: IRoom) => {
@@ -134,11 +160,24 @@ export const useChatStore = () => {
 
   const handleIncomingMessage = (message: IMessage) => {
     console.warn("--> Incoming Message", message);
-    const updatedRoom = getRooms.value.find((r) => r.id === message.roomId);
-    updatedRoom.messages = [message, ...updatedRoom.messages].sort((a, b) =>
-      a < b ? 1 : -1
+    const roomToUpdate = availableRooms.value.find(
+      (r) => r.id === message.roomId
     );
-    updatedRoom.lastActivity = message.created;
+    const newRoomList = availableRooms.value.filter(
+      (r) => r.id !== message.roomId
+    );
+
+    const newMessages = [...roomToUpdate.messages, message];
+
+    console.warn("--> Sorting Messages", newMessages);
+    roomToUpdate.messages = newMessages.sort(
+      (a, b) => Number(a.created) - Number(b.created)
+    );
+    roomToUpdate.lastActivity = message.created;
+
+    console.warn("--> Room Updated", roomToUpdate);
+    newRoomList.push(roomToUpdate);
+    availableRooms.value = newRoomList;
   };
 
   return {
@@ -147,11 +186,15 @@ export const useChatStore = () => {
     activeRoomId,
     getActiveRoom,
     getConnections,
+    getApprovedConnections,
+    getActiveRoomMessages,
+    getActiveRoomMembers,
     addRoom,
     clearRooms,
     loadRooms,
     sortRooms,
     selectRoom,
+    handleUpdateRoom,
     handleIncomingMessage,
     handleDeleteRoom,
     handleConnectionRequestReceived,

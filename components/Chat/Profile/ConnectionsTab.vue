@@ -123,7 +123,6 @@ const blockConnection = async (id: number) => {
 
 const allowConnection = async (id: number) => {
   console.log("--> Calling connection block");
-
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/user/allow-connection/?connectionId=${id}`,
     {
@@ -183,7 +182,6 @@ const deleteConnection = async (id: number) => {
 
 const createInvitation = async (userName: string) => {
   console.log("--> Calling connection request");
-
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/user/request-connection`,
     {

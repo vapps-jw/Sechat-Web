@@ -13,23 +13,15 @@
             :key="room.id"
             :title="room.name"
           >
-            <template v-slot:prepend>
-              <v-btn
-                size="small"
-                icon="mdi-account-plus"
-                color="success"
-                variant="outlined"
-                class="mr-2"
-              ></v-btn>
-            </template>
-
             <template v-slot:append>
               <chat-rooms-delete-room
                 v-if="room.creatorName === userData.userProfile.value.userName"
                 @room-delete-requested="async () => await deleteRoom(room.id)"
                 :room="room"
+                class="mr-2"
               />
               <v-btn
+                v-if="room.creatorName !== userData.userProfile.value.userName"
                 size="small"
                 icon="mdi-exit-to-app"
                 color="warning"
