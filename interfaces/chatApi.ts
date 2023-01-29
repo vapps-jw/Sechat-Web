@@ -26,7 +26,6 @@ interface IRoom {
 
 interface IMessage {
   id?: number;
-  idSentBy?: string;
   nameSentBy?: string;
   text?: string;
   roomId?: string;
