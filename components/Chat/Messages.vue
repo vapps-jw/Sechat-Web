@@ -22,8 +22,26 @@
         {{ u.userName }}
       </p>
       <v-card-text id="chatView" class="ma-0 pa-0 sechat-v-card-text-full">
-        <v-list v-if="chatStore.activeRoomId.value">
+        <v-card v-for="message in chatStore.getActiveRoom.value.messages">
+          <v-card-text>
+            <div class="text--primary">
+              {{ message.text }}
+            </div>
+            <p class="text--secondary text-caption text-grey-darken-1">
+              {{
+                `${message.nameSentBy} ${new Date(
+                  message.created
+                ).toLocaleString(appStore.localLanguage.value)}`
+              }}
+            </p>
+          </v-card-text>
+        </v-card>
+        <!-- <v-list v-if="chatStore.activeRoomId.value">
           <v-list-item
+            :class="{
+              'flex-row-reverse':
+                message.nameSentBy === userData.getUsername.value,
+            }"
             class="mb-5"
             v-for="message in chatStore.getActiveRoom.value.messages"
             :title="message.text"
@@ -32,8 +50,9 @@
             ).toLocaleString(appStore.localLanguage.value)}`"
             :key="message.id"
           >
+     
           </v-list-item>
-        </v-list>
+        </v-list> -->
       </v-card-text>
       <v-card-actions>
         <v-textarea
@@ -58,7 +77,7 @@ const chatStore = useChatStore();
 const signalR = useSignalR();
 const appStore = useAppStore();
 const config = useRuntimeConfig();
-
+const userData = useUserData();
 const newMessage = ref("");
 
 const pushMessage = () => {

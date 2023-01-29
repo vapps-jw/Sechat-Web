@@ -6,6 +6,10 @@ export const useUserData = () => {
 
   const config = useRuntimeConfig();
 
+  const getUsername = computed(() => {
+    return userProfile.value.userName;
+  });
+
   const setUserData = (user: IUserProfile | null) => {
     console.log("--> Setting User Data in the State", user);
     if (user !== null) {
@@ -105,6 +109,7 @@ export const useUserData = () => {
   return {
     userProfile,
     isSignedIn,
+    getUsername,
     signOut,
     getUserData,
     signIn,
