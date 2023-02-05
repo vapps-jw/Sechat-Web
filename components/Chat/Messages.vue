@@ -23,15 +23,16 @@
           v-for="u in chatStore.getActiveRoomMembers.value"
           :key="u.userName"
           class="ma-2"
-          color="primary"
+          :color="
+            u.userName !== chatStore.getActiveRoom.value.creatorName
+              ? 'primary'
+              : 'warning'
+          "
           label
         >
           {{ u.userName }}
           <v-icon
-            v-if="
-              userData.getUsername.value !==
-              chatStore.getActiveRoom.value.creatorName
-            "
+            v-if="u.userName !== chatStore.getActiveRoom.value.creatorName"
             @click="async () => await removeUserFromRoom(u)"
             end
             icon="mdi-close-circle"
