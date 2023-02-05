@@ -28,6 +28,10 @@
         >
           {{ u.userName }}
           <v-icon
+            v-if="
+              userData.getUsername.value !==
+              chatStore.getActiveRoom.value.creatorName
+            "
             @click="async () => await removeUserFromRoom(u)"
             end
             icon="mdi-close-circle"
@@ -75,6 +79,7 @@ const chatStore = useChatStore();
 const signalR = useSignalR();
 const appStore = useAppStore();
 const config = useRuntimeConfig();
+const userData = useUserData();
 const newMessage = ref("");
 
 onMounted(() => {
@@ -90,6 +95,18 @@ const pushMessage = () => {
 const removeUserFromRoom = async (data: IMemeber) => {
   if (chatStore.getActiveRoom.value.members.length == 1) {
     appStore.showWarningSnackbar("Last member has to delete Room");
+    return;
+  }
+
+  console.warn(
+    "--> Room creator check",
+    userData.getUsername.value,
+    chatStore.getActiveRoom.value.creatorName
+  );
+  if (
+    userData.getUsername.value === chatStore.getActiveRoom.value.creatorName
+  ) {
+    appStore.showWarningSnackbar("Cant remove room creator");
     return;
   }
 

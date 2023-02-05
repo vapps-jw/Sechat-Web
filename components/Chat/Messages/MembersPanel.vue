@@ -24,7 +24,11 @@
           :custom-filter="hasOccurrences"
           item-title="displayName"
           item-text="displayName"
-          :items="chatStore.getApprovedConnections.value"
+          :items="
+            chatStore.getApprovedConnections.value.filter(
+              (ap) => chatStore.getActiveRoom.value
+            )
+          "
           item-value="id"
           variant="solo"
           v-model="chosenConnection"
