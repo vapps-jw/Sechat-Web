@@ -22,6 +22,10 @@ export const useSignalR = () => {
     ConnectionRequestReceived: "ConnectionRequestReceived",
     ConnectionDeleted: "ConnectionDeleted",
     ConnectionUpdated: "ConnectionUpdated",
+    UserAddedToRoom: "UserAddedToRoom",
+    UserRemovedFromRoom: "UserRemovedFromRoom",
+    DisconnectFromRoom: "DisconnectFromRoom",
+    RoomUpdated: "RoomUpdated",
   };
 
   const createNewConnection = () => {
@@ -45,9 +49,13 @@ export const useSignalR = () => {
       connection.value.onclose(() => {
         _offIncomingMessage();
         _offRoomDeletedEvent();
+        _offUserAddedToRoomEvent();
+        _offRoomUpdatedEvent();
+        _offUserRemovedFromRoomEvent();
         _offConnectionRequestReceivedEvent();
         _offUserConnectionUpdatedEvent();
         _offUserConnectionDeleteEvent();
+
         console.log("--> Connection Closed");
       });
 
@@ -58,6 +66,9 @@ export const useSignalR = () => {
         _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
         _onIncomingMessage();
         _onRoomDeletedEvent();
+        _onUserAddedToRoomEvent();
+        _onRoomUpdatedEvent();
+        _onUserRemovedFromRoomEvent();
         _onConnectionRequestReceivedEvent();
         _onUserConnectionUpdatedEvent();
         _onUserConnectionDeleteEvent();
@@ -121,6 +132,54 @@ export const useSignalR = () => {
 
   // Rooms
 
+  const _onRoomUpdatedEvent = () => {
+    console.log("--> Connecting RoomUpdated event");
+    connection.value.on(
+      SignalRHubMethods.RoomUpdated,
+      chatStore.handleUpdateRoom
+    );
+  };
+
+  const _offRoomUpdatedEvent = () => {
+    console.log("--> Disconnecting RoomUpdated event");
+    connection.value.off(
+      SignalRHubMethods.RoomUpdated,
+      chatStore.handleUpdateRoom
+    );
+  };
+
+  const _onUserAddedToRoomEvent = () => {
+    console.log("--> Connecting UserAddedToRoom event");
+    connection.value.on(
+      SignalRHubMethods.UserAddedToRoom,
+      _handleUserAddedToRoomActions
+    );
+  };
+
+  const _offUserAddedToRoomEvent = () => {
+    console.log("--> Disconnecting UserAddedToRoom event");
+    connection.value.off(
+      SignalRHubMethods.UserAddedToRoom,
+      _handleUserAddedToRoomActions
+    );
+  };
+
+  const _onUserRemovedFromRoomEvent = () => {
+    console.log("--> Connecting UserRemovedFromRoom event");
+    connection.value.on(
+      SignalRHubMethods.UserRemovedFromRoom,
+      _handleUserRemovedFromRoomActions
+    );
+  };
+
+  const _offUserRemovedFromRoomEvent = () => {
+    console.log("--> Disconnecting UserRemovedFromRoom event");
+    connection.value.off(
+      SignalRHubMethods.UserRemovedFromRoom,
+      _handleUserRemovedFromRoomActions
+    );
+  };
+
   const _onRoomDeletedEvent = () => {
     console.log("--> Connecting RoomDeleted event");
     connection.value.on(
@@ -179,6 +238,27 @@ export const useSignalR = () => {
       });
   };
 
+  const _disconnectFromRoom = (roomId: string) => {
+    if (connection.value.state !== SignalRState.Connected) {
+      console.warn("--> Cant disconnect from Room");
+      return;
+    }
+
+    if (!roomId) {
+      console.warn("--> Incorect Room Id");
+      return;
+    }
+
+    console.log("--> Disconnecting from Room", roomId);
+    connection.value
+      .invoke(SignalRHubMethods.DisconnectFromRoom, {
+        Id: roomId,
+      })
+      .then((result) => {
+        console.log("--> Disconnected from room", result);
+      });
+  };
+
   const createRoom = (name: string) => {
     console.log("--> Connection state:", connection.value.state);
     console.log("--> Creating room:", name);
@@ -200,6 +280,26 @@ export const useSignalR = () => {
           throw err;
         }
       });
+  };
+
+  // Room Handlers
+
+  const _handleUserAddedToRoomActions = (data: IRoom) => {
+    _connectToRoom(data.id);
+    chatStore.handleUserAddedToRoom(data);
+  };
+
+  const _handleUserRemovedFromRoomActions = (options: IUserRoomOptions) => {
+    console.warn("--> Handling UserRemovedFromRoom in SignalR", options);
+    if (userData.getUsername.value === options.userName) {
+      console.warn("--> Active user is being removed - signalR");
+      _disconnectFromRoom(options.roomId);
+      chatStore.handleUserRemovedFromRoom(options);
+      return;
+    }
+
+    console.warn("--> Other user is being removed - signalR");
+    chatStore.handleUserRemovedFromRoom(options);
   };
 
   // Messages
