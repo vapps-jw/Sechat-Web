@@ -15,12 +15,27 @@
         <chat-messages-members-panel
           :room-name="chatStore.getActiveRoom.value.name"
           :room-id="chatStore.getActiveRoom.value.id"
-          @user-to-invite-selected="inviteToRoom"
+          @invite-user-to-room="inviteToRoom"
         />
       </v-toolbar>
-      <p v-for="u in chatStore.getActiveRoomMembers.value" :key="u.userName">
-        {{ u.userName }}
-      </p>
+      <div class="d-flex">
+        <v-chip
+          v-for="u in chatStore.getActiveRoomMembers.value"
+          :key="u.userName"
+          class="ma-2"
+          color="primary"
+          label
+        >
+          {{ u.userName }}
+          <v-icon
+            @click="async () => await removeUserFromRoom(u)"
+            end
+            icon="mdi-close-circle"
+          ></v-icon>
+        </v-chip>
+      </div>
+
+      <v-divider />
       <v-card-text id="chatView" class="ma-0 pa-0 sechat-v-card-text-full">
         <v-card v-for="message in chatStore.getActiveRoom.value.messages">
           <v-card-text>
@@ -36,23 +51,6 @@
             </p>
           </v-card-text>
         </v-card>
-        <!-- <v-list v-if="chatStore.activeRoomId.value">
-          <v-list-item
-            :class="{
-              'flex-row-reverse':
-                message.nameSentBy === userData.getUsername.value,
-            }"
-            class="mb-5"
-            v-for="message in chatStore.getActiveRoom.value.messages"
-            :title="message.text"
-            :subtitle="`${message.nameSentBy} on ${new Date(
-              message.created
-            ).toLocaleString(appStore.localLanguage.value)}`"
-            :key="message.id"
-          >
-     
-          </v-list-item>
-        </v-list> -->
       </v-card-text>
       <v-card-actions>
         <v-textarea
@@ -77,16 +75,54 @@ const chatStore = useChatStore();
 const signalR = useSignalR();
 const appStore = useAppStore();
 const config = useRuntimeConfig();
-const userData = useUserData();
 const newMessage = ref("");
+
+onMounted(() => {
+  console.log("--> Mounted Scrolling");
+  scrollToBottom("chatView");
+});
 
 const pushMessage = () => {
   signalR.sendMessage(newMessage.value, chatStore.activeRoomId.value);
   newMessage.value = "";
 };
 
-const inviteToRoom = async (data) => {
-  console.warn("--> Inviting User", data);
+const removeUserFromRoom = async (data: IMemeber) => {
+  if (chatStore.getActiveRoom.value.members.length == 1) {
+    appStore.showWarningSnackbar("Last member has to delete Room");
+    return;
+  }
+
+  console.warn("--> Removing User from Room", data);
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/chat/remove-from-room`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      credentials: "include",
+      body: {
+        userName: data.userName,
+        RoomId: chatStore.getActiveRoom.value.id,
+        ConnectionId: chatStore.getConnections.value.find(
+          (c) =>
+            c.invitedName === data.userName || c.inviterName === data.userName
+        )?.id,
+      },
+    }
+  );
+
+  if (apiError.value) {
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    return;
+  }
+
+  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+};
+
+const inviteToRoom = async (data: IConnectionRequest) => {
+  console.warn("--> API Inviting User", data);
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/chat/add-to-room`,
     {
@@ -96,8 +132,9 @@ const inviteToRoom = async (data) => {
       method: "POST",
       credentials: "include",
       body: {
-        userName: data.user,
-        roomId: data.room,
+        userName: data.displayName,
+        RoomId: chatStore.activeRoomId,
+        ConnectionId: data.id,
       },
     }
   );

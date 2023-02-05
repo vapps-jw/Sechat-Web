@@ -5,6 +5,12 @@ interface IResourceGuid {
 interface IResourceId {
   id?: number;
 }
+
+interface IUserRoomOptions {
+  roomId?: string;
+  userName?: string;
+}
+
 interface INewRoomCreateMessage {
   id?: string;
   name?: string;

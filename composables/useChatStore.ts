@@ -68,14 +68,14 @@ export const useChatStore = () => {
   };
 
   const handleConnectionDelete = (resourceId: IResourceId) => {
-    console.warn("--> Connection Delete Event", resourceId);
+    console.warn("--> Connection Delete Event Handled", resourceId);
     availableConnections.value = getConnections.value.filter(
       (uc) => uc.id !== resourceId.id
     );
   };
 
   const handleConnectionUpdated = (data: IConnectionRequest) => {
-    console.log("--> User Connection Updated Event", data);
+    console.log("--> User Connection Updated Event Handled", data);
     if (data.invitedName === userData.userProfile.value.userName) {
       data.displayName = data.inviterName;
     } else {
@@ -108,7 +108,7 @@ export const useChatStore = () => {
   };
 
   const handleUpdateRoom = (room: IRoom) => {
-    console.log("--> User Room Updated Event", room);
+    console.warn("--> Handling Room Updated Event", room);
 
     availableRooms.value = [
       ...availableRooms.value.filter((uc) => uc.id !== room.id),
@@ -116,8 +116,41 @@ export const useChatStore = () => {
     ].sort((a, b) => Number(a.lastActivity) - Number(b.lastActivity));
   };
 
+  const handleUserAddedToRoom = (room: IRoom) => {
+    console.warn("--> Handling UserAddedToRoom Event", room);
+
+    availableRooms.value = [...availableRooms.value, room].sort(
+      (a, b) => Number(a.lastActivity) - Number(b.lastActivity)
+    );
+  };
+
+  const handleUserRemovedFromRoom = (options: IUserRoomOptions) => {
+    console.warn(
+      "--> Handling UserRemovedFromRoom Event in Chat Store",
+      options
+    );
+
+    if (userData.getUsername.value === options.userName) {
+      console.warn("--> Active user is being removed - Chat Store");
+      if (activeRoomId.value === options.roomId) {
+        activeRoomId.value = "";
+      }
+      availableRooms.value = getRooms.value.filter(
+        (r) => r.id !== options.roomId
+      );
+      return;
+    }
+
+    const roomToUpdate = availableRooms.value.find(
+      (r) => r.id === options.roomId
+    );
+    roomToUpdate.members = roomToUpdate.members.filter(
+      (rm) => rm.userName !== options.userName
+    );
+  };
+
   const handleDeleteRoom = (message: IResourceGuid) => {
-    console.warn("--> Handling Room Delete", message);
+    console.warn("--> Handling Room Delete Event Handled", message);
     if (activeRoomId.value === message.id) {
       activeRoomId.value = "";
     }
@@ -159,7 +192,7 @@ export const useChatStore = () => {
   // Messages
 
   const handleIncomingMessage = (message: IMessage) => {
-    console.warn("--> Incoming Message", message);
+    console.warn("--> Incoming Message Event Handle", message);
     const roomToUpdate = availableRooms.value.find(
       (r) => r.id === message.roomId
     );
@@ -175,7 +208,6 @@ export const useChatStore = () => {
     );
     roomToUpdate.lastActivity = message.created;
 
-    console.warn("--> Room Updated", roomToUpdate);
     newRoomList.push(roomToUpdate);
     availableRooms.value = newRoomList;
   };
@@ -201,5 +233,7 @@ export const useChatStore = () => {
     handleConnectionUpdated,
     loadUserConnections,
     handleConnectionDelete,
+    handleUserAddedToRoom,
+    handleUserRemovedFromRoom,
   };
 };

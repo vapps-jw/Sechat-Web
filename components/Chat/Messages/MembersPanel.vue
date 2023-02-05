@@ -37,7 +37,9 @@
           Cancel
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="error" variant="text"> Send </v-btn>
+        <v-btn color="error" variant="text" @click="inviteUserToRoom">
+          Invite
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -48,11 +50,20 @@ const chatStore = useChatStore();
 const dialog = ref<boolean>(false);
 const chosenConnection = ref<IConnectionRequest>();
 
+const emit = defineEmits(["inviteUserToRoom"]);
+
 interface PropsModel {
   roomId: string;
   roomName: string;
 }
 const props = defineProps<PropsModel>();
+
+const inviteUserToRoom = async () => {
+  console.log("--> Inviting to Room", chosenConnection.value);
+  emit("inviteUserToRoom", chosenConnection.value);
+  chosenConnection.value = null;
+  dialog.value = false;
+};
 
 const hasOccurrences = (item: any, queryText: any) => {
   console.log("--> Lookup item", item);
