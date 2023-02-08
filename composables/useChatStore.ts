@@ -33,13 +33,6 @@ export const useChatStore = () => {
     return "";
   });
 
-  const getActiveRoomMessages = computed(() => {
-    if (!activeRoomId.value) {
-      return [];
-    }
-    return getRooms.value.find((r) => r.id === activeRoomId.value).messages;
-  });
-
   const getActiveRoomMembers = computed(() => {
     if (!activeRoomId.value) {
       return [];
@@ -225,7 +218,6 @@ export const useChatStore = () => {
     getActiveRoom,
     getConnections,
     getApprovedConnections,
-    getActiveRoomMessages,
     getActiveRoomMembers,
     getActiveRoomCreatorName,
     addRoom,
