@@ -164,9 +164,4 @@ const inviteToRoom = async (data: IConnectionRequest) => {
 
   appStore.showSuccessSnackbar(SnackbarMessages.Success);
 };
-
-watch(chatStore.getActiveRoomMessages, () => {
-  console.log("--> Scrolling");
-  scrollToBottom("chatView");
-});
 </script>

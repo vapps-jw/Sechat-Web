@@ -1,3 +1,5 @@
+import { scrollToBottom } from "~~/utilities/documentFunctions";
+
 export const useChatStore = () => {
   const userData = useUserData();
 
@@ -201,23 +203,19 @@ export const useChatStore = () => {
 
   const handleIncomingMessage = (message: IMessage) => {
     console.warn("--> Incoming Message Event Handle", message);
+
     const roomToUpdate = availableRooms.value.find(
       (r) => r.id === message.roomId
     );
-    const newRoomList = availableRooms.value.filter(
-      (r) => r.id !== message.roomId
-    );
 
-    const newMessages = [...roomToUpdate.messages, message];
+    roomToUpdate.messages.push(message);
 
-    console.warn("--> Sorting Messages", newMessages);
-    roomToUpdate.messages = newMessages.sort(
+    console.warn("--> Sorting Messages");
+    roomToUpdate.messages = roomToUpdate.messages.sort(
       (a, b) => Number(a.created) - Number(b.created)
     );
     roomToUpdate.lastActivity = message.created;
-
-    newRoomList.push(roomToUpdate);
-    availableRooms.value = newRoomList;
+    scrollToBottom("chatView");
   };
 
   return {
