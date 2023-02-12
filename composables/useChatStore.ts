@@ -55,6 +55,21 @@ export const useChatStore = () => {
     return result;
   });
 
+  const getConnectionsAllowedForActiveRoom = computed(() => {
+    if (!getActiveRoom.value) {
+      return [];
+    }
+    return availableConnections.value.filter(
+      (uc) =>
+        !uc.blocked &&
+        uc.approved &&
+        uc.displayName !== userData.getUsername.value &&
+        !getActiveRoom.value.members.some(
+          (arm) => arm.userName === uc.displayName
+        )
+    );
+  });
+
   // User Connections
 
   const handleConnectionRequestReceived = (data: IConnectionRequest) => {
@@ -217,6 +232,7 @@ export const useChatStore = () => {
     getApprovedConnections,
     getActiveRoomMembers,
     getActiveRoomCreatorName,
+    getConnectionsAllowedForActiveRoom,
     addRoom,
     clearRooms,
     loadRooms,

@@ -12,11 +12,7 @@
           chatStore.getActiveRoom.value.name
         }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <chat-messages-members-panel
-          :room-name="chatStore.getActiveRoom.value.name"
-          :room-id="chatStore.getActiveRoom.value.id"
-          @invite-user-to-room="inviteToRoom"
-        />
+        <chat-messages-members-panel @invite-user-to-room="inviteToRoom" />
       </v-toolbar>
       <div class="d-flex">
         <v-chip
@@ -42,26 +38,6 @@
 
       <v-divider />
       <v-sheet id="chatView" class="ma-0 pa-0 sechat-flex-grow-overflow">
-        <!-- <v-card
-          class="d-flex justify-start mb-6"
-          color="green lighten-4"
-          flat
-          tile
-        >
-          <v-card v-for="n in 3" :key="n" class="pa-2" outlined tile>
-            justify-start
-          </v-card>
-        </v-card>
-        <v-card
-          class="d-flex justify-end mb-6"
-          color="grey lighten-4"
-          flat
-          tile
-        >
-          <v-card v-for="n in 3" :key="n" class="pa-2" outlined tile>
-            justify-end
-          </v-card>
-        </v-card> -->
         <div
           class="d-flex"
           :class="
@@ -140,8 +116,10 @@ onUpdated(() => {
 });
 
 const pushMessage = () => {
-  signalR.sendMessage(newMessage.value, chatStore.activeRoomId.value);
-  newMessage.value = "";
+  if (newMessage.value) {
+    signalR.sendMessage(newMessage.value, chatStore.activeRoomId.value);
+    newMessage.value = "";
+  }
 };
 
 const removeUserFromRoom = async (data: IMemeber) => {

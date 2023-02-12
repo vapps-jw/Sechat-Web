@@ -16,7 +16,7 @@
     </template>
     <v-card>
       <v-toolbar>
-        <v-toolbar-title>{{ props.roomName }} Members</v-toolbar-title>
+        <v-toolbar-title>Room Members</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
@@ -24,11 +24,7 @@
           :custom-filter="hasOccurrences"
           item-title="displayName"
           item-text="displayName"
-          :items="
-            chatStore.getApprovedConnections.value.filter(
-              (ap) => chatStore.getActiveRoom.value
-            )
-          "
+          :items="chatStore.getConnectionsAllowedForActiveRoom.value"
           item-value="id"
           variant="solo"
           v-model="chosenConnection"
@@ -56,11 +52,12 @@ const chosenConnection = ref<IConnectionRequest>();
 
 const emit = defineEmits(["inviteUserToRoom"]);
 
-interface PropsModel {
-  roomId: string;
-  roomName: string;
-}
-const props = defineProps<PropsModel>();
+onUpdated(() => {
+  console.log(
+    "--> Available users",
+    chatStore.getConnectionsAllowedForActiveRoom.value
+  );
+});
 
 const inviteUserToRoom = async () => {
   console.log("--> Inviting to Room", chosenConnection.value);
