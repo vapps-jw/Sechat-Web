@@ -29,7 +29,7 @@
           variant="solo"
           v-model="chosenConnection"
           return-object
-          no-data-text="user not found"
+          no-data-text="You have no friends?"
         ></v-autocomplete>
       </v-card-text>
       <v-card-actions>

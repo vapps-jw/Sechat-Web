@@ -41,42 +41,37 @@
         <div
           class="d-flex"
           :class="
-            message.nameSentBy === userData.getUsername.value
-              ? 'flex-row-reverse ma-2 '
-              : 'flex-row flex-start ma-2 '
+            isActiveUser(message)
+              ? 'flex-row-reverse ma-1 '
+              : 'flex-row flex-start ma-1 '
           "
           v-for="message in chatStore.getActiveRoom.value.messages"
         >
           <v-card>
             <v-card-item
               :class="
-                message.nameSentBy === userData.getUsername.value
+                isActiveUser(message)
                   ? 'flex-end bg-blue-darken-4 rounded-xl rounded-be-0'
                   : 'flex-start bg-grey-darken-3 rounded-xl rounded-bs-0'
               "
             >
               <v-card-title
-                :class="
-                  message.nameSentBy === userData.getUsername.value
-                    ? 'text-right'
-                    : ''
-                "
+                :class="isActiveUser(message) ? 'text-right' : ''"
                 >{{ message.nameSentBy }}</v-card-title
               >
               <v-card-subtitle
-                :class="
-                  message.nameSentBy === userData.getUsername.value
-                    ? 'text-right'
-                    : ''
-                "
+                :class="isActiveUser(message) ? 'text-right' : ''"
                 >{{
                   new Date(message.created).toLocaleString(
                     appStore.localLanguage.value
                   )
                 }}</v-card-subtitle
               >
-              <v-card-text>
-                <p class="text--primary text-h6">
+              <v-card-text class="px-0 py-0">
+                <p
+                  class="text--primary text-h6"
+                  :class="isActiveUser(message) ? 'text-right' : ''"
+                >
                   {{ message.text }}
                 </p>
               </v-card-text>
@@ -120,6 +115,10 @@ const pushMessage = () => {
     signalR.sendMessage(newMessage.value, chatStore.activeRoomId.value);
     newMessage.value = "";
   }
+};
+
+const isActiveUser = (message: IMessage) => {
+  return message.nameSentBy === userData.getUsername.value;
 };
 
 const removeUserFromRoom = async (data: IMemeber) => {
