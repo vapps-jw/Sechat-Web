@@ -81,6 +81,7 @@
       </v-sheet>
       <v-card-actions>
         <v-textarea
+          variant="solo"
           clear-icon="mdi-close-circle"
           clearable
           counter

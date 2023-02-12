@@ -39,11 +39,13 @@ export const useUserData = () => {
     );
 
     if (loginError.value) {
-      throw createError({
+      const displayError = createError({
         ...loginError.value,
-        statusMessage: "Sing in Failed",
+        statusMessage: "Sign in Failed",
         statusCode: loginError.value.statusCode,
       });
+      console.log("--> Throwing Error", displayError);
+      throw displayError;
     }
 
     await getUserData();

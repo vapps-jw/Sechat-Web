@@ -1,6 +1,5 @@
 <template>
   <div>
-    <ChatSnackbar />
     <v-app-bar density="compact">
       <v-spacer></v-spacer>
       <v-tabs v-model="chatStore.activeChatTab.value" stacked centered>
@@ -40,7 +39,6 @@ definePageMeta({
 const signalr = useSignalR();
 const chatApi = useChatApi();
 const chatStore = useChatStore();
-const appStore = useAppStore();
 
 onMounted(async () => {
   console.log("--> Chat mounted");
