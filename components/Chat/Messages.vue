@@ -62,33 +62,51 @@
             justify-end
           </v-card>
         </v-card> -->
-
-        <v-card
-          v-for="message in chatStore.getActiveRoom.value.messages"
-          flat
-          tile
+        <div
+          class="d-flex"
           :class="
             message.nameSentBy === userData.getUsername.value
-              ? 'd-flex justify-end mb-6 bg-primary rounded-xl rounded-be-0'
-              : 'd-flex justify-start mb-6 bg-grey-darken-3 rounded-xl rounded-bs-0'
+              ? 'flex-row-reverse ma-2 '
+              : 'flex-row flex-start ma-2 '
           "
+          v-for="message in chatStore.getActiveRoom.value.messages"
         >
-          <div>
-            <v-card-item>
-              <v-card-title>{{ message.nameSentBy }}</v-card-title>
-              <v-card-subtitle>{{
-                new Date(message.created).toLocaleString(
-                  appStore.localLanguage.value
-                )
-              }}</v-card-subtitle>
+          <v-card>
+            <v-card-item
+              :class="
+                message.nameSentBy === userData.getUsername.value
+                  ? 'flex-end bg-blue-darken-4 rounded-xl rounded-be-0'
+                  : 'flex-start bg-grey-darken-3 rounded-xl rounded-bs-0'
+              "
+            >
+              <v-card-title
+                :class="
+                  message.nameSentBy === userData.getUsername.value
+                    ? 'text-right'
+                    : ''
+                "
+                >{{ message.nameSentBy }}</v-card-title
+              >
+              <v-card-subtitle
+                :class="
+                  message.nameSentBy === userData.getUsername.value
+                    ? 'text-right'
+                    : ''
+                "
+                >{{
+                  new Date(message.created).toLocaleString(
+                    appStore.localLanguage.value
+                  )
+                }}</v-card-subtitle
+              >
+              <v-card-text>
+                <p class="text--primary text-h6">
+                  {{ message.text }}
+                </p>
+              </v-card-text>
             </v-card-item>
-            <v-card-text>
-              <p class="text--primary">
-                {{ message.text }}
-              </p>
-            </v-card-text>
-          </div>
-        </v-card>
+          </v-card>
+        </div>
       </v-sheet>
       <v-card-actions>
         <v-textarea
