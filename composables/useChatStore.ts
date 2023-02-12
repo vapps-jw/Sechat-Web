@@ -184,12 +184,9 @@ export const useChatStore = () => {
       activeChatTab.value = ChatViews.Messages;
       return;
     }
-    if (room.id == activeRoomId.value) {
-      activeRoomId.value = null;
-      return;
-    }
     activeRoomId.value = room.id;
     activeChatTab.value = ChatViews.Messages;
+    scrollToBottom("chatView");
   };
 
   // Messages

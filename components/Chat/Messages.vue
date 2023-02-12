@@ -41,22 +41,55 @@
       </div>
 
       <v-divider />
-      <v-card-text id="chatView" class="ma-0 pa-0 sechat-v-card-text-full">
-        <v-card v-for="message in chatStore.getActiveRoom.value.messages">
-          <v-card-text>
-            <div class="text--primary">
-              {{ message.text }}
-            </div>
-            <p class="text--secondary text-caption text-grey-darken-1">
-              {{
-                `${message.nameSentBy} ${new Date(
-                  message.created
-                ).toLocaleString(appStore.localLanguage.value)}`
-              }}
-            </p>
-          </v-card-text>
+      <v-sheet id="chatView" class="ma-0 pa-0 sechat-flex-grow-overflow">
+        <!-- <v-card
+          class="d-flex justify-start mb-6"
+          color="green lighten-4"
+          flat
+          tile
+        >
+          <v-card v-for="n in 3" :key="n" class="pa-2" outlined tile>
+            justify-start
+          </v-card>
         </v-card>
-      </v-card-text>
+        <v-card
+          class="d-flex justify-end mb-6"
+          color="grey lighten-4"
+          flat
+          tile
+        >
+          <v-card v-for="n in 3" :key="n" class="pa-2" outlined tile>
+            justify-end
+          </v-card>
+        </v-card> -->
+
+        <v-card
+          v-for="message in chatStore.getActiveRoom.value.messages"
+          flat
+          tile
+          :class="
+            message.nameSentBy === userData.getUsername.value
+              ? 'd-flex justify-end mb-6 bg-primary rounded-xl rounded-be-0'
+              : 'd-flex justify-start mb-6 bg-grey-darken-3 rounded-xl rounded-be-0'
+          "
+        >
+          <div>
+            <v-card-item>
+              <v-card-title>{{ message.nameSentBy }}</v-card-title>
+              <v-card-subtitle>{{
+                new Date(message.created).toLocaleString(
+                  appStore.localLanguage.value
+                )
+              }}</v-card-subtitle>
+            </v-card-item>
+            <v-card-text>
+              <p class="text--primary">
+                {{ message.text }}
+              </p>
+            </v-card-text>
+          </div>
+        </v-card>
+      </v-sheet>
       <v-card-actions>
         <v-textarea
           clear-icon="mdi-close-circle"
@@ -83,8 +116,8 @@ const config = useRuntimeConfig();
 const userData = useUserData();
 const newMessage = ref("");
 
-onMounted(() => {
-  console.log("--> Mounted Scrolling");
+onUpdated(() => {
+  console.log("--> onUpdated Scrolling");
   scrollToBottom("chatView");
 });
 

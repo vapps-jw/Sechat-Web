@@ -10,7 +10,12 @@
 }
 
 .sechat-v-card-text-full {
-  flex-grow: 1;
+  /* flex-grow: 1; */
+  overflow: auto;
+}
+
+.sechat-flex-grow-overflow {
+  /* flex-grow: 1; */
   overflow: auto;
 }
 
