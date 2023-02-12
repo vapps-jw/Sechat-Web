@@ -70,7 +70,7 @@
           :class="
             message.nameSentBy === userData.getUsername.value
               ? 'd-flex justify-end mb-6 bg-primary rounded-xl rounded-be-0'
-              : 'd-flex justify-start mb-6 bg-grey-darken-3 rounded-xl rounded-be-0'
+              : 'd-flex justify-start mb-6 bg-grey-darken-3 rounded-xl rounded-bs-0'
           "
         >
           <div>
