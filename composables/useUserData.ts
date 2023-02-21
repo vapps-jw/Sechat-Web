@@ -78,7 +78,36 @@ export const useUserData = () => {
     navigateTo("/");
   };
 
-  const register = async (username: string, password: string) => {};
+  const signUp = async (username: string, password: string) => {
+    console.log("--> Signing Up");
+
+    const { error: loginError, data: response } = await useFetch(
+      `${config.public.apiBase}/account/register`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          username: username,
+          password: password,
+        },
+      }
+    );
+
+    console.log("--> Response", response);
+
+    if (loginError.value) {
+      const displayError = createError({
+        ...loginError.value,
+        statusMessage: "Sign up Failed",
+        statusCode: loginError.value.statusCode,
+      });
+      console.log("--> Throwing Error", displayError);
+      throw displayError;
+    }
+  };
 
   const getUserData = async () => {
     const config = useRuntimeConfig();
@@ -113,5 +142,6 @@ export const useUserData = () => {
     signOut,
     getUserData,
     signIn,
+    signUp,
   };
 };

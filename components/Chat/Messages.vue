@@ -35,7 +35,6 @@
           ></v-icon>
         </v-chip>
       </div>
-
       <v-divider />
       <v-sheet id="chatView" class="ma-0 pa-0 sechat-flex-grow-overflow">
         <div
@@ -55,21 +54,32 @@
                   : 'flex-start bg-grey-darken-3 rounded-xl rounded-bs-0'
               "
             >
-              <v-card-title
-                :class="isActiveUser(message) ? 'text-right' : ''"
-                >{{ message.nameSentBy }}</v-card-title
-              >
               <v-card-subtitle
+                v-if="userData.getUsername.value === message.nameSentBy"
                 :class="isActiveUser(message) ? 'text-right' : ''"
-                >{{
+                class="text-xs"
+              >
+                {{
                   new Date(message.created).toLocaleString(
                     appStore.localLanguage.value
                   )
                 }}</v-card-subtitle
               >
+              <v-card-subtitle
+                v-else
+                :class="isActiveUser(message) ? 'text-right' : ''"
+                class="text-xs"
+              >
+                <strong> {{ message.nameSentBy }}</strong>
+                {{
+                  new Date(message.created).toLocaleString(
+                    appStore.localLanguage.value
+                  )
+                }}
+              </v-card-subtitle>
               <v-card-text class="px-0 py-0">
                 <p
-                  class="text--primary text-h6"
+                  class="text--primary text-sm"
                   :class="isActiveUser(message) ? 'text-right' : ''"
                 >
                   {{ message.text }}
@@ -79,6 +89,7 @@
           </v-card>
         </div>
       </v-sheet>
+      <v-spacer />
       <v-card-actions>
         <v-textarea
           variant="solo"
@@ -130,12 +141,11 @@ const removeUserFromRoom = async (data: IMemeber) => {
 
   console.warn(
     "--> Room creator check",
+    data.userName,
     userData.getUsername.value,
     chatStore.getActiveRoom.value.creatorName
   );
-  if (
-    userData.getUsername.value === chatStore.getActiveRoom.value.creatorName
-  ) {
+  if (data.userName === chatStore.getActiveRoom.value.creatorName) {
     appStore.showWarningSnackbar("Cant remove room creator");
     return;
   }

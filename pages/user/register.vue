@@ -5,9 +5,10 @@
         <v-text-field
           v-model="credentials.username"
           :readonly="loading"
-          :rules="[credentials.nameRules]"
+          :rules="credentials.usernameRules"
           class="mb-2"
           clearable
+          :counter="10"
           label="Name"
         ></v-text-field>
 
@@ -17,8 +18,9 @@
           :type="showPassword ? 'text' : 'password'"
           v-model="credentials.password"
           :readonly="loading"
-          :rules="[credentials.passwordRules]"
+          :rules="credentials.passwordRules"
           clearable
+          :counter="20"
           label="Password"
         ></v-text-field>
 
@@ -43,6 +45,7 @@
 const userData = useUserData();
 const form = ref(false);
 const loading = ref(false);
+const appStore = useAppStore();
 
 interface ICredentials {
   valid: boolean;
@@ -54,14 +57,16 @@ interface ICredentials {
 
 const showPassword = ref<boolean>(true);
 const buttonText = ref<string>("Sign Up");
-const buttonColor = ref<string>("success");
+const buttonColor = ref<string>("warning");
 
 const onSubmit = async () => {
   try {
-    await userData.signIn(
+    await userData.signUp(
       credentials.value.username,
       credentials.value.password
     );
+    appStore.showSuccessSnackbar("User created");
+    navigateTo("/user/login");
   } catch (error) {
     console.log("--> Sign in error", error);
     buttonText.value = "Try Again";
@@ -70,12 +75,18 @@ const onSubmit = async () => {
   }
 };
 
-const credentials = ref<ICredentials>({
+const credentials = ref({
   valid: true,
   username: "",
   password: "",
-  nameRules: [(v) => !!v || "Name is required"],
-  passwordRules: [(v) => !!v || "Password is required"],
+  usernameRules: [
+    (v) => !!v || "Username is required",
+    (v) => (v && v.length <= 10) || "Max 10 characters",
+  ],
+  passwordRules: [
+    (v) => !!v || "Password is required",
+    (v) => (v && v.length <= 20) || "Max 20 characters",
+  ],
 });
 </script>
 

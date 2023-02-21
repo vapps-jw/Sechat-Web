@@ -5,7 +5,7 @@
         <v-text-field
           v-model="credentials.username"
           :readonly="loading"
-          :rules="[credentials.nameRules]"
+          :rules="credentials.nameRules"
           class="mb-2"
           clearable
           label="Name"
@@ -17,7 +17,7 @@
           :type="showPassword ? 'text' : 'password'"
           v-model="credentials.password"
           :readonly="loading"
-          :rules="[credentials.passwordRules]"
+          :rules="credentials.passwordRules"
           clearable
           label="Password"
         ></v-text-field>
@@ -54,7 +54,7 @@ interface ICredentials {
 
 const showPassword = ref<boolean>(true);
 const buttonText = ref<string>("Sign In");
-const buttonColor = ref<string>("success");
+const buttonColor = ref<string>("warning");
 
 const onSubmit = async () => {
   try {
@@ -70,7 +70,7 @@ const onSubmit = async () => {
   }
 };
 
-const credentials = ref<ICredentials>({
+const credentials = ref({
   valid: true,
   username: "",
   password: "",

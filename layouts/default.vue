@@ -8,10 +8,15 @@
         </div>
         <v-divider class="my-4"></v-divider>
       </v-container>
+      <client-only>
+        <chat-snackbar />
+      </client-only>
       <slot />
     </v-main>
   </v-app>
 </template>
+
+<script setup lang="ts"></script>
 
 <style scoped>
 .page-enter-active,
