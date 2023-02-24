@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!chatApi.processing">
     <v-app-bar density="compact">
       <v-spacer></v-spacer>
       <v-tabs v-model="chatStore.activeChatTab.value" stacked centered>
@@ -27,6 +27,7 @@
       <v-window-item value="profile"> <ChatProfile /> </v-window-item>
     </v-window>
   </div>
+  <div v-else>Processing ...</div>
 </template>
 
 <script setup lang="ts">
