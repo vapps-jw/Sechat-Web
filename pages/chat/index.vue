@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!chatApi.processing">
+  <div v-if="chatApi.processing">
     <v-app-bar density="compact">
       <v-spacer></v-spacer>
       <v-tabs v-model="chatStore.activeChatTab.value" stacked centered>
@@ -40,6 +40,11 @@ definePageMeta({
 const signalr = useSignalR();
 const chatApi = useChatApi();
 const chatStore = useChatStore();
+
+const { data, pending, error, refresh } = await useAsyncData(
+  "fullChatData",
+  () => $fetch("https://api.nuxtjs.dev/mountains")
+);
 
 onMounted(async () => {
   console.log("--> Chat mounted");
