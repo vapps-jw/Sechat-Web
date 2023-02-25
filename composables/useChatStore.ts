@@ -127,6 +127,7 @@ export const useChatStore = () => {
 
   const handleUpdateRoom = (room: IRoom) => {
     console.warn("--> Handling Room Updated Event", room);
+    room.messages = getActiveRoom.value.messages;
 
     availableRooms.value = [
       ...availableRooms.value.filter((uc) => uc.id !== room.id),
