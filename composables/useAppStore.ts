@@ -33,6 +33,17 @@ export const useAppStore = () => {
     });
   };
 
+  const showInfoSnackbar = (message: string) => {
+    showSnackbar({
+      snackbar: true,
+      text: message,
+      timeout: 2000,
+      color: "primary",
+      icon: SnackbarIcons.Info,
+      iconColor: "white",
+    });
+  };
+
   const showWarningSnackbar = (message: string) => {
     showSnackbar({
       snackbar: true,
@@ -62,5 +73,6 @@ export const useAppStore = () => {
     showSuccessSnackbar,
     showWarningSnackbar,
     showErrorSnackbar,
+    showInfoSnackbar,
   };
 };

@@ -2,6 +2,7 @@ import { scrollToBottom } from "~~/utilities/documentFunctions";
 
 export const useChatStore = () => {
   const userData = useUserData();
+  const appStore = useAppStore();
 
   const ChatViews = {
     Messages: "messages",
@@ -70,6 +71,17 @@ export const useChatStore = () => {
     );
   });
 
+  // Online State
+
+  const handleOffline = () => {
+    console.warn("--> Became offline");
+    appStore.showInfoSnackbar("You are offline!");
+  };
+
+  const handleOnline = () => {
+    console.warn("--> Became online");
+    appStore.showInfoSnackbar("You are back online!");
+  };
   // User Connections
 
   const handleConnectionRequestReceived = (data: IConnectionRequest) => {
@@ -234,6 +246,8 @@ export const useChatStore = () => {
     getActiveRoomMembers,
     getActiveRoomCreatorName,
     getConnectionsAllowedForActiveRoom,
+    handleOnline,
+    handleOffline,
     addRoom,
     clearRooms,
     loadRooms,

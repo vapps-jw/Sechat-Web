@@ -23,6 +23,13 @@
           </v-list-item>
           <v-divider class="mt-10" />
           <v-list-subheader color="error">Danger Zone</v-list-subheader>
+          <v-list-item>
+            <template v-slot:append>
+              <ChatProfileDeleteAccount
+                @account-delete-requested="() => deleteAccount()"
+              />
+            </template>
+          </v-list-item>
         </v-list>
       </v-card-text>
     </v-card>
@@ -34,6 +41,10 @@ const userData = useUserData();
 
 const backToHomePage = () => {
   navigateTo("/");
+};
+
+const deleteAccount = () => {
+  console.warn("--> Deleting Account");
 };
 </script>
 

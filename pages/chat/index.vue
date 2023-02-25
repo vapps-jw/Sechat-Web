@@ -27,7 +27,12 @@
       <v-window-item value="profile"> <ChatProfile /> </v-window-item>
     </v-window>
   </div>
-  <div v-else>Processing ...</div>
+  <v-progress-circular
+    v-else
+    :size="50"
+    color="amber"
+    indeterminate
+  ></v-progress-circular>
 </template>
 
 <script setup lang="ts">
@@ -41,15 +46,18 @@ const signalr = useSignalR();
 const chatApi = useChatApi();
 const chatStore = useChatStore();
 
-const { data, pending, error, refresh } = await useAsyncData(
-  "fullChatData",
-  () => $fetch("https://api.nuxtjs.dev/mountains")
-);
-
 onMounted(async () => {
-  console.log("--> Chat mounted");
+  console.warn("--> Chat onMounted");
   await chatApi.getState();
   signalr.openConnection();
+  window.addEventListener("online", () => chatStore.handleOnline());
+  window.addEventListener("offline", () => chatStore.handleOffline());
+});
+
+onBeforeUnmount(() => {
+  console.warn("--> Chat onBeforeUnmount");
+  window.removeEventListener("online", () => chatStore.handleOnline());
+  window.removeEventListener("offline", () => chatStore.handleOffline());
 });
 
 watch(chatStore.activeChatTab, () => {

@@ -2,28 +2,20 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent>
       <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          icon="mdi-delete"
-          color="error"
-          size="small"
-          variant="outlined"
-        ></v-btn>
+        <v-btn v-bind="props" color="error" size="small" variant="outlined"
+          >Delete Account</v-btn
+        >
       </template>
       <v-card>
         <v-card-title class="text-h6 text-center">
-          Wanna delete {{ props.room.name }}?
+          Are you really sure ???
         </v-card-title>
         <v-card-actions>
           <v-btn color="success" variant="text" @click="dialog = false">
             No
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn
-            color="error"
-            variant="text"
-            @click="() => deleteRoom(props.room.id)"
-          >
+          <v-btn color="error" variant="text" @click="() => deleteAccount()">
             Yes
           </v-btn>
         </v-card-actions>
@@ -35,15 +27,10 @@
 <script setup lang="ts">
 const dialog = ref<boolean>(false);
 
-interface PropsModel {
-  room: IRoom;
-}
+const emit = defineEmits(["accountDeleteRequested"]);
 
-const emit = defineEmits(["roomDeleteRequested"]);
-const props = defineProps<PropsModel>();
-
-const deleteRoom = (roomId: string) => {
-  emit("roomDeleteRequested", roomId);
+const deleteAccount = () => {
+  emit("accountDeleteRequested");
   dialog.value = false;
 };
 </script>

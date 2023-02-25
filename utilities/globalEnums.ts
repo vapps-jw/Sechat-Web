@@ -2,6 +2,7 @@ export const SnackbarIcons = {
   Warning: "mdi-alert",
   Success: "mdi-check-circle",
   Error: "mdi-alert-octagram",
+  Info: "mdi-information-outline",
 };
 
 export const SnackbarMessages = {
