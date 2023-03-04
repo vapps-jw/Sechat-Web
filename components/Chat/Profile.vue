@@ -24,7 +24,7 @@
           <v-divider class="mt-10" />
           <v-list-subheader color="error">Danger Zone</v-list-subheader>
           <v-list-item>
-            <template v-slot:append>
+            <template v-slot:prepend>
               <ChatProfileDeleteAccount
                 @account-delete-requested="() => deleteAccount()"
               />
