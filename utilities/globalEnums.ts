@@ -10,3 +10,7 @@ export const SnackbarMessages = {
   Success: "Consider it done :)",
   Error: "Something went wrong :/",
 };
+
+export const CustomCookies = {
+  GDPR: "gdpr-consent",
+};
