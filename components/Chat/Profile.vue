@@ -37,14 +37,36 @@
 </template>
 
 <script setup lang="ts">
+import { SnackbarMessages } from "~~/utilities/globalEnums";
+
 const userData = useUserData();
+const config = useRuntimeConfig();
+const appStore = useAppStore();
 
 const backToHomePage = () => {
   navigateTo("/");
 };
 
-const deleteAccount = () => {
-  console.warn("--> Deleting Account");
+const deleteAccount = async () => {
+  console.warn("--> Deleting account");
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/account/delete-account`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (apiError.value) {
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    return;
+  }
+
+  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  return navigateTo("/user/register");
 };
 </script>
 
