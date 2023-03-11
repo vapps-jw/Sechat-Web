@@ -1,12 +1,51 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  typescript: {
+    strict: false,
+  },
   plugins: ["~/plugins/nuxtClientInit.client.ts"],
   runtimeConfig: {
     public: {
       apiBase: process.env.API_BASE_URL || "/api",
     },
   },
-  modules: ["@nuxt/image-edge", "@nuxtjs/i18n"],
+  modules: ["@nuxt/image-edge", "@nuxtjs/i18n", "@vite-pwa/nuxt"],
+  pwa: {
+    manifest: {
+      name: "Sechat",
+      short_name: "Sechat",
+      description: "Sechat",
+      icons: [
+        {
+          src: "icons/icon_64x64.png",
+          sizes: "64x64",
+          type: "image/png",
+        },
+        {
+          src: "icons/icon_144x144.png",
+          sizes: "144x144",
+          type: "image/png",
+        },
+        {
+          src: "icons/icon_192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          src: "icons/icon_512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
+      ],
+    },
+    workbox: {
+      navigateFallback: "/",
+    },
+    devOptions: {
+      enabled: true,
+      type: "module",
+    },
+  },
   i18n: {
     detectBrowserLanguage: {
       useCookie: true,
@@ -37,6 +76,6 @@ export default defineNuxtConfig({
   },
   routeRules: {
     // Render these routes with SPA
-    "/chat/**": { ssr: false },
+    "/**": { ssr: false },
   },
 });

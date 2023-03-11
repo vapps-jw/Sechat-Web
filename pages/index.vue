@@ -32,12 +32,18 @@
 
 <script setup lang="ts">
 const userData = useUserData();
+const chatStore = useChatStore();
 
 const throwClientSideError = () => {
   throw createError({
     statusCode: 400,
     message: "upsie wopsie",
   });
+};
+
+const signOut = () => {
+  userData.signOut();
+  chatStore.clearState();
 };
 
 const handleClientError = (error: any) => {

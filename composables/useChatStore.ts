@@ -19,6 +19,7 @@ export const useChatStore = () => {
       return [];
     }
   );
+
   const activeChatTab = useState<string>("activeChatTab", () => "");
   const activeRoomId = useState<string>("activeChatRoom", () => "");
 
@@ -82,6 +83,15 @@ export const useChatStore = () => {
     console.warn("--> Became online");
     appStore.showInfoSnackbar("You are back online!");
   };
+
+  const clearState = () => {
+    console.warn("--> Clearing state");
+    availableRooms.value = [];
+    availableConnections.value = [];
+    activeChatTab.value = "";
+    activeRoomId.value = "";
+  };
+
   // User Connections
 
   const handleConnectionRequestReceived = (data: IConnectionRequest) => {
@@ -246,6 +256,7 @@ export const useChatStore = () => {
     getActiveRoomMembers,
     getActiveRoomCreatorName,
     getConnectionsAllowedForActiveRoom,
+    clearState,
     handleOnline,
     handleOffline,
     addRoom,
