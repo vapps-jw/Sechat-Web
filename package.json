@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "start": "cross-env PORT=3000 HOST=localhost node .output/server/index.mjs",
     "build": "nuxt build",
     "dev": "nuxt dev --dotenv .env.development --https --ssl-cert localhost.pem --ssl-key localhost-key.pem",
     "dev-def": "nuxt dev",
