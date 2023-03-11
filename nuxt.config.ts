@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   plugins: ["~/plugins/nuxtClientInit.client.ts"],
   runtimeConfig: {
     public: {
-      apiBase: process.env.API_BASE_URL || "/api",
+      apiBase: process.env.API_BASE_URL || "https://api.sechat.net",
     },
   },
   modules: ["@nuxt/image-edge", "@nuxtjs/i18n", "@vite-pwa/nuxt"],
