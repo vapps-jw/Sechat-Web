@@ -50,14 +50,14 @@ onMounted(async () => {
   console.warn("--> Chat onMounted");
   await chatApi.getState();
   signalr.openConnection();
-  window.addEventListener("online", () => chatStore.handleOnline());
-  window.addEventListener("offline", () => chatStore.handleOffline());
+  window.addEventListener("online", () => chatApi.handleOnline());
+  window.addEventListener("offline", () => chatApi.handleOffline());
 });
 
 onBeforeUnmount(() => {
   console.warn("--> Chat onBeforeUnmount");
-  window.removeEventListener("online", () => chatStore.handleOnline());
-  window.removeEventListener("offline", () => chatStore.handleOffline());
+  window.removeEventListener("online", () => chatApi.handleOnline());
+  window.removeEventListener("offline", () => chatApi.handleOffline());
 });
 
 watch(chatStore.activeChatTab, () => {
