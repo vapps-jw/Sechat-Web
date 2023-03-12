@@ -1,24 +1,54 @@
 <template>
   <div>
     <v-container>
-      <v-sheet class="mx-2 bg-transparent">
-        <NuxtImg
-          src="/logos/sechat-black-b-300x300.png"
-          alt=""
-          class="w-[300px] h-full"
-        ></NuxtImg>
-        <v-divider class="my-4"></v-divider>
-        <NuxtLink class="text-blue-400 mr-5" :to="`/user/login`"
-          >Sign In</NuxtLink
+      <client-only>
+        <div
+          class="d-flex flex-column align-center"
+          v-if="userData.isSignedIn.value"
         >
-        <NuxtLink class="text-blue-400 mr-5" :to="`/user/register`"
-          >Sign Up</NuxtLink
-        >
-      </v-sheet>
+          <v-btn class="my-2" size="large">
+            <NuxtLink class="sechat-link-clear" :to="`/chat`">Chat</NuxtLink>
+          </v-btn>
+          <v-btn class="my-2" size="large" @click="userData.signOut"
+            >Sign Out</v-btn
+          >
+        </div>
+        <div class="d-flex flex-column align-center" v-else>
+          <v-btn class="my-2" size="large">
+            <NuxtLink class="sechat-link-clear" :to="`/user/login`"
+              >Sign In</NuxtLink
+            >
+          </v-btn>
+          <v-btn class="my-2" size="large">
+            <NuxtLink class="sechat-link-clear" :to="`/user/register`"
+              >Sign Up</NuxtLink
+            >
+          </v-btn>
+        </div>
+      </client-only>
     </v-container>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const userData = useUserData();
+const chatStore = useChatStore();
+
+const throwClientSideError = () => {
+  throw createError({
+    statusCode: 400,
+    message: "upsie wopsie",
+  });
+};
+
+const signOut = () => {
+  userData.signOut();
+  chatStore.clearState();
+};
+
+const handleClientError = (error: any) => {
+  error.value = null;
+};
+</script>
 
 <style scoped></style>

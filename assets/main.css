@@ -3,6 +3,54 @@
   color: inherit;
 }
 
-.sechat-blur-image {
-  filter: blur(4px);
+.sechat-v-card-full {
+  height: 90vh;
+  display: flex !important;
+  flex-direction: column;
 }
+
+.sechat-v-card-text-full {
+  /* flex-grow: 1; */
+  overflow: auto;
+}
+
+.sechat-flex-grow-overflow {
+  /* flex-grow: 1; */
+  overflow: auto;
+}
+
+.sechat-message-input {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  z-index: 100;
+  opacity: 1;
+}
+
+html {
+  overflow: hidden !important;
+}
+
+/* Scroll Bar Start */
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #424242;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Scroll Bar End */
