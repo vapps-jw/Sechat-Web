@@ -80,6 +80,15 @@ export const useSignalR = () => {
     console.log("--> Already Connected");
   };
 
+  const closeConnection = async () => {
+    console.log("--> Closing connection");
+    if (connection.value !== null) {
+      console.log("--> Calling stop method");
+      connection.value.stop();
+      return;
+    }
+  };
+
   // User Connections
 
   const _onUserConnectionDeleteEvent = () => {
@@ -334,6 +343,7 @@ export const useSignalR = () => {
 
   return {
     openConnection,
+    closeConnection,
     createRoom,
     sendMessage,
   };

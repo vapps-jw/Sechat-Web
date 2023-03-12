@@ -1,10 +1,13 @@
 export const useChatApi = () => {
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
+  const appStore = useAppStore();
   const processing = useState<boolean>(() => false);
 
   const getState = async () => {
     console.log("--> Getting State");
+    chatStore.clearState();
+
     processing.value = true;
     const { error: apiError, data: chatState } = await useFetch<IChatState>(
       `${config.public.apiBase}/chat/get-state`,
@@ -29,5 +32,16 @@ export const useChatApi = () => {
     processing.value = false;
   };
 
-  return { processing, getState };
+  const handleOffline = () => {
+    console.warn("--> Became offline");
+    appStore.showInfoSnackbar("You are offline!");
+  };
+
+  const handleOnline = async () => {
+    console.warn("--> Became online");
+    appStore.showInfoSnackbar("You are back online!");
+    await getState();
+  };
+
+  return { processing, getState, handleOffline, handleOnline };
 };

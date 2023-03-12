@@ -72,18 +72,6 @@ export const useChatStore = () => {
     );
   });
 
-  // Online State
-
-  const handleOffline = () => {
-    console.warn("--> Became offline");
-    appStore.showInfoSnackbar("You are offline!");
-  };
-
-  const handleOnline = () => {
-    console.warn("--> Became online");
-    appStore.showInfoSnackbar("You are back online!");
-  };
-
   const clearState = () => {
     console.warn("--> Clearing state");
     availableRooms.value = [];
@@ -257,8 +245,6 @@ export const useChatStore = () => {
     getActiveRoomCreatorName,
     getConnectionsAllowedForActiveRoom,
     clearState,
-    handleOnline,
-    handleOffline,
     addRoom,
     clearRooms,
     loadRooms,
