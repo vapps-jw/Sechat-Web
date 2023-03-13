@@ -50,7 +50,7 @@ export const useSignalR = () => {
 
     if (connection.value.state !== SignalRState.Connected) {
       connection.value = createNewConnection();
-      connection.value.onclose(() => {
+      connection.value.onclose(async () => {
         _offIncomingMessage();
         _offRoomDeletedEvent();
         _offUserAddedToRoomEvent();
@@ -61,7 +61,7 @@ export const useSignalR = () => {
         _offUserConnectionDeleteEvent();
 
         console.log("--> Connection Closed");
-        openConnection();
+        await openConnection();
       });
 
       connection.value.onreconnected(async (connectionId) => {
