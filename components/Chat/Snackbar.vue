@@ -1,5 +1,6 @@
 <template>
   <v-snackbar
+    location="top"
     v-model="appStore.snackbarData.value.snackbar"
     :color="appStore.snackbarData.value.color"
     :timeout="appStore.snackbarData.value.timeout"

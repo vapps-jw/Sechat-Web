@@ -1,9 +1,7 @@
 <template>
   <v-app id="chat-view">
     <v-main>
-      <client-only>
-        <chat-snackbar />
-      </client-only>
+      <chat-snackbar />
       <slot />
     </v-main>
   </v-app>

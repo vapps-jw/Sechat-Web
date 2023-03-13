@@ -10,10 +10,8 @@
         </div>
         <v-divider class="my-4"></v-divider>
       </v-container>
-      <client-only>
-        <GdprDialog />
-        <chat-snackbar />
-      </client-only>
+      <GdprDialog />
+      <chat-snackbar />
       <slot />
     </v-main>
   </v-app>
