@@ -14,7 +14,11 @@ export default defineNuxtConfig({
     manifest: {
       name: "Sechat",
       short_name: "Sechat",
-      description: "Sechat",
+      background_color: "#ffffff",
+      display: "fullscreen",
+      scope: "/",
+      start_url: "/",
+      description: "Secure chat app",
       icons: [
         {
           src: "icons/icon_64x64.png",

@@ -31,7 +31,11 @@ export const useSignalR = () => {
   const createNewConnection = () => {
     return new signalR.HubConnectionBuilder()
       .withUrl(`${config.public.apiBase}/chat-hub`)
-      .withAutomaticReconnect()
+      .withAutomaticReconnect({
+        nextRetryDelayInMilliseconds: (retryContext) => {
+          return 500;
+        },
+      })
       .build();
   };
 
@@ -57,6 +61,29 @@ export const useSignalR = () => {
         _offUserConnectionDeleteEvent();
 
         console.log("--> Connection Closed");
+      });
+
+      connection.value.onreconnected(async (connectionId) => {
+        const { error: apiError, data: chatState } = await useFetch<IChatState>(
+          `${config.public.apiBase}/chat/get-state`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        if (apiError.value) {
+          throw createError({
+            ...apiError.value,
+            statusMessage: "Failed to pull state",
+            statusCode: apiError.value.statusCode,
+          });
+        }
+
+        console.log("--> State Fetched", chatState.value);
+        chatStore.clearState();
+        chatStore.loadRooms(chatState.value.rooms);
+        chatStore.loadUserConnections(chatState.value.userConnections);
       });
 
       await connection.value.start();
