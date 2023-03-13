@@ -20,7 +20,10 @@ export const useChatStore = () => {
     }
   );
 
-  const activeChatTab = useState<string>("activeChatTab", () => "");
+  const activeChatTab = useState<string>(
+    "activeChatTab",
+    () => ChatViews.Messages
+  );
   const activeRoomId = useState<string>("activeChatRoom", () => "");
 
   const getActiveRoom = computed(() => {
