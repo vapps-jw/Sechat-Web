@@ -9,9 +9,7 @@
           <v-btn class="my-2" size="large">
             <NuxtLink class="sechat-link-clear" :to="`/chat`">Chat</NuxtLink>
           </v-btn>
-          <v-btn class="my-2" size="large" @click="userData.signOut"
-            >Sign Out</v-btn
-          >
+          <v-btn class="my-2" size="large" @click="signOut">Sign Out</v-btn>
         </div>
         <div class="d-flex flex-column align-center" v-else>
           <v-btn class="my-2" size="large">
@@ -34,20 +32,9 @@
 const userData = useUserData();
 const chatStore = useChatStore();
 
-const throwClientSideError = () => {
-  throw createError({
-    statusCode: 400,
-    message: "upsie wopsie",
-  });
-};
-
 const signOut = () => {
   userData.signOut();
   chatStore.clearState();
-};
-
-const handleClientError = (error: any) => {
-  error.value = null;
 };
 </script>
 
