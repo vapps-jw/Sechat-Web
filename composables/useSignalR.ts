@@ -81,7 +81,6 @@ export const useSignalR = () => {
         }
 
         console.log("--> State Fetched", chatState.value);
-        chatStore.clearState();
         chatStore.loadRooms(chatState.value.rooms);
         chatStore.loadUserConnections(chatState.value.userConnections);
       });
