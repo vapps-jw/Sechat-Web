@@ -61,6 +61,7 @@ export const useSignalR = () => {
         _offUserConnectionDeleteEvent();
 
         console.log("--> Connection Closed");
+        openConnection();
       });
 
       connection.value.onreconnected(async (connectionId) => {
