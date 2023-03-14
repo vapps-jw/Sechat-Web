@@ -40,9 +40,21 @@ export const useSignalR = () => {
       .build();
   };
 
-  const connection = useState<signalR.HubConnection>("signalRConnection", () =>
-    createNewConnection()
+  const connection = useState<signalR.HubConnection>(
+    "signalRConnection",
+    () => null
   );
+
+  const tryReconnect = async () => {
+    if (connection.value && connection.value.state !== SignalRState.Connected) {
+      await connection.value.start();
+    }
+
+    if (connection.value.state === SignalRState.Connected) {
+      console.log("--> Connected");
+      return;
+    }
+  };
 
   const openConnection = async () => {
     console.warn(
@@ -54,11 +66,21 @@ export const useSignalR = () => {
       connection.value?.state
     );
 
-    if (
-      !connection.value ||
-      connection.value.state !== SignalRState.Connected
-    ) {
+    if (!connection.value) {
+      console.warn("--> No connection, creatig a new one");
       connection.value = createNewConnection();
+
+      // Connect to events on connection build
+      _onIncomingMessage();
+      _onRoomDeletedEvent();
+      _onUserAddedToRoomEvent();
+      _onRoomUpdatedEvent();
+      _onUserRemovedFromRoomEvent();
+      _onConnectionRequestReceivedEvent();
+      _onUserConnectionUpdatedEvent();
+      _onUserConnectionDeleteEvent();
+
+      // Disconnect from events on connection close
       connection.value.onclose(async () => {
         _offIncomingMessage();
         _offRoomDeletedEvent();
@@ -96,27 +118,18 @@ export const useSignalR = () => {
 
       await connection.value.start();
 
-      console.log("--> Listening to events", connection.value.state);
       if (connection.value.state === SignalRState.Connected) {
         console.log("--> Connection established");
+        console.log("--> Connecting to Rooms");
         _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
-        _onIncomingMessage();
-        _onRoomDeletedEvent();
-        _onUserAddedToRoomEvent();
-        _onRoomUpdatedEvent();
-        _onUserRemovedFromRoomEvent();
-        _onConnectionRequestReceivedEvent();
-        _onUserConnectionUpdatedEvent();
-        _onUserConnectionDeleteEvent();
         return;
       }
 
       throw createError({
         statusCode: 404,
-        statusMessage: `Connection State: ${connection.value.state}`,
+        statusMessage: `Connection State is not correct: ${connection.value.state}`,
       });
     }
-    console.log("--> Already Connected");
   };
 
   const closeConnection = async () => {
@@ -385,5 +398,6 @@ export const useSignalR = () => {
     closeConnection,
     createRoom,
     sendMessage,
+    tryReconnect,
   };
 };
