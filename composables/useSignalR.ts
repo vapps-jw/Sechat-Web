@@ -33,7 +33,8 @@ export const useSignalR = () => {
       .withUrl(`${config.public.apiBase}/chat-hub`)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
-          return 500;
+          console.log("--> Reconnectiong ...");
+          return 1000;
         },
       })
       .build();
@@ -65,6 +66,7 @@ export const useSignalR = () => {
       });
 
       connection.value.onreconnected(async (connectionId) => {
+        console.log("--> Reconnected, pulling state ...");
         const { error: apiError, data: chatState } = await useFetch<IChatState>(
           `${config.public.apiBase}/chat/get-state`,
           {
@@ -85,8 +87,6 @@ export const useSignalR = () => {
         chatStore.loadRooms(chatState.value.rooms);
         chatStore.loadUserConnections(chatState.value.userConnections);
       });
-
-      await connection.value.start();
 
       if (connection.value.state === SignalRState.Connected) {
         console.log("--> Connection established");
