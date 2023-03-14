@@ -2,13 +2,10 @@ export const useChatApi = () => {
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
   const appStore = useAppStore();
-  const processing = useState<boolean>(() => false);
 
   const getState = async () => {
     console.log("--> Getting State");
-    chatStore.clearState();
 
-    processing.value = true;
     const { error: apiError, data: chatState } = await useFetch<IChatState>(
       `${config.public.apiBase}/chat/get-state`,
       {
@@ -18,7 +15,6 @@ export const useChatApi = () => {
     );
 
     if (apiError.value) {
-      processing.value = false;
       throw createError({
         ...apiError.value,
         statusMessage: "Failed to pull state",
@@ -29,7 +25,6 @@ export const useChatApi = () => {
     console.log("--> State Fetched", chatState.value);
     chatStore.loadRooms(chatState.value.rooms);
     chatStore.loadUserConnections(chatState.value.userConnections);
-    processing.value = false;
   };
 
   const handleOffline = () => {
@@ -43,5 +38,5 @@ export const useChatApi = () => {
     await getState();
   };
 
-  return { processing, getState, handleOffline, handleOnline };
+  return { getState, handleOffline, handleOnline };
 };

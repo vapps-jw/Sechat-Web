@@ -33,7 +33,7 @@ export const useSignalR = () => {
       .withUrl(`${config.public.apiBase}/chat-hub`)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
-          console.log("--> Reconnectiong ...");
+          console.log("--> Reconnecting ...");
           return 1000;
         },
       })
@@ -45,11 +45,19 @@ export const useSignalR = () => {
   );
 
   const openConnection = async () => {
-    if (connection.value === null) {
-      connection.value = createNewConnection();
-    }
+    console.warn(
+      "--> Opening connection, current connection",
+      connection.value
+    );
+    console.warn(
+      "--> Opening connection, current connection state",
+      connection.value?.state
+    );
 
-    if (connection.value.state !== SignalRState.Connected) {
+    if (
+      !connection.value ||
+      connection.value.state !== SignalRState.Connected
+    ) {
       connection.value = createNewConnection();
       connection.value.onclose(async () => {
         _offIncomingMessage();
@@ -60,9 +68,7 @@ export const useSignalR = () => {
         _offConnectionRequestReceivedEvent();
         _offUserConnectionUpdatedEvent();
         _offUserConnectionDeleteEvent();
-
-        console.log("--> Connection Closed");
-        await openConnection();
+        console.warn("--> Connection Closed");
       });
 
       connection.value.onreconnected(async (connectionId) => {
@@ -88,6 +94,9 @@ export const useSignalR = () => {
         chatStore.loadUserConnections(chatState.value.userConnections);
       });
 
+      await connection.value.start();
+
+      console.log("--> Listening to events", connection.value.state);
       if (connection.value.state === SignalRState.Connected) {
         console.log("--> Connection established");
         _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
@@ -102,7 +111,10 @@ export const useSignalR = () => {
         return;
       }
 
-      throw createError({ statusCode: 404, statusMessage: "Page Not Found" });
+      throw createError({
+        statusCode: 404,
+        statusMessage: `Connection State: ${connection.value.state}`,
+      });
     }
     console.log("--> Already Connected");
   };

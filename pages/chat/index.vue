@@ -1,5 +1,5 @@
 <template>
-  <div v-if="chatApi.processing">
+  <div>
     <v-app-bar density="compact">
       <v-spacer></v-spacer>
       <v-tabs v-model="chatStore.activeChatTab.value" stacked centered>
@@ -27,12 +27,6 @@
       <v-window-item value="profile"> <ChatProfile /> </v-window-item>
     </v-window>
   </div>
-  <v-progress-circular
-    v-else
-    :size="50"
-    color="amber"
-    indeterminate
-  ></v-progress-circular>
 </template>
 
 <script setup lang="ts">
@@ -45,9 +39,11 @@ definePageMeta({
 const signalr = useSignalR();
 const chatApi = useChatApi();
 const chatStore = useChatStore();
+const appStore = useAppStore();
 
 onMounted(async () => {
   console.warn("--> Chat onMounted");
+  appStore.pingServer();
   await chatApi.getState();
   signalr.openConnection();
   window.addEventListener("online", () => chatApi.handleOnline());
@@ -56,6 +52,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   console.warn("--> Chat onBeforeUnmount");
+  signalr.closeConnection();
   window.removeEventListener("online", () => chatApi.handleOnline());
   window.removeEventListener("offline", () => chatApi.handleOffline());
 });

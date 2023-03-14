@@ -1,5 +1,7 @@
 import { SnackbarIcons } from "~~/utilities/globalEnums";
 
+const config = useRuntimeConfig();
+
 export const useAppStore = () => {
   const localLanguage = useState<string>(
     "localLanguage",
@@ -16,6 +18,19 @@ export const useAppStore = () => {
       iconColor: "",
     };
   });
+
+  const pingServer = async () => {
+    console.log("--> Ping Server");
+    await useFetch(`${config.public.apiBase}/status/ping-api`, {
+      method: "GET",
+      onResponse({ response }) {
+        console.log("--> Ping Result", response.status);
+      },
+      onResponseError({ response }) {
+        console.log("--> Ping Result", response.status);
+      },
+    });
+  };
 
   const showSnackbar = (data: ISanckbar) => {
     console.log("--> Snackbar data", data);
@@ -74,5 +89,6 @@ export const useAppStore = () => {
     showWarningSnackbar,
     showErrorSnackbar,
     showInfoSnackbar,
+    pingServer,
   };
 };
