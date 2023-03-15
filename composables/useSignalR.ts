@@ -1,4 +1,5 @@
 import * as signalR from "@microsoft/signalr";
+import { VisibilityStates } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
   const appStore = useAppStore();
@@ -28,8 +29,49 @@ export const useSignalR = () => {
     RoomUpdated: "RoomUpdated",
   };
 
-  const createNewConnection = () => {
-    return new signalR.HubConnectionBuilder()
+  const isConnected = computed(() => {
+    if (connection.value && connection.value.state === SignalRState.Connected) {
+      return true;
+    }
+    return false;
+  });
+
+  const connectionPresent = computed(() => {
+    if (connection.value) {
+      return true;
+    }
+    return false;
+  });
+
+  const connection = useState<signalR.HubConnection>(
+    "signalRConnection",
+    () => null
+  );
+
+  const handleVisibilityChange = () => {
+    console.log("--> Visibility changed", document?.visibilityState);
+    if (!document) return;
+    if (document.visibilityState === VisibilityStates.VISIBLE) {
+      try {
+        console.log(
+          `--> APP Resumed, Connection: ${connection.value} State: ${connection.value?.state}`
+        );
+        appStore.showLoadingOverlay();
+        appStore.stopPing();
+        tryReconnect();
+      } catch (error) {
+        console.error("--> APP Resume Error!");
+      } finally {
+        appStore.hideLoadingOverlay();
+      }
+    }
+    if (document.visibilityState !== VisibilityStates.VISIBLE) {
+      appStore.startPing();
+    }
+  };
+
+  const createNewConnection = async () => {
+    connection.value = new signalR.HubConnectionBuilder()
       .withUrl(`${config.public.apiBase}/chat-hub`)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
@@ -38,63 +80,34 @@ export const useSignalR = () => {
         },
       })
       .build();
-  };
 
-  const connection = useState<signalR.HubConnection>(
-    "signalRConnection",
-    () => null
-  );
+    // Connect to events on connection build
+    _onIncomingMessage();
+    _onRoomDeletedEvent();
+    _onUserAddedToRoomEvent();
+    _onRoomUpdatedEvent();
+    _onUserRemovedFromRoomEvent();
+    _onConnectionRequestReceivedEvent();
+    _onUserConnectionUpdatedEvent();
+    _onUserConnectionDeleteEvent();
 
-  const tryReconnect = async () => {
-    if (connection.value && connection.value.state !== SignalRState.Connected) {
-      await connection.value.start();
-    }
+    // Disconnect from events on connection close
+    connection.value.onclose(async () => {
+      _offIncomingMessage();
+      _offRoomDeletedEvent();
+      _offUserAddedToRoomEvent();
+      _offRoomUpdatedEvent();
+      _offUserRemovedFromRoomEvent();
+      _offConnectionRequestReceivedEvent();
+      _offUserConnectionUpdatedEvent();
+      _offUserConnectionDeleteEvent();
+      console.warn("--> Connection Closed");
+    });
 
-    if (connection.value.state === SignalRState.Connected) {
-      console.log("--> Connected");
-      return;
-    }
-  };
-
-  const openConnection = async () => {
-    console.warn(
-      "--> Opening connection, current connection",
-      connection.value
-    );
-    console.warn(
-      "--> Opening connection, current connection state",
-      connection.value?.state
-    );
-
-    if (!connection.value) {
-      console.warn("--> No connection, creatig a new one");
-      connection.value = createNewConnection();
-
-      // Connect to events on connection build
-      _onIncomingMessage();
-      _onRoomDeletedEvent();
-      _onUserAddedToRoomEvent();
-      _onRoomUpdatedEvent();
-      _onUserRemovedFromRoomEvent();
-      _onConnectionRequestReceivedEvent();
-      _onUserConnectionUpdatedEvent();
-      _onUserConnectionDeleteEvent();
-
-      // Disconnect from events on connection close
-      connection.value.onclose(async () => {
-        _offIncomingMessage();
-        _offRoomDeletedEvent();
-        _offUserAddedToRoomEvent();
-        _offRoomUpdatedEvent();
-        _offUserRemovedFromRoomEvent();
-        _offConnectionRequestReceivedEvent();
-        _offUserConnectionUpdatedEvent();
-        _offUserConnectionDeleteEvent();
-        console.warn("--> Connection Closed");
-      });
-
-      connection.value.onreconnected(async (connectionId) => {
-        console.log("--> Reconnected, pulling state ...");
+    connection.value.onreconnected(async (connectionId) => {
+      console.log("--> Reconnected, getting state ...");
+      try {
+        appStore.showLoadingOverlay();
         const { error: apiError, data: chatState } = await useFetch<IChatState>(
           `${config.public.apiBase}/chat/get-state`,
           {
@@ -114,21 +127,44 @@ export const useSignalR = () => {
         console.log("--> State Fetched", chatState.value);
         chatStore.loadRooms(chatState.value.rooms);
         chatStore.loadUserConnections(chatState.value.userConnections);
-      });
-
-      await connection.value.start();
-
-      if (connection.value.state === SignalRState.Connected) {
-        console.log("--> Connection established");
-        console.log("--> Connecting to Rooms");
-        _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
-        return;
+      } catch (error) {
+      } finally {
+        appStore.hideLoadingOverlay();
       }
+    });
 
-      throw createError({
-        statusCode: 404,
-        statusMessage: `Connection State is not correct: ${connection.value.state}`,
-      });
+    console.log("--> Starting Connection ...");
+    await connection.value.start();
+
+    if (connection.value.state === SignalRState.Connected) {
+      console.log("--> Connection Established");
+      console.log("--> Connecting to Rooms");
+      _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
+      return;
+    }
+  };
+
+  const tryReconnect = async () => {
+    if (connection.value && connection.value.state === SignalRState.Connected) {
+      console.log("--> Already Connected");
+      return;
+    }
+    if (!connection.value) {
+      await createNewConnection();
+      return;
+    }
+    if (connection.value && connection.value.state !== SignalRState.Connected) {
+      console.log("--> Starting Current Connection");
+      await connection.value.start();
+    }
+
+    if (connection.value.state === SignalRState.Connected) {
+      console.log("--> Connected");
+      return;
+    }
+    if (connection.value.state !== SignalRState.Connected) {
+      console.error("--> Not Connected");
+      return;
     }
   };
 
@@ -394,10 +430,12 @@ export const useSignalR = () => {
   };
 
   return {
-    openConnection,
+    isConnected,
+    connectionPresent,
     closeConnection,
     createRoom,
     sendMessage,
     tryReconnect,
+    handleVisibilityChange,
   };
 };

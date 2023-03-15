@@ -45,7 +45,7 @@ onMounted(async () => {
   console.warn("--> Chat onMounted");
   appStore.pingServer();
   await chatApi.getState();
-  signalr.openConnection();
+  await signalr.tryReconnect();
   window.addEventListener("online", () => chatApi.handleOnline());
   window.addEventListener("offline", () => chatApi.handleOffline());
 });

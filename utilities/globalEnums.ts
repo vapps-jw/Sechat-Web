@@ -14,3 +14,8 @@ export const SnackbarMessages = {
 export const CustomCookies = {
   GDPR: "gdpr-consent",
 };
+
+export const VisibilityStates = {
+  VISIBLE: "visible",
+  HIDDEN: "hidden",
+};

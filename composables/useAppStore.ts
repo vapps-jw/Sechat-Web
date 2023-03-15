@@ -1,13 +1,20 @@
 import { SnackbarIcons } from "~~/utilities/globalEnums";
 
-const config = useRuntimeConfig();
-
 export const useAppStore = () => {
+  const config = useRuntimeConfig();
+
+  const loadingOverlayVisible = useState<boolean>(
+    "loadingOverlayVisible",
+    () => false
+  );
+  const pingServerInterval = useState<NodeJS.Timer>(
+    "pingServerInterval",
+    () => null
+  );
   const localLanguage = useState<string>(
     "localLanguage",
     () => useI18n().locale.value
   );
-
   const snackbarData = useState<ISanckbar>("snackbarData", () => {
     return {
       snackbar: false,
@@ -18,6 +25,24 @@ export const useAppStore = () => {
       iconColor: "",
     };
   });
+
+  const startPing = () => {
+    pingServerInterval.value = setInterval(
+      async () => await pingServer(),
+      2000
+    );
+  };
+
+  const stopPing = () => {
+    clearInterval(pingServerInterval.value);
+  };
+
+  const showLoadingOverlay = () => {
+    loadingOverlayVisible.value = true;
+  };
+  const hideLoadingOverlay = () => {
+    loadingOverlayVisible.value = false;
+  };
 
   const pingServer = async () => {
     console.log("--> Ping Server");
@@ -84,11 +109,16 @@ export const useAppStore = () => {
   return {
     localLanguage,
     snackbarData,
+    loadingOverlayVisible,
     showSnackbar,
     showSuccessSnackbar,
     showWarningSnackbar,
     showErrorSnackbar,
     showInfoSnackbar,
     pingServer,
+    showLoadingOverlay,
+    hideLoadingOverlay,
+    startPing,
+    stopPing,
   };
 };

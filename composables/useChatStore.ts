@@ -1,8 +1,8 @@
 import { scrollToBottom } from "~~/utilities/documentFunctions";
+import { VisibilityStates } from "~~/utilities/globalEnums";
 
 export const useChatStore = () => {
   const userData = useUserData();
-  const appStore = useAppStore();
 
   const ChatViews = {
     Messages: "messages",
