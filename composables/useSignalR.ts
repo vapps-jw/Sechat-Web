@@ -23,6 +23,13 @@ export const useSignalR = () => {
     RoomUpdated: "RoomUpdated",
   };
 
+  const connection = useState<signalR.HubConnection>(
+    "signalRConnection",
+    () => null
+  );
+
+  const isOnline = useState<boolean>("isOnlineForSignalR", () => true);
+
   const isConnected = computed(() => {
     if (
       connection.value &&
@@ -34,6 +41,7 @@ export const useSignalR = () => {
   });
 
   const connectionState = computed(() => {
+    console.warn("--> SignalR State computer triggered");
     if (!connection.value) {
       return SignalRState.Disconnected;
     }
@@ -42,7 +50,7 @@ export const useSignalR = () => {
     }
     if (
       connection.value.state === signalR.HubConnectionState.Connecting ||
-      connection.value.state === signalR.HubConnectionState.Disconnecting
+      connection.value.state === signalR.HubConnectionState.Reconnecting
     ) {
       return SignalRState.Connecting;
     }
@@ -56,39 +64,13 @@ export const useSignalR = () => {
     return false;
   });
 
-  const connection = useState<signalR.HubConnection>(
-    "signalRConnection",
-    () => null
-  );
-
-  const handleVisibilityChange = () => {
-    console.log("--> Visibility changed", document?.visibilityState);
-    if (!document) return;
-    if (document.visibilityState === VisibilityStates.VISIBLE) {
-      try {
-        console.log(
-          `--> APP Resumed, Connection: ${connection.value} State: ${connection.value?.state}`
-        );
-        appStore.showLoadingOverlay();
-        appStore.stopPing();
-        tryReconnect();
-      } catch (error) {
-        console.error("--> APP Resume Error!");
-      } finally {
-        appStore.hideLoadingOverlay();
-      }
-    }
-    if (document.visibilityState !== VisibilityStates.VISIBLE) {
-      appStore.startPing();
-    }
-  };
-
   const createNewConnection = async () => {
     connection.value = new signalR.HubConnectionBuilder()
       .withUrl(`${config.public.apiBase}/chat-hub`)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
           console.log("--> Reconnecting ...");
+          appStore.showLoadingOverlay();
           return 1000;
         },
       })
@@ -118,9 +100,11 @@ export const useSignalR = () => {
     });
 
     connection.value.onreconnected(async (connectionId) => {
-      console.log("--> Reconnected, getting state ...");
       try {
         appStore.showLoadingOverlay();
+
+        // Get the updates
+        console.log("--> Reconnected, getting state ...");
         const { error: apiError, data: chatState } = await useFetch<IChatState>(
           `${config.public.apiBase}/chat/get-state`,
           {
@@ -137,9 +121,11 @@ export const useSignalR = () => {
           });
         }
 
-        console.log("--> State Fetched", chatState.value);
         chatStore.loadRooms(chatState.value.rooms);
         chatStore.loadUserConnections(chatState.value.userConnections);
+
+        console.log("--> Reconnected, connectiong to Rooms ...");
+        _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
       } catch (error) {
       } finally {
         appStore.hideLoadingOverlay();
@@ -192,6 +178,34 @@ export const useSignalR = () => {
       console.log("--> Calling stop method");
       connection.value.stop();
       return;
+    }
+  };
+
+  const handleOffline = () => {
+    console.warn("--> Handling Offline from SignalR");
+    isOnline.value = false;
+  };
+
+  const handleOnline = async () => {
+    console.warn("--> Handling Online from SignalR");
+    isOnline.value = true;
+  };
+
+  const handleVisibilityChange = () => {
+    console.log("--> Visibility changed", document?.visibilityState);
+    if (!document) return;
+    if (document.visibilityState === VisibilityStates.VISIBLE) {
+      try {
+        console.log(
+          `--> APP Resumed, Connection: ${connection.value} State: ${connection.value?.state}`
+        );
+        appStore.showLoadingOverlay();
+        tryReconnect();
+      } catch (error) {
+        console.error("--> APP Resume Error!");
+      } finally {
+        appStore.hideLoadingOverlay();
+      }
     }
   };
 
@@ -448,6 +462,7 @@ export const useSignalR = () => {
   };
 
   return {
+    isOnline,
     connectionState,
     isConnected,
     connectionPresent,
@@ -456,5 +471,7 @@ export const useSignalR = () => {
     sendMessage,
     tryReconnect,
     handleVisibilityChange,
+    handleOffline,
+    handleOnline,
   };
 };

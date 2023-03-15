@@ -46,15 +46,21 @@ onMounted(async () => {
   appStore.pingServer();
   await chatApi.getState();
   await signalr.tryReconnect();
-  window.addEventListener("online", () => chatApi.handleOnline());
-  window.addEventListener("offline", () => chatApi.handleOffline());
+  window.addEventListener("online", () => {
+    chatApi.handleOnline();
+    signalr.handleOnline();
+  });
+  window.addEventListener("offline", () => signalr.handleOffline());
 });
 
 onBeforeUnmount(() => {
   console.warn("--> Chat onBeforeUnmount");
   signalr.closeConnection();
-  window.removeEventListener("online", () => chatApi.handleOnline());
-  window.removeEventListener("offline", () => chatApi.handleOffline());
+  window.removeEventListener("online", () => {
+    chatApi.handleOnline();
+    signalr.handleOnline();
+  });
+  window.removeEventListener("offline", () => signalr.handleOffline());
 });
 
 watch(chatStore.activeChatTab, () => {

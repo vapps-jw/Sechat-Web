@@ -32,16 +32,10 @@ export const useChatApi = () => {
     }
   };
 
-  const handleOffline = () => {
-    console.warn("--> Became offline");
-    appStore.showInfoSnackbar("You are offline!");
-  };
-
   const handleOnline = async () => {
-    console.warn("--> Became online");
-    appStore.showInfoSnackbar("You are back online!");
+    console.warn("--> Handling Online from Chat API");
     await getState();
   };
 
-  return { getState, handleOffline, handleOnline };
+  return { getState, handleOnline };
 };

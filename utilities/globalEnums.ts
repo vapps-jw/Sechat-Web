@@ -3,6 +3,8 @@ export const SnackbarIcons = {
   Success: "mdi-check-circle",
   Error: "mdi-alert-octagram",
   Info: "mdi-information-outline",
+  Offline: "mdi-web-off",
+  Disconnected: "broadcast-off",
 };
 
 export const SnackbarMessages = {
@@ -24,4 +26,5 @@ export const SignalRState = {
   Connected: "Connected",
   Disconnected: "Disconnected",
   Connecting: "Connecting",
+  Offline: "Offline",
 };

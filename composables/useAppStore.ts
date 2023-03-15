@@ -26,6 +26,8 @@ export const useAppStore = () => {
     };
   });
 
+  const isOnline = useState<boolean>("isOnlineForAppStore", () => true);
+
   const startPing = () => {
     pingServerInterval.value = setInterval(
       async () => await pingServer(),
@@ -95,6 +97,28 @@ export const useAppStore = () => {
     });
   };
 
+  const showOfflineSnackbar = (message: string) => {
+    showSnackbar({
+      snackbar: true,
+      text: message,
+      timeout: 2000,
+      color: "error",
+      icon: SnackbarIcons.Offline,
+      iconColor: "black",
+    });
+  };
+
+  const showDisconnectedSnackbar = (message: string) => {
+    showSnackbar({
+      snackbar: true,
+      text: message,
+      timeout: 2000,
+      color: "error",
+      icon: SnackbarIcons.Disconnected,
+      iconColor: "black",
+    });
+  };
+
   const showErrorSnackbar = (message: string) => {
     showSnackbar({
       snackbar: true,
@@ -106,6 +130,14 @@ export const useAppStore = () => {
     });
   };
 
+  const handleOffline = () => {
+    console.warn("--> Handling Offline from App Store");
+  };
+
+  const handleOnline = async () => {
+    console.warn("--> Handling Online from App Store");
+  };
+
   return {
     localLanguage,
     snackbarData,
@@ -115,10 +147,14 @@ export const useAppStore = () => {
     showWarningSnackbar,
     showErrorSnackbar,
     showInfoSnackbar,
+    showOfflineSnackbar,
+    showDisconnectedSnackbar,
     pingServer,
     showLoadingOverlay,
     hideLoadingOverlay,
     startPing,
     stopPing,
+    handleOffline,
+    handleOnline,
   };
 };

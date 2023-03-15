@@ -5,7 +5,7 @@
     class="align-center justify-center"
   >
     <v-progress-circular
-      color="primary"
+      color="warning"
       indeterminate
       size="64"
     ></v-progress-circular>
