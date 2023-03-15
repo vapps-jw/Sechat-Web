@@ -19,3 +19,9 @@ export const VisibilityStates = {
   VISIBLE: "visible",
   HIDDEN: "hidden",
 };
+
+export const SignalRState = {
+  Connected: "Connected",
+  Disconnected: "Disconnected",
+  Connecting: "Connecting",
+};

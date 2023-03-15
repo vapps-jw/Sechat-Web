@@ -5,10 +5,32 @@
       <chat-loading-overlay :overlay="appStore.loadingOverlayVisible.value" />
       <slot />
     </v-main>
+    <v-footer class="d-flex flex-row justify-center">
+      <v-icon
+        v-if="signalR.connectionState.value === SignalRState.Connected"
+        icon="mdi-web-check"
+        size="x-large"
+        color="success"
+      ></v-icon>
+      <v-icon
+        v-if="signalR.connectionState.value === SignalRState.Connecting"
+        icon="mdi-web-sync"
+        size="x-large"
+        color="warning"
+      ></v-icon>
+      <v-icon
+        v-if="signalR.connectionState.value === SignalRState.Disconnected"
+        icon="mdi-web-off"
+        size="x-large"
+        color="error"
+      ></v-icon>
+    </v-footer>
   </v-app>
 </template>
 
 <script setup lang="ts">
+import { SignalRState } from "~~/utilities/globalEnums";
+
 const lockResolver = ref(null);
 const appStore = useAppStore();
 const signalR = useSignalR();

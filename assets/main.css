@@ -4,7 +4,7 @@
 }
 
 .sechat-v-card-full {
-  height: 90vh;
+  height: 85vh;
   display: flex !important;
   flex-direction: column;
 }

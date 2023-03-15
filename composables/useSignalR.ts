@@ -1,17 +1,11 @@
 import * as signalR from "@microsoft/signalr";
-import { VisibilityStates } from "~~/utilities/globalEnums";
+import { VisibilityStates, SignalRState } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
   const appStore = useAppStore();
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
   const userData = useUserData();
-
-  const SignalRState = {
-    Connected: "Connected",
-    Disconnected: "Disconnected",
-    Connecting: "Connecting",
-  };
 
   const SignalRHubMethods = {
     SendMessage: "SendMessage",
@@ -30,10 +24,29 @@ export const useSignalR = () => {
   };
 
   const isConnected = computed(() => {
-    if (connection.value && connection.value.state === SignalRState.Connected) {
+    if (
+      connection.value &&
+      connection.value.state === signalR.HubConnectionState.Connected
+    ) {
       return true;
     }
     return false;
+  });
+
+  const connectionState = computed(() => {
+    if (!connection.value) {
+      return SignalRState.Disconnected;
+    }
+    if (connection.value.state === signalR.HubConnectionState.Connected) {
+      return SignalRState.Connected;
+    }
+    if (
+      connection.value.state === signalR.HubConnectionState.Connecting ||
+      connection.value.state === signalR.HubConnectionState.Disconnecting
+    ) {
+      return SignalRState.Connecting;
+    }
+    return SignalRState.Disconnected;
   });
 
   const connectionPresent = computed(() => {
@@ -136,7 +149,7 @@ export const useSignalR = () => {
     console.log("--> Starting Connection ...");
     await connection.value.start();
 
-    if (connection.value.state === SignalRState.Connected) {
+    if (connection.value.state === signalR.HubConnectionState.Connected) {
       console.log("--> Connection Established");
       console.log("--> Connecting to Rooms");
       _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
@@ -145,7 +158,10 @@ export const useSignalR = () => {
   };
 
   const tryReconnect = async () => {
-    if (connection.value && connection.value.state === SignalRState.Connected) {
+    if (
+      connection.value &&
+      connection.value.state === signalR.HubConnectionState.Connected
+    ) {
       console.log("--> Already Connected");
       return;
     }
@@ -153,16 +169,18 @@ export const useSignalR = () => {
       await createNewConnection();
       return;
     }
-    if (connection.value && connection.value.state !== SignalRState.Connected) {
+    if (
+      connection.value &&
+      connection.value.state !== signalR.HubConnectionState.Connected
+    ) {
       console.log("--> Starting Current Connection");
       await connection.value.start();
     }
 
-    if (connection.value.state === SignalRState.Connected) {
+    if (connection.value.state === signalR.HubConnectionState.Connected) {
       console.log("--> Connected");
       return;
-    }
-    if (connection.value.state !== SignalRState.Connected) {
+    } else {
       console.error("--> Not Connected");
       return;
     }
@@ -294,7 +312,7 @@ export const useSignalR = () => {
   };
 
   const _connectToRooms = (roomIds: string[]) => {
-    if (connection.value.state !== SignalRState.Connected) {
+    if (connection.value.state !== signalR.HubConnectionState.Connected) {
       console.warn("--> Cant connect to Rooms");
       return;
     }
@@ -315,7 +333,7 @@ export const useSignalR = () => {
   };
 
   const _connectToRoom = (roomId: string) => {
-    if (connection.value.state !== SignalRState.Connected) {
+    if (connection.value.state !== signalR.HubConnectionState.Connected) {
       console.warn("--> Cant connect to Rooms");
       return;
     }
@@ -336,7 +354,7 @@ export const useSignalR = () => {
   };
 
   const _disconnectFromRoom = (roomId: string) => {
-    if (connection.value.state !== SignalRState.Connected) {
+    if (connection.value.state !== signalR.HubConnectionState.Connected) {
       console.warn("--> Cant disconnect from Room");
       return;
     }
@@ -430,6 +448,7 @@ export const useSignalR = () => {
   };
 
   return {
+    connectionState,
     isConnected,
     connectionPresent,
     closeConnection,
