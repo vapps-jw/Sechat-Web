@@ -4,7 +4,7 @@ export const useChatApi = () => {
   const appStore = useAppStore();
 
   const getState = async () => {
-    console.log("--> Getting State");
+    console.log("--> Getting State from API");
     try {
       appStore.showLoadingOverlay();
       const { error: apiError, data: chatState } = await useFetch<IChatState>(

@@ -46,27 +46,46 @@
 <script setup lang="ts">
 import { SignalRState } from "~~/utilities/globalEnums";
 
-const lockResolver = ref(null);
+//const lockResolver = ref(null);
 const appStore = useAppStore();
 const signalR = useSignalR();
 const chatApi = useChatApi();
 
 onMounted(async () => {
-  console.warn("--> App onMounted");
+  console.warn("--> Chat Layout onMounted");
 
-  console.info("--> Hooking to visibilitychange");
+  await chatApi.getState();
+  await signalR.tryReconnect();
+
+  console.info("--> Hooking to visibility change");
   window.addEventListener("visibilitychange", () => {
     signalR.handleVisibilityChange();
-    chatApi.getState();
   });
+
+  console.info("--> Hooking to online change");
+  window.addEventListener("online", () => {
+    chatApi.handleOnline();
+    signalR.handleOnline();
+  });
+  window.addEventListener("offline", () => signalR.handleOffline());
 });
 
 onBeforeUnmount(() => {
-  console.warn("--> App onBeforeUnmount");
+  console.warn("--> Chat Layout onBeforeUnmount");
+
+  signalR.closeConnection();
+
+  console.info("--> Removing Hook to visibility change");
   window.removeEventListener("visibilitychange", () => {
     signalR.handleVisibilityChange();
-    chatApi.getState();
   });
+
+  console.info("--> Removing Hook to online change");
+  window.removeEventListener("online", () => {
+    chatApi.handleOnline();
+    signalR.handleOnline();
+  });
+  window.removeEventListener("offline", () => signalR.handleOffline());
 });
 
 // console.info("--> Handling lock");

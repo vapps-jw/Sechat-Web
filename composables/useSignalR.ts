@@ -6,6 +6,7 @@ export const useSignalR = () => {
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
   const userData = useUserData();
+  const chatApi = useChatApi();
 
   const SignalRHubMethods = {
     SendMessage: "SendMessage",
@@ -41,7 +42,6 @@ export const useSignalR = () => {
   });
 
   const connectionState = computed(() => {
-    console.warn("--> SignalR State computer triggered");
     if (!connection.value) {
       return SignalRState.Disconnected;
     }
@@ -161,6 +161,7 @@ export const useSignalR = () => {
     ) {
       console.log("--> Starting Current Connection");
       await connection.value.start();
+      _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
     }
 
     if (connection.value.state === signalR.HubConnectionState.Connected) {
@@ -176,7 +177,8 @@ export const useSignalR = () => {
     console.log("--> Closing connection");
     if (connection.value !== null) {
       console.log("--> Calling stop method");
-      connection.value.stop();
+      await connection.value.stop();
+      connection.value = null;
       return;
     }
   };
@@ -192,7 +194,7 @@ export const useSignalR = () => {
   };
 
   const handleVisibilityChange = () => {
-    console.log("--> Visibility changed", document?.visibilityState);
+    console.warn("--> Visibility changed", document?.visibilityState);
     if (!document) return;
     if (document.visibilityState === VisibilityStates.VISIBLE) {
       try {
@@ -201,6 +203,7 @@ export const useSignalR = () => {
         );
         appStore.showLoadingOverlay();
         tryReconnect();
+        chatApi.getState();
       } catch (error) {
         console.error("--> APP Resume Error!");
       } finally {

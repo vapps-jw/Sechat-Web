@@ -130,14 +130,6 @@ export const useAppStore = () => {
     });
   };
 
-  const handleOffline = () => {
-    console.warn("--> Handling Offline from App Store");
-  };
-
-  const handleOnline = async () => {
-    console.warn("--> Handling Online from App Store");
-  };
-
   return {
     localLanguage,
     snackbarData,
@@ -154,7 +146,5 @@ export const useAppStore = () => {
     hideLoadingOverlay,
     startPing,
     stopPing,
-    handleOffline,
-    handleOnline,
   };
 };
