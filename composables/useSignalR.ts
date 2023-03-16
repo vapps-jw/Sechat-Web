@@ -29,8 +29,6 @@ export const useSignalR = () => {
     () => null
   );
 
-  const isOnline = useState<boolean>("isOnlineForSignalR", () => true);
-
   const isConnected = computed(() => {
     if (
       connection.value &&
@@ -172,16 +170,6 @@ export const useSignalR = () => {
     } else {
       console.log("--> No connection to close");
     }
-  };
-
-  const handleOffline = () => {
-    console.warn("--> Handling Offline from SignalR");
-    isOnline.value = false;
-  };
-
-  const handleOnline = async () => {
-    console.warn("--> Handling Online from SignalR");
-    isOnline.value = true;
   };
 
   const handleVisibilityChange = () => {
@@ -452,7 +440,6 @@ export const useSignalR = () => {
   };
 
   return {
-    isOnline,
     connectionState,
     isConnected,
     connectionPresent,
@@ -461,7 +448,5 @@ export const useSignalR = () => {
     sendMessage,
     connect,
     handleVisibilityChange,
-    handleOffline,
-    handleOnline,
   };
 };

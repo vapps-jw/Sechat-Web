@@ -39,6 +39,16 @@ export const useAppStore = () => {
     clearInterval(pingServerInterval.value);
   };
 
+  const handleOffline = () => {
+    console.warn("--> Handling Offline from SignalR");
+    isOnline.value = false;
+  };
+
+  const handleOnline = async () => {
+    console.warn("--> Handling Online from SignalR");
+    isOnline.value = true;
+  };
+
   const showLoadingOverlay = () => {
     loadingOverlayVisible.value = true;
   };
@@ -131,6 +141,7 @@ export const useAppStore = () => {
   };
 
   return {
+    isOnline,
     localLanguage,
     snackbarData,
     loadingOverlayVisible,
@@ -146,5 +157,7 @@ export const useAppStore = () => {
     hideLoadingOverlay,
     startPing,
     stopPing,
+    handleOffline,
+    handleOnline,
   };
 };

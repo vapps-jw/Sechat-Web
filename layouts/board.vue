@@ -9,7 +9,7 @@
       <v-icon
         v-if="
           signalR.connectionState.value === SignalRState.Connected &&
-          signalR.isOnline.value
+          appStore.isOnline.value
         "
         icon="mdi-web-check"
         size="x-large"
@@ -18,7 +18,7 @@
       <v-icon
         v-if="
           signalR.connectionState.value === SignalRState.Connecting &&
-          signalR.isOnline.value
+          appStore.isOnline.value
         "
         icon="mdi-web-sync"
         size="x-large"
@@ -27,14 +27,14 @@
       <v-icon
         v-if="
           signalR.connectionState.value === SignalRState.Disconnected &&
-          signalR.isOnline.value
+          appStore.isOnline.value
         "
         icon="mdi-web-remove"
         size="x-large"
         color="error"
       ></v-icon>
       <v-icon
-        v-if="!signalR.isOnline.value"
+        v-if="!appStore.isOnline.value"
         icon="mdi-web-off"
         size="x-large"
         color="grey-lighten-1"

@@ -15,6 +15,7 @@ export const useRefreshHandler = () => {
   const handleOnlineChange = async () => {
     appStore.showLoadingOverlay();
 
+    appStore.handleOnline();
     chatApi.getState();
 
     appStore.hideLoadingOverlay();
@@ -23,7 +24,7 @@ export const useRefreshHandler = () => {
   const handleOfflineChange = async () => {
     appStore.showLoadingOverlay();
 
-    signalR.handleOffline();
+    appStore.handleOffline();
 
     appStore.hideLoadingOverlay();
   };
