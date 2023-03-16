@@ -50,24 +50,25 @@ import { SignalRState } from "~~/utilities/globalEnums";
 const appStore = useAppStore();
 const signalR = useSignalR();
 const chatApi = useChatApi();
+const refreshHandler = useRefreshHandler();
 
 onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
+  appStore.showLoadingOverlay();
 
   await chatApi.getState();
-  await signalR.tryReconnect();
+  await signalR.connect();
 
   console.info("--> Hooking to visibility change");
   window.addEventListener("visibilitychange", () => {
-    signalR.handleVisibilityChange();
+    refreshHandler.handleVisibilityChange();
   });
 
   console.info("--> Hooking to online change");
-  window.addEventListener("online", () => {
-    chatApi.handleOnline();
-    signalR.handleOnline();
-  });
-  window.addEventListener("offline", () => signalR.handleOffline());
+  window.addEventListener("online", () => refreshHandler.handleOnlineChange());
+  window.addEventListener("offline", () => refreshHandler.handleOnlineChange());
+
+  appStore.hideLoadingOverlay();
 });
 
 onBeforeUnmount(() => {
@@ -76,16 +77,17 @@ onBeforeUnmount(() => {
   signalR.closeConnection();
 
   console.info("--> Removing Hook to visibility change");
-  window.removeEventListener("visibilitychange", () => {
-    signalR.handleVisibilityChange();
-  });
+  window.removeEventListener("visibilitychange", () =>
+    refreshHandler.handleVisibilityChange()
+  );
 
   console.info("--> Removing Hook to online change");
-  window.removeEventListener("online", () => {
-    chatApi.handleOnline();
-    signalR.handleOnline();
-  });
-  window.removeEventListener("offline", () => signalR.handleOffline());
+  window.removeEventListener("online", () =>
+    refreshHandler.handleOnlineChange()
+  );
+  window.removeEventListener("offline", () =>
+    refreshHandler.handleOnlineChange()
+  );
 });
 
 // console.info("--> Handling lock");

@@ -136,14 +136,13 @@ export const useSignalR = () => {
     await connection.value.start();
 
     if (connection.value.state === signalR.HubConnectionState.Connected) {
-      console.log("--> Connection Established");
-      console.log("--> Connecting to Rooms");
+      console.log("--> Connection Established, connectiong to Rooms ...");
       _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
       return;
     }
   };
 
-  const tryReconnect = async () => {
+  const connect = async () => {
     if (
       connection.value &&
       connection.value.state === signalR.HubConnectionState.Connected
@@ -153,33 +152,25 @@ export const useSignalR = () => {
     }
     if (!connection.value) {
       await createNewConnection();
-      return;
     }
     if (
       connection.value &&
       connection.value.state !== signalR.HubConnectionState.Connected
     ) {
-      console.log("--> Starting Current Connection");
+      console.log("--> Starting Current Connection, connecting to Rooms");
       await connection.value.start();
       _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
-    }
-
-    if (connection.value.state === signalR.HubConnectionState.Connected) {
-      console.log("--> Connected");
-      return;
-    } else {
-      console.error("--> Not Connected");
-      return;
     }
   };
 
   const closeConnection = async () => {
-    console.log("--> Closing connection");
-    if (connection.value !== null) {
-      console.log("--> Calling stop method");
+    if (connection.value) {
+      console.log("--> Closing connection, calling stop method");
       await connection.value.stop();
       connection.value = null;
       return;
+    } else {
+      console.log("--> No connection to close");
     }
   };
 
@@ -201,13 +192,9 @@ export const useSignalR = () => {
         console.log(
           `--> APP Resumed, Connection: ${connection.value} State: ${connection.value?.state}`
         );
-        appStore.showLoadingOverlay();
-        tryReconnect();
-        chatApi.getState();
+        connect();
       } catch (error) {
         console.error("--> APP Resume Error!");
-      } finally {
-        appStore.hideLoadingOverlay();
       }
     }
   };
@@ -472,7 +459,7 @@ export const useSignalR = () => {
     closeConnection,
     createRoom,
     sendMessage,
-    tryReconnect,
+    connect,
     handleVisibilityChange,
     handleOffline,
     handleOnline,

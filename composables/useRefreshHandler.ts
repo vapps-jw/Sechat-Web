@@ -1,9 +1,32 @@
 export const useRefreshHandler = () => {
-  const handleVisibilityChange = async () => {};
+  const appStore = useAppStore();
+  const signalR = useSignalR();
+  const chatApi = useChatApi();
 
-  const handleChatMounted = async () => {};
+  const handleVisibilityChange = async () => {
+    appStore.showLoadingOverlay();
 
-  const handleOnlineChange = async () => {};
+    signalR.handleVisibilityChange();
+    chatApi.getState();
 
-  return { handleVisibilityChange, handleChatMounted, handleOnlineChange };
+    appStore.hideLoadingOverlay();
+  };
+
+  const handleOnlineChange = async () => {
+    appStore.showLoadingOverlay();
+
+    chatApi.getState();
+
+    appStore.hideLoadingOverlay();
+  };
+
+  const handleOfflineChange = async () => {
+    appStore.showLoadingOverlay();
+
+    signalR.handleOffline();
+
+    appStore.hideLoadingOverlay();
+  };
+
+  return { handleVisibilityChange, handleOnlineChange, handleOfflineChange };
 };
