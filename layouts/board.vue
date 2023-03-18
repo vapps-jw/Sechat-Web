@@ -12,7 +12,7 @@
           appStore.isOnline.value
         "
         icon="mdi-web-check"
-        size="x-large"
+        size="small"
         color="success"
       ></v-icon>
       <v-icon
@@ -21,7 +21,7 @@
           appStore.isOnline.value
         "
         icon="mdi-web-sync"
-        size="x-large"
+        size="small"
         color="warning"
       ></v-icon>
       <v-icon
@@ -30,13 +30,13 @@
           appStore.isOnline.value
         "
         icon="mdi-web-remove"
-        size="x-large"
+        size="small"
         color="error"
       ></v-icon>
       <v-icon
         v-if="!appStore.isOnline.value"
         icon="mdi-web-off"
-        size="x-large"
+        size="small"
         color="grey-lighten-1"
       ></v-icon>
     </v-footer>

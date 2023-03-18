@@ -123,7 +123,7 @@ export const useSignalR = () => {
         chatStore.loadUserConnections(chatState.value.userConnections);
 
         console.log("--> Reconnected, connectiong to Rooms ...");
-        _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
+        _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
       } catch (error) {
       } finally {
         appStore.hideLoadingOverlay();
@@ -135,7 +135,7 @@ export const useSignalR = () => {
 
     if (connection.value.state === signalR.HubConnectionState.Connected) {
       console.log("--> Connection Established, connectiong to Rooms ...");
-      _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
+      _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
       return;
     }
   };
@@ -157,7 +157,7 @@ export const useSignalR = () => {
     ) {
       console.log("--> Starting Current Connection, connecting to Rooms");
       await connection.value.start();
-      _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
+      _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
     }
   };
 
@@ -368,12 +368,11 @@ export const useSignalR = () => {
 
   const createRoom = (name: string) => {
     console.log("--> Connection state:", connection.value.state);
-    console.log("--> Creating room:", name);
+    console.log("--> SignalR Creating Room:", name);
     connection.value
       .invoke(SignalRHubMethods.CreateRoom, { RoomName: name })
       .then((newRoom: IRoom) => {
         console.log("--> New room created", newRoom);
-        const chatStore = useChatStore();
         chatStore.addRoom(newRoom);
         _connectToRoom(newRoom.id);
         appStore.showSuccessSnackbar("Room created");

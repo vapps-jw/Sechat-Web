@@ -2,6 +2,7 @@ import { scrollToBottom } from "~~/utilities/documentFunctions";
 
 export const useChatStore = () => {
   const userData = useUserData();
+  const notifications = useSechatNotifications();
 
   const ChatViews = {
     Messages: "messages",
@@ -26,12 +27,12 @@ export const useChatStore = () => {
   const activeRoomId = useState<string>("activeChatRoom", () => "");
 
   const getActiveRoom = computed(() => {
-    return getRooms.value.find((r) => r.id === activeRoomId.value);
+    return availableRooms.value.find((r) => r.id === activeRoomId.value);
   });
 
   const getActiveRoomCreatorName = computed(() => {
     if (activeRoomId) {
-      return getRooms.value.find((r) => r.id === activeRoomId.value)
+      return availableRooms.value.find((r) => r.id === activeRoomId.value)
         .creatorName;
     }
     return "";
@@ -41,11 +42,8 @@ export const useChatStore = () => {
     if (!activeRoomId.value) {
       return [];
     }
-    return getRooms.value.find((r) => r.id === activeRoomId.value).members;
-  });
-
-  const getRooms = computed(() => {
-    return availableRooms.value;
+    return availableRooms.value.find((r) => r.id === activeRoomId.value)
+      .members;
   });
 
   const getConnections = computed(() => {
@@ -134,7 +132,7 @@ export const useChatStore = () => {
 
   const addRoom = (room: IRoom) => {
     console.log("--> Adding room to the Store", room.name);
-    getRooms.value.push(room);
+    availableRooms.value = [...availableRooms.value, room];
   };
 
   const handleUpdateRoom = (room: IRoom) => {
@@ -166,7 +164,7 @@ export const useChatStore = () => {
       if (activeRoomId.value === options.roomId) {
         activeRoomId.value = "";
       }
-      availableRooms.value = getRooms.value.filter(
+      availableRooms.value = availableRooms.value.filter(
         (r) => r.id !== options.roomId
       );
       return;
@@ -185,7 +183,10 @@ export const useChatStore = () => {
     if (activeRoomId.value === message.id) {
       activeRoomId.value = "";
     }
-    availableRooms.value = getRooms.value.filter((r) => r.id !== message.id);
+    availableRooms.value = availableRooms.value.filter(
+      (r) => r.id !== message.id
+    );
+    console.warn("--> Room Deleted", availableRooms.value);
   };
 
   const loadRooms = (data: IRoom[]) => {
@@ -207,11 +208,6 @@ export const useChatStore = () => {
 
   const selectRoom = (room: IRoom) => {
     console.log("--> Room selected", room);
-    if (!activeRoomId.value) {
-      activeRoomId.value = room.id;
-      activeChatTab.value = ChatViews.Messages;
-      return;
-    }
     activeRoomId.value = room.id;
     activeChatTab.value = ChatViews.Messages;
     scrollToBottom("chatView");
@@ -232,12 +228,23 @@ export const useChatStore = () => {
     roomToUpdate.messages = roomToUpdate.messages.sort(
       (a, b) => Number(a.created) - Number(b.created)
     );
+
     roomToUpdate.lastActivity = message.created;
-    scrollToBottom("chatView");
+
+    if (roomToUpdate.id === activeRoomId.value) {
+      scrollToBottom("chatView");
+    }
+
+    if (message.nameSentBy !== userData.getUsername.value) {
+      notifications.newMessage({
+        roomName: roomToUpdate.name,
+        sender: message.nameSentBy,
+      });
+    }
   };
 
   return {
-    getRooms,
+    availableRooms,
     activeChatTab,
     activeRoomId,
     getActiveRoom,
