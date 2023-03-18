@@ -17,7 +17,9 @@
   </v-app>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+Notification.requestPermission();
+</script>
 
 <style scoped>
 .page-enter-active,
