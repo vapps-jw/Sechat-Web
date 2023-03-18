@@ -1,8 +1,7 @@
 export const useChatApi = () => {
   const config = useRuntimeConfig();
-  const chatStore = useChatStore();
 
-  const getState = async () => {
+  const getState = async (): Promise<IChatState> => {
     console.log("--> Getting State from API");
     try {
       const { error: apiError, data: chatState } = await useFetch<IChatState>(
@@ -22,15 +21,16 @@ export const useChatApi = () => {
       }
 
       console.log("--> State Fetched", chatState.value);
-      chatStore.loadRooms(chatState.value.rooms);
-      chatStore.loadUserConnections(chatState.value.userConnections);
-    } catch (error) {
-    } finally {
-    }
+      return chatState.value;
+    } catch (error) {}
   };
 
-  const inviteToRoom = async (chosenConnection: IConnectionRequest) => {
+  const inviteToRoom = async (
+    chosenConnection: IConnectionRequest,
+    roomId: string
+  ) => {
     console.warn("--> API Inviting User", chosenConnection);
+
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/chat/add-to-room`,
       {
@@ -41,7 +41,7 @@ export const useChatApi = () => {
         credentials: "include",
         body: {
           userName: chosenConnection.displayName,
-          RoomId: chatStore.activeRoomId,
+          RoomId: roomId,
           ConnectionId: chosenConnection.id,
         },
       }

@@ -164,9 +164,10 @@ export const useChatStore = () => {
       if (activeRoomId.value === options.roomId) {
         activeRoomId.value = "";
       }
-      availableRooms.value = availableRooms.value.filter(
-        (r) => r.id !== options.roomId
-      );
+
+      availableRooms.value = [
+        ...availableRooms.value.filter((r) => r.id !== options.roomId),
+      ];
       return;
     }
 
@@ -183,9 +184,9 @@ export const useChatStore = () => {
     if (activeRoomId.value === message.id) {
       activeRoomId.value = "";
     }
-    availableRooms.value = availableRooms.value.filter(
-      (r) => r.id !== message.id
-    );
+    availableRooms.value = [
+      ...availableRooms.value.filter((r) => r.id !== message.id),
+    ];
     console.warn("--> Room Deleted", availableRooms.value);
   };
 

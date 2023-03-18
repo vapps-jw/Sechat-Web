@@ -49,13 +49,19 @@ import { SnackbarMessages } from "~~/utilities/globalEnums";
 const chatStore = useChatStore();
 const dialog = ref<boolean>(false);
 const chosenConnection = ref<IConnectionRequest>();
+
 const appStore = useAppStore();
 const chatApi = useChatApi();
 
+interface PropsModel {
+  roomId: string;
+}
+
+const props = defineProps<PropsModel>();
+
 const invite = async () => {
-  console.warn("--> API Inviting User", chosenConnection.value);
   try {
-    await chatApi.inviteToRoom(chosenConnection.value);
+    await chatApi.inviteToRoom(chosenConnection.value, props.roomId);
     appStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {
     appStore.showErrorSnackbar(SnackbarMessages.Error);

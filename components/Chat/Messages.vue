@@ -13,7 +13,9 @@
           chatStore.getActiveRoom.value.name
         }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <chat-messages-members-panel />
+        <chat-messages-members-panel
+          :room-id="chatStore.getActiveRoom.value.id"
+        />
       </v-toolbar>
       <chat-messages-room-members />
       <v-divider />

@@ -51,12 +51,17 @@ const appStore = useAppStore();
 const signalR = useSignalR();
 const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
+const chatStore = useChatStore();
 
 onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
   appStore.showLoadingOverlay();
 
-  await chatApi.getState();
+  const chatState = await chatApi.getState();
+
+  chatStore.loadRooms(chatState.rooms);
+  chatStore.loadUserConnections(chatState.userConnections);
+
   await signalR.connect();
 
   console.info("--> Hooking to visibility change");

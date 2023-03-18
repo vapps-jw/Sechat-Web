@@ -2,12 +2,17 @@ export const useRefreshHandler = () => {
   const appStore = useAppStore();
   const signalR = useSignalR();
   const chatApi = useChatApi();
+  const chatStore = useChatStore();
 
   const handleVisibilityChange = async () => {
     appStore.showLoadingOverlay();
 
     signalR.handleVisibilityChange();
-    chatApi.getState();
+
+    const chatState = await chatApi.getState();
+
+    chatStore.loadRooms(chatState.rooms);
+    chatStore.loadUserConnections(chatState.userConnections);
 
     appStore.hideLoadingOverlay();
   };
@@ -16,7 +21,11 @@ export const useRefreshHandler = () => {
     appStore.showLoadingOverlay();
 
     appStore.handleOnline();
-    chatApi.getState();
+
+    const chatState = await chatApi.getState();
+
+    chatStore.loadRooms(chatState.rooms);
+    chatStore.loadUserConnections(chatState.userConnections);
 
     appStore.hideLoadingOverlay();
   };
