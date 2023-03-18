@@ -29,5 +29,34 @@ export const useChatApi = () => {
     }
   };
 
-  return { getState };
+  const inviteToRoom = async (chosenConnection: IConnectionRequest) => {
+    console.warn("--> API Inviting User", chosenConnection);
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/add-to-room`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          userName: chosenConnection.displayName,
+          RoomId: chatStore.activeRoomId,
+          ConnectionId: chosenConnection.id,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      const displayError = createError({
+        ...apiError.value,
+        statusMessage: "Sign in Failed",
+        statusCode: apiError.value.statusCode,
+      });
+      console.log("--> Throwing Error", displayError);
+      throw displayError;
+    }
+  };
+
+  return { getState, inviteToRoom };
 };

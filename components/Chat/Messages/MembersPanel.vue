@@ -37,9 +37,7 @@
           Cancel
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="error" variant="text" @click="inviteToRoom">
-          Invite
-        </v-btn>
+        <v-btn color="error" variant="text" @click="invite"> Invite </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -52,35 +50,19 @@ const chatStore = useChatStore();
 const dialog = ref<boolean>(false);
 const chosenConnection = ref<IConnectionRequest>();
 const appStore = useAppStore();
-const config = useRuntimeConfig();
+const chatApi = useChatApi();
 
-const inviteToRoom = async () => {
+const invite = async () => {
   console.warn("--> API Inviting User", chosenConnection.value);
-  const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/chat/add-to-room`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      credentials: "include",
-      body: {
-        userName: chosenConnection.value.displayName,
-        RoomId: chatStore.activeRoomId,
-        ConnectionId: chosenConnection.value.id,
-      },
-    }
-  );
-
-  chosenConnection.value = null;
-  dialog.value = false;
-
-  if (apiError.value) {
+  try {
+    await chatApi.inviteToRoom(chosenConnection.value);
+    appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  } catch (error) {
     appStore.showErrorSnackbar(SnackbarMessages.Error);
-    return;
+  } finally {
+    chosenConnection.value = null;
+    dialog.value = false;
   }
-
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const hasOccurrences = (item: any, queryText: any) => {
