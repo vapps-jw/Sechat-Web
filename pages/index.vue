@@ -22,9 +22,6 @@
               >Sign Up</NuxtLink
             >
           </v-btn>
-          <v-btn @click="testNotification" class="my-2" size="large">
-            Test Notification
-          </v-btn>
         </div>
       </client-only>
     </v-container>
@@ -34,15 +31,10 @@
 <script setup lang="ts">
 const userData = useUserData();
 const chatStore = useChatStore();
-const sechatNotifications = useSechatNotifications();
 
 const signOut = () => {
   userData.signOut();
   chatStore.clearState();
-};
-
-const testNotification = () => {
-  sechatNotifications.testNotification();
 };
 </script>
 
