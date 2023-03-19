@@ -57,8 +57,30 @@ export const useSechatNotifications = () => {
     }
 
     console.warn("permissionGrantedNotification notification triggered");
-    const notifTitle = "Notifications Readu";
+    const notifTitle = "Notifications Ready";
     const notifBody = "Sechat will be pinging you now";
+    const notifImg = "icons/icon_64x64.png";
+    const options = {
+      body: notifBody,
+      icon: notifImg,
+    };
+
+    let notification = new Notification(notifTitle, options);
+    notification.onclick = () => {
+      notification.close();
+      window.parent.focus();
+    };
+
+    setTimeout(() => notification.close(), 3000);
+  };
+
+  const testNotification = () => {
+    if (Notification.permission !== "granted") {
+      return;
+    }
+
+    const notifTitle = "Test Notification";
+    const notifBody = `Permission Status: ${Notification.permission}`;
     const notifImg = "icons/icon_64x64.png";
     const options = {
       body: notifBody,
@@ -78,5 +100,6 @@ export const useSechatNotifications = () => {
     randomNotification,
     newMessageNotification,
     permissionGrantedNotification,
+    testNotification,
   };
 };
