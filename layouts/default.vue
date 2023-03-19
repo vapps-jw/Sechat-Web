@@ -41,7 +41,6 @@ onMounted(() => {
       if (result === "granted") {
         console.warn("--> Permission Granted");
         notificationsAllowed.value = Notification.permission === "granted";
-        sechatNotifications.permissionGrantedNotification();
       }
     });
   }
