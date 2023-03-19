@@ -25,7 +25,7 @@ export const useSechatNotifications = () => {
     setTimeout(() => notification.close(), 2000);
   };
 
-  const newMessage = (message: INewMessage) => {
+  const newMessageNotification = (message: INewMessage) => {
     if (
       document.visibilityState === "visible" ||
       Notification.permission !== "granted"
@@ -51,5 +51,5 @@ export const useSechatNotifications = () => {
     setTimeout(() => notification.close(), 2000);
   };
 
-  return { randomNotification, newMessage };
+  return { randomNotification, newMessageNotification };
 };

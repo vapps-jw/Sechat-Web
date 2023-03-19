@@ -237,7 +237,7 @@ export const useChatStore = () => {
     }
 
     if (message.nameSentBy !== userData.getUsername.value) {
-      notifications.newMessage({
+      notifications.newMessageNotification({
         roomName: roomToUpdate.name,
         sender: message.nameSentBy,
       });

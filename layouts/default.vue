@@ -18,7 +18,9 @@
 </template>
 
 <script setup lang="ts">
-Notification.requestPermission();
+if (Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
 </script>
 
 <style scoped>
