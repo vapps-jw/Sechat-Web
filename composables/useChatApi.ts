@@ -25,6 +25,32 @@ export const useChatApi = () => {
     } catch (error) {}
   };
 
+  const leaveRoom = async (room: IRoom) => {
+    console.warn("--> API Leave Room", room);
+
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/leave-room`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          RoomId: room.id,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusMessage: "Failed to leave room",
+        statusCode: apiError.value.statusCode,
+      });
+    }
+  };
+
   const inviteToRoom = async (
     chosenConnection: IConnectionRequest,
     roomId: string
@@ -58,5 +84,5 @@ export const useChatApi = () => {
     }
   };
 
-  return { getState, inviteToRoom };
+  return { getState, inviteToRoom, leaveRoom };
 };

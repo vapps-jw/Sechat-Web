@@ -21,6 +21,7 @@
               />
               <v-btn
                 v-if="room.creatorName !== userData.userProfile.value.userName"
+                @click="leaveRoom(room)"
                 size="small"
                 icon="mdi-exit-to-app"
                 color="warning"
@@ -44,8 +45,23 @@
 </template>
 
 <script setup lang="ts">
+import { SnackbarMessages } from "~~/utilities/globalEnums";
+
 const chatStore = useChatStore();
 const userData = useUserData();
+const chatApi = useChatApi();
+const appStore = useAppStore();
+
+const leaveRoom = async (room: IRoom) => {
+  try {
+    await chatApi.leaveRoom(room);
+    chatStore.removeRoom(room);
+  } catch (error) {
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
+  }
+
+  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+};
 </script>
 
 <style scoped></style>

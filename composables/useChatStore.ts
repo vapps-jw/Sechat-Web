@@ -135,6 +135,13 @@ export const useChatStore = () => {
     availableRooms.value = [...availableRooms.value, room];
   };
 
+  const removeRoom = (room: IRoom) => {
+    console.log("--> Removing Room", room.name);
+    availableRooms.value = [
+      ...availableRooms.value.filter((uc) => uc.id !== room.id),
+    ];
+  };
+
   const handleUpdateRoom = (room: IRoom) => {
     console.warn("--> Handling Room Updated Event", room);
     room.messages = getActiveRoom.value.messages;
@@ -256,6 +263,7 @@ export const useChatStore = () => {
     getActiveRoomMembers,
     getActiveRoomCreatorName,
     getConnectionsAllowedForActiveRoom,
+    removeRoom,
     clearState,
     addRoom,
     clearRooms,
