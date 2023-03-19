@@ -240,6 +240,7 @@ export const useChatStore = () => {
       notifications.newMessageNotification({
         roomName: roomToUpdate.name,
         sender: message.nameSentBy,
+        text: message.text,
       });
     }
   };

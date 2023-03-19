@@ -35,7 +35,7 @@ export const useSechatNotifications = () => {
 
     console.warn("New message notification triggered", message);
     const notifTitle = message.roomName;
-    const notifBody = message.sender;
+    const notifBody = `From ${message.sender}: ${message}`;
     const notifImg = "icons/icon_64x64.png";
     const options = {
       body: notifBody,
