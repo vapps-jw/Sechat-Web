@@ -24,13 +24,28 @@
 </template>
 
 <script setup lang="ts">
-if (Notification.permission !== "granted") {
-  Notification.requestPermission();
-}
-
-const notificationsAllowed = computed(
+const sechatNotifications = useSechatNotifications();
+const notificationsAllowed = useState<boolean>(
+  "notificationsAllowed",
   () => Notification.permission === "granted"
 );
+
+onMounted(() => {
+  console.warn(
+    "--> Chekcing notification permission",
+    notificationsAllowed.value
+  );
+  if (!notificationsAllowed.value) {
+    console.warn("--> Requesting notification permission");
+    Notification.requestPermission().then((result) => {
+      if (result === "granted") {
+        console.warn("--> Permission Granted");
+        sechatNotifications.permissionGrantedNotification();
+        notificationsAllowed.value = Notification.permission === "granted";
+      }
+    });
+  }
+});
 </script>
 
 <style scoped>
