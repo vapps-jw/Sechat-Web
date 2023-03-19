@@ -237,6 +237,7 @@ export const useChatStore = () => {
     }
 
     if (message.nameSentBy !== userData.getUsername.value) {
+      console.warn("--> Notification on Message Incoming", message);
       notifications.newMessageNotification({
         roomName: roomToUpdate.name,
         sender: message.nameSentBy,
