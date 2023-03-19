@@ -7,20 +7,29 @@ export const useSechatNotifications = () => {
       return;
     }
 
-    console.warn("New message notification triggered", message);
-    const notifTitle = message.roomName;
-    const notifBody = `From ${message.sender}: ${message.text}`;
-    const notifImg = "icons/icon_64x64.png";
-    const options = {
-      body: notifBody,
-      icon: notifImg,
-    };
+    console.warn("--> Service Worker", navigator.serviceWorker);
+    if (!navigator.serviceWorker) {
+      return;
+    }
 
-    let notification = new Notification(notifTitle, options);
-    notification.onclick = () => {
-      notification.close();
-      window.parent.focus();
-    };
+    navigator.serviceWorker.ready.then((registration) => {
+      console.warn("New message notification triggered", message);
+      const notifTitle = message.roomName;
+      const notifBody = `From ${message.sender}: ${message.text}`;
+      const notifImg = "icons/icon_64x64.png";
+
+      registration.showNotification(notifTitle, {
+        body: notifBody,
+        icon: notifImg,
+        tag: "Sechat",
+      });
+    });
+
+    // let notification = new Notification(notifTitle, options);
+    // notification.onclick = () => {
+    //   notification.close();
+    //   window.parent.focus();
+    // };
   };
 
   const permissionGrantedNotification = () => {

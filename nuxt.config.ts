@@ -45,6 +45,7 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: "/",
+      sourcemap: true,
     },
     devOptions: {
       enabled: true,
