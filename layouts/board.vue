@@ -39,6 +39,18 @@
         size="small"
         color="grey-lighten-1"
       ></v-icon>
+      <v-icon
+        v-if="notificationAllowed"
+        icon="mdi-bell"
+        size="small"
+        color="success"
+      ></v-icon>
+      <v-icon
+        v-if="!notificationAllowed"
+        icon="mdi-bell-off"
+        size="small"
+        color="error"
+      ></v-icon>
     </v-footer>
   </v-app>
 </template>
@@ -52,6 +64,10 @@ const signalR = useSignalR();
 const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
 const chatStore = useChatStore();
+
+const notificationAllowed = computed(() => {
+  return Notification.permission === "granted";
+});
 
 onMounted(async () => {
   console.warn("--> Chat Layout onMounted");

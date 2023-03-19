@@ -1,4 +1,5 @@
 import * as signalR from "@microsoft/signalr";
+import { scrollToBottom } from "~~/utilities/documentFunctions";
 import { VisibilityStates, SignalRState } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
@@ -6,7 +7,6 @@ export const useSignalR = () => {
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
   const userData = useUserData();
-  const chatApi = useChatApi();
 
   const SignalRHubMethods = {
     SendMessage: "SendMessage",
@@ -124,6 +124,10 @@ export const useSignalR = () => {
 
         console.log("--> Reconnected, connectiong to Rooms ...");
         _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
+
+        if (chatStore.activeRoomId.value) {
+          scrollToBottom("chatView");
+        }
       } catch (error) {
       } finally {
         appStore.hideLoadingOverlay();
@@ -136,6 +140,7 @@ export const useSignalR = () => {
     if (connection.value.state === signalR.HubConnectionState.Connected) {
       console.log("--> Connection Established, connectiong to Rooms ...");
       _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
+
       return;
     }
   };
