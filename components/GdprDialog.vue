@@ -21,7 +21,9 @@
 import { CustomCookies } from "~~/utilities/globalEnums";
 
 const dialog = ref<boolean>(false);
-const gdprCookie = useCookie(CustomCookies.GDPR);
+const gdprCookie = useCookie(CustomCookies.GDPR, {
+  maxAge: 30000000,
+});
 
 onMounted(async () => {
   console.warn("--> GDPR onMounted");
