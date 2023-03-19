@@ -29,7 +29,7 @@ if (Notification.permission !== "granted") {
 }
 
 const notificationsAllowed = computed(
-  () => Notification.permission !== "granted"
+  () => Notification.permission === "granted"
 );
 </script>
 
