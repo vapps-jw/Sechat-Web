@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>forgot password</p>
+    <p>forgot password ups</p>
   </div>
 </template>
 

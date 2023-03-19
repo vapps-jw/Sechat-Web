@@ -2,7 +2,10 @@ export default defineNuxtConfig({
   typescript: {
     strict: false,
   },
-  plugins: ["~/plugins/nuxtClientInit.client.ts"],
+  plugins: [
+    "~/plugins/nuxtClientInit.client.ts",
+    { src: "~/plugins/pwa-update.ts", mode: "client" },
+  ],
   runtimeConfig: {
     public: {
       apiBase: process.env.API_BASE_URL || "https://api.sechat.net",
