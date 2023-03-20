@@ -10,9 +10,6 @@
           <v-chip class="ma-2" color="warning">
             For best experience use as PWA
           </v-chip>
-          <v-chip v-if="!notificationsAllowed" class="ma-2" color="error">
-            Notifications Not Allowed
-          </v-chip>
         </div>
         <v-divider class="my-4"></v-divider>
       </v-container>
@@ -24,26 +21,20 @@
 </template>
 
 <script setup lang="ts">
-const sechatNotifications = useSechatNotifications();
-const notificationsAllowed = useState<boolean>(
-  "notificationsAllowed",
-  () => Notification.permission === "granted"
-);
-
 onMounted(() => {
-  console.warn(
-    "--> Chekcing notification permission",
-    notificationsAllowed.value
-  );
-  if (!notificationsAllowed.value) {
-    console.warn("--> Requesting notification permission");
-    Notification.requestPermission().then((result) => {
-      if (result === "granted") {
-        console.warn("--> Permission Granted");
-        notificationsAllowed.value = Notification.permission === "granted";
-      }
-    });
-  }
+  // console.warn(
+  //   "--> Chekcing notification permission",
+  //   notificationsAllowed.value
+  // );
+  // if (!notificationsAllowed.value) {
+  //   console.warn("--> Requesting notification permission");
+  //   Notification.requestPermission().then((result) => {
+  //     if (result === "granted") {
+  //       console.warn("--> Permission Granted");
+  //       notificationsAllowed.value = Notification.permission === "granted";
+  //     }
+  //   });
+  // }
 });
 </script>
 
