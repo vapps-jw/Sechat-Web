@@ -9,9 +9,13 @@ export const useSechatNotifications = () => {
   const addEventListenersToWorker = () => {
     if (Notification.permission === "granted") {
       navigator.serviceWorker.addEventListener("push", (e: any) => {
+        console.log("Push Recieved...");
+        if (document.visibilityState === "visible") {
+          console.log("Chat Visible...");
+          return;
+        }
         const data = e.data.json();
 
-        console.log("Push Recieved...");
         navigator.serviceWorker.ready.then((registration) => {
           const notifTitle = data.title;
           const notifBody = `test`;
