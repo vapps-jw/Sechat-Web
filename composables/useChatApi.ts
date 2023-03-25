@@ -37,7 +37,7 @@ export const useChatApi = () => {
         method: "POST",
         credentials: "include",
         body: {
-          Test: message,
+          Text: message,
           RoomId: roomId,
         },
       }
