@@ -27,6 +27,27 @@ export const useSechatNotifications = () => {
     }
   };
 
+  const unsubscribeFromPush = async () => {
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/notifications/push-unubscribe`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusMessage: "Failed to unsubscribe",
+        statusCode: apiError.value.statusCode,
+      });
+    }
+  };
+
   const subscribeToPush = async () => {
     console.warn("--> Requesting Permission");
 
@@ -78,6 +99,8 @@ export const useSechatNotifications = () => {
     }
 
     console.log("--> Push Subscription Sent...");
+    console.log("--> Adding event Listener...");
+    addEventListenersToWorker();
   };
 
   // const isSubscribedToPush = useState<PushSubscription>(
@@ -186,5 +209,6 @@ export const useSechatNotifications = () => {
     notificationsAllowed,
     subscribeToPush,
     addEventListenersToWorker,
+    unsubscribeFromPush,
   };
 };
