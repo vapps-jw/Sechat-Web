@@ -6,6 +6,27 @@ export const useSechatNotifications = () => {
     () => false
   );
 
+  const addEventListenersToWorker = () => {
+    if (Notification.permission === "granted") {
+      navigator.serviceWorker.addEventListener("push", (e: any) => {
+        const data = e.data.json();
+
+        console.log("Push Recieved...");
+        navigator.serviceWorker.ready.then((registration) => {
+          const notifTitle = data.title;
+          const notifBody = `test`;
+          const notifImg = "icons/icon_64x64.png";
+
+          registration.showNotification(notifTitle, {
+            body: notifBody,
+            icon: notifImg,
+            tag: "Sechat",
+          });
+        });
+      });
+    }
+  };
+
   const subscribeToPush = async () => {
     console.warn("--> Requesting Permission");
 
@@ -56,7 +77,7 @@ export const useSechatNotifications = () => {
       });
     }
 
-    console.log("--> Push Sent...");
+    console.log("--> Push Subscription Sent...");
   };
 
   // const isSubscribedToPush = useState<PushSubscription>(
@@ -164,5 +185,6 @@ export const useSechatNotifications = () => {
   return {
     notificationsAllowed,
     subscribeToPush,
+    addEventListenersToWorker,
   };
 };
