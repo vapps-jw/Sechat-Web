@@ -28,6 +28,11 @@
               <ChatProfileAllowNotifications />
             </template>
           </v-list-item>
+          <v-list-item>
+            <template v-slot:prepend>
+              <ChatProfileRemoveSubscriptions />
+            </template>
+          </v-list-item>
           <v-divider class="mt-10" />
           <v-list-subheader color="error">Danger Zone</v-list-subheader>
           <v-list-item>

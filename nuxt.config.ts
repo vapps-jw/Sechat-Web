@@ -15,6 +15,9 @@ export default defineNuxtConfig({
   },
   modules: ["@nuxt/image-edge", "@nuxtjs/i18n", "@vite-pwa/nuxt"],
   pwa: {
+    registerType: "autoUpdate",
+    strategies: "injectManifest",
+    filename: "sw.js",
     manifest: {
       name: "Sechat",
       short_name: "Sechat",

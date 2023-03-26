@@ -1,35 +1,13 @@
+import { SnackbarIcons } from "~~/utilities/globalEnums";
+
 export const useSechatNotifications = () => {
   const config = useRuntimeConfig();
+  const appStore = useAppStore();
 
   const notificationsAllowed = useState<boolean>(
     "notificationsAllowed",
     () => false
   );
-
-  const addEventListenersToWorker = () => {
-    if (Notification.permission === "granted") {
-      navigator.serviceWorker.addEventListener("push", (e: any) => {
-        console.log("Push Recieved...");
-        if (document.visibilityState === "visible") {
-          console.log("Chat Visible...");
-          return;
-        }
-        const data = e.data.json();
-
-        navigator.serviceWorker.ready.then((registration) => {
-          const notifTitle = data.title;
-          const notifBody = `test`;
-          const notifImg = "icons/icon_64x64.png";
-
-          registration.showNotification(notifTitle, {
-            body: notifBody,
-            icon: notifImg,
-            tag: "Sechat",
-          });
-        });
-      });
-    }
-  };
 
   const unsubscribeFromPush = async () => {
     const { error: apiError } = await useFetch(
@@ -50,6 +28,15 @@ export const useSechatNotifications = () => {
         statusCode: apiError.value.statusCode,
       });
     }
+
+    appStore.showSnackbar({
+      snackbar: true,
+      text: "All subscriptions deleted",
+      timeout: 2000,
+      color: "success",
+      icon: SnackbarIcons.Success,
+      iconColor: "black",
+    });
   };
 
   const subscribeToPush = async () => {
@@ -67,7 +54,11 @@ export const useSechatNotifications = () => {
     try {
       const register = await navigator.serviceWorker.ready;
 
-      console.log("--> Registering Push...");
+      console.log(
+        "--> Registering Push...",
+        config.public.publicVapidKey,
+        config.public.apiBase
+      );
       subscription = await register.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
@@ -103,96 +94,7 @@ export const useSechatNotifications = () => {
     }
 
     console.log("--> Push Subscription Sent...");
-    console.log("--> Adding event Listener...");
-    addEventListenersToWorker();
   };
-
-  // const isSubscribedToPush = useState<PushSubscription>(
-  //   "isSubscribedToPush",
-  //   () => {
-  //     let subscribed;
-  //     navigator.serviceWorker.ready.then((reg) => {
-  //       // Do we already have a push message subscription?
-
-  //       reg.pushManager
-  //         .getSubscription()
-  //         .then(function (subscription) {
-  //           if (subscription) {
-  //             console.log(
-  //               "--> User is already subscribed to push notifications"
-  //             );
-  //           } else {
-  //             console.log(
-  //               "--> User is not yet subscribed to push notifications"
-  //             );
-  //           }
-  //           subscribed = subscription;
-  //         })
-  //         .catch(function (err) {
-  //           console.log("-->  Unable to get subscription details.", err);
-  //         });
-  //     });
-  //     return subscribed;
-  //   }
-  // );
-
-  // const subscribeToPush = () => {
-  //   navigator.serviceWorker.ready.then(function (reg) {
-  //     const subscribeParams = { userVisibleOnly: true };
-
-  //     //Setting the public key of our VAPID key pair.
-  //     const applicationServerKey = urlB64ToUint8Array("");
-  //     subscribeParams.applicationServerKey = applicationServerKey;
-
-  //     reg.pushManager
-  //       .subscribe(subscribeParams)
-  //       .then(function (subscription) {
-  //         //isSubscribed = true;
-
-  //         var p256dh = base64Encode(subscription.getKey("p256dh"));
-  //         var auth = base64Encode(subscription.getKey("auth"));
-
-  //         console.log(subscription);
-
-  //         // $('#PushEndpoint').val(subscription.endpoint);
-  //         // $('#PushP256DH').val(p256dh);
-  //         // $('#PushAuth').val(auth);
-  //       })
-  //       .catch(function (e) {});
-  //   });
-  // };
-
-  // const newMessageNotification = (message: INewMessage) => {
-  //   if (
-  //     document.visibilityState === "visible" ||
-  //     Notification.permission !== "granted"
-  //   ) {
-  //     return;
-  //   }
-
-  //   console.warn("--> Service Worker", navigator.serviceWorker);
-  //   if (!navigator.serviceWorker) {
-  //     return;
-  //   }
-
-  //   navigator.serviceWorker.ready.then((registration) => {
-  //     console.warn("New message notification triggered", message);
-  //     const notifTitle = message.roomName;
-  //     const notifBody = `From ${message.sender}: ${message.text}`;
-  //     const notifImg = "icons/icon_64x64.png";
-
-  //     registration.showNotification(notifTitle, {
-  //       body: notifBody,
-  //       icon: notifImg,
-  //       tag: "Sechat",
-  //     });
-  //   });
-
-  // let notification = new Notification(notifTitle, options);
-  // notification.onclick = () => {
-  //   notification.close();
-  //   window.parent.focus();
-  // };
 
   function urlBase64ToUint8Array(base64String) {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -212,7 +114,6 @@ export const useSechatNotifications = () => {
   return {
     notificationsAllowed,
     subscribeToPush,
-    addEventListenersToWorker,
     unsubscribeFromPush,
   };
 };

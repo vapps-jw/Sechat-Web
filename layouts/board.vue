@@ -74,9 +74,6 @@ onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
   appStore.showLoadingOverlay();
 
-  console.warn("--> Adding PUSH event handler ...");
-  sechatNotification.addEventListenersToWorker();
-
   console.warn("--> Getting State");
   const chatState = await chatApi.getState();
 
