@@ -24,7 +24,7 @@ self.addEventListener("push", async (e) => {
     body: String(data.options.body),
     icon: "icons/icon_64x64.png",
     tag: "Sechat",
-    vibrate: [200, 100, 50],
+    vibrate: [1000, 1000],
   };
 
   console.warn("Showing Notification...");
