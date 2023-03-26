@@ -444,6 +444,7 @@ export const useSignalR = () => {
   };
 
   return {
+    connection,
     connectionState,
     isConnected,
     connectionPresent,
