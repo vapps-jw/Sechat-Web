@@ -20,7 +20,7 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
+        <v-card-text class="ma-0 pa-0 overflow-auto">
           <v-list>
             <v-list-item
               class="my-1"

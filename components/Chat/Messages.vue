@@ -6,7 +6,7 @@
       </div>
     </v-card>
   </v-container>
-  <v-container v-else>
+  <v-container v-else class="pa-1 ma-0">
     <v-card class="sechat-v-card-full">
       <v-toolbar>
         <v-toolbar-title>{{
@@ -19,7 +19,7 @@
       </v-toolbar>
       <chat-messages-room-members />
       <v-divider />
-      <v-sheet id="chatView" class="ma-0 pa-0 sechat-flex-grow-overflow">
+      <v-sheet id="chatView" class="ma-0 pa-0 overflow-auto">
         <div
           class="d-flex"
           :class="

@@ -1,12 +1,12 @@
 <template>
-  <v-container>
+  <v-container class="pa-1 ma-0">
     <v-card class="mx-auto sechat-v-card-full" max-width="800">
       <v-toolbar>
         <v-toolbar-title>Rooms</v-toolbar-title>
         <v-spacer></v-spacer>
         <chat-rooms-create-room />
       </v-toolbar>
-      <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
+      <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list>
           <v-list-item
             v-for="room in chatStore.availableRooms.value"

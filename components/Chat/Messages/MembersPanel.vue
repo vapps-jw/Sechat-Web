@@ -19,7 +19,7 @@
         <v-toolbar-title>Room Members</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
-      <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
+      <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-autocomplete
           :custom-filter="hasOccurrences"
           item-title="displayName"

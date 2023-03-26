@@ -1,6 +1,6 @@
 <template>
-  <v-footer class="d-flex flex-row justify-center">
-    <v-chip class="ma-2" color="warning">
+  <v-footer class="d-flex flex-row justify-center h-5">
+    <v-chip color="warning">
       {{ config.public.appVersion }}
     </v-chip>
     <v-spacer></v-spacer>

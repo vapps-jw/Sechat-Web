@@ -9,16 +9,6 @@
   flex-direction: column;
 }
 
-.sechat-v-card-text-full {
-  /* flex-grow: 1; */
-  overflow: auto;
-}
-
-.sechat-flex-grow-overflow {
-  /* flex-grow: 1; */
-  overflow: auto;
-}
-
 .sechat-message-input {
   width: 100%;
   position: absolute;
