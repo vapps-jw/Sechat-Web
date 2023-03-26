@@ -243,14 +243,14 @@ export const useChatStore = () => {
       scrollToBottom("chatView");
     }
 
-    if (message.nameSentBy !== userData.getUsername.value) {
-      console.warn("--> Notification on Message Incoming", message);
-      notifications.newMessageNotification({
-        roomName: roomToUpdate.name,
-        sender: message.nameSentBy,
-        text: message.text,
-      });
-    }
+    // if (message.nameSentBy !== userData.getUsername.value) {
+    //   console.warn("--> Notification on Message Incoming", message);
+    //   notifications.newMessageNotification({
+    //     roomName: roomToUpdate.name,
+    //     sender: message.nameSentBy,
+    //     text: message.text,
+    //   });
+    // }
   };
 
   return {

@@ -25,6 +25,33 @@ export const useChatApi = () => {
     } catch (error) {}
   };
 
+  const sendMessage = async (message: string, roomId: string) => {
+    console.log("--> Sending message:", message);
+
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/send-message`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          Text: message,
+          RoomId: roomId,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusMessage: "Failed to send message",
+        statusCode: apiError.value.statusCode,
+      });
+    }
+  };
+
   const leaveRoom = async (room: IRoom) => {
     console.warn("--> API Leave Room", room);
 
@@ -84,5 +111,5 @@ export const useChatApi = () => {
     }
   };
 
-  return { getState, inviteToRoom, leaveRoom };
+  return { getState, inviteToRoom, leaveRoom, sendMessage };
 };

@@ -64,6 +64,7 @@ const signalR = useSignalR();
 const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
 const chatStore = useChatStore();
+const sechatNotification = useSechatNotifications();
 
 const notificationAllowed = computed(() => {
   return Notification.permission === "granted";
@@ -72,16 +73,6 @@ const notificationAllowed = computed(() => {
 onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
   appStore.showLoadingOverlay();
-
-  console.warn("--> Setting up service worker");
-  if (navigator.serviceWorker) {
-    navigator.serviceWorker.ready.then((registration) => {
-      console.warn("--> Adding notification click-close event handler");
-      registration.addEventListener("notificationclick", function (event) {
-        event.notification.close();
-      });
-    });
-  }
 
   console.warn("--> Getting State");
   const chatState = await chatApi.getState();
