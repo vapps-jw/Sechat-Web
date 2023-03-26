@@ -1,8 +1,6 @@
 <template>
   <div>
-    <v-btn @click="sechatNotifications.subscribeToPush"
-      >Allow Notifications</v-btn
-    >
+    <v-btn @click="sechatNotifications.subscribeToPush">Subscribe</v-btn>
   </div>
 </template>
 

@@ -82,18 +82,43 @@ export const useSechatNotifications = () => {
         method: "POST",
         credentials: "include",
         body: subscriptionPayload,
+        onResponseError({ response }) {
+          if (response.status === 400) {
+            appStore.showSnackbar({
+              snackbar: true,
+              text: response._data,
+              timeout: 2000,
+              color: "warning",
+              icon: SnackbarIcons.Warning,
+              iconColor: "black",
+            });
+          } else {
+            appStore.showSnackbar({
+              snackbar: true,
+              text: "Subscription Failed",
+              timeout: 2000,
+              color: "error",
+              icon: SnackbarIcons.Error,
+              iconColor: "black",
+            });
+          }
+        },
       }
     );
 
     if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusMessage: "Failed to leave room",
-        statusCode: apiError.value.statusCode,
-      });
+      console.error("--> API Error - Subscription");
+      return;
     }
 
-    console.log("--> Push Subscription Sent...");
+    appStore.showSnackbar({
+      snackbar: true,
+      text: "Subscribed",
+      timeout: 2000,
+      color: "success",
+      icon: SnackbarIcons.Success,
+      iconColor: "black",
+    });
   };
 
   function urlBase64ToUint8Array(base64String) {

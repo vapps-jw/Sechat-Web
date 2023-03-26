@@ -22,7 +22,7 @@
             </template>
           </v-list-item>
           <v-divider class="mt-10" />
-          <v-list-subheader>Permissions</v-list-subheader>
+          <v-list-subheader>Notifications</v-list-subheader>
           <v-list-item>
             <template v-slot:prepend>
               <ChatProfileAllowNotifications />
