@@ -6,7 +6,7 @@
           <NuxtImg src="/logos/sechat-black-tr-300x300.png" alt=""></NuxtImg>
         </div>
         <div class="d-flex justify-center flex-wrap">
-          <v-chip class="ma-2" color="warning"> BETA v0.3.2 </v-chip>
+          <v-chip class="ma-2" color="warning"> BETA v0.3.3 </v-chip>
           <v-chip class="ma-2" color="warning">
             For best experience use as PWA
           </v-chip>
@@ -20,23 +20,7 @@
   </v-app>
 </template>
 
-<script setup lang="ts">
-onMounted(() => {
-  // console.warn(
-  //   "--> Chekcing notification permission",
-  //   notificationsAllowed.value
-  // );
-  // if (!notificationsAllowed.value) {
-  //   console.warn("--> Requesting notification permission");
-  //   Notification.requestPermission().then((result) => {
-  //     if (result === "granted") {
-  //       console.warn("--> Permission Granted");
-  //       notificationsAllowed.value = Notification.permission === "granted";
-  //     }
-  //   });
-  // }
-});
-</script>
+<script setup lang="ts"></script>
 
 <style scoped>
 .page-enter-active,
