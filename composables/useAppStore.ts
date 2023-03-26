@@ -39,6 +39,16 @@ export const useAppStore = () => {
     clearInterval(pingServerInterval.value);
   };
 
+  const handleOffline = () => {
+    console.warn("--> Handling Offline from SignalR");
+    isOnline.value = false;
+  };
+
+  const handleOnline = async () => {
+    console.warn("--> Handling Online from SignalR");
+    isOnline.value = true;
+  };
+
   const showLoadingOverlay = () => {
     loadingOverlayVisible.value = true;
   };
@@ -130,15 +140,8 @@ export const useAppStore = () => {
     });
   };
 
-  const handleOffline = () => {
-    console.warn("--> Handling Offline from App Store");
-  };
-
-  const handleOnline = async () => {
-    console.warn("--> Handling Online from App Store");
-  };
-
   return {
+    isOnline,
     localLanguage,
     snackbarData,
     loadingOverlayVisible,

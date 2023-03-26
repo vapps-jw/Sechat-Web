@@ -37,33 +37,38 @@
           Cancel
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="error" variant="text" @click="inviteUserToRoom">
-          Invite
-        </v-btn>
+        <v-btn color="error" variant="text" @click="invite"> Invite </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
+import { SnackbarMessages } from "~~/utilities/globalEnums";
+
 const chatStore = useChatStore();
 const dialog = ref<boolean>(false);
 const chosenConnection = ref<IConnectionRequest>();
 
-const emit = defineEmits(["inviteUserToRoom"]);
+const appStore = useAppStore();
+const chatApi = useChatApi();
 
-onUpdated(() => {
-  console.log(
-    "--> Available users",
-    chatStore.getConnectionsAllowedForActiveRoom.value
-  );
-});
+interface PropsModel {
+  roomId: string;
+}
 
-const inviteUserToRoom = async () => {
-  console.log("--> Inviting to Room", chosenConnection.value);
-  emit("inviteUserToRoom", chosenConnection.value);
-  chosenConnection.value = null;
-  dialog.value = false;
+const props = defineProps<PropsModel>();
+
+const invite = async () => {
+  try {
+    await chatApi.inviteToRoom(chosenConnection.value, props.roomId);
+    appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  } catch (error) {
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
+  } finally {
+    chosenConnection.value = null;
+    dialog.value = false;
+  }
 };
 
 const hasOccurrences = (item: any, queryText: any) => {

@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 const dialog = ref<boolean>(false);
-const emit = defineEmits(["roomCreateRequested"]);
+const signalR = useSignalR();
 
 const roomCreateForm = ref<HTMLFormElement>();
 const roomData = ref({
@@ -52,7 +52,7 @@ const createRoom = async () => {
     return;
   }
 
-  emit("roomCreateRequested", roomData.value.name);
+  signalR.createRoom(roomData.value.name);
   roomData.value.name = "";
   dialog.value = false;
 };

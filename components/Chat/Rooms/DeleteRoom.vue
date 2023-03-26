@@ -22,7 +22,7 @@
           <v-btn
             color="error"
             variant="text"
-            @click="() => deleteRoom(props.room.id)"
+            @click="deleteRoom(props.room.id)"
           >
             Yes
           </v-btn>
@@ -33,18 +33,36 @@
 </template>
 
 <script setup lang="ts">
+import { SnackbarMessages } from "~~/utilities/globalEnums";
+
 const dialog = ref<boolean>(false);
 
 interface PropsModel {
   room: IRoom;
 }
 
-const emit = defineEmits(["roomDeleteRequested"]);
 const props = defineProps<PropsModel>();
 
-const deleteRoom = (roomId: string) => {
-  emit("roomDeleteRequested", roomId);
+const appStore = useAppStore();
+const config = useRuntimeConfig();
+
+const deleteRoom = async (roomId: string) => {
+  console.log("--> API Deleting room", roomId);
+  const { error: deleteError } = await useFetch(
+    `${config.public.apiBase}/chat/delete-room/?roomId=${roomId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
   dialog.value = false;
+
+  if (deleteError.value) {
+    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    return;
+  }
+  appStore.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 

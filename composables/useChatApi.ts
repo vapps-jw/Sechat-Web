@@ -1,12 +1,9 @@
 export const useChatApi = () => {
   const config = useRuntimeConfig();
-  const chatStore = useChatStore();
-  const appStore = useAppStore();
 
-  const getState = async () => {
-    console.log("--> Getting State");
+  const getState = async (): Promise<IChatState> => {
+    console.log("--> Getting State from API");
     try {
-      appStore.showLoadingOverlay();
       const { error: apiError, data: chatState } = await useFetch<IChatState>(
         `${config.public.apiBase}/chat/get-state`,
         {
@@ -24,18 +21,95 @@ export const useChatApi = () => {
       }
 
       console.log("--> State Fetched", chatState.value);
-      chatStore.loadRooms(chatState.value.rooms);
-      chatStore.loadUserConnections(chatState.value.userConnections);
-    } catch (error) {
-    } finally {
-      appStore.hideLoadingOverlay();
+      return chatState.value;
+    } catch (error) {}
+  };
+
+  const sendMessage = async (message: string, roomId: string) => {
+    console.log("--> Sending message:", message);
+
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/send-message`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          Text: message,
+          RoomId: roomId,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusMessage: "Failed to send message",
+        statusCode: apiError.value.statusCode,
+      });
     }
   };
 
-  const handleOnline = async () => {
-    console.warn("--> Handling Online from Chat API");
-    await getState();
+  const leaveRoom = async (room: IRoom) => {
+    console.warn("--> API Leave Room", room);
+
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/leave-room`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          RoomId: room.id,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusMessage: "Failed to leave room",
+        statusCode: apiError.value.statusCode,
+      });
+    }
   };
 
-  return { getState, handleOnline };
+  const inviteToRoom = async (
+    chosenConnection: IConnectionRequest,
+    roomId: string
+  ) => {
+    console.warn("--> API Inviting User", chosenConnection);
+
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/add-to-room`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          userName: chosenConnection.displayName,
+          RoomId: roomId,
+          ConnectionId: chosenConnection.id,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      const displayError = createError({
+        ...apiError.value,
+        statusMessage: "Sign in Failed",
+        statusCode: apiError.value.statusCode,
+      });
+      console.log("--> Throwing Error", displayError);
+      throw displayError;
+    }
+  };
+
+  return { getState, inviteToRoom, leaveRoom, sendMessage };
 };

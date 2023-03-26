@@ -1,4 +1,5 @@
 import * as signalR from "@microsoft/signalr";
+import { scrollToBottom } from "~~/utilities/documentFunctions";
 import { VisibilityStates, SignalRState } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
@@ -28,8 +29,6 @@ export const useSignalR = () => {
     () => null
   );
 
-  const isOnline = useState<boolean>("isOnlineForSignalR", () => true);
-
   const isConnected = computed(() => {
     if (
       connection.value &&
@@ -41,7 +40,6 @@ export const useSignalR = () => {
   });
 
   const connectionState = computed(() => {
-    console.warn("--> SignalR State computer triggered");
     if (!connection.value) {
       return SignalRState.Disconnected;
     }
@@ -125,7 +123,11 @@ export const useSignalR = () => {
         chatStore.loadUserConnections(chatState.value.userConnections);
 
         console.log("--> Reconnected, connectiong to Rooms ...");
-        _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
+        _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
+
+        if (chatStore.activeRoomId.value) {
+          scrollToBottom("chatView");
+        }
       } catch (error) {
       } finally {
         appStore.hideLoadingOverlay();
@@ -136,14 +138,14 @@ export const useSignalR = () => {
     await connection.value.start();
 
     if (connection.value.state === signalR.HubConnectionState.Connected) {
-      console.log("--> Connection Established");
-      console.log("--> Connecting to Rooms");
-      _connectToRooms(chatStore.getRooms.value.map((r) => r.id));
+      console.log("--> Connection Established, connectiong to Rooms ...");
+      _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
+
       return;
     }
   };
 
-  const tryReconnect = async () => {
+  const connect = async () => {
     if (
       connection.value &&
       connection.value.state === signalR.HubConnectionState.Connected
@@ -153,58 +155,39 @@ export const useSignalR = () => {
     }
     if (!connection.value) {
       await createNewConnection();
-      return;
     }
     if (
       connection.value &&
       connection.value.state !== signalR.HubConnectionState.Connected
     ) {
-      console.log("--> Starting Current Connection");
+      console.log("--> Starting Current Connection, connecting to Rooms");
       await connection.value.start();
-    }
-
-    if (connection.value.state === signalR.HubConnectionState.Connected) {
-      console.log("--> Connected");
-      return;
-    } else {
-      console.error("--> Not Connected");
-      return;
+      _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
     }
   };
 
   const closeConnection = async () => {
-    console.log("--> Closing connection");
-    if (connection.value !== null) {
-      console.log("--> Calling stop method");
-      connection.value.stop();
+    if (connection.value) {
+      console.log("--> Closing connection, calling stop method");
+      await connection.value.stop();
+      connection.value = null;
       return;
+    } else {
+      console.log("--> No connection to close");
     }
   };
 
-  const handleOffline = () => {
-    console.warn("--> Handling Offline from SignalR");
-    isOnline.value = false;
-  };
-
-  const handleOnline = async () => {
-    console.warn("--> Handling Online from SignalR");
-    isOnline.value = true;
-  };
-
   const handleVisibilityChange = () => {
-    console.log("--> Visibility changed", document?.visibilityState);
+    console.warn("--> Visibility changed", document?.visibilityState);
     if (!document) return;
     if (document.visibilityState === VisibilityStates.VISIBLE) {
       try {
         console.log(
           `--> APP Resumed, Connection: ${connection.value} State: ${connection.value?.state}`
         );
-        appStore.showLoadingOverlay();
-        tryReconnect();
+        connect();
       } catch (error) {
         console.error("--> APP Resume Error!");
-      } finally {
-        appStore.hideLoadingOverlay();
       }
     }
   };
@@ -390,12 +373,11 @@ export const useSignalR = () => {
 
   const createRoom = (name: string) => {
     console.log("--> Connection state:", connection.value.state);
-    console.log("--> Creating room:", name);
+    console.log("--> SignalR Creating Room:", name);
     connection.value
       .invoke(SignalRHubMethods.CreateRoom, { RoomName: name })
       .then((newRoom: IRoom) => {
         console.log("--> New room created", newRoom);
-        const chatStore = useChatStore();
         chatStore.addRoom(newRoom);
         _connectToRoom(newRoom.id);
         appStore.showSuccessSnackbar("Room created");
@@ -462,16 +444,13 @@ export const useSignalR = () => {
   };
 
   return {
-    isOnline,
     connectionState,
     isConnected,
     connectionPresent,
     closeConnection,
     createRoom,
     sendMessage,
-    tryReconnect,
+    connect,
     handleVisibilityChange,
-    handleOffline,
-    handleOnline,
   };
 };

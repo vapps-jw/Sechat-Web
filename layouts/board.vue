@@ -9,35 +9,47 @@
       <v-icon
         v-if="
           signalR.connectionState.value === SignalRState.Connected &&
-          signalR.isOnline.value
+          appStore.isOnline.value
         "
         icon="mdi-web-check"
-        size="x-large"
+        size="small"
         color="success"
       ></v-icon>
       <v-icon
         v-if="
           signalR.connectionState.value === SignalRState.Connecting &&
-          signalR.isOnline.value
+          appStore.isOnline.value
         "
         icon="mdi-web-sync"
-        size="x-large"
+        size="small"
         color="warning"
       ></v-icon>
       <v-icon
         v-if="
           signalR.connectionState.value === SignalRState.Disconnected &&
-          signalR.isOnline.value
+          appStore.isOnline.value
         "
         icon="mdi-web-remove"
-        size="x-large"
+        size="small"
         color="error"
       ></v-icon>
       <v-icon
-        v-if="!signalR.isOnline.value"
+        v-if="!appStore.isOnline.value"
         icon="mdi-web-off"
-        size="x-large"
+        size="small"
         color="grey-lighten-1"
+      ></v-icon>
+      <v-icon
+        v-if="notificationAllowed"
+        icon="mdi-bell"
+        size="small"
+        color="success"
+      ></v-icon>
+      <v-icon
+        v-if="!notificationAllowed"
+        icon="mdi-bell-off"
+        size="small"
+        color="error"
       ></v-icon>
     </v-footer>
   </v-app>
@@ -46,27 +58,59 @@
 <script setup lang="ts">
 import { SignalRState } from "~~/utilities/globalEnums";
 
-const lockResolver = ref(null);
+//const lockResolver = ref(null);
 const appStore = useAppStore();
 const signalR = useSignalR();
 const chatApi = useChatApi();
+const refreshHandler = useRefreshHandler();
+const chatStore = useChatStore();
+const sechatNotification = useSechatNotifications();
+
+const notificationAllowed = computed(() => {
+  return Notification.permission === "granted";
+});
 
 onMounted(async () => {
-  console.warn("--> App onMounted");
+  console.warn("--> Chat Layout onMounted");
+  appStore.showLoadingOverlay();
 
-  console.info("--> Hooking to visibilitychange");
+  console.warn("--> Getting State");
+  const chatState = await chatApi.getState();
+
+  chatStore.loadRooms(chatState.rooms);
+  chatStore.loadUserConnections(chatState.userConnections);
+
+  await signalR.connect();
+
+  console.info("--> Hooking to visibility change");
   window.addEventListener("visibilitychange", () => {
-    signalR.handleVisibilityChange();
-    chatApi.getState();
+    refreshHandler.handleVisibilityChange();
   });
+
+  console.info("--> Hooking to online change");
+  window.addEventListener("online", () => refreshHandler.handleOnlineChange());
+  window.addEventListener("offline", () => refreshHandler.handleOnlineChange());
+
+  appStore.hideLoadingOverlay();
 });
 
 onBeforeUnmount(() => {
-  console.warn("--> App onBeforeUnmount");
-  window.removeEventListener("visibilitychange", () => {
-    signalR.handleVisibilityChange();
-    chatApi.getState();
-  });
+  console.warn("--> Chat Layout onBeforeUnmount");
+
+  signalR.closeConnection();
+
+  console.info("--> Removing Hook to visibility change");
+  window.removeEventListener("visibilitychange", () =>
+    refreshHandler.handleVisibilityChange()
+  );
+
+  console.info("--> Removing Hook to online change");
+  window.removeEventListener("online", () =>
+    refreshHandler.handleOnlineChange()
+  );
+  window.removeEventListener("offline", () =>
+    refreshHandler.handleOnlineChange()
+  );
 });
 
 // console.info("--> Handling lock");

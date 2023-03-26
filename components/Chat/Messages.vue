@@ -13,7 +13,9 @@
           chatStore.getActiveRoom.value.name
         }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <chat-messages-members-panel @invite-user-to-room="inviteToRoom" />
+        <chat-messages-members-panel
+          :room-id="chatStore.getActiveRoom.value.id"
+        />
       </v-toolbar>
       <chat-messages-room-members />
       <v-divider />
@@ -38,11 +40,8 @@
 
 <script setup lang="ts">
 import { scrollToBottom } from "@/utilities/documentFunctions";
-import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useChatStore();
-const appStore = useAppStore();
-const config = useRuntimeConfig();
 const userData = useUserData();
 
 onUpdated(() => {
@@ -52,31 +51,5 @@ onUpdated(() => {
 
 const isActiveUser = (message: IMessage) => {
   return message.nameSentBy === userData.getUsername.value;
-};
-
-const inviteToRoom = async (data: IConnectionRequest) => {
-  console.warn("--> API Inviting User", data);
-  const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/chat/add-to-room`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      credentials: "include",
-      body: {
-        userName: data.displayName,
-        RoomId: chatStore.activeRoomId,
-        ConnectionId: data.id,
-      },
-    }
-  );
-
-  if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
-    return;
-  }
-
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>

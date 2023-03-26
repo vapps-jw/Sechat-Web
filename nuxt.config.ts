@@ -1,16 +1,23 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   typescript: {
     strict: false,
   },
-  plugins: ["~/plugins/nuxtClientInit.client.ts"],
+  plugins: [
+    "~/plugins/nuxtClientInit.client.ts",
+    { src: "~/plugins/pwa-update.ts", mode: "client" },
+  ],
   runtimeConfig: {
     public: {
+      publicVapidKey:
+        "BIazXIHc0G_xFGTio-sMOdSbarBmeVNtcKaQGsV6mLnaO1cn3_b_-j218VFz5YiSOWaVHX58tRo_dbkHh-xXfpg",
       apiBase: process.env.API_BASE_URL || "https://api.sechat.net",
     },
   },
   modules: ["@nuxt/image-edge", "@nuxtjs/i18n", "@vite-pwa/nuxt"],
   pwa: {
+    registerType: "autoUpdate",
+    strategies: "injectManifest",
+    filename: "sw.js",
     manifest: {
       name: "Sechat",
       short_name: "Sechat",
@@ -43,6 +50,7 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: "/",
+      sourcemap: true,
     },
     devOptions: {
       enabled: true,
