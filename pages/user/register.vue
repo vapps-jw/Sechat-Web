@@ -1,6 +1,6 @@
 <template>
   <v-sheet class="bg-transparent pa-12" rounded>
-    <v-card class="mx-auto px-6 py-8" max-width="344">
+    <v-card class="mx-auto px-6 py-8" max-width="380">
       <v-form v-model="form" @submit.prevent="onSubmit">
         <v-text-field
           v-model="credentials.username"
@@ -86,6 +86,9 @@ const credentials = ref({
   passwordRules: [
     (v) => !!v || "Password is required",
     (v) => (v && v.length <= 20) || "Max 20 characters",
+    (v) => (v && v.length > 8) || "Min 8 characters",
+    (v) => (v && /[A-Z]/.test(v)) || "At least one Uppercase character",
+    (v) => (v && /\W/.test(v)) || "At least one special character",
   ],
 });
 </script>
