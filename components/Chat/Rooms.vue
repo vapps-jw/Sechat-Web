@@ -1,6 +1,6 @@
 <template>
-  <v-container class="pa-1 ma-0">
-    <v-card class="mx-auto sechat-v-card-full" max-width="800">
+  <v-container>
+    <v-card class="sechat-v-card-full">
       <v-toolbar>
         <v-toolbar-title>Rooms</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -15,12 +15,12 @@
           >
             <template v-slot:append>
               <chat-rooms-delete-room
-                v-if="room.creatorName === userData.userProfile.value.userName"
+                v-if="room.creatorName === userStore.getUserName"
                 :room="room"
                 class="mr-2"
               />
               <v-btn
-                v-if="room.creatorName !== userData.userProfile.value.userName"
+                v-if="room.creatorName !== userStore.getUserName"
                 @click="leaveRoom(room)"
                 size="small"
                 icon="mdi-exit-to-app"
@@ -48,9 +48,9 @@
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useChatStore();
-const userData = useUserData();
 const chatApi = useChatApi();
 const appStore = useAppStore();
+const userStore = useUserStore();
 
 const leaveRoom = async (room: IRoom) => {
   try {

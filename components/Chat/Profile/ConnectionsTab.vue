@@ -41,8 +41,7 @@
               <template v-slot:append>
                 <v-btn
                   v-if="
-                    uc.blocked &&
-                    uc.blockedByName === userData.userProfile.value.userName
+                    uc.blocked && uc.blockedByName === userStore.getUserName
                   "
                   @click="async () => allowConnection(uc.id)"
                   class="mx-2"
@@ -62,8 +61,7 @@
                 ></v-btn>
                 <v-btn
                   v-if="
-                    !uc.approved &&
-                    uc.invitedName === userData.userProfile.value.userName
+                    !uc.approved && uc.invitedName === userStore.getUserName
                   "
                   @click="async () => approveConnection(uc.id)"
                   class="mx-2"
@@ -94,11 +92,9 @@ import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const dialog = ref<boolean>(false);
 const chatStore = useChatStore();
-const userData = useUserData();
 const config = useRuntimeConfig();
 const appStore = useAppStore();
-
-const isBusy = ref<boolean>(false);
+const userStore = useUserStore();
 
 const blockConnection = async (id: number) => {
   console.log("--> Calling connection block");

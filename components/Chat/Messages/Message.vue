@@ -8,7 +8,7 @@
       "
     >
       <v-card-subtitle
-        v-if="userData.getUsername.value === props.message.nameSentBy"
+        v-if="userStore.getUserName === props.message.nameSentBy"
         :class="isActiveUser(message) ? 'text-right' : ''"
         class="text-xs"
       >
@@ -43,8 +43,8 @@
 </template>
 
 <script setup lang="ts">
-const userData = useUserData();
 const appStore = useAppStore();
+const userStore = useUserStore();
 
 interface PropsModel {
   message: IMessage;
@@ -53,7 +53,7 @@ interface PropsModel {
 const props = defineProps<PropsModel>();
 
 const isActiveUser = (message: IMessage) => {
-  return message.nameSentBy === userData.getUsername.value;
+  return message.nameSentBy === userStore.getUserName;
 };
 </script>
 

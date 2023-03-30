@@ -2,6 +2,9 @@ export default defineNuxtConfig({
   typescript: {
     strict: false,
   },
+  imports: {
+    dirs: ["stores"],
+  },
   plugins: [
     "~/plugins/nuxtClientInit.client.ts",
     { src: "~/plugins/pwa-update.ts", mode: "client" },
@@ -14,7 +17,17 @@ export default defineNuxtConfig({
       apiBase: process.env.API_BASE_URL || "https://api.sechat.net",
     },
   },
-  modules: ["@nuxt/image-edge", "@nuxtjs/i18n", "@vite-pwa/nuxt"],
+  modules: [
+    "@nuxt/image-edge",
+    "@nuxtjs/i18n",
+    "@vite-pwa/nuxt",
+    [
+      "@pinia/nuxt",
+      {
+        autoImports: ["defineStore", "acceptHMRUpdate"],
+      },
+    ],
+  ],
   pwa: {
     registerType: "autoUpdate",
     strategies: "injectManifest",

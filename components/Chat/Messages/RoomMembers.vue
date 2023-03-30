@@ -27,8 +27,8 @@ import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useChatStore();
 const appStore = useAppStore();
-const userData = useUserData();
 const config = useRuntimeConfig();
+const userStore = useUserStore();
 
 const removeUserFromRoom = async (data: IMemeber) => {
   if (chatStore.getActiveRoom.value.members.length == 1) {
@@ -39,7 +39,7 @@ const removeUserFromRoom = async (data: IMemeber) => {
   console.warn(
     "--> Room creator check",
     data.userName,
-    userData.getUsername.value,
+    userStore.getUserName,
     chatStore.getActiveRoom.value.creatorName
   );
   if (data.userName === chatStore.getActiveRoom.value.creatorName) {

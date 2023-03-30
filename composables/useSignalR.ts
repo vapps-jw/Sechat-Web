@@ -6,7 +6,7 @@ export const useSignalR = () => {
   const appStore = useAppStore();
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
-  const userData = useUserData();
+  const userStore = useUserStore();
 
   const SignalRHubMethods = {
     SendMessage: "SendMessage",
@@ -402,7 +402,7 @@ export const useSignalR = () => {
 
   const _handleUserRemovedFromRoomActions = (options: IUserRoomOptions) => {
     console.warn("--> Handling UserRemovedFromRoom in SignalR", options);
-    if (userData.getUsername.value === options.userName) {
+    if (userStore.getUserName === options.userName) {
       console.warn("--> Active user is being removed - signalR");
       _disconnectFromRoom(options.roomId);
       chatStore.handleUserRemovedFromRoom(options);

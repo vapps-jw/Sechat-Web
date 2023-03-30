@@ -6,7 +6,7 @@
       </div>
     </v-card>
   </v-container>
-  <v-container v-else class="pa-1 ma-0">
+  <v-container v-else>
     <v-card class="sechat-v-card-full">
       <v-toolbar>
         <v-toolbar-title>{{
@@ -42,7 +42,7 @@
 import { scrollToBottom } from "@/utilities/documentFunctions";
 
 const chatStore = useChatStore();
-const userData = useUserData();
+const userStore = useUserStore();
 
 onUpdated(() => {
   console.log("--> onUpdated Scrolling");
@@ -50,6 +50,6 @@ onUpdated(() => {
 });
 
 const isActiveUser = (message: IMessage) => {
-  return message.nameSentBy === userData.getUsername.value;
+  return message.nameSentBy === userStore.getUserName;
 };
 </script>

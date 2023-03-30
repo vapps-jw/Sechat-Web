@@ -4,7 +4,7 @@
       <client-only>
         <div
           class="d-flex flex-column align-center"
-          v-if="userData.isSignedIn.value"
+          v-if="userStore.isSignedIn"
         >
           <v-btn class="my-2" size="large">
             <NuxtLink class="sechat-link-clear" :to="`/chat`">Chat</NuxtLink>
@@ -30,6 +30,7 @@
 
 <script setup lang="ts">
 const userData = useUserData();
+const userStore = useUserStore();
 const chatStore = useChatStore();
 
 const signOut = () => {

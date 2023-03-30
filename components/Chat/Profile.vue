@@ -1,10 +1,8 @@
 <template>
-  <v-container class="pa-1 ma-0">
-    <v-card class="mx-auto sechat-v-card-full" max-width="800">
+  <v-container>
+    <v-card class="sechat-v-card-full">
       <v-toolbar>
-        <v-toolbar-title>{{
-          userData.userProfile.value.userName
-        }}</v-toolbar-title>
+        <v-toolbar-title>{{ userStore.getUserName }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn
           @click="backToHomePage"
@@ -51,9 +49,9 @@
 <script setup lang="ts">
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
-const userData = useUserData();
 const config = useRuntimeConfig();
 const appStore = useAppStore();
+const userStore = useUserStore();
 
 const backToHomePage = () => {
   navigateTo("/");

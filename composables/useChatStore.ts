@@ -1,8 +1,7 @@
 import { scrollToBottom } from "~~/utilities/documentFunctions";
 
 export const useChatStore = () => {
-  const userData = useUserData();
-  const notifications = useSechatNotifications();
+  const userStore = useUserStore();
 
   const ChatViews = {
     Messages: "messages",
@@ -65,7 +64,7 @@ export const useChatStore = () => {
       (uc) =>
         !uc.blocked &&
         uc.approved &&
-        uc.displayName !== userData.getUsername.value &&
+        uc.displayName !== userStore.getUserName &&
         !getActiveRoom.value.members.some(
           (arm) => arm.userName === uc.displayName
         )
@@ -84,7 +83,7 @@ export const useChatStore = () => {
 
   const handleConnectionRequestReceived = (data: IConnectionRequest) => {
     console.warn("--> Connection Request Received", data);
-    if (data.invitedName === userData.userProfile.value.userName) {
+    if (data.invitedName === userStore.getUserName) {
       data.displayName = data.inviterName;
     } else {
       data.displayName = data.invitedName;
@@ -104,7 +103,7 @@ export const useChatStore = () => {
 
   const handleConnectionUpdated = (data: IConnectionRequest) => {
     console.log("--> User Connection Updated Event Handled", data);
-    if (data.invitedName === userData.userProfile.value.userName) {
+    if (data.invitedName === userStore.getUserName) {
       data.displayName = data.inviterName;
     } else {
       data.displayName = data.invitedName;
@@ -119,7 +118,7 @@ export const useChatStore = () => {
   const loadUserConnections = (data: IConnectionRequest[]) => {
     console.log("--> Adding user connecitons to the Store", data);
     data.forEach((uc) => {
-      if (uc.invitedName === userData.userProfile.value.userName) {
+      if (uc.invitedName === userStore.getUserName) {
         uc.displayName = uc.inviterName;
       } else {
         uc.displayName = uc.invitedName;
@@ -166,7 +165,7 @@ export const useChatStore = () => {
       options
     );
 
-    if (userData.getUsername.value === options.userName) {
+    if (userStore.getUserName === options.userName) {
       console.warn("--> Active user is being removed - Chat Store");
       if (activeRoomId.value === options.roomId) {
         activeRoomId.value = "";
