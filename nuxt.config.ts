@@ -9,6 +9,9 @@ export default defineNuxtConfig({
     "~/plugins/nuxtClientInit.client.ts",
     { src: "~/plugins/pwa-update.ts", mode: "client" },
   ],
+  alias: {
+    pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs",
+  },
   runtimeConfig: {
     public: {
       appVersion: "BETA v0.3.9",
