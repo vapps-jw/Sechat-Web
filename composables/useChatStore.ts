@@ -2,6 +2,7 @@ import { scrollToBottom } from "~~/utilities/documentFunctions";
 
 export const useChatStore = () => {
   const userStore = useUserStore();
+  const chatStore = useSechatChatStore();
 
   const ChatViews = {
     Messages: "messages",

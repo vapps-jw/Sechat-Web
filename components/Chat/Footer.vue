@@ -28,18 +28,6 @@
       size="small"
       color="grey-lighten-1"
     ></v-icon>
-    <!-- <v-icon
-      v-if="notificationAllowed"
-      icon="mdi-bell"
-      size="small"
-      color="success"
-    ></v-icon>
-    <v-icon
-      v-if="!notificationAllowed"
-      icon="mdi-bell-off"
-      size="small"
-      color="error"
-    ></v-icon> -->
   </v-footer>
 </template>
 
