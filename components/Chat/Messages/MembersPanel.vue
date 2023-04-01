@@ -71,6 +71,21 @@ const invite = async () => {
   }
 };
 
+// const getConnectionsAllowedForActiveRoom = computed(() => {
+//   if (!getActiveRoom.value) {
+//     return [];
+//   }
+//   return availableConnections.value.filter(
+//     (uc) =>
+//       !uc.blocked &&
+//       uc.approved &&
+//       uc.displayName !== userStore.getUserName &&
+//       !getActiveRoom.value.members.some(
+//         (arm) => arm.userName === uc.displayName
+//       )
+//   );
+// });
+
 const hasOccurrences = (item: any, queryText: any) => {
   console.log("--> Lookup item", item);
   console.log("--> Lookup queryText", queryText);
