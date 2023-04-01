@@ -19,7 +19,7 @@ export const useRefreshHandler = () => {
 
   const handleOnlineChange = async () => {
     appStore.showLoadingOverlay();
-
+    // todo: add signalR reconnect
     appStore.handleOnline();
 
     const chatState = await chatApi.getState();
