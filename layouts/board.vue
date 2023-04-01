@@ -2,7 +2,7 @@
   <v-app id="chat-view">
     <v-main>
       <chat-snackbar />
-      <chat-loading-overlay :overlay="appStore.loadingOverlayVisible.value" />
+      <chat-loading-overlay :overlay="sechatAppStore.loadingOverlayVisible" />
       <slot />
     </v-main>
     <chat-footer />
@@ -11,7 +11,8 @@
 
 <script setup lang="ts">
 //const lockResolver = ref(null);
-const appStore = useAppStore();
+const sechatAppStore = useSechatAppStore();
+const sechatApp = useSechatApp();
 const signalR = useSignalR();
 const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
@@ -19,7 +20,7 @@ const chatStore = useChatStore();
 
 onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
-  appStore.showLoadingOverlay();
+  sechatApp.showLoadingOverlay();
 
   console.warn("--> Getting State");
   const chatState = await chatApi.getState();
@@ -38,7 +39,7 @@ onMounted(async () => {
   window.addEventListener("online", () => refreshHandler.handleOnlineChange());
   window.addEventListener("offline", () => refreshHandler.handleOnlineChange());
 
-  appStore.hideLoadingOverlay();
+  sechatApp.hideLoadingOverlay();
 });
 
 onBeforeUnmount(() => {

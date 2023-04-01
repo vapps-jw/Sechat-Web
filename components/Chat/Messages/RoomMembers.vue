@@ -26,13 +26,13 @@
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useChatStore();
-const appStore = useAppStore();
+const sechatApp = useSechatApp();
 const config = useRuntimeConfig();
 const userStore = useUserStore();
 
 const removeUserFromRoom = async (data: IMemeber) => {
   if (chatStore.getActiveRoom.value.members.length == 1) {
-    appStore.showWarningSnackbar("Last member has to delete Room");
+    sechatApp.showWarningSnackbar("Last member has to delete Room");
     return;
   }
 
@@ -43,7 +43,7 @@ const removeUserFromRoom = async (data: IMemeber) => {
     chatStore.getActiveRoom.value.creatorName
   );
   if (data.userName === chatStore.getActiveRoom.value.creatorName) {
-    appStore.showWarningSnackbar("Cant remove room creator");
+    sechatApp.showWarningSnackbar("Cant remove room creator");
     return;
   }
 
@@ -68,11 +68,11 @@ const removeUserFromRoom = async (data: IMemeber) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 

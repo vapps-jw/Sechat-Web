@@ -1,11 +1,12 @@
 export const useRefreshHandler = () => {
-  const appStore = useAppStore();
+  const appStore = useSechatAppStore();
+  const sechatApp = useSechatApp();
   const signalR = useSignalR();
   const chatApi = useChatApi();
   const chatStore = useChatStore();
 
   const handleVisibilityChange = async () => {
-    appStore.showLoadingOverlay();
+    appStore.updateLoadingOverlay(true);
 
     signalR.handleVisibilityChange();
 
@@ -14,28 +15,28 @@ export const useRefreshHandler = () => {
     chatStore.loadRooms(chatState.rooms);
     chatStore.loadUserConnections(chatState.userConnections);
 
-    appStore.hideLoadingOverlay();
+    appStore.updateLoadingOverlay(false);
   };
 
   const handleOnlineChange = async () => {
-    appStore.showLoadingOverlay();
+    appStore.updateLoadingOverlay(true);
     // todo: add signalR reconnect
-    appStore.handleOnline();
+    sechatApp.handleOnline();
 
     const chatState = await chatApi.getState();
 
     chatStore.loadRooms(chatState.rooms);
     chatStore.loadUserConnections(chatState.userConnections);
 
-    appStore.hideLoadingOverlay();
+    appStore.updateLoadingOverlay(true);
   };
 
   const handleOfflineChange = async () => {
-    appStore.showLoadingOverlay();
+    appStore.updateLoadingOverlay(true);
 
-    appStore.handleOffline();
+    sechatApp.handleOffline();
 
-    appStore.hideLoadingOverlay();
+    appStore.updateLoadingOverlay(false);
   };
 
   return { handleVisibilityChange, handleOnlineChange, handleOfflineChange };

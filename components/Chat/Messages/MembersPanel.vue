@@ -50,7 +50,7 @@ const chatStore = useChatStore();
 const dialog = ref<boolean>(false);
 const chosenConnection = ref<IConnectionRequest>();
 
-const appStore = useAppStore();
+const appStore = useSechatApp();
 const chatApi = useChatApi();
 
 interface PropsModel {

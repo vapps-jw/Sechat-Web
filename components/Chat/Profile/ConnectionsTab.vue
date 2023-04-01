@@ -93,7 +93,7 @@ import { SnackbarMessages } from "~~/utilities/globalEnums";
 const dialog = ref<boolean>(false);
 const chatStore = useChatStore();
 const config = useRuntimeConfig();
-const appStore = useAppStore();
+const sechatApp = useSechatApp();
 const userStore = useUserStore();
 
 const blockConnection = async (id: number) => {
@@ -111,10 +111,10 @@ const blockConnection = async (id: number) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const allowConnection = async (id: number) => {
@@ -131,10 +131,10 @@ const allowConnection = async (id: number) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const approveConnection = async (id: number) => {
@@ -151,11 +151,11 @@ const approveConnection = async (id: number) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const deleteConnection = async (id: number) => {
@@ -169,11 +169,11 @@ const deleteConnection = async (id: number) => {
   );
 
   if (deleteError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const createInvitation = async (userName: string) => {
@@ -193,11 +193,11 @@ const createInvitation = async (userName: string) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 

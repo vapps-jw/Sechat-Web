@@ -18,7 +18,7 @@ import { SnackbarIcons } from "~~/utilities/globalEnums";
 
 const chatStore = useChatStore();
 const signalR = useSignalR();
-const appStore = useAppStore();
+const appStore = useSechatApp();
 const chatApi = useChatApi();
 
 const newMessage = ref("");

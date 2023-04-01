@@ -3,7 +3,8 @@ import { scrollToBottom } from "~~/utilities/documentFunctions";
 import { VisibilityStates, SignalRState } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
-  const appStore = useAppStore();
+  const sechatStore = useSechatAppStore();
+  const sechatApp = useSechatApp();
   const config = useRuntimeConfig();
   const chatStore = useChatStore();
   const userStore = useUserStore();
@@ -68,7 +69,7 @@ export const useSignalR = () => {
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
           console.log("--> Reconnecting ...");
-          appStore.showLoadingOverlay();
+          sechatStore.updateLoadingOverlay(true);
           return 1000;
         },
       })
@@ -99,7 +100,7 @@ export const useSignalR = () => {
 
     connection.value.onreconnected(async (connectionId) => {
       try {
-        appStore.showLoadingOverlay();
+        sechatStore.updateLoadingOverlay(true);
 
         // Get the updates
         console.log("--> Reconnected, getting state ...");
@@ -130,7 +131,7 @@ export const useSignalR = () => {
         }
       } catch (error) {
       } finally {
-        appStore.hideLoadingOverlay();
+        sechatStore.updateLoadingOverlay(false);
       }
     });
 
@@ -380,7 +381,7 @@ export const useSignalR = () => {
         console.log("--> New room created", newRoom);
         chatStore.addRoom(newRoom);
         _connectToRoom(newRoom.id);
-        appStore.showSuccessSnackbar("Room created");
+        sechatApp.showSuccessSnackbar("Room created");
       })
       .catch((err) => {
         // todo: make auth work or remove it

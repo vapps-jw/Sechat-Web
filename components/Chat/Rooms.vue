@@ -49,7 +49,7 @@ import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useChatStore();
 const chatApi = useChatApi();
-const appStore = useAppStore();
+const sechatApp = useSechatApp();
 const userStore = useUserStore();
 
 const leaveRoom = async (room: IRoom) => {
@@ -57,10 +57,10 @@ const leaveRoom = async (room: IRoom) => {
     await chatApi.leaveRoom(room);
     chatStore.removeRoom(room);
   } catch (error) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 
