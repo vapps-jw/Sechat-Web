@@ -102,6 +102,8 @@ export const useSechatChat = () => {
       message,
       chatStore.activeRoomId
     );
+    // todo: handle views of the messages
+
     chatStore.addNewMessage(message);
 
     if (message.roomId === chatStore.activeRoomId) {
