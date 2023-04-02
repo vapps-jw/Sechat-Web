@@ -5,16 +5,15 @@
     </v-chip>
     <v-spacer></v-spacer>
     <v-icon
-      v-if="
-        connectionState === SignalRState.Connected && appStore.isOnline.value
-      "
+      v-if="signalRStore.connectionState === SignalRState.Connected"
       icon="mdi-web-check"
       size="small"
       color="success"
     ></v-icon>
     <v-icon
       v-if="
-        connectionState === SignalRState.Connecting && appStore.isOnline.value
+        signalRStore.connectionState === SignalRState.Connecting &&
+        appStore.isOnline
       "
       icon="mdi-web-sync"
       size="small"
@@ -22,56 +21,28 @@
     ></v-icon>
     <v-icon
       v-if="
-        connectionState === SignalRState.Disconnected && appStore.isOnline.value
+        signalRStore.connectionState === SignalRState.Disconnected &&
+        appStore.isOnline
       "
       icon="mdi-web-remove"
       size="small"
       color="error"
     ></v-icon>
     <v-icon
-      v-if="!appStore.isOnline.value"
+      v-if="!appStore.isOnline"
       icon="mdi-web-off"
       size="small"
       color="grey-lighten-1"
     ></v-icon>
-    <!-- <v-icon
-      v-if="notificationAllowed"
-      icon="mdi-bell"
-      size="small"
-      color="success"
-    ></v-icon>
-    <v-icon
-      v-if="!notificationAllowed"
-      icon="mdi-bell-off"
-      size="small"
-      color="error"
-    ></v-icon> -->
   </v-footer>
 </template>
 
 <script setup lang="ts">
 import { SignalRState } from "~~/utilities/globalEnums";
-import { HubConnectionState } from "@microsoft/signalr";
 
-const appStore = useAppStore();
-const signalR = useSignalR();
+const appStore = useSechatAppStore();
 const config = useRuntimeConfig();
-
-const connectionState = computed<string>(() => {
-  if (!signalR.connection.value) {
-    return SignalRState.Disconnected;
-  }
-  if (signalR.connection.value.state === HubConnectionState.Connected) {
-    return SignalRState.Connected;
-  }
-  if (
-    signalR.connection.value.state === HubConnectionState.Connecting ||
-    signalR.connection.value.state === HubConnectionState.Reconnecting
-  ) {
-    return SignalRState.Connecting;
-  }
-  return SignalRState.Disconnected;
-});
+const signalRStore = useSignalRStore();
 </script>
 
 <style scoped></style>

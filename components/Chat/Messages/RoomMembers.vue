@@ -1,11 +1,11 @@
 <template>
   <div class="d-flex">
     <v-chip
-      v-for="u in chatStore.getActiveRoomMembers.value"
+      v-for="u in chatStore.getActiveRoomMembers"
       :key="u.userName"
       class="ma-2"
       :color="
-        u.userName !== chatStore.getActiveRoom.value.creatorName
+        u.userName !== chatStore.getActiveRoom.creatorName
           ? 'primary'
           : 'warning'
       "
@@ -13,7 +13,7 @@
     >
       {{ u.userName }}
       <v-icon
-        v-if="u.userName !== chatStore.getActiveRoom.value.creatorName"
+        v-if="u.userName !== chatStore.getActiveRoom.creatorName"
         @click="async () => await removeUserFromRoom(u)"
         end
         icon="mdi-close-circle"
@@ -25,14 +25,14 @@
 <script setup lang="ts">
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
-const chatStore = useChatStore();
-const appStore = useAppStore();
+const chatStore = useSechatChatStore();
+const sechatApp = useSechatApp();
 const config = useRuntimeConfig();
 const userStore = useUserStore();
 
 const removeUserFromRoom = async (data: IMemeber) => {
-  if (chatStore.getActiveRoom.value.members.length == 1) {
-    appStore.showWarningSnackbar("Last member has to delete Room");
+  if (chatStore.getActiveRoom.members.length == 1) {
+    sechatApp.showWarningSnackbar("Last member has to delete Room");
     return;
   }
 
@@ -40,10 +40,10 @@ const removeUserFromRoom = async (data: IMemeber) => {
     "--> Room creator check",
     data.userName,
     userStore.getUserName,
-    chatStore.getActiveRoom.value.creatorName
+    chatStore.getActiveRoom.creatorName
   );
-  if (data.userName === chatStore.getActiveRoom.value.creatorName) {
-    appStore.showWarningSnackbar("Cant remove room creator");
+  if (data.userName === chatStore.getActiveRoom.creatorName) {
+    sechatApp.showWarningSnackbar("Cant remove room creator");
     return;
   }
 
@@ -58,8 +58,8 @@ const removeUserFromRoom = async (data: IMemeber) => {
       credentials: "include",
       body: {
         userName: data.userName,
-        RoomId: chatStore.getActiveRoom.value.id,
-        ConnectionId: chatStore.getConnections.value.find(
+        RoomId: chatStore.getActiveRoom.id,
+        ConnectionId: chatStore.getConnections.find(
           (c) =>
             c.invitedName === data.userName || c.inviterName === data.userName
         )?.id,
@@ -68,11 +68,11 @@ const removeUserFromRoom = async (data: IMemeber) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 

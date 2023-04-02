@@ -50,7 +50,7 @@
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const config = useRuntimeConfig();
-const appStore = useAppStore();
+const sechatApp = useSechatApp();
 const userStore = useUserStore();
 
 const backToHomePage = () => {
@@ -71,11 +71,11 @@ const deleteAccount = async () => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
   return navigateTo("/user/register");
 };
 </script>

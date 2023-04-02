@@ -24,7 +24,7 @@
           :custom-filter="hasOccurrences"
           item-title="displayName"
           item-text="displayName"
-          :items="chatStore.getConnectionsAllowedForActiveRoom.value"
+          :items="getConnectionsAllowedForActiveRoom"
           item-value="id"
           variant="solo"
           v-model="chosenConnection"
@@ -46,12 +46,13 @@
 <script setup lang="ts">
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
-const chatStore = useChatStore();
+const chatStore = useSechatChatStore();
 const dialog = ref<boolean>(false);
 const chosenConnection = ref<IConnectionRequest>();
 
-const appStore = useAppStore();
+const appStore = useSechatApp();
 const chatApi = useChatApi();
+const userStore = useUserStore();
 
 interface PropsModel {
   roomId: string;
@@ -70,6 +71,21 @@ const invite = async () => {
     dialog.value = false;
   }
 };
+
+const getConnectionsAllowedForActiveRoom = computed(() => {
+  if (!chatStore.activeRoomId) {
+    return [];
+  }
+  return chatStore.availableConnections.filter(
+    (uc) =>
+      !uc.blocked &&
+      uc.approved &&
+      uc.displayName !== userStore.getUserName &&
+      !chatStore.getActiveRoom.members.some(
+        (arm) => arm.userName === uc.displayName
+      )
+  );
+});
 
 const hasOccurrences = (item: any, queryText: any) => {
   console.log("--> Lookup item", item);

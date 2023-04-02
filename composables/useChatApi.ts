@@ -1,5 +1,6 @@
 export const useChatApi = () => {
   const config = useRuntimeConfig();
+  const userStore = useUserStore();
 
   const getState = async (): Promise<IChatState> => {
     console.log("--> Getting State from API");
@@ -21,6 +22,15 @@ export const useChatApi = () => {
       }
 
       console.log("--> State Fetched", chatState.value);
+
+      chatState.value.userConnections.forEach((uc) => {
+        if (uc.invitedName === userStore.userProfile.userName) {
+          uc.displayName = uc.inviterName;
+        } else {
+          uc.displayName = uc.invitedName;
+        }
+      });
+
       return chatState.value;
     } catch (error) {}
   };

@@ -14,7 +14,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      appVersion: "BETA v0.3.9",
+      appVersion: "BETA v0.4.0",
       publicVapidKey:
         "BIazXIHc0G_xFGTio-sMOdSbarBmeVNtcKaQGsV6mLnaO1cn3_b_-j218VFz5YiSOWaVHX58tRo_dbkHh-xXfpg",
       apiBase: process.env.API_BASE_URL || "https://api.sechat.net",
@@ -27,7 +27,7 @@ export default defineNuxtConfig({
     [
       "@pinia/nuxt",
       {
-        autoImports: ["defineStore", "acceptHMRUpdate"],
+        autoImports: ["defineStore", "acceptHMRUpdate", "storeToRefs"],
       },
     ],
   ],

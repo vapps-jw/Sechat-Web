@@ -31,11 +31,11 @@
 <script setup lang="ts">
 const userData = useUserData();
 const userStore = useUserStore();
-const chatStore = useChatStore();
+const sechatStore = useSechatChatStore();
 
 const signOut = () => {
   userData.signOut();
-  chatStore.clearState();
+  sechatStore.$reset();
 };
 </script>
 

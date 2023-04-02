@@ -13,9 +13,7 @@
         class="text-xs"
       >
         {{
-          new Date(props.message.created).toLocaleString(
-            appStore.localLanguage.value
-          )
+          new Date(props.message.created).toLocaleString(appStore.localLanguage)
         }}</v-card-subtitle
       >
       <v-card-subtitle
@@ -25,9 +23,7 @@
       >
         <strong> {{ props.message.nameSentBy }}</strong>
         {{
-          new Date(props.message.created).toLocaleString(
-            appStore.localLanguage.value
-          )
+          new Date(props.message.created).toLocaleString(appStore.localLanguage)
         }}
       </v-card-subtitle>
       <v-card-text class="px-0 py-0">
@@ -43,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-const appStore = useAppStore();
+const appStore = useSechatAppStore();
 const userStore = useUserStore();
 
 interface PropsModel {

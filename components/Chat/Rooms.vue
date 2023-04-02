@@ -9,7 +9,7 @@
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list>
           <v-list-item
-            v-for="room in chatStore.availableRooms.value"
+            v-for="room in chatStore.availableRooms"
             :key="room.id"
             :title="room.name"
           >
@@ -29,7 +29,7 @@
                 class="mr-2"
               ></v-btn>
               <v-btn
-                @click="chatStore.selectRoom(room)"
+                @click="selectRoomClicked(room.id)"
                 size="small"
                 icon="mdi-arrow-right"
                 color="success"
@@ -45,22 +45,27 @@
 </template>
 
 <script setup lang="ts">
+import { scrollToBottom } from "~~/utilities/documentFunctions";
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
-const chatStore = useChatStore();
+const chatStore = useSechatChatStore();
 const chatApi = useChatApi();
-const appStore = useAppStore();
+const sechatApp = useSechatApp();
 const userStore = useUserStore();
+
+const selectRoomClicked = (roomId: string) => {
+  chatStore.selectRoom(roomId);
+};
 
 const leaveRoom = async (room: IRoom) => {
   try {
     await chatApi.leaveRoom(room);
-    chatStore.removeRoom(room);
+    chatStore.deleteRoom(room.id);
   } catch (error) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 
