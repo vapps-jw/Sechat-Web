@@ -36,6 +36,8 @@ interface IMessage {
   text?: string;
   roomId?: string;
   created?: Date;
+  messageViewers?: string[];
+  wasViewed?: boolean;
 }
 
 interface IMemeber {

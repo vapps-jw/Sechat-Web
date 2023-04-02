@@ -35,6 +35,39 @@ export const useChatApi = () => {
     } catch (error) {}
   };
 
+  const markMessagesAsViewed = async (): Promise<IChatState> => {
+    console.log("--> Getting State from API");
+    try {
+      const { error: apiError, data: chatState } = await useFetch<IChatState>(
+        `${config.public.apiBase}/chat/get-state`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (apiError.value) {
+        throw createError({
+          ...apiError.value,
+          statusMessage: "Failed to pull state",
+          statusCode: apiError.value.statusCode,
+        });
+      }
+
+      console.log("--> State Fetched", chatState.value);
+
+      chatState.value.userConnections.forEach((uc) => {
+        if (uc.invitedName === userStore.userProfile.userName) {
+          uc.displayName = uc.inviterName;
+        } else {
+          uc.displayName = uc.invitedName;
+        }
+      });
+
+      return chatState.value;
+    } catch (error) {}
+  };
+
   const sendMessage = async (message: string, roomId: string) => {
     console.log("--> Sending message:", message);
 
