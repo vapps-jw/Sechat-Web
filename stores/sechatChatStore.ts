@@ -42,13 +42,11 @@ export const useSechatChatStore = defineStore({
       );
     },
     loadRooms(value: IRoom[]) {
-      this.availableRooms = value.sort(
-        (a, b) => Number(a.lastActivity) - Number(b.lastActivity)
-      );
+      this.availableRooms = value.sort((a, b) => a.name.localeCompare(b.name));
     },
     addRoom(value: IRoom) {
-      this.availableRooms = [...this.availableRooms, value].sort(
-        (a, b) => Number(a.lastActivity) - Number(b.lastActivity)
+      this.availableRooms = [...this.availableRooms, value].sort((a, b) =>
+        a.name.localeCompare(b.name)
       );
     },
     updateRoom(value: IRoom) {
@@ -59,7 +57,7 @@ export const useSechatChatStore = defineStore({
       this.availableRooms = [
         ...this.availableRooms.filter((uc) => uc.id !== value.id),
         value,
-      ].sort((a, b) => Number(a.lastActivity) - Number(b.lastActivity));
+      ].sort((a, b) => a.name.localeCompare(b.name));
     },
     deleteRoom(value: string) {
       if (this.activeRoomId === value) {
