@@ -45,7 +45,6 @@
 </template>
 
 <script setup lang="ts">
-import { scrollToBottom } from "~~/utilities/documentFunctions";
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
@@ -54,7 +53,9 @@ const sechatApp = useSechatApp();
 const userStore = useUserStore();
 
 const selectRoomClicked = (roomId: string) => {
+  sechatApp.showLoadingOverlay();
   chatStore.selectRoom(roomId);
+  sechatApp.hideLoadingOverlay();
 };
 
 const leaveRoom = async (room: IRoom) => {
