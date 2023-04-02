@@ -15,6 +15,12 @@ export const useSechatChatStore = defineStore({
     };
   },
   actions: {
+    activateMessagesTab() {
+      this.activeChatTab = ChatViews.Messages;
+    },
+    activateRoomsTab() {
+      this.activeChatTab = ChatViews.Rooms;
+    },
     addConnection(value: IConnectionRequest) {
       this.availableConnections = [
         ...this.availableConnections.value,
@@ -36,12 +42,12 @@ export const useSechatChatStore = defineStore({
       );
     },
     loadRooms(value: IRoom[]) {
-      this.availableRooms.value = value.sort(
+      this.availableRooms = value.sort(
         (a, b) => Number(a.lastActivity) - Number(b.lastActivity)
       );
     },
     addRoom(value: IRoom) {
-      this.availableRooms.value = [...this.availableRooms.value, value].sort(
+      this.availableRooms = [...this.availableRooms, value].sort(
         (a, b) => Number(a.lastActivity) - Number(b.lastActivity)
       );
     },
@@ -58,12 +64,19 @@ export const useSechatChatStore = defineStore({
     deleteRoom(value: string) {
       if (this.activeRoomId === value) {
         this.activeRoomId = "";
+        this.activeChatTab = ChatViews.Rooms;
       }
       this.availableRooms = [
         ...this.availableRooms.filter((uc) => uc.id !== value),
       ];
     },
     addUserToRoom(value: IRoom) {
+      const storedRoom = this.availableRooms.find((r) => r.id === value.id);
+      if (!storedRoom) {
+        this.availableRooms.push(value);
+        return;
+      }
+
       const updatedRoom = this.availableRooms.find((r) => r.id === value.id);
       updatedRoom.members = value.members;
     },
@@ -71,21 +84,23 @@ export const useSechatChatStore = defineStore({
       this.activeRoomId = value;
       this.activeChatTab = ChatViews.Messages;
     },
-    deleteUserFromRoom(value: IUserRoomOptions, userName: string) {
+    deleteUserFromRoom(value: IUserRoomOptions) {
       const updatedRoom = this.availableRooms.find(
         (r) => r.id === value.roomId
       );
+
       updatedRoom.members = updatedRoom.members.filter(
-        (m) => m.userName !== userName
+        (m) => m.userName !== value.userName
       );
     },
     deleteCurrentUserFromRoom(value: IUserRoomOptions) {
       if (value.roomId === this.activeRoomId) {
         this.activeRoomId = "";
+        this.activeChatTab = ChatViews.Rooms;
       }
 
       this.availableRooms = [
-        ...this.availableRooms.filter((uc) => uc.id !== value),
+        ...this.availableRooms.filter((uc) => uc.id !== value.roomId),
       ];
     },
     addNewMessage(value: IMessage) {
@@ -97,6 +112,10 @@ export const useSechatChatStore = defineStore({
 
       updatedRoom.messages = updatedRoom.messages.sort(
         (a, b) => Number(a.created) - Number(b.created)
+      );
+
+      this.availableRooms = this.availableRoomssort(
+        (a, b) => Number(a.lastActivity) - Number(b.lastActivity)
       );
     },
     addNewMessages(value: string, roomId: string) {},

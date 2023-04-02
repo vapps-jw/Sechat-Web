@@ -380,12 +380,11 @@ export const useSignalR = () => {
       .invoke(SignalRHubMethods.CreateRoom, { RoomName: name })
       .then((newRoom: IRoom) => {
         console.log("--> New room created", newRoom);
-        sechatChat.addRoom(newRoom);
+        sechatChatStore.addRoom(newRoom);
         _connectToRoom(newRoom.id);
         sechatApp.showSuccessSnackbar("Room created");
       })
       .catch((err) => {
-        // todo: make auth work or remove it
         if (err.message.indexOf("auth_expired") > 0) {
           console.log("--> Auth cookie expored");
           navigateTo("/user/login");

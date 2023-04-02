@@ -67,10 +67,7 @@ export const useSechatChat = () => {
   };
 
   const handleUserRemovedFromRoom = (options: IUserRoomOptions) => {
-    console.warn(
-      "--> Handling UserRemovedFromRoom Event in Chat Store",
-      options
-    );
+    console.warn("--> Handling UserRemovedFromRoom Event", options);
 
     if (userStore.getUserName === options.userName) {
       console.warn("--> Current User is removed from room", options);
@@ -79,7 +76,7 @@ export const useSechatChat = () => {
     }
 
     console.warn("--> User is removed from room", options);
-    chatStore.deleteCurrentUserFromRoom(options);
+    chatStore.deleteUserFromRoom(options);
   };
 
   const handleDeleteRoom = (message: IResourceGuid) => {
