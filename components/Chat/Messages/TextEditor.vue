@@ -8,6 +8,7 @@
       no-resize
       rows="3"
       v-model="newMessage"
+      v-on:keyup.enter="pushMessage"
     ></v-textarea>
     <v-btn icon="mdi-send" color="warning" @click="pushMessage"></v-btn>
   </v-card-actions>
@@ -18,6 +19,7 @@ import { SnackbarIcons } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
 const signalR = useSignalR();
+const signalRstore = useSignalRStore();
 const appStore = useSechatApp();
 const chatApi = useChatApi();
 
@@ -25,7 +27,7 @@ const newMessage = ref("");
 
 const pushMessage = () => {
   if (newMessage.value) {
-    if (!signalR.isConnected) {
+    if (!signalRstore.isConnected) {
       appStore.showSnackbar({
         snackbar: true,
         text: "You are not connected",

@@ -1,28 +1,48 @@
+import * as signalR from "@microsoft/signalr";
+import { SignalRState } from "~~/utilities/globalEnums";
+
 export const useSignalRStore = defineStore({
   id: "signalR-store",
   state: () => {
     return {
-      loadingOverlayVisible: <boolean>false,
-      pingServerInterval: <NodeJS.Timer>null,
-      localLanguage: <string>useI18n().locale.value,
-      snackbarData: <ISanckbar>{
-        snackbar: false,
-        text: "",
-        timeout: 2000,
-        color: "",
-        icon: "",
-        iconColor: "",
-      },
-      isOnline: <boolean>true,
+      connection: <signalR.HubConnection>null,
     };
   },
   actions: {
-    updateLoadingOverlay(value: boolean) {
-      this.loadingOverlayVisible = value;
-    },
-    updateSnackbar(value: ISanckbar) {
-      this.snackbarData = value;
+    updateConnectionValue(value: signalR.HubConnection) {
+      this.connection = value;
     },
   },
-  getters: {},
+  getters: {
+    isConnected: (state) => {
+      if (
+        state.connection &&
+        state.connection.state === signalR.HubConnectionState.Connected
+      ) {
+        return true;
+      }
+      return false;
+    },
+    connectionState: (state) => {
+      if (!state.connection) {
+        return SignalRState.Disconnected;
+      }
+      if (state.connection.state === signalR.HubConnectionState.Connected) {
+        return SignalRState.Connected;
+      }
+      if (
+        state.connection.state === signalR.HubConnectionState.Connecting ||
+        state.connection.state === signalR.HubConnectionState.Reconnecting
+      ) {
+        return SignalRState.Connecting;
+      }
+      return SignalRState.Disconnected;
+    },
+    connectionPresent: (state) => {
+      if (state.connection) {
+        return true;
+      }
+      return false;
+    },
+  },
 });

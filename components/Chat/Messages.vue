@@ -40,8 +40,8 @@ import { scrollToBottom } from "@/utilities/documentFunctions";
 const chatStore = useSechatChatStore();
 const userStore = useUserStore();
 
-onUpdated(() => {
-  console.log("--> onUpdated Scrolling");
+onMounted(() => {
+  console.log("--> onMounted Scrolling");
   scrollToBottom("chatView");
 });
 

@@ -38,7 +38,7 @@ const { activeChatTab } = storeToRefs(chatStore);
 
 watch(activeChatTab, () => {
   if (activeChatTab.value === "messages" && chatStore.activeRoomId) {
-    console.log("--> Scrolling");
+    console.log("--> Scrolling from watch");
     scrollToBottom("chatView");
   }
 });

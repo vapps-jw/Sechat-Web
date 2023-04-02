@@ -28,7 +28,7 @@ export const useRefreshHandler = () => {
     chatStore.loadRooms(chatState.rooms);
     chatStore.loadConnections(chatState.userConnections);
 
-    appStore.updateLoadingOverlay(true);
+    appStore.updateLoadingOverlay(false);
   };
 
   const handleOfflineChange = async () => {

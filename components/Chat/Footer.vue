@@ -5,19 +5,25 @@
     </v-chip>
     <v-spacer></v-spacer>
     <v-icon
-      v-if="connectionState === SignalRState.Connected && appStore.isOnline"
+      v-if="signalRStore.connectionState === SignalRState.Connected"
       icon="mdi-web-check"
       size="small"
       color="success"
     ></v-icon>
     <v-icon
-      v-if="connectionState === SignalRState.Connecting && appStore.isOnline"
+      v-if="
+        signalRStore.connectionState === SignalRState.Connecting &&
+        appStore.isOnline
+      "
       icon="mdi-web-sync"
       size="small"
       color="warning"
     ></v-icon>
     <v-icon
-      v-if="connectionState === SignalRState.Disconnected && appStore.isOnline"
+      v-if="
+        signalRStore.connectionState === SignalRState.Disconnected &&
+        appStore.isOnline
+      "
       icon="mdi-web-remove"
       size="small"
       color="error"
@@ -33,27 +39,10 @@
 
 <script setup lang="ts">
 import { SignalRState } from "~~/utilities/globalEnums";
-import { HubConnectionState } from "@microsoft/signalr";
 
 const appStore = useSechatAppStore();
-const signalR = useSignalR();
 const config = useRuntimeConfig();
-
-const connectionState = computed<string>(() => {
-  if (!signalR.connection.value) {
-    return SignalRState.Disconnected;
-  }
-  if (signalR.connection.value.state === HubConnectionState.Connected) {
-    return SignalRState.Connected;
-  }
-  if (
-    signalR.connection.value.state === HubConnectionState.Connecting ||
-    signalR.connection.value.state === HubConnectionState.Reconnecting
-  ) {
-    return SignalRState.Connecting;
-  }
-  return SignalRState.Disconnected;
-});
+const signalRStore = useSignalRStore();
 </script>
 
 <style scoped></style>

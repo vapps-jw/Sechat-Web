@@ -98,10 +98,15 @@ export const useSechatChat = () => {
   // Messages
 
   const handleIncomingMessage = (message: IMessage) => {
-    console.warn("--> Incoming Message Event Handle", message);
+    console.warn(
+      "--> Incoming Message Event Handle",
+      message,
+      chatStore.activeRoomId
+    );
     chatStore.addNewMessage(message);
 
     if (message.roomId === chatStore.activeRoomId) {
+      console.warn("--> Scrolling");
       scrollToBottom("chatView");
     }
   };

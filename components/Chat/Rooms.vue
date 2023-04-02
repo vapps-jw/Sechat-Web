@@ -29,7 +29,7 @@
                 class="mr-2"
               ></v-btn>
               <v-btn
-                @click="chatStore.selectRoom(room.id)"
+                @click="selectRoomClicked(room.id)"
                 size="small"
                 icon="mdi-arrow-right"
                 color="success"
@@ -45,12 +45,18 @@
 </template>
 
 <script setup lang="ts">
+import { scrollToBottom } from "~~/utilities/documentFunctions";
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
 const chatApi = useChatApi();
 const sechatApp = useSechatApp();
 const userStore = useUserStore();
+
+const selectRoomClicked = (roomId: string) => {
+  chatStore.selectRoom(roomId);
+  scrollToBottom("chatView");
+};
 
 const leaveRoom = async (room: IRoom) => {
   try {

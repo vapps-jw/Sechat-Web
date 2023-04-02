@@ -113,10 +113,6 @@ export const useSechatChatStore = defineStore({
       updatedRoom.messages = updatedRoom.messages.sort(
         (a, b) => Number(a.created) - Number(b.created)
       );
-
-      this.availableRooms = this.availableRoomssort(
-        (a, b) => Number(a.lastActivity) - Number(b.lastActivity)
-      );
     },
     addNewMessages(value: string, roomId: string) {},
   },
