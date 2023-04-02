@@ -92,7 +92,6 @@ export const useSechatChat = () => {
   const selectRoom = (room: IRoom) => {
     console.log("--> Room selected", room);
     chatStore.selectRoom(room.id);
-    scrollToBottom("chatView");
   };
 
   // Messages
@@ -106,7 +105,7 @@ export const useSechatChat = () => {
     chatStore.addNewMessage(message);
 
     if (message.roomId === chatStore.activeRoomId) {
-      console.warn("--> Scrolling");
+      console.warn("--> Scrolling from handleIncomingMessage");
       scrollToBottom("chatView");
     }
   };

@@ -55,7 +55,6 @@ const userStore = useUserStore();
 
 const selectRoomClicked = (roomId: string) => {
   chatStore.selectRoom(roomId);
-  scrollToBottom("chatView");
 };
 
 const leaveRoom = async (room: IRoom) => {

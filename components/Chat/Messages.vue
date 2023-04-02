@@ -15,18 +15,24 @@
       </v-toolbar>
       <chat-messages-room-members />
       <v-divider />
-      <v-sheet id="chatView" class="ma-0 pa-0 overflow-auto">
-        <div
-          class="d-flex"
-          :class="
-            isActiveUser(message)
-              ? 'flex-row-reverse ma-1 '
-              : 'flex-row flex-start ma-1 '
-          "
-          v-for="message in chatStore.getActiveRoom.messages"
+      <v-sheet id="chatView" class="ma-0 pa-0 overflow-auto sechat-chat-window">
+        <v-virtual-scroll
+          scrollToBottom="true"
+          :items="chatStore.getActiveRoom.messages"
         >
-          <chat-messages-message :message="message" />
-        </div>
+          <template v-slot:default="{ item }">
+            <div
+              class="d-flex"
+              :class="
+                isActiveUser(item)
+                  ? 'flex-row-reverse ma-1 '
+                  : 'flex-row flex-start ma-1 '
+              "
+            >
+              <chat-messages-message :message="item" />
+            </div>
+          </template>
+        </v-virtual-scroll>
       </v-sheet>
       <v-spacer />
       <chat-messages-text-editor />
@@ -40,8 +46,13 @@ import { scrollToBottom } from "@/utilities/documentFunctions";
 const chatStore = useSechatChatStore();
 const userStore = useUserStore();
 
-onMounted(() => {
-  console.log("--> onMounted Scrolling");
+onUpdated(() => {
+  console.warn("--> onUpdated Scrolling");
+  scrollToBottom("chatView");
+});
+
+onUnmounted(() => {
+  console.warn("--> onUnmounted Scrolling");
   scrollToBottom("chatView");
 });
 

@@ -9,6 +9,10 @@
   flex-direction: column;
 }
 
+.sechat-chat-window {
+  height: 70vh;
+}
+
 .sechat-message-input {
   width: 100%;
   position: absolute;

@@ -27,21 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import { scrollToBottom } from "@/utilities/documentFunctions";
 definePageMeta({
   layout: "board",
   middleware: ["authenticated"],
 });
 
 const chatStore = useSechatChatStore();
-const { activeChatTab } = storeToRefs(chatStore);
-
-watch(activeChatTab, () => {
-  if (activeChatTab.value === "messages" && chatStore.activeRoomId) {
-    console.log("--> Scrolling from watch");
-    scrollToBottom("chatView");
-  }
-});
 </script>
 
 <style scoped></style>
