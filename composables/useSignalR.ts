@@ -6,7 +6,8 @@ export const useSignalR = () => {
   const sechatStore = useSechatAppStore();
   const sechatApp = useSechatApp();
   const config = useRuntimeConfig();
-  const chatStore = useChatStore();
+  const sechatChat = useSechatChat();
+  const sechatChatStore = useSechatChatStore();
   const userStore = useUserStore();
 
   const SignalRHubMethods = {
@@ -120,13 +121,13 @@ export const useSignalR = () => {
           });
         }
 
-        chatStore.loadRooms(chatState.value.rooms);
-        chatStore.loadUserConnections(chatState.value.userConnections);
+        sechatChat.loadRooms(chatState.value.rooms);
+        sechatChat.loadUserConnections(chatState.value.userConnections);
 
         console.log("--> Reconnected, connectiong to Rooms ...");
-        _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
+        _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
 
-        if (chatStore.activeRoomId.value) {
+        if (sechatChatStore.activeRoomId) {
           scrollToBottom("chatView");
         }
       } catch (error) {
@@ -140,7 +141,7 @@ export const useSignalR = () => {
 
     if (connection.value.state === signalR.HubConnectionState.Connected) {
       console.log("--> Connection Established, connectiong to Rooms ...");
-      _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
+      _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
 
       return;
     }
@@ -163,7 +164,7 @@ export const useSignalR = () => {
     ) {
       console.log("--> Starting Current Connection, connecting to Rooms");
       await connection.value.start();
-      _connectToRooms(chatStore.availableRooms.value.map((r) => r.id));
+      _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
     }
   };
 
@@ -199,7 +200,7 @@ export const useSignalR = () => {
     console.log("--> Connecting UserConnectionRemoved event");
     connection.value.on(
       SignalRHubMethods.ConnectionDeleted,
-      chatStore.handleConnectionDelete
+      sechatChat.handleConnectionDelete
     );
   };
 
@@ -207,7 +208,7 @@ export const useSignalR = () => {
     console.log("--> Disconnecting UserConnectionRemoved event");
     connection.value.off(
       SignalRHubMethods.ConnectionDeleted,
-      chatStore.handleConnectionDelete
+      sechatChat.handleConnectionDelete
     );
   };
 
@@ -215,7 +216,7 @@ export const useSignalR = () => {
     console.log("--> Connecting UserConnectionUpdated event");
     connection.value.on(
       SignalRHubMethods.ConnectionUpdated,
-      chatStore.handleConnectionUpdated
+      sechatChat.handleConnectionUpdated
     );
   };
 
@@ -223,7 +224,7 @@ export const useSignalR = () => {
     console.log("--> Disconnecting UserConnectionChange event");
     connection.value.off(
       SignalRHubMethods.ConnectionUpdated,
-      chatStore.handleConnectionUpdated
+      sechatChat.handleConnectionUpdated
     );
   };
 
@@ -231,7 +232,7 @@ export const useSignalR = () => {
     console.log("--> Connecting ConnectionRequestReceived event");
     connection.value.on(
       SignalRHubMethods.ConnectionRequestReceived,
-      chatStore.handleConnectionRequestReceived
+      sechatChat.handleConnectionRequestReceived
     );
   };
 
@@ -239,7 +240,7 @@ export const useSignalR = () => {
     console.log("--> Disconnecting ConnectionRequestReceived event");
     connection.value.off(
       SignalRHubMethods.ConnectionRequestReceived,
-      chatStore.handleConnectionRequestReceived
+      sechatChat.handleConnectionRequestReceived
     );
   };
 
@@ -249,7 +250,7 @@ export const useSignalR = () => {
     console.log("--> Connecting RoomUpdated event");
     connection.value.on(
       SignalRHubMethods.RoomUpdated,
-      chatStore.handleUpdateRoom
+      sechatChat.handleUpdateRoom
     );
   };
 
@@ -257,7 +258,7 @@ export const useSignalR = () => {
     console.log("--> Disconnecting RoomUpdated event");
     connection.value.off(
       SignalRHubMethods.RoomUpdated,
-      chatStore.handleUpdateRoom
+      sechatChat.handleUpdateRoom
     );
   };
 
@@ -297,7 +298,7 @@ export const useSignalR = () => {
     console.log("--> Connecting RoomDeleted event");
     connection.value.on(
       SignalRHubMethods.RoomDeleted,
-      chatStore.handleDeleteRoom
+      sechatChat.handleDeleteRoom
     );
   };
 
@@ -305,7 +306,7 @@ export const useSignalR = () => {
     console.log("--> Disconnecting RoomDeleted event");
     connection.value.off(
       SignalRHubMethods.RoomDeleted,
-      chatStore.handleDeleteRoom
+      sechatChat.handleDeleteRoom
     );
   };
 
@@ -379,7 +380,7 @@ export const useSignalR = () => {
       .invoke(SignalRHubMethods.CreateRoom, { RoomName: name })
       .then((newRoom: IRoom) => {
         console.log("--> New room created", newRoom);
-        chatStore.addRoom(newRoom);
+        sechatChat.addRoom(newRoom);
         _connectToRoom(newRoom.id);
         sechatApp.showSuccessSnackbar("Room created");
       })
@@ -398,7 +399,7 @@ export const useSignalR = () => {
 
   const _handleUserAddedToRoomActions = (data: IRoom) => {
     _connectToRoom(data.id);
-    chatStore.handleUserAddedToRoom(data);
+    sechatChat.handleUserAddedToRoom(data);
   };
 
   const _handleUserRemovedFromRoomActions = (options: IUserRoomOptions) => {
@@ -406,12 +407,12 @@ export const useSignalR = () => {
     if (userStore.getUserName === options.userName) {
       console.warn("--> Active user is being removed - signalR");
       _disconnectFromRoom(options.roomId);
-      chatStore.handleUserRemovedFromRoom(options);
+      sechatChat.handleUserRemovedFromRoom(options);
       return;
     }
 
     console.warn("--> Other user is being removed - signalR");
-    chatStore.handleUserRemovedFromRoom(options);
+    sechatChat.handleUserRemovedFromRoom(options);
   };
 
   // Messages
@@ -420,7 +421,7 @@ export const useSignalR = () => {
     console.log("--> Connecting SendMessage event");
     connection.value.on(
       SignalRHubMethods.MessageIncoming,
-      chatStore.handleIncomingMessage
+      sechatChat.handleIncomingMessage
     );
   };
 
@@ -428,7 +429,7 @@ export const useSignalR = () => {
     console.log("--> Disconnecting SendMessage event");
     connection.value.off(
       SignalRHubMethods.MessageIncoming,
-      chatStore.handleIncomingMessage
+      sechatChat.handleIncomingMessage
     );
   };
 

@@ -16,7 +16,7 @@ const sechatApp = useSechatApp();
 const signalR = useSignalR();
 const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
-const chatStore = useChatStore();
+const chatStore = useSechatChatStore();
 
 onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
@@ -26,7 +26,7 @@ onMounted(async () => {
   const chatState = await chatApi.getState();
 
   chatStore.loadRooms(chatState.rooms);
-  chatStore.loadUserConnections(chatState.userConnections);
+  chatStore.loadConnections(chatState.userConnections);
 
   await signalR.connect();
 

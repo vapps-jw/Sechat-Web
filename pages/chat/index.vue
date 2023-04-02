@@ -2,7 +2,7 @@
   <div>
     <v-app-bar density="compact">
       <v-spacer></v-spacer>
-      <v-tabs v-model="chatStore.activeChatTab.value" stacked centered>
+      <v-tabs v-model="chatStore.activeChatTab" stacked centered>
         <v-tab value="messages">
           <v-icon>mdi-chat-processing</v-icon>
           Messages
@@ -18,7 +18,7 @@
       </v-tabs>
       <v-spacer></v-spacer>
     </v-app-bar>
-    <v-window v-model="chatStore.activeChatTab.value">
+    <v-window v-model="chatStore.activeChatTab">
       <v-window-item value="messages"> <ChatMessages /> </v-window-item>
       <v-window-item value="rooms"> <ChatRooms /> </v-window-item>
       <v-window-item value="profile"> <ChatProfile /> </v-window-item>
@@ -33,10 +33,11 @@ definePageMeta({
   middleware: ["authenticated"],
 });
 
-const chatStore = useChatStore();
+const chatStore = useSechatChatStore();
+const { activeChatTab } = storeToRefs(chatStore);
 
-watch(chatStore.activeChatTab, () => {
-  if (chatStore.activeChatTab.value === "messages" && chatStore.activeRoomId) {
+watch(activeChatTab, () => {
+  if (activeChatTab.value === "messages" && chatStore.activeRoomId) {
     console.log("--> Scrolling");
     scrollToBottom("chatView");
   }

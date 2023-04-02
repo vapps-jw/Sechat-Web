@@ -9,7 +9,7 @@
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list>
           <v-list-item
-            v-for="room in chatStore.availableRooms.value"
+            v-for="room in chatStore.availableRooms"
             :key="room.id"
             :title="room.name"
           >
@@ -29,7 +29,7 @@
                 class="mr-2"
               ></v-btn>
               <v-btn
-                @click="chatStore.selectRoom(room)"
+                @click="chatStore.selectRoom(room.id)"
                 size="small"
                 icon="mdi-arrow-right"
                 color="success"
@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
-const chatStore = useChatStore();
+const chatStore = useSechatChatStore();
 const chatApi = useChatApi();
 const sechatApp = useSechatApp();
 const userStore = useUserStore();
@@ -55,7 +55,7 @@ const userStore = useUserStore();
 const leaveRoom = async (room: IRoom) => {
   try {
     await chatApi.leaveRoom(room);
-    chatStore.removeRoom(room);
+    chatStore.deleteRoom(room.id);
   } catch (error) {
     sechatApp.showErrorSnackbar(SnackbarMessages.Error);
   }

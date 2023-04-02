@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { SnackbarIcons } from "~~/utilities/globalEnums";
 
-const chatStore = useChatStore();
+const chatStore = useSechatChatStore();
 const signalR = useSignalR();
 const appStore = useSechatApp();
 const chatApi = useChatApi();
@@ -36,7 +36,7 @@ const pushMessage = () => {
       });
       return;
     }
-    chatApi.sendMessage(newMessage.value, chatStore.activeRoomId.value);
+    chatApi.sendMessage(newMessage.value, chatStore.activeRoomId);
     newMessage.value = "";
   }
 };

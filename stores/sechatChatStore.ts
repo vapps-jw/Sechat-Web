@@ -27,18 +27,78 @@ export const useSechatChatStore = defineStore({
         value,
       ].sort((a, b) => a.invitedName.localeCompare(b.invitedName));
     },
-    updateConnections(value: IConnectionRequest[]) {
+    loadConnections(value: IConnectionRequest[]) {
       this.availableConnections = value;
     },
-    updateRooms(value: IRoom[]) {
-      this.availableRooms.value = value;
+    deleteConnection(value: IResourceId) {
+      this.availableConnections = this.availableConnections.filter(
+        (uc) => uc.id !== value.id
+      );
+    },
+    loadRooms(value: IRoom[]) {
+      this.availableRooms.value = value.sort(
+        (a, b) => Number(a.lastActivity) - Number(b.lastActivity)
+      );
     },
     addRoom(value: IRoom) {
-      this.availableRooms.value = [...this.availableRooms.value, value];
+      this.availableRooms.value = [...this.availableRooms.value, value].sort(
+        (a, b) => Number(a.lastActivity) - Number(b.lastActivity)
+      );
     },
-    updateRoom(value: IRoom) {},
-    deleteRoom(value: string) {},
-    addNewMessage(value: IMessage, roomId: string) {},
+    updateRoom(value: IRoom) {
+      value.messages = this.availableRooms.find(
+        (r) => r.id === this.activeRoomId
+      ).messages;
+
+      this.availableRooms = [
+        ...this.availableRooms.filter((uc) => uc.id !== value.id),
+        value,
+      ].sort((a, b) => Number(a.lastActivity) - Number(b.lastActivity));
+    },
+    deleteRoom(value: string) {
+      if (this.activeRoomId === value) {
+        this.activeRoomId = "";
+      }
+      this.availableRooms = [
+        ...this.availableRooms.filter((uc) => uc.id !== value),
+      ];
+    },
+    addUserToRoom(value: IRoom) {
+      const updatedRoom = this.availableRooms.find((r) => r.id === value.id);
+      updatedRoom.members = value.members;
+    },
+    selectRoom(value: string) {
+      this.activeRoomId = value;
+      this.activeChatTab = ChatViews.Messages;
+    },
+    deleteUserFromRoom(value: IUserRoomOptions, userName: string) {
+      const updatedRoom = this.availableRooms.find(
+        (r) => r.id === value.roomId
+      );
+      updatedRoom.members = updatedRoom.members.filter(
+        (m) => m.userName !== userName
+      );
+    },
+    deleteCurrentUserFromRoom(value: IUserRoomOptions) {
+      if (value.roomId === this.activeRoomId) {
+        this.activeRoomId = "";
+      }
+
+      this.availableRooms = [
+        ...this.availableRooms.filter((uc) => uc.id !== value),
+      ];
+    },
+    addNewMessage(value: IMessage) {
+      const updatedRoom = this.availableRooms.find(
+        (r) => r.id === value.roomId
+      );
+      updatedRoom.messages.push(value);
+      updatedRoom.lastActivity = value.created;
+
+      updatedRoom.messages = updatedRoom.messages.sort(
+        (a, b) => Number(a.created) - Number(b.created)
+      );
+    },
     addNewMessages(value: string, roomId: string) {},
   },
   getters: {

@@ -3,7 +3,7 @@ export const useRefreshHandler = () => {
   const sechatApp = useSechatApp();
   const signalR = useSignalR();
   const chatApi = useChatApi();
-  const chatStore = useChatStore();
+  const chatStore = useSechatChatStore();
 
   const handleVisibilityChange = async () => {
     appStore.updateLoadingOverlay(true);
@@ -13,7 +13,7 @@ export const useRefreshHandler = () => {
     const chatState = await chatApi.getState();
 
     chatStore.loadRooms(chatState.rooms);
-    chatStore.loadUserConnections(chatState.userConnections);
+    chatStore.loadConnections(chatState.userConnections);
 
     appStore.updateLoadingOverlay(false);
   };
@@ -26,7 +26,7 @@ export const useRefreshHandler = () => {
     const chatState = await chatApi.getState();
 
     chatStore.loadRooms(chatState.rooms);
-    chatStore.loadUserConnections(chatState.userConnections);
+    chatStore.loadConnections(chatState.userConnections);
 
     appStore.updateLoadingOverlay(true);
   };

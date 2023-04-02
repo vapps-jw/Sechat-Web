@@ -24,7 +24,7 @@
           <v-list>
             <v-list-item
               class="my-1"
-              v-for="uc in chatStore.getConnections.value"
+              v-for="uc in chatStore.getConnections"
               :key="`${uc.invitedName}-${uc.inviterName}`"
               :title="uc.displayName"
             >
@@ -91,7 +91,7 @@
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const dialog = ref<boolean>(false);
-const chatStore = useChatStore();
+const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
 const userStore = useUserStore();
