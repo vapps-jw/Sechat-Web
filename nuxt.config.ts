@@ -69,6 +69,9 @@ export default defineNuxtConfig({
       navigateFallback: "/",
       sourcemap: true,
     },
+    client: {
+      periodicSyncForUpdates: 3600,
+    },
     devOptions: {
       enabled: true,
       type: "module",
