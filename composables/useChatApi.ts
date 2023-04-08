@@ -72,7 +72,7 @@ export const useChatApi = () => {
           } else {
             sechatApp.showSnackbar({
               snackbar: true,
-              text: "Subscription Failed",
+              text: "Connection Error",
               timeout: 2000,
               color: "error",
               icon: SnackbarIcons.Error,
