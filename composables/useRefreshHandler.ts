@@ -12,6 +12,7 @@ export const useRefreshHandler = () => {
 
     const chatState = await chatApi.getState();
 
+    chatStore.activateRoomsTab();
     chatStore.loadRooms(chatState.rooms);
     chatStore.loadConnections(chatState.userConnections);
 
@@ -25,6 +26,7 @@ export const useRefreshHandler = () => {
 
     const chatState = await chatApi.getState();
 
+    chatStore.activateRoomsTab();
     chatStore.loadRooms(chatState.rooms);
     chatStore.loadConnections(chatState.userConnections);
 

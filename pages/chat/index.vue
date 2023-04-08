@@ -27,12 +27,42 @@
 </template>
 
 <script setup lang="ts">
+import { scrollToBottom } from "~~/utilities/documentFunctions";
+import { ChatViews } from "~~/utilities/globalEnums";
+
 definePageMeta({
   layout: "board",
   middleware: ["authenticated"],
 });
 
 const chatStore = useSechatChatStore();
+const chatApi = useChatApi();
+const chatApp = useSechatApp();
+
+const { activeChatTab } = storeToRefs(chatStore);
+
+watch(activeChatTab, (newVal, oldVal) => {
+  console.log("--> Chat Tab Changed", activeChatTab.value);
+
+  if (newVal === ChatViews.Messages) {
+    scrollToBottom("chatView");
+  }
+
+  if (!chatStore.activeRoomId) {
+    return;
+  }
+  if (activeChatTab.value !== ChatViews.Messages) {
+    return;
+  }
+  try {
+    chatApp.showLoadingOverlay();
+    chatApi.markMessagesAsViewed(chatStore.activeRoomId);
+    chatStore.markMessagesAsViewed();
+  } catch (error) {
+  } finally {
+    chatApp.hideLoadingOverlay();
+  }
+});
 </script>
 
 <style scoped></style>

@@ -28,3 +28,9 @@ export const SignalRState = {
   Connecting: "Connecting",
   Offline: "Offline",
 };
+
+export const ChatViews = {
+  Messages: "messages",
+  Rooms: "rooms",
+  Settings: "settings",
+};

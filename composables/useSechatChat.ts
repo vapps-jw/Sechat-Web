@@ -1,4 +1,5 @@
 import { scrollToBottom } from "~~/utilities/documentFunctions";
+import { ChatViews } from "~~/utilities/globalEnums";
 
 export const useSechatChat = () => {
   const userStore = useUserStore();
@@ -102,7 +103,19 @@ export const useSechatChat = () => {
       message,
       chatStore.activeRoomId
     );
-    // todo: handle views of the messages
+
+    message.wasViewed = false;
+    if (message.nameSentBy === userStore.getUserName) {
+      message.wasViewed = true;
+    }
+
+    if (
+      chatStore.getActiveRoomId &&
+      message.roomId === chatStore.getActiveRoomId &&
+      chatStore.getActiveChatTab === ChatViews.Messages
+    ) {
+      message.wasViewed = true;
+    }
 
     chatStore.addNewMessage(message);
 

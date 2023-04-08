@@ -27,15 +27,28 @@
                 color="warning"
                 variant="outlined"
                 class="mr-2"
-              ></v-btn>
+              >
+              </v-btn>
               <v-btn
                 @click="selectRoomClicked(room.id)"
                 size="small"
-                icon="mdi-arrow-right"
+                icon
                 color="success"
                 variant="outlined"
                 class="mr-2"
-              ></v-btn>
+              >
+                <v-icon
+                  v-if="room.messages.filter((m) => !m.wasViewed).length === 0"
+                  >mdi-arrow-right</v-icon
+                >
+                <v-badge
+                  v-if="room.messages.filter((m) => !m.wasViewed).length > 0"
+                  :content="room.messages.filter((m) => !m.wasViewed).length"
+                  color="error"
+                >
+                  <v-icon>mdi-arrow-right</v-icon>
+                </v-badge>
+              </v-btn>
             </template>
           </v-list-item>
         </v-list>

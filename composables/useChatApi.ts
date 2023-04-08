@@ -1,6 +1,9 @@
+import { SnackbarIcons } from "~~/utilities/globalEnums";
+
 export const useChatApi = () => {
   const config = useRuntimeConfig();
   const userStore = useUserStore();
+  const sechatApp = useSechatApp();
 
   const getState = async (): Promise<IChatState> => {
     console.log("--> Getting State from API");
@@ -23,7 +26,16 @@ export const useChatApi = () => {
 
       console.log("--> State Fetched", chatState.value);
 
-      // todo: handle views of the messages
+      chatState.value.rooms.forEach((r) =>
+        r.messages.forEach((m) => {
+          if (
+            m.messageViewers.find((mv) => mv.user === userStore.getUserName)
+          ) {
+            m.wasViewed = true;
+          }
+        })
+      );
+
       chatState.value.userConnections.forEach((uc) => {
         if (uc.invitedName === userStore.userProfile.userName) {
           uc.displayName = uc.inviterName;
@@ -36,37 +48,45 @@ export const useChatApi = () => {
     } catch (error) {}
   };
 
-  const markMessagesAsViewed = async (): Promise<IChatState> => {
-    console.log("--> Getting State from API");
-    try {
-      const { error: apiError, data: chatState } = await useFetch<IChatState>(
-        `${config.public.apiBase}/chat/get-state`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
+  const markMessagesAsViewed = async (roomId: string) => {
+    console.log("--> Marking messages as viewed");
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/message-viewed`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PATCH",
+        credentials: "include",
+        body: { Id: roomId },
+        onResponseError({ response }) {
+          if (response.status === 400) {
+            sechatApp.showSnackbar({
+              snackbar: true,
+              text: response._data,
+              timeout: 2000,
+              color: "warning",
+              icon: SnackbarIcons.Warning,
+              iconColor: "black",
+            });
+          } else {
+            sechatApp.showSnackbar({
+              snackbar: true,
+              text: "Subscription Failed",
+              timeout: 2000,
+              color: "error",
+              icon: SnackbarIcons.Error,
+              iconColor: "black",
+            });
 
-      if (apiError.value) {
-        throw createError({
-          ...apiError.value,
-          statusMessage: "Failed to pull state",
-          statusCode: apiError.value.statusCode,
-        });
+            throw createError({
+              ...apiError.value,
+              statusMessage: response._data,
+            });
+          }
+        },
       }
-
-      console.log("--> State Fetched", chatState.value);
-
-      chatState.value.userConnections.forEach((uc) => {
-        if (uc.invitedName === userStore.userProfile.userName) {
-          uc.displayName = uc.inviterName;
-        } else {
-          uc.displayName = uc.invitedName;
-        }
-      });
-
-      return chatState.value;
-    } catch (error) {}
+    );
   };
 
   const sendMessage = async (message: string, roomId: string) => {
@@ -155,5 +175,11 @@ export const useChatApi = () => {
     }
   };
 
-  return { getState, inviteToRoom, leaveRoom, sendMessage };
+  return {
+    getState,
+    inviteToRoom,
+    leaveRoom,
+    sendMessage,
+    markMessagesAsViewed,
+  };
 };

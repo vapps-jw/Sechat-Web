@@ -1,8 +1,4 @@
-const ChatViews = {
-  Messages: "messages",
-  Rooms: "rooms",
-  Settings: "settings",
-};
+import { ChatViews } from "~~/utilities/globalEnums";
 
 export const useSechatChatStore = defineStore({
   id: "sechat-chat-store",
@@ -32,6 +28,15 @@ export const useSechatChatStore = defineStore({
         ...this.availableConnections.filter((uc) => uc.id !== value.id),
         value,
       ].sort((a, b) => a.invitedName.localeCompare(b.invitedName));
+    },
+    markMessagesAsViewed() {
+      if (!this.activeRoomId) {
+        return;
+      }
+      const room: IRoom = this.availableRooms.find(
+        (r: IRoom) => r.id === this.activeRoomId
+      );
+      room.messages.forEach((m) => (m.wasViewed = true));
     },
     loadConnections(value: IConnectionRequest[]) {
       this.availableConnections = value;
@@ -105,6 +110,7 @@ export const useSechatChatStore = defineStore({
       const updatedRoom = this.availableRooms.find(
         (r) => r.id === value.roomId
       );
+
       updatedRoom.messages.push(value);
       updatedRoom.lastActivity = value.created;
 
@@ -115,6 +121,8 @@ export const useSechatChatStore = defineStore({
     addNewMessages(value: string, roomId: string) {},
   },
   getters: {
+    getActiveRoomId: (state) => state.activeRoomId,
+    getActiveChatTab: (state) => state.activeChatTab,
     getActiveRoom: (state) =>
       state.availableRooms.find((r) => r.id === state.activeRoomId),
     getActiveRoomCreatorName: (state) => {
