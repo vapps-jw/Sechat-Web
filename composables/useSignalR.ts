@@ -119,18 +119,17 @@ export const useSignalR = () => {
     ) {
       console.log("--> Already Connected");
     }
-    if (!signalRStore.connection) {
-      await createNewConnection();
-    }
     if (
       signalRStore.connection &&
       signalRStore.connection.state !== signalR.HubConnectionState.Connected
     ) {
-      console.log("--> Starting Current Connection");
+      console.log("--> Starting Current Connection, connecting to Rooms");
       await signalRStore.connection.start();
+      _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
     }
-    console.log("--> Starting Current Connection, connecting to Rooms");
-    _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
+    if (!signalRStore.connection) {
+      await createNewConnection();
+    }
   };
 
   const closeConnection = async () => {
