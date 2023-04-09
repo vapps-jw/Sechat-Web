@@ -2,83 +2,31 @@
   <v-app id="chat-view">
     <v-main>
       <chat-snackbar />
-      <chat-loading-overlay :overlay="appStore.loadingOverlayVisible.value" />
+      <chat-loading-overlay :overlay="sechatAppStore.loadingOverlayVisible" />
       <slot />
     </v-main>
-    <v-footer class="d-flex flex-row justify-center">
-      <v-icon
-        v-if="
-          signalR.connectionState.value === SignalRState.Connected &&
-          appStore.isOnline.value
-        "
-        icon="mdi-web-check"
-        size="small"
-        color="success"
-      ></v-icon>
-      <v-icon
-        v-if="
-          signalR.connectionState.value === SignalRState.Connecting &&
-          appStore.isOnline.value
-        "
-        icon="mdi-web-sync"
-        size="small"
-        color="warning"
-      ></v-icon>
-      <v-icon
-        v-if="
-          signalR.connectionState.value === SignalRState.Disconnected &&
-          appStore.isOnline.value
-        "
-        icon="mdi-web-remove"
-        size="small"
-        color="error"
-      ></v-icon>
-      <v-icon
-        v-if="!appStore.isOnline.value"
-        icon="mdi-web-off"
-        size="small"
-        color="grey-lighten-1"
-      ></v-icon>
-      <v-icon
-        v-if="notificationAllowed"
-        icon="mdi-bell"
-        size="small"
-        color="success"
-      ></v-icon>
-      <v-icon
-        v-if="!notificationAllowed"
-        icon="mdi-bell-off"
-        size="small"
-        color="error"
-      ></v-icon>
-    </v-footer>
+    <chat-footer />
   </v-app>
 </template>
 
 <script setup lang="ts">
-import { SignalRState } from "~~/utilities/globalEnums";
-
 //const lockResolver = ref(null);
-const appStore = useAppStore();
+const sechatAppStore = useSechatAppStore();
+const sechatApp = useSechatApp();
 const signalR = useSignalR();
 const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
-const chatStore = useChatStore();
-const sechatNotification = useSechatNotifications();
-
-const notificationAllowed = computed(() => {
-  return Notification.permission === "granted";
-});
+const chatStore = useSechatChatStore();
 
 onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
-  appStore.showLoadingOverlay();
+  sechatApp.showLoadingOverlay();
 
   console.warn("--> Getting State");
   const chatState = await chatApi.getState();
 
   chatStore.loadRooms(chatState.rooms);
-  chatStore.loadUserConnections(chatState.userConnections);
+  chatStore.loadConnections(chatState.userConnections);
 
   await signalR.connect();
 
@@ -91,7 +39,7 @@ onMounted(async () => {
   window.addEventListener("online", () => refreshHandler.handleOnlineChange());
   window.addEventListener("offline", () => refreshHandler.handleOnlineChange());
 
-  appStore.hideLoadingOverlay();
+  sechatApp.hideLoadingOverlay();
 });
 
 onBeforeUnmount(() => {

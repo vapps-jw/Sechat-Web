@@ -43,7 +43,7 @@ interface PropsModel {
 
 const props = defineProps<PropsModel>();
 
-const appStore = useAppStore();
+const appStore = useSechatApp();
 const config = useRuntimeConfig();
 
 const deleteRoom = async (roomId: string) => {

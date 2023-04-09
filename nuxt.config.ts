@@ -2,18 +2,35 @@ export default defineNuxtConfig({
   typescript: {
     strict: false,
   },
+  imports: {
+    dirs: ["stores"],
+  },
   plugins: [
     "~/plugins/nuxtClientInit.client.ts",
     { src: "~/plugins/pwa-update.ts", mode: "client" },
   ],
+  alias: {
+    pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs",
+  },
   runtimeConfig: {
     public: {
+      appVersion: "BETA v0.4.0",
       publicVapidKey:
         "BIazXIHc0G_xFGTio-sMOdSbarBmeVNtcKaQGsV6mLnaO1cn3_b_-j218VFz5YiSOWaVHX58tRo_dbkHh-xXfpg",
       apiBase: process.env.API_BASE_URL || "https://api.sechat.net",
     },
   },
-  modules: ["@nuxt/image-edge", "@nuxtjs/i18n", "@vite-pwa/nuxt"],
+  modules: [
+    "@nuxt/image-edge",
+    "@nuxtjs/i18n",
+    "@vite-pwa/nuxt",
+    [
+      "@pinia/nuxt",
+      {
+        autoImports: ["defineStore", "acceptHMRUpdate", "storeToRefs"],
+      },
+    ],
+  ],
   pwa: {
     registerType: "autoUpdate",
     strategies: "injectManifest",
@@ -51,6 +68,9 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: "/",
       sourcemap: true,
+    },
+    client: {
+      periodicSyncForUpdates: 3600,
     },
     devOptions: {
       enabled: true,

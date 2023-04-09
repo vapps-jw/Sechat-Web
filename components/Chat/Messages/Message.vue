@@ -8,14 +8,12 @@
       "
     >
       <v-card-subtitle
-        v-if="userData.getUsername.value === props.message.nameSentBy"
+        v-if="userStore.getUserName === props.message.nameSentBy"
         :class="isActiveUser(message) ? 'text-right' : ''"
         class="text-xs"
       >
         {{
-          new Date(props.message.created).toLocaleString(
-            appStore.localLanguage.value
-          )
+          new Date(props.message.created).toLocaleString(appStore.localLanguage)
         }}</v-card-subtitle
       >
       <v-card-subtitle
@@ -25,9 +23,7 @@
       >
         <strong> {{ props.message.nameSentBy }}</strong>
         {{
-          new Date(props.message.created).toLocaleString(
-            appStore.localLanguage.value
-          )
+          new Date(props.message.created).toLocaleString(appStore.localLanguage)
         }}
       </v-card-subtitle>
       <v-card-text class="px-0 py-0">
@@ -43,8 +39,8 @@
 </template>
 
 <script setup lang="ts">
-const userData = useUserData();
-const appStore = useAppStore();
+const appStore = useSechatAppStore();
+const userStore = useUserStore();
 
 interface PropsModel {
   message: IMessage;
@@ -53,7 +49,7 @@ interface PropsModel {
 const props = defineProps<PropsModel>();
 
 const isActiveUser = (message: IMessage) => {
-  return message.nameSentBy === userData.getUsername.value;
+  return message.nameSentBy === userStore.getUserName;
 };
 </script>
 

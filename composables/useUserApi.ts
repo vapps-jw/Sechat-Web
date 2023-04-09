@@ -1,22 +1,16 @@
 export const useUserData = () => {
-  const userProfile = useState<IUserProfile>("userProfile", () => {
-    return {};
-  });
-  const isSignedIn = useState("isSignedIn", () => false);
-
+  const userStore = useUserStore();
   const config = useRuntimeConfig();
-
-  const getUsername = computed(() => userProfile.value.userName);
 
   const setUserData = (user: IUserProfile | null) => {
     console.log("--> Setting User Data in the State", user);
     if (user !== null) {
-      userProfile.value = user;
-      isSignedIn.value = true;
+      userStore.updateUserProfile(user);
+      userStore.updateSignIn(true);
       console.log("--> Logged In");
       return;
     }
-    isSignedIn.value = false;
+    userStore.updateSignIn(false);
     console.log("--> Not Logged In");
   };
 
@@ -50,7 +44,7 @@ export const useUserData = () => {
 
     await getUserData();
 
-    if (userProfile.value) {
+    if (userStore.profilePresent) {
       console.log("--> Navigating to Chat");
       navigateTo("/chat");
     }
@@ -132,13 +126,10 @@ export const useUserData = () => {
     }
 
     setUserData(newProfile.value);
-    console.warn("--> User profile", userProfile.value);
+    console.warn("--> User profile", userStore.userProfile);
   };
 
   return {
-    userProfile,
-    isSignedIn,
-    getUsername,
     signOut,
     getUserData,
     signIn,

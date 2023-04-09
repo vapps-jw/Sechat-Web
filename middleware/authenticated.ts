@@ -1,7 +1,7 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  const userData = useUserData();
-  console.log("--> Auth middleware triggered", userData.isSignedIn.value);
-  if (userData.isSignedIn.value) {
+  const userStore = useUserStore();
+  console.log("--> Auth middleware triggered", userStore.isSignedIn);
+  if (userStore.isSignedIn) {
     return;
   }
   return navigateTo("/user/login");

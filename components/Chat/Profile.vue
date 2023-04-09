@@ -1,10 +1,8 @@
 <template>
   <v-container>
-    <v-card class="mx-auto sechat-v-card-full" max-width="800">
+    <v-card class="sechat-v-card-full">
       <v-toolbar>
-        <v-toolbar-title>{{
-          userData.userProfile.value.userName
-        }}</v-toolbar-title>
+        <v-toolbar-title>{{ userStore.getUserName }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn
           @click="backToHomePage"
@@ -14,7 +12,7 @@
           variant="outlined"
         ></v-btn>
       </v-toolbar>
-      <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
+      <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list flex align-center>
           <v-list-item title="My Connections">
             <template v-slot:append>
@@ -51,9 +49,9 @@
 <script setup lang="ts">
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
-const userData = useUserData();
 const config = useRuntimeConfig();
-const appStore = useAppStore();
+const sechatApp = useSechatApp();
+const userStore = useUserStore();
 
 const backToHomePage = () => {
   navigateTo("/");
@@ -73,11 +71,11 @@ const deleteAccount = async () => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
   return navigateTo("/user/register");
 };
 </script>

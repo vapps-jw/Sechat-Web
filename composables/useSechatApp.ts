@@ -1,59 +1,35 @@
 import { SnackbarIcons } from "~~/utilities/globalEnums";
 
-export const useAppStore = () => {
+export const useSechatApp = () => {
   const config = useRuntimeConfig();
-
-  const loadingOverlayVisible = useState<boolean>(
-    "loadingOverlayVisible",
-    () => false
-  );
-  const pingServerInterval = useState<NodeJS.Timer>(
-    "pingServerInterval",
-    () => null
-  );
-  const localLanguage = useState<string>(
-    "localLanguage",
-    () => useI18n().locale.value
-  );
-  const snackbarData = useState<ISanckbar>("snackbarData", () => {
-    return {
-      snackbar: false,
-      text: "",
-      timeout: 2000,
-      color: "",
-      icon: "",
-      iconColor: "",
-    };
-  });
-
-  const isOnline = useState<boolean>("isOnlineForAppStore", () => true);
+  const useAppStore = useSechatAppStore();
 
   const startPing = () => {
-    pingServerInterval.value = setInterval(
+    useAppStore.pingServerInterval = setInterval(
       async () => await pingServer(),
       2000
     );
   };
 
   const stopPing = () => {
-    clearInterval(pingServerInterval.value);
+    clearInterval(useAppStore.pingServerInterval);
   };
 
   const handleOffline = () => {
     console.warn("--> Handling Offline from SignalR");
-    isOnline.value = false;
+    useAppStore.isOnline = false;
   };
 
   const handleOnline = async () => {
     console.warn("--> Handling Online from SignalR");
-    isOnline.value = true;
+    useAppStore.isOnline = true;
   };
 
   const showLoadingOverlay = () => {
-    loadingOverlayVisible.value = true;
+    useAppStore.updateLoadingOverlay(true);
   };
   const hideLoadingOverlay = () => {
-    loadingOverlayVisible.value = false;
+    useAppStore.updateLoadingOverlay(false);
   };
 
   const pingServer = async () => {
@@ -71,7 +47,7 @@ export const useAppStore = () => {
 
   const showSnackbar = (data: ISanckbar) => {
     console.log("--> Snackbar data", data);
-    snackbarData.value = data;
+    useAppStore.updateSnackbar(data);
   };
 
   const showSuccessSnackbar = (message: string) => {
@@ -141,10 +117,6 @@ export const useAppStore = () => {
   };
 
   return {
-    isOnline,
-    localLanguage,
-    snackbarData,
-    loadingOverlayVisible,
     showSnackbar,
     showSuccessSnackbar,
     showWarningSnackbar,

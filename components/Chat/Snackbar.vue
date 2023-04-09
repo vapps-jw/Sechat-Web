@@ -1,18 +1,18 @@
 <template>
   <v-snackbar
-    v-model="appStore.snackbarData.value.snackbar"
-    :color="appStore.snackbarData.value.color"
-    :timeout="appStore.snackbarData.value.timeout"
+    v-model="appStore.snackbarData.snackbar"
+    :color="appStore.snackbarData.color"
+    :timeout="appStore.snackbarData.timeout"
   >
-    <v-icon :color="appStore.snackbarData.value.iconColor">{{
-      appStore.snackbarData.value.icon
+    <v-icon :color="appStore.snackbarData.iconColor">{{
+      appStore.snackbarData.icon
     }}</v-icon>
-    {{ appStore.snackbarData.value.text }}
+    {{ appStore.snackbarData.text }}
   </v-snackbar>
 </template>
 
 <script setup lang="ts">
-const appStore = useAppStore();
+const appStore = useSechatAppStore();
 </script>
 
 <style scoped></style>

@@ -20,11 +20,11 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card-text class="ma-0 pa-0 sechat-v-card-text-full">
+        <v-card-text class="ma-0 pa-0 overflow-auto">
           <v-list>
             <v-list-item
               class="my-1"
-              v-for="uc in chatStore.getConnections.value"
+              v-for="uc in chatStore.getConnections"
               :key="`${uc.invitedName}-${uc.inviterName}`"
               :title="uc.displayName"
             >
@@ -41,8 +41,7 @@
               <template v-slot:append>
                 <v-btn
                   v-if="
-                    uc.blocked &&
-                    uc.blockedByName === userData.userProfile.value.userName
+                    uc.blocked && uc.blockedByName === userStore.getUserName
                   "
                   @click="async () => allowConnection(uc.id)"
                   class="mx-2"
@@ -62,8 +61,7 @@
                 ></v-btn>
                 <v-btn
                   v-if="
-                    !uc.approved &&
-                    uc.invitedName === userData.userProfile.value.userName
+                    !uc.approved && uc.invitedName === userStore.getUserName
                   "
                   @click="async () => approveConnection(uc.id)"
                   class="mx-2"
@@ -93,12 +91,10 @@
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const dialog = ref<boolean>(false);
-const chatStore = useChatStore();
-const userData = useUserData();
+const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();
-const appStore = useAppStore();
-
-const isBusy = ref<boolean>(false);
+const sechatApp = useSechatApp();
+const userStore = useUserStore();
 
 const blockConnection = async (id: number) => {
   console.log("--> Calling connection block");
@@ -115,10 +111,10 @@ const blockConnection = async (id: number) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const allowConnection = async (id: number) => {
@@ -135,10 +131,10 @@ const allowConnection = async (id: number) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const approveConnection = async (id: number) => {
@@ -155,11 +151,11 @@ const approveConnection = async (id: number) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const deleteConnection = async (id: number) => {
@@ -173,11 +169,11 @@ const deleteConnection = async (id: number) => {
   );
 
   if (deleteError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const createInvitation = async (userName: string) => {
@@ -197,11 +193,11 @@ const createInvitation = async (userName: string) => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
 
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 

@@ -1,5 +1,9 @@
+import { SnackbarIcons } from "~~/utilities/globalEnums";
+
 export const useChatApi = () => {
   const config = useRuntimeConfig();
+  const userStore = useUserStore();
+  const sechatApp = useSechatApp();
 
   const getState = async (): Promise<IChatState> => {
     console.log("--> Getting State from API");
@@ -21,8 +25,68 @@ export const useChatApi = () => {
       }
 
       console.log("--> State Fetched", chatState.value);
+
+      chatState.value.rooms.forEach((r) =>
+        r.messages.forEach((m) => {
+          if (
+            m.messageViewers.find((mv) => mv.user === userStore.getUserName)
+          ) {
+            m.wasViewed = true;
+          }
+        })
+      );
+
+      chatState.value.userConnections.forEach((uc) => {
+        if (uc.invitedName === userStore.userProfile.userName) {
+          uc.displayName = uc.inviterName;
+        } else {
+          uc.displayName = uc.invitedName;
+        }
+      });
+
       return chatState.value;
     } catch (error) {}
+  };
+
+  const markMessagesAsViewed = async (roomId: string) => {
+    console.log("--> Marking messages as viewed");
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/message-viewed`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PATCH",
+        credentials: "include",
+        body: { Id: roomId },
+        onResponseError({ response }) {
+          if (response.status === 400) {
+            sechatApp.showSnackbar({
+              snackbar: true,
+              text: response._data,
+              timeout: 2000,
+              color: "warning",
+              icon: SnackbarIcons.Warning,
+              iconColor: "black",
+            });
+          } else {
+            sechatApp.showSnackbar({
+              snackbar: true,
+              text: "Connection Error",
+              timeout: 2000,
+              color: "error",
+              icon: SnackbarIcons.Error,
+              iconColor: "black",
+            });
+
+            throw createError({
+              ...apiError.value,
+              statusMessage: response._data,
+            });
+          }
+        },
+      }
+    );
   };
 
   const sendMessage = async (message: string, roomId: string) => {
@@ -111,5 +175,11 @@ export const useChatApi = () => {
     }
   };
 
-  return { getState, inviteToRoom, leaveRoom, sendMessage };
+  return {
+    getState,
+    inviteToRoom,
+    leaveRoom,
+    sendMessage,
+    markMessagesAsViewed,
+  };
 };
