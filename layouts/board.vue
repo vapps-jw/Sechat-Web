@@ -2,7 +2,7 @@
   <v-app id="chat-view">
     <v-main>
       <chat-snackbar />
-      <chat-loading-overlay :overlay="sechatAppStore.loadingOverlayVisible" />
+      <chat-loading-overlay :overlay="sechatAppStore.showLoadingOverlay" />
       <slot />
     </v-main>
     <chat-footer />

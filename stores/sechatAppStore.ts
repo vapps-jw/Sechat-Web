@@ -24,5 +24,7 @@ export const useSechatAppStore = defineStore({
       this.snackbarData = value;
     },
   },
-  getters: {},
+  getters: {
+    showLoadingOverlay: (state) => state.loadingOverlayVisible,
+  },
 });
