@@ -53,7 +53,7 @@ export const useUserData = () => {
   const signOut = async () => {
     console.log("--> Signing Out");
 
-    const { error: loginError } = await useFetch(
+    const { error: apiError } = await useFetch(
       `${config.public.apiBase}/account/logout`,
       {
         headers: {
@@ -64,8 +64,12 @@ export const useUserData = () => {
       }
     );
 
-    if (loginError.value) {
-      console.error("--> No server not responsed for Sign Out");
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
     } else {
       setUserData(null);
     }
@@ -75,7 +79,7 @@ export const useUserData = () => {
   const signUp = async (username: string, password: string) => {
     console.log("--> Signing Up");
 
-    const { error: loginError, data: response } = await useFetch(
+    const { error: apiError, data: response } = await useFetch(
       `${config.public.apiBase}/account/register`,
       {
         headers: {
@@ -92,34 +96,54 @@ export const useUserData = () => {
 
     console.log("--> Response", response);
 
-    if (loginError.value) {
-      const displayError = createError({
-        ...loginError.value,
-        statusMessage: "Sign up Failed",
-        statusCode: loginError.value.statusCode,
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
       });
-      console.log("--> Throwing Error", displayError);
-      throw displayError;
+    }
+  };
+
+  const changePassword = async (newPassword: string, oldPassword: string) => {
+    console.log("--> Changing password");
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/account/change-password`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: { newPassword, oldPassword },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
     }
   };
 
   const getUserData = async () => {
     const config = useRuntimeConfig();
-    const { data: newProfile, error: profileFetchError } =
-      await useFetch<IUserProfile>(
-        `${config.public.apiBase}/user/get-profile`,
-        {
-          credentials: "include",
-        }
-      );
+    const { data: newProfile, error: apiError } = await useFetch<IUserProfile>(
+      `${config.public.apiBase}/user/get-profile`,
+      {
+        credentials: "include",
+      }
+    );
 
-    if (profileFetchError.value && profileFetchError.value.statusCode === 405) {
+    if (apiError.value && apiError.value.statusCode === 405) {
       console.error("--> Not logged in - unauthorized");
       setUserData(null);
       return;
     }
 
-    if (profileFetchError.value) {
+    if (apiError.value) {
       console.error("--> Fetch user profile Error");
       setUserData(null);
       return;
@@ -130,6 +154,7 @@ export const useUserData = () => {
   };
 
   return {
+    changePassword,
     signOut,
     getUserData,
     signIn,

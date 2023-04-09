@@ -9,6 +9,11 @@
           <v-btn class="my-2" size="large">
             <NuxtLink class="sechat-link-clear" :to="`/chat`">Chat</NuxtLink>
           </v-btn>
+          <v-btn class="my-2" size="large">
+            <NuxtLink class="sechat-link-clear" :to="`/user/changePassword`"
+              >Change Password</NuxtLink
+            >
+          </v-btn>
           <v-btn class="my-2" size="large" @click="signOut">Sign Out</v-btn>
         </div>
         <div class="d-flex flex-column align-center" v-else>

@@ -35,6 +35,17 @@
           {{ buttonText }}
         </v-btn>
       </v-form>
+      <v-btn
+        @click="navigateTo('/')"
+        class="mt-3"
+        color="tertiary"
+        block
+        size="large"
+        type="submit"
+        variant="elevated"
+      >
+        Go Back
+      </v-btn>
     </v-card>
   </v-sheet>
 </template>
@@ -62,8 +73,6 @@ const onSubmit = async () => {
       credentials.value.username,
       credentials.value.password
     );
-
-    // TODO initialize connection etc
   } catch (error) {
     console.log("--> Sign up error", error);
     buttonText.value = "Try Again";
@@ -72,7 +81,7 @@ const onSubmit = async () => {
   }
 };
 
-const credentials = ref({
+const credentials = ref<ICredentials>({
   valid: true,
   username: "",
   password: "",

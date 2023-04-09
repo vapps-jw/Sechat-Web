@@ -37,6 +37,17 @@
           {{ buttonText }}
         </v-btn>
       </v-form>
+      <v-btn
+        @click="navigateTo('/')"
+        class="mt-3"
+        color="tertiary"
+        block
+        size="large"
+        type="submit"
+        variant="elevated"
+      >
+        Go Back
+      </v-btn>
     </v-card>
   </v-sheet>
 </template>
@@ -51,7 +62,7 @@ interface ICredentials {
   valid: boolean;
   username: string;
   password: string;
-  nameRules: any;
+  usernameRules: any;
   passwordRules: any;
 }
 
@@ -75,7 +86,7 @@ const onSubmit = async () => {
   }
 };
 
-const credentials = ref({
+const credentials = ref<ICredentials>({
   valid: true,
   username: "",
   password: "",
@@ -88,6 +99,7 @@ const credentials = ref({
     (v) => (v && v.length <= 20) || "Max 20 characters",
     (v) => (v && v.length > 8) || "Min 8 characters",
     (v) => (v && /[A-Z]/.test(v)) || "At least one Uppercase character",
+    (v) => (v && /[0-9]/.test(v)) || "At least one number",
     (v) => (v && /\W/.test(v)) || "At least one special character",
   ],
 });
