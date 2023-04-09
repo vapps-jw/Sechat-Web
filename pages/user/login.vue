@@ -62,6 +62,8 @@ const onSubmit = async () => {
       credentials.value.username,
       credentials.value.password
     );
+
+    // TODO initialize connection etc
   } catch (error) {
     console.log("--> Sign up error", error);
     buttonText.value = "Try Again";

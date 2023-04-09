@@ -8,20 +8,20 @@ export const useRefreshHandler = () => {
   const handleVisibilityChange = async () => {
     appStore.updateLoadingOverlay(true);
 
-    signalR.handleVisibilityChange();
-
     const chatState = await chatApi.getState();
 
     chatStore.activateRoomsTab();
     chatStore.loadRooms(chatState.rooms);
     chatStore.loadConnections(chatState.userConnections);
 
+    signalR.handleVisibilityChange();
+
     appStore.updateLoadingOverlay(false);
   };
 
   const handleOnlineChange = async () => {
     appStore.updateLoadingOverlay(true);
-    // todo: add signalR reconnect
+
     sechatApp.handleOnline();
 
     const chatState = await chatApi.getState();
@@ -29,6 +29,8 @@ export const useRefreshHandler = () => {
     chatStore.activateRoomsTab();
     chatStore.loadRooms(chatState.rooms);
     chatStore.loadConnections(chatState.userConnections);
+
+    signalR.handleVisibilityChange();
 
     appStore.updateLoadingOverlay(false);
   };

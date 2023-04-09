@@ -25,15 +25,6 @@ export const useChatApi = () => {
       }
 
       console.log("--> State Fetched", chatState.value);
-      // chatState.value.rooms.forEach((r) =>
-      //   r.messages.forEach((m) => {
-      //     if (
-      //       m.messageViewers.find((mv) => mv.user === userStore.getUserName)
-      //     ) {
-      //       m.wasViewed = true;
-      //     }
-      //   })
-      // );
 
       chatState.value.userConnections.forEach((uc) => {
         if (uc.invitedName === userStore.userProfile.userName) {
