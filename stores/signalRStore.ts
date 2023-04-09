@@ -12,8 +12,12 @@ export const useSignalRStore = defineStore({
     updateConnectionValue(value: signalR.HubConnection) {
       this.connection = value;
     },
+    async closeConnection() {
+      await this.connection.stop();
+    },
   },
   getters: {
+    getConnection: (state) => state.connection,
     isConnected: (state) => {
       if (
         state.connection &&

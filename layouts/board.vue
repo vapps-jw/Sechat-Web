@@ -14,6 +14,7 @@
 const sechatAppStore = useSechatAppStore();
 const sechatApp = useSechatApp();
 const signalR = useSignalR();
+const signalRStore = useSignalRStore();
 const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
 const chatStore = useSechatChatStore();
@@ -47,6 +48,10 @@ onBeforeUnmount(() => {
   console.warn("--> Chat Layout onBeforeUnmount");
 
   signalR.closeConnection();
+  signalRStore.$reset();
+  chatStore.$reset();
+
+  console.warn("--> Connection", signalRStore.getConnection);
 
   console.info("--> Removing Hook to visibility change");
   window.removeEventListener(

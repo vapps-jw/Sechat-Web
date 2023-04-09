@@ -59,7 +59,7 @@ export const useSignalR = () => {
       _offConnectionRequestReceivedEvent(connection);
       _offUserConnectionUpdatedEvent(connection);
       _offUserConnectionDeleteEvent(connection);
-      console.warn("--> Connection Closed");
+      console.warn("--> Connection Closed - connection.onclose");
     });
 
     connection.onreconnected(async (connectionId) => {
@@ -118,7 +118,6 @@ export const useSignalR = () => {
       signalRStore.connection.state === signalR.HubConnectionState.Connected
     ) {
       console.log("--> Already Connected");
-      return;
     }
     if (!signalRStore.connection) {
       await createNewConnection();
@@ -127,18 +126,17 @@ export const useSignalR = () => {
       signalRStore.connection &&
       signalRStore.connection.state !== signalR.HubConnectionState.Connected
     ) {
-      console.log("--> Starting Current Connection, connecting to Rooms");
+      console.log("--> Starting Current Connection");
       await signalRStore.connection.start();
-      _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
     }
+    console.log("--> Starting Current Connection, connecting to Rooms");
+    _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
   };
 
   const closeConnection = async () => {
-    if (signalRStore.connection) {
+    if (signalRStore.getConnection) {
       console.log("--> Closing connection, calling stop method");
-      await signalRStore.connection.stop();
-      signalRStore.$reset;
-      return;
+      await signalRStore.closeConnection();
     } else {
       console.log("--> No connection to close");
     }
@@ -390,7 +388,7 @@ export const useSignalR = () => {
   };
 
   const _offIncomingMessage = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting SendMessage event");
+    console.log("--> Disconnecting IncomingMessage event");
     connection.off(
       SignalRHubMethods.MessageIncoming,
       sechatChat.handleIncomingMessage
