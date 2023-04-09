@@ -31,13 +31,14 @@ onMounted(async () => {
   await signalR.connect();
 
   console.info("--> Hooking to visibility change");
-  window.addEventListener("visibilitychange", () => {
-    refreshHandler.handleVisibilityChange();
-  });
+  window.addEventListener(
+    "visibilitychange",
+    refreshHandler.handleVisibilityChange
+  );
 
   console.info("--> Hooking to online change");
-  window.addEventListener("online", () => refreshHandler.handleOnlineChange());
-  window.addEventListener("offline", () => refreshHandler.handleOnlineChange());
+  window.addEventListener("online", refreshHandler.handleOnlineChange);
+  window.addEventListener("offline", refreshHandler.handleOnlineChange);
 
   sechatApp.hideLoadingOverlay();
 });
@@ -48,17 +49,14 @@ onBeforeUnmount(() => {
   signalR.closeConnection();
 
   console.info("--> Removing Hook to visibility change");
-  window.removeEventListener("visibilitychange", () =>
-    refreshHandler.handleVisibilityChange()
+  window.removeEventListener(
+    "visibilitychange",
+    refreshHandler.handleVisibilityChange
   );
 
   console.info("--> Removing Hook to online change");
-  window.removeEventListener("online", () =>
-    refreshHandler.handleOnlineChange()
-  );
-  window.removeEventListener("offline", () =>
-    refreshHandler.handleOnlineChange()
-  );
+  window.removeEventListener("online", refreshHandler.handleOnlineChange);
+  window.removeEventListener("offline", refreshHandler.handleOnlineChange);
 });
 
 // console.info("--> Handling lock");

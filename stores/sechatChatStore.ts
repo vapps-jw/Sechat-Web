@@ -28,6 +28,15 @@ export const useSechatChatStore = defineStore({
         value,
       ].sort((a, b) => a.invitedName.localeCompare(b.invitedName));
     },
+    markMessagesAsViewedByUser(userName: string) {
+      this.availableRooms.forEach((r) =>
+        r.messages.forEach((m) => {
+          if (m.messageViewers.find((mv) => mv.user === userName)) {
+            m.wasViewed = true;
+          }
+        })
+      );
+    },
     markMessagesAsViewed() {
       if (!this.activeRoomId) {
         return;

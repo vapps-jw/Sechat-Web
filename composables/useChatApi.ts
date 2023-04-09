@@ -25,7 +25,6 @@ export const useChatApi = () => {
       }
 
       console.log("--> State Fetched", chatState.value);
-
       chatState.value.rooms.forEach((r) =>
         r.messages.forEach((m) => {
           if (
