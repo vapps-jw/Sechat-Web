@@ -18,10 +18,9 @@ export const useSechatChatStore = defineStore({
       this.activeChatTab = ChatViews.Rooms;
     },
     addConnection(value: IConnectionRequest) {
-      this.availableConnections = [
-        ...this.availableConnections.value,
-        value,
-      ].sort((a, b) => a.invitedName.localeCompare(b.invitedName));
+      this.availableConnections = [...this.availableConnections, value].sort(
+        (a, b) => a.invitedName.localeCompare(b.invitedName)
+      );
     },
     updateConnection(value: IConnectionRequest) {
       this.availableConnections = [
