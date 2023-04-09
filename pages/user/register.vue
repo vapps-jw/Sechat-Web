@@ -45,7 +45,7 @@
 const userData = useUserData();
 const form = ref(false);
 const loading = ref(false);
-const appStore = useAppStore();
+const appStore = useSechatApp();
 
 interface ICredentials {
   valid: boolean;
