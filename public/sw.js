@@ -30,7 +30,7 @@ self.addEventListener("push", async (event) => {
   const options = {
     body: String(data.options.body),
     icon: "icons/icon_64x64.png",
-    badge: "images/message-notification-badge.png",
+    badge: "icons/message-notification-badge.png",
     tag: "Sechat",
     vibrate: [1000, 1000],
   };
