@@ -9,12 +9,12 @@ export default defineNuxtConfig({
     "~/plugins/nuxtClientInit.client.ts",
     { src: "~/plugins/pwa-update.ts", mode: "client" },
   ],
-  alias: {
-    pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs",
-  },
+  // alias: {
+  //   pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs",
+  // },
   runtimeConfig: {
     public: {
-      appVersion: "BETA v0.4.4",
+      appVersion: "BETA v0.4.5",
       publicVapidKey:
         "BIazXIHc0G_xFGTio-sMOdSbarBmeVNtcKaQGsV6mLnaO1cn3_b_-j218VFz5YiSOWaVHX58tRo_dbkHh-xXfpg",
       apiBase: process.env.API_BASE_URL || "https://api.sechat.net",
@@ -24,6 +24,7 @@ export default defineNuxtConfig({
     "@nuxt/image-edge",
     "@nuxtjs/i18n",
     "@vite-pwa/nuxt",
+    "nuxt-security",
     [
       "@pinia/nuxt",
       {
