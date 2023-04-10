@@ -14,7 +14,7 @@
             <v-text-field
               v-model="roomData.name"
               :rules="roomData.nameRules"
-              :counter="50"
+              :counter="25"
               label="Room Name"
               required
             ></v-text-field>
@@ -41,7 +41,7 @@ const roomData = ref({
   nameRules: [
     (v) => !!v || "Room Name is required",
     (v) =>
-      (v && v.length <= 50) || "Room Name cant be longer than 50 characters",
+      (v && v.length <= 25) || "Room Name cant be longer than 25 characters",
   ],
 });
 
