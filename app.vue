@@ -3,8 +3,8 @@
     <client-only>
       <VitePwaManifest />
     </client-only>
-    <NuxtLoadingIndicator color="#fdd835" />
     <NuxtLayout>
+      <NuxtLoadingIndicator color="#fdd835" />
       <NuxtPage />
     </NuxtLayout>
   </div>

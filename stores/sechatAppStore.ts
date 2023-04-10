@@ -26,5 +26,6 @@ export const useSechatAppStore = defineStore({
   },
   getters: {
     showLoadingOverlay: (state) => state.loadingOverlayVisible,
+    getOnlineState: (state) => state.isOnline,
   },
 });
