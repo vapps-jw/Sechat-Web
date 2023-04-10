@@ -17,7 +17,7 @@ export const useUserData = () => {
   const signIn = async (username: string, password: string) => {
     console.log("--> Signing In");
 
-    const { error: loginError } = await useFetch(
+    const { error: apiError } = await useFetch(
       `${config.public.apiBase}/account/login`,
       {
         headers: {
@@ -32,14 +32,12 @@ export const useUserData = () => {
       }
     );
 
-    if (loginError.value) {
-      const displayError = createError({
-        ...loginError.value,
-        statusMessage: "Sign in Failed",
-        statusCode: loginError.value.statusCode,
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
       });
-      console.log("--> Throwing Error", displayError);
-      throw displayError;
     }
 
     await getUserData();

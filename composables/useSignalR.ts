@@ -1,6 +1,6 @@
 import * as signalR from "@microsoft/signalr";
 import { scrollToBottom } from "~~/utilities/documentFunctions";
-import { VisibilityStates, SignalRState } from "~~/utilities/globalEnums";
+import { VisibilityStates } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
   const sechatStore = useSechatAppStore();
@@ -67,7 +67,7 @@ export const useSignalR = () => {
         sechatStore.updateLoadingOverlay(true);
 
         // Get the updates
-        console.log("--> Reconnected, getting state ...");
+        console.log("--> Reconnected, getting state ...", connectionId);
         const { error: apiError, data: chatState } = await useFetch<IChatState>(
           `${config.public.apiBase}/chat/get-state`,
           {
@@ -79,8 +79,8 @@ export const useSignalR = () => {
         if (apiError.value) {
           throw createError({
             ...apiError.value,
-            statusMessage: "Failed to pull state",
             statusCode: apiError.value.statusCode,
+            statusMessage: apiError.value.data,
           });
         }
 
@@ -94,6 +94,7 @@ export const useSignalR = () => {
           scrollToBottom("chatView");
         }
       } catch (error) {
+        console.error("--> Fetch State Failed", error);
       } finally {
         sechatStore.updateLoadingOverlay(false);
       }

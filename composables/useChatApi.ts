@@ -19,8 +19,8 @@ export const useChatApi = () => {
       if (apiError.value) {
         throw createError({
           ...apiError.value,
-          statusMessage: "Failed to pull state",
           statusCode: apiError.value.statusCode,
+          statusMessage: apiError.value.data,
         });
       }
 
@@ -100,8 +100,8 @@ export const useChatApi = () => {
     if (apiError.value) {
       throw createError({
         ...apiError.value,
-        statusMessage: "Failed to send message",
         statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
       });
     }
   };
@@ -126,8 +126,8 @@ export const useChatApi = () => {
     if (apiError.value) {
       throw createError({
         ...apiError.value,
-        statusMessage: "Failed to leave room",
         statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
       });
     }
   };
@@ -155,13 +155,11 @@ export const useChatApi = () => {
     );
 
     if (apiError.value) {
-      const displayError = createError({
+      throw createError({
         ...apiError.value,
-        statusMessage: "Sign in Failed",
         statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
       });
-      console.log("--> Throwing Error", displayError);
-      throw displayError;
     }
   };
 
