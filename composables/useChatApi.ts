@@ -106,67 +106,8 @@ export const useChatApi = () => {
     }
   };
 
-  const leaveRoom = async (room: IRoom) => {
-    console.warn("--> API Leave Room", room);
-
-    const { error: apiError } = await useFetch(
-      `${config.public.apiBase}/chat/leave-room`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        credentials: "include",
-        body: {
-          RoomId: room.id,
-        },
-      }
-    );
-
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
-  };
-
-  const inviteToRoom = async (
-    chosenConnection: IConnectionRequest,
-    roomId: string
-  ) => {
-    console.warn("--> API Inviting User", chosenConnection);
-
-    const { error: apiError } = await useFetch(
-      `${config.public.apiBase}/chat/add-to-room`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        credentials: "include",
-        body: {
-          userName: chosenConnection.displayName,
-          RoomId: roomId,
-          ConnectionId: chosenConnection.id,
-        },
-      }
-    );
-
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
-  };
-
   return {
     getState,
-    inviteToRoom,
-    leaveRoom,
     sendMessage,
     markMessagesAsViewed,
   };

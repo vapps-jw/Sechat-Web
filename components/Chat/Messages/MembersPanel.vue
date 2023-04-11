@@ -51,8 +51,8 @@ const dialog = ref<boolean>(false);
 const chosenConnection = ref<IConnectionRequest>();
 
 const appStore = useSechatApp();
-const chatApi = useChatApi();
 const userStore = useUserStore();
+const config = useRuntimeConfig();
 
 interface PropsModel {
   roomId: string;
@@ -62,10 +62,32 @@ const props = defineProps<PropsModel>();
 
 const invite = async () => {
   try {
-    await chatApi.inviteToRoom(chosenConnection.value, props.roomId);
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/add-to-room`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          userName: chosenConnection.value.displayName,
+          RoomId: props.roomId,
+          ConnectionId: chosenConnection.value.id,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
     appStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
+    appStore.showErrorSnackbar(error.statusMessage);
   } finally {
     chosenConnection.value = null;
     dialog.value = false;
