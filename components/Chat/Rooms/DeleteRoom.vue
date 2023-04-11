@@ -45,24 +45,32 @@ const props = defineProps<PropsModel>();
 
 const appStore = useSechatApp();
 const config = useRuntimeConfig();
+const sechatApp = useSechatApp();
 
 const deleteRoom = async (roomId: string) => {
-  console.log("--> API Deleting room", roomId);
-  const { error: deleteError } = await useFetch(
-    `${config.public.apiBase}/chat/delete-room/?roomId=${roomId}`,
-    {
-      method: "DELETE",
-      credentials: "include",
+  try {
+    console.log("--> API Deleting room", roomId);
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/delete-room/?roomId=${roomId}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
     }
-  );
 
-  dialog.value = false;
-
-  if (deleteError.value) {
-    appStore.showErrorSnackbar(SnackbarMessages.Error);
-    return;
+    dialog.value = false;
+    appStore.showSuccessSnackbar(SnackbarMessages.Success);
+  } catch (error) {
+    sechatApp.showErrorSnackbar(error.statusMessage);
   }
-  appStore.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 
