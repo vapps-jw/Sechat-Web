@@ -48,31 +48,38 @@ const removeUserFromRoom = async (data: IMemeber) => {
   }
 
   console.warn("--> Removing User from Room", data);
-  const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/chat/remove-from-room`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      credentials: "include",
-      body: {
-        userName: data.userName,
-        RoomId: chatStore.getActiveRoom.id,
-        ConnectionId: chatStore.getConnections.find(
-          (c) =>
-            c.invitedName === data.userName || c.inviterName === data.userName
-        )?.id,
-      },
+
+  try {
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/remove-from-room`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          userName: data.userName,
+          RoomId: chatStore.getActiveRoom.id,
+          ConnectionId: chatStore.getConnections.find(
+            (c) =>
+              c.invitedName === data.userName || c.inviterName === data.userName
+          )?.id,
+        },
+      }
+    );
+
+    sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
     }
-  );
-
-  if (apiError.value) {
-    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
-    return;
+  } catch (error) {
+    sechatApp.showErrorSnackbar(error.statusMessage);
   }
-
-  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 
