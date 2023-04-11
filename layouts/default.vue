@@ -24,9 +24,4 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig();
-const userData = useUserData();
-
-onMounted(async () => {
-  await userData.getUserData();
-});
 </script>
