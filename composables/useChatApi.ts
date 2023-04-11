@@ -7,35 +7,33 @@ export const useChatApi = () => {
 
   const getState = async (): Promise<IChatState> => {
     console.log("--> Getting State from API");
-    try {
-      const { error: apiError, data: chatState } = await useFetch<IChatState>(
-        `${config.public.apiBase}/chat/get-state`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-
-      if (apiError.value) {
-        throw createError({
-          ...apiError.value,
-          statusCode: apiError.value.statusCode,
-          statusMessage: apiError.value.data,
-        });
+    const { error: apiError, data: chatState } = await useFetch<IChatState>(
+      `${config.public.apiBase}/chat/get-state`,
+      {
+        method: "GET",
+        credentials: "include",
       }
+    );
 
-      console.log("--> State Fetched", chatState.value);
-
-      chatState.value.userConnections.forEach((uc) => {
-        if (uc.invitedName === userStore.userProfile.userName) {
-          uc.displayName = uc.inviterName;
-        } else {
-          uc.displayName = uc.invitedName;
-        }
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
       });
+    }
 
-      return chatState.value;
-    } catch (error) {}
+    console.log("--> State Fetched", chatState.value);
+
+    chatState.value.userConnections.forEach((uc) => {
+      if (uc.invitedName === userStore.userProfile.userName) {
+        uc.displayName = uc.inviterName;
+      } else {
+        uc.displayName = uc.invitedName;
+      }
+    });
+
+    return chatState.value;
   };
 
   const markMessagesAsViewed = async (roomId: string) => {
@@ -79,36 +77,8 @@ export const useChatApi = () => {
     );
   };
 
-  const sendMessage = async (message: string, roomId: string) => {
-    console.log("--> Sending message:", message);
-
-    const { error: apiError } = await useFetch(
-      `${config.public.apiBase}/chat/send-message`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        credentials: "include",
-        body: {
-          Text: message,
-          RoomId: roomId,
-        },
-      }
-    );
-
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
-  };
-
   return {
     getState,
-    sendMessage,
     markMessagesAsViewed,
   };
 };

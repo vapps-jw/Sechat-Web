@@ -18,14 +18,14 @@
 import { SnackbarIcons } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
-const signalR = useSignalR();
 const signalRstore = useSignalRStore();
 const appStore = useSechatApp();
-const chatApi = useChatApi();
+const config = useRuntimeConfig();
+const sechatApp = useSechatApp();
 
 const newMessage = ref("");
 
-const pushMessage = () => {
+const pushMessage = async () => {
   if (newMessage.value) {
     if (!signalRstore.isConnected) {
       appStore.showSnackbar({
@@ -38,8 +38,35 @@ const pushMessage = () => {
       });
       return;
     }
-    chatApi.sendMessage(newMessage.value, chatStore.activeRoomId);
+  }
+
+  try {
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/send-message`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          Text: newMessage.value,
+          RoomId: chatStore.activeRoomId,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
     newMessage.value = "";
+  } catch (error) {
+    sechatApp.showErrorSnackbar(error.statusMessage);
   }
 };
 </script>
