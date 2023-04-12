@@ -14,7 +14,8 @@
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list flex align-center>
-          <v-list-item title="My Connections">
+          <v-list-subheader>Friends</v-list-subheader>
+          <v-list-item title="Connections">
             <template v-slot:append>
               <ChatProfileConnectionsTab />
             </template>

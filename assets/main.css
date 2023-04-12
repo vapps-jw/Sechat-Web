@@ -9,22 +9,6 @@
   flex-direction: column;
 }
 
-.sechat-chat-window {
-  height: 70vh;
-}
-
-.sechat-message-input {
-  width: 100%;
-  position: absolute;
-  bottom: 0;
-  z-index: 100;
-  opacity: 1;
-}
-
-html {
-  overflow: hidden !important;
-}
-
 /* Scroll Bar Start */
 
 /* width */

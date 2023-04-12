@@ -15,7 +15,7 @@
       </v-toolbar>
       <chat-messages-room-members />
       <v-divider />
-      <v-sheet id="chatView" class="ma-0 pa-0 overflow-auto sechat-chat-window">
+      <v-sheet id="chatView" class="ma-0 pa-0 overflow-auto">
         <div
           class="d-flex"
           :class="

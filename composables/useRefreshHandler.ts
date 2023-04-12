@@ -8,7 +8,7 @@ export const useRefreshHandler = () => {
   const handleVisibilityChange = async () => {
     appStore.updateLoadingOverlay(true);
 
-    chatStore.activateRoomsTab();
+    chatStore.activateRoomsView();
 
     const chatState = await chatApi.getState();
     chatStore.loadRooms(chatState.rooms);
@@ -24,7 +24,7 @@ export const useRefreshHandler = () => {
 
     sechatApp.handleOnline();
 
-    chatStore.activateRoomsTab();
+    chatStore.activateRoomsView();
 
     const chatState = await chatApi.getState();
     chatStore.loadRooms(chatState.rooms);

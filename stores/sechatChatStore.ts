@@ -11,11 +11,14 @@ export const useSechatChatStore = defineStore({
     };
   },
   actions: {
-    activateMessagesTab() {
+    activateMessagesView() {
       this.activeChatTab = ChatViews.Messages;
     },
-    activateRoomsTab() {
+    activateRoomsView() {
       this.activeChatTab = ChatViews.Rooms;
+    },
+    activateSettingsView() {
+      this.activeChatTab = ChatViews.Settings;
     },
     addConnection(value: IConnectionRequest) {
       this.availableConnections = [...this.availableConnections, value].sort(
@@ -131,6 +134,9 @@ export const useSechatChatStore = defineStore({
   getters: {
     getActiveRoomId: (state) => state.activeRoomId,
     getActiveChatTab: (state) => state.activeChatTab,
+    isSettingsViewActive: (state) => state.activeChatTab === ChatViews.Settings,
+    isRoomsViewActive: (state) => state.activeChatTab === ChatViews.Rooms,
+    isMessagesViewActive: (state) => state.activeChatTab === ChatViews.Messages,
     getActiveRoom: (state) =>
       state.availableRooms.find((r) => r.id === state.activeRoomId),
     getActiveRoomCreatorName: (state) => {

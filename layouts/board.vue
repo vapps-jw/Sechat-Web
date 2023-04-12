@@ -1,11 +1,11 @@
 <template>
   <v-app id="chat-view">
-    <v-main>
+    <v-main class="overflow-hidden">
       <chat-snackbar />
       <chat-loading-overlay :overlay="sechatAppStore.showLoadingOverlay" />
       <slot />
     </v-main>
-    <chat-footer />
+    <!-- <chat-footer /> -->
   </v-app>
 </template>
 

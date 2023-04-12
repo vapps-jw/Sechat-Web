@@ -1,7 +1,11 @@
 <template>
-  <div>
-    <v-btn @click="sechatNotifications.subscribeToPush">Subscribe</v-btn>
-  </div>
+  <v-btn
+    color="success"
+    size="small"
+    variant="outlined"
+    @click="sechatNotifications.subscribeToPush"
+    >Subscribe</v-btn
+  >
 </template>
 
 <script setup lang="ts">
