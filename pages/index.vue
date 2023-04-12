@@ -34,13 +34,40 @@
 </template>
 
 <script setup lang="ts">
-const userData = useUserData();
 const userStore = useUserStore();
 const sechatStore = useSechatChatStore();
+const config = useRuntimeConfig();
+const sechatApp = useSechatApp();
 
-const signOut = () => {
-  userData.signOut();
-  sechatStore.$reset();
+const signOut = async () => {
+  console.log("--> Signing Out");
+  try {
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/account/logout`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    sechatStore.$reset();
+    userStore.$reset();
+    navigateTo("/");
+    sechatApp.showSuccessSnackbar("Logged out");
+  } catch (error) {
+    sechatApp.showErrorSnackbar(error.statusMessage);
+  }
 };
 </script>
 

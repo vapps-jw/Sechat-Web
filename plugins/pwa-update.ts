@@ -1,4 +1,5 @@
 export default defineNuxtPlugin(async (context, firstTime = true) => {
+  // TODO delete in the future
   const updatAction = async (context, firstTime) => {
     if ("serviceWorker" in navigator) {
       const registration = await navigator.serviceWorker.getRegistration();

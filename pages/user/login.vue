@@ -51,7 +51,6 @@
 </template>
 
 <script setup lang="ts">
-const userData = useUserData();
 const form = ref(false);
 const loading = ref(false);
 
@@ -66,17 +65,48 @@ interface ICredentials {
 const showPassword = ref<boolean>(true);
 const buttonText = ref<string>("Sign In");
 const buttonColor = ref<string>("warning");
+const config = useRuntimeConfig();
+const userStore = useUserStore();
+const userApi = useUserApi();
+const sechatApp = useSechatApp();
 
 const onSubmit = async () => {
   try {
-    await userData.signIn(
-      credentials.value.username,
-      credentials.value.password
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/account/login`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          username: credentials.value.username,
+          password: credentials.value.password,
+        },
+      }
     );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    await userApi.getUserData();
+
+    if (userStore.profilePresent) {
+      userStore.updateSignIn(true);
+      console.log("--> Navigating to Chat");
+      navigateTo("/chat");
+    }
   } catch (error) {
     console.log("--> Sign up error", error);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
+    sechatApp.showErrorSnackbar(error.statusMessage);
     error.value = null;
   }
 };

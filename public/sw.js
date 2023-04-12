@@ -75,20 +75,3 @@ function isClientFocused() {
       return clientIsFocused;
     });
 }
-
-async function checkClientIsVisible() {
-  const windowClients = await clients.matchAll({
-    type: "window",
-    includeUncontrolled: true,
-  });
-
-  console.error("Checking visibility", windowClients);
-
-  for (var i = 0; i < windowClients.length; i++) {
-    if (windowClients[i].visibilityState === "visible") {
-      return true;
-    }
-  }
-
-  return false;
-}

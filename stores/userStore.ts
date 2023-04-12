@@ -3,7 +3,7 @@ export const useUserStore = defineStore({
   state: () => {
     return {
       userProfile: <IUserProfile>null,
-      isSignedIn: <boolean>null,
+      isSignedIn: <boolean>false,
     };
   },
   actions: {
@@ -15,6 +15,7 @@ export const useUserStore = defineStore({
     },
   },
   getters: {
+    getIsSignedIn: (state) => state.isSignedIn,
     getUserName: (state) => state.userProfile?.userName,
     profilePresent: (state) => (state.userProfile ? true : false),
   },

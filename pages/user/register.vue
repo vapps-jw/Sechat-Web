@@ -53,10 +53,11 @@
 </template>
 
 <script setup lang="ts">
-const userData = useUserData();
 const form = ref(false);
 const loading = ref(false);
 const appStore = useSechatApp();
+const sechatApp = useSechatApp();
+const config = useRuntimeConfig();
 
 interface ICredentials {
   valid: boolean;
@@ -69,23 +70,6 @@ interface ICredentials {
 const showPassword = ref<boolean>(true);
 const buttonText = ref<string>("Sign Up");
 const buttonColor = ref<string>("warning");
-
-const onSubmit = async () => {
-  try {
-    await userData.signUp(
-      credentials.value.username,
-      credentials.value.password
-    );
-    appStore.showSuccessSnackbar("User created");
-    navigateTo("/user/login");
-  } catch (error) {
-    console.log("--> Sign in error", error);
-    buttonText.value = "Try Again";
-    buttonColor.value = "error";
-    error.value = null;
-  }
-};
-
 const credentials = ref<ICredentials>({
   valid: true,
   username: "",
@@ -99,10 +83,51 @@ const credentials = ref<ICredentials>({
     (v) => (v && v.length <= 20) || "Max 20 characters",
     (v) => (v && v.length > 8) || "Min 8 characters",
     (v) => (v && /[A-Z]/.test(v)) || "At least one Uppercase character",
+    (v) => (v && /[a-z]/.test(v)) || "At least one Loercase character",
     (v) => (v && /[0-9]/.test(v)) || "At least one number",
     (v) => (v && /\W/.test(v)) || "At least one special character",
   ],
 });
+
+const onSubmit = async () => {
+  try {
+    console.log("--> Signing Up");
+
+    const { error: apiError, data: response } = await useFetch(
+      `${config.public.apiBase}/account/register`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          username: credentials.value.username,
+          password: credentials.value.password,
+        },
+      }
+    );
+
+    console.log("--> Response", response);
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    appStore.showSuccessSnackbar("User created");
+    navigateTo("/user/login");
+  } catch (error) {
+    console.log("--> Sign in error", error);
+    buttonText.value = "Try Again";
+    buttonColor.value = "error";
+    sechatApp.showErrorSnackbar(error.statusMessage);
+    error.value = null;
+  }
+};
 </script>
 
 <style scoped></style>

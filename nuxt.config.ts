@@ -5,10 +5,7 @@ export default defineNuxtConfig({
   imports: {
     dirs: ["stores"],
   },
-  plugins: [
-    "~/plugins/nuxtClientInit.client.ts",
-    { src: "~/plugins/pwa-update.ts", mode: "client" },
-  ],
+  plugins: ["~/plugins/nuxtClientInit.client.ts"],
   // alias: {
   //   pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs",
   // },
