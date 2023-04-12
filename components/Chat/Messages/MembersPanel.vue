@@ -16,28 +16,32 @@
     </template>
     <v-card>
       <v-toolbar>
-        <v-toolbar-title>Room Members</v-toolbar-title>
+        <v-toolbar-title>Add To Room</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
-        <v-autocomplete
-          :custom-filter="hasOccurrences"
-          item-title="displayName"
-          item-text="displayName"
-          :items="getConnectionsAllowedForActiveRoom"
-          item-value="id"
-          variant="solo"
-          v-model="chosenConnection"
-          return-object
-          no-data-text="You have no friends?"
-        ></v-autocomplete>
+        <v-container>
+          <div class="text-caption pa-3">Add Someone</div>
+          <v-autocomplete
+            :custom-filter="hasOccurrences"
+            item-title="displayName"
+            item-text="displayName"
+            :items="getConnectionsAllowedForActiveRoom"
+            item-value="id"
+            v-model="chosenConnection"
+            return-object
+            no-data-text="You have no friends?"
+          ></v-autocomplete>
+        </v-container>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="success" variant="text" @click="dialog = false">
+        <v-btn color="error" variant="outlined" @click="dialog = false">
           Cancel
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="error" variant="text" @click="invite"> Invite </v-btn>
+        <v-btn color="success" variant="outlined" @click="invite">
+          Invite
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

@@ -8,11 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { SignalRState } from "~~/utilities/globalEnums";
-
-const appStore = useSechatAppStore();
 const config = useRuntimeConfig();
-const signalRStore = useSignalRStore();
 </script>
 
 <style scoped></style>

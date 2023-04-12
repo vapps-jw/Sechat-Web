@@ -11,15 +11,15 @@
       v-model="selectedNav"
       :on-update:model-value="navUpdated"
     >
-      <v-btn plain value="messages" @click="chatStore.activateMessagesView">
+      <v-btn value="messages" @click="chatStore.activateMessagesView">
         <v-icon>mdi-chat-processing</v-icon>
         <span>Messages</span>
       </v-btn>
-      <v-btn plain value="rooms" @click="chatStore.activateRoomsView">
+      <v-btn value="rooms" @click="chatStore.activateRoomsView">
         <v-icon>mdi-forum</v-icon>
         <span>Rooms</span>
       </v-btn>
-      <v-btn plain value="settings" @click="chatStore.activateSettingsView">
+      <v-btn value="settings" @click="chatStore.activateSettingsView">
         <v-icon>mdi-account-details</v-icon>
         <span>Settings</span>
       </v-btn>
