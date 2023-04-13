@@ -25,21 +25,7 @@ const sechatApp = useSechatApp();
 
 const newMessage = ref("");
 
-const pushMessage = async () => {
-  if (newMessage.value) {
-    if (!signalRstore.isConnected) {
-      appStore.showSnackbar({
-        snackbar: true,
-        text: "You are not connected",
-        timeout: 2000,
-        color: "warning",
-        icon: SnackbarIcons.Warning,
-        iconColor: "black",
-      });
-      return;
-    }
-  }
-
+const callMessageApi = async () => {
   try {
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/chat/send-message`,
@@ -63,11 +49,28 @@ const pushMessage = async () => {
         statusMessage: apiError.value.data,
       });
     }
-
-    newMessage.value = "";
   } catch (error) {
     sechatApp.showErrorSnackbar(error.statusMessage);
   }
+};
+
+const pushMessage = async () => {
+  if (newMessage.value) {
+    if (!signalRstore.isConnected) {
+      appStore.showSnackbar({
+        snackbar: true,
+        text: "You are not connected",
+        timeout: 2000,
+        color: "warning",
+        icon: SnackbarIcons.Warning,
+        iconColor: "black",
+      });
+      return;
+    }
+  }
+
+  callMessageApi();
+  newMessage.value = "";
 };
 </script>
 

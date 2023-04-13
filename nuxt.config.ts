@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   // },
   runtimeConfig: {
     public: {
-      appVersion: "BETA v0.4.9.2",
+      appVersion: "BETA v0.4.9.3",
       publicVapidKey:
         "BIazXIHc0G_xFGTio-sMOdSbarBmeVNtcKaQGsV6mLnaO1cn3_b_-j218VFz5YiSOWaVHX58tRo_dbkHh-xXfpg",
       apiBase: process.env.API_BASE_URL || "https://api.sechat.net",
