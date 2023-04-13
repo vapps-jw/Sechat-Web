@@ -91,7 +91,7 @@ const onSubmit = async () => {
       throw createError({
         ...apiError.value,
         statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
+        statusMessage: apiError.value.data ?? "Sign in failed",
       });
     }
 
