@@ -32,5 +32,6 @@ export const SignalRState = {
 export const ChatViews = {
   Messages: "messages",
   Rooms: "rooms",
+  Contacts: "contacts",
   Settings: "settings",
 };

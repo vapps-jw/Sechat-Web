@@ -17,6 +17,9 @@ export const useSechatChatStore = defineStore({
     activateRoomsView() {
       this.activeChatTab = ChatViews.Rooms;
     },
+    activateContactsView() {
+      this.activeChatTab = ChatViews.Contacts;
+    },
     activateSettingsView() {
       this.activeChatTab = ChatViews.Settings;
     },

@@ -8,9 +8,7 @@
     <template v-slot:activator="{ props }">
       <v-btn
         v-bind="props"
-        size="small"
-        icon="mdi-account-group"
-        color="warning"
+        icon="mdi-account-multiple-plus"
         variant="outlined"
       ></v-btn>
     </template>

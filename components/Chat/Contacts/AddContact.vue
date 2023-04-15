@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog">
     <template v-slot:activator="{ props }">
-      <v-btn v-bind="props" icon="mdi-account-plus"></v-btn>
+      <v-btn v-bind="props" icon="mdi-account-plus" variant="outlined"></v-btn>
     </template>
 
     <v-card>

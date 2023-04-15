@@ -1,6 +1,5 @@
 export const useRefreshHandler = () => {
   const appStore = useSechatAppStore();
-  const sechatApp = useSechatApp();
   const signalR = useSignalR();
   const chatApi = useChatApi();
   const chatStore = useSechatChatStore();
@@ -20,9 +19,8 @@ export const useRefreshHandler = () => {
   };
 
   const handleOnlineChange = async () => {
-    appStore.updateLoadingOverlay(true);
-
-    sechatApp.handleOnline();
+    appStore.updateLoadingOverlay(false);
+    appStore.updateOnlineState(true);
 
     chatStore.activateRoomsView();
 
@@ -31,16 +29,11 @@ export const useRefreshHandler = () => {
     chatStore.loadConnections(chatState.userConnections);
 
     signalR.handleVisibilityChange();
-
-    appStore.updateLoadingOverlay(false);
   };
 
   const handleOfflineChange = async () => {
+    appStore.updateOnlineState(false);
     appStore.updateLoadingOverlay(true);
-
-    sechatApp.handleOffline();
-
-    appStore.updateLoadingOverlay(false);
   };
 
   return { handleVisibilityChange, handleOnlineChange, handleOfflineChange };

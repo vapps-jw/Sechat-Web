@@ -3,30 +3,11 @@
     <v-window v-model="chatStore.activeChatTab">
       <v-window-item value="messages"> <ChatMessages /> </v-window-item>
       <v-window-item value="rooms"> <ChatRooms /> </v-window-item>
+      <v-window-item value="contacts"> <ChatContacts /> </v-window-item>
       <v-window-item value="settings"> <ChatProfile /> </v-window-item>
     </v-window>
-    <v-bottom-navigation
-      mode="shift"
-      color="primary"
-      v-model="selectedNav"
-      :on-update:model-value="navUpdated"
-    >
-      <v-btn value="messages" @click="chatStore.activateMessagesView">
-        <v-icon>mdi-chat-processing</v-icon>
-        <span>Messages</span>
-      </v-btn>
-      <v-btn value="rooms" @click="chatStore.activateRoomsView">
-        <v-icon>mdi-forum</v-icon>
-        <span>Rooms</span>
-      </v-btn>
-      <v-btn value="settings" @click="chatStore.activateSettingsView">
-        <v-icon>mdi-account-details</v-icon>
-        <span>Settings</span>
-      </v-btn>
-      <div class="d-flex align-center flex-end">
-        <ChatStatusConnectionIcon />
-      </div>
-    </v-bottom-navigation>
+    <!-- <ChatStatusConnectionIcon /> -->
+    <ChatBottomNav />
   </div>
 </template>
 
@@ -44,10 +25,6 @@ const chatApi = useChatApi();
 const chatApp = useSechatApp();
 
 const selectedNav = ref(ChatViews.Rooms);
-
-const navUpdated = (model) => {
-  console.log("--> Model", model);
-};
 
 const { activeChatTab } = storeToRefs(chatStore);
 

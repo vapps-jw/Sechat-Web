@@ -23,6 +23,9 @@ export const useSechatAppStore = defineStore({
     updateSnackbar(value: ISanckbar) {
       this.snackbarData = value;
     },
+    updateOnlineState(value: boolean) {
+      this.isOnline = value;
+    },
   },
   getters: {
     showLoadingOverlay: (state) => state.loadingOverlayVisible,

@@ -1,33 +1,35 @@
 <template>
-  <div class="flex align-center">
-    <v-dialog v-model="dialog">
-      <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" icon="mdi-forum-plus-outline"></v-btn>
-      </template>
+  <v-dialog v-model="dialog">
+    <template v-slot:activator="{ props }">
+      <v-btn
+        v-bind="props"
+        icon="mdi-forum-plus-outline"
+        variant="outlined"
+      ></v-btn>
+    </template>
 
-      <v-card>
-        <v-card-title>
-          <p class="text-h4 text-center">Create Room</p>
-        </v-card-title>
-        <v-card-text>
-          <v-form ref="roomCreateForm" @submit.prevent>
-            <v-text-field
-              v-model="roomData.name"
-              :rules="roomData.nameRules"
-              :counter="25"
-              label="Room Name"
-              required
-            ></v-text-field>
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="warning" @click="dialog = false"> Close </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn color="success" @click="createRoom"> Create </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
+    <v-card>
+      <v-card-title>
+        <p class="text-h4 text-center">Create Room</p>
+      </v-card-title>
+      <v-card-text>
+        <v-form ref="roomCreateForm" @submit.prevent>
+          <v-text-field
+            v-model="roomData.name"
+            :rules="roomData.nameRules"
+            :counter="25"
+            label="Room Name"
+            required
+          ></v-text-field>
+        </v-form>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="warning" @click="dialog = false"> Close </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn color="success" @click="createRoom"> Create </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">

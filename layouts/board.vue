@@ -39,7 +39,7 @@ onMounted(async () => {
 
   console.info("--> Hooking to online change");
   window.addEventListener("online", refreshHandler.handleOnlineChange);
-  window.addEventListener("offline", refreshHandler.handleOnlineChange);
+  window.addEventListener("offline", refreshHandler.handleOfflineChange);
 
   sechatApp.hideLoadingOverlay();
 });
@@ -61,7 +61,7 @@ onBeforeUnmount(() => {
 
   console.info("--> Removing Hook to online change");
   window.removeEventListener("online", refreshHandler.handleOnlineChange);
-  window.removeEventListener("offline", refreshHandler.handleOnlineChange);
+  window.removeEventListener("offline", refreshHandler.handleOfflineChange);
 });
 
 // console.info("--> Handling lock");

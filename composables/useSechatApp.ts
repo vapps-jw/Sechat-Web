@@ -15,16 +15,6 @@ export const useSechatApp = () => {
     clearInterval(useAppStore.pingServerInterval);
   };
 
-  const handleOffline = () => {
-    console.warn("--> Handling Offline from SignalR");
-    useAppStore.isOnline = false;
-  };
-
-  const handleOnline = async () => {
-    console.warn("--> Handling Online from SignalR");
-    useAppStore.isOnline = true;
-  };
-
   const showLoadingOverlay = () => {
     useAppStore.updateLoadingOverlay(true);
   };
@@ -129,7 +119,5 @@ export const useSechatApp = () => {
     hideLoadingOverlay,
     startPing,
     stopPing,
-    handleOffline,
-    handleOnline,
   };
 };
