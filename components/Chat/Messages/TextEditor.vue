@@ -46,7 +46,7 @@ const callMessageApi = async () => {
       throw createError({
         ...apiError.value,
         statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
+        statusMessage: "Something went wrong",
       });
     }
   } catch (error) {
@@ -55,18 +55,20 @@ const callMessageApi = async () => {
 };
 
 const pushMessage = async () => {
-  if (newMessage.value) {
-    if (!signalRstore.isConnected) {
-      appStore.showSnackbar({
-        snackbar: true,
-        text: "You are not connected",
-        timeout: 2000,
-        color: "warning",
-        icon: SnackbarIcons.Warning,
-        iconColor: "black",
-      });
-      return;
-    }
+  if (!newMessage.value) {
+    return;
+  }
+
+  if (!signalRstore.isConnected) {
+    appStore.showSnackbar({
+      snackbar: true,
+      text: "You are not connected",
+      timeout: 2000,
+      color: "warning",
+      icon: SnackbarIcons.Warning,
+      iconColor: "black",
+    });
+    return;
   }
 
   callMessageApi();

@@ -12,7 +12,6 @@ export const useSignalR = () => {
   const signalRStore = useSignalRStore();
 
   const SignalRHubMethods = {
-    SendMessage: "SendMessage",
     ConnectToRooms: "ConnectToRooms",
     ConnectToRoom: "ConnectToRoom",
     CreateRoom: "CreateRoom",
@@ -380,7 +379,7 @@ export const useSignalR = () => {
   // Messages
 
   const _onIncomingMessage = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting SendMessage event");
+    console.log("--> Connecting IncomingMessage event");
     connection.on(
       SignalRHubMethods.MessageIncoming,
       sechatChat.handleIncomingMessage
@@ -395,22 +394,9 @@ export const useSignalR = () => {
     );
   };
 
-  const sendMessage = (message: string, roomId: string) => {
-    console.log("--> Connection state:", signalRStore.connection.state);
-    console.log("--> Sending message:", message);
-
-    const newMessage: ISentMessage = {
-      roomId: roomId,
-      text: message,
-    };
-
-    signalRStore.connection.send(SignalRHubMethods.SendMessage, newMessage);
-  };
-
   return {
     closeConnection,
     createRoom,
-    sendMessage,
     connect,
     handleVisibilityChange,
   };

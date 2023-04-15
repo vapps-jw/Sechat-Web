@@ -39,13 +39,11 @@ export const useUserApi = () => {
 
     if (apiError.value && apiError.value.statusCode === 405) {
       console.error("--> Not logged in - unauthorized");
-      userStore.updateSignIn(false);
       return;
     }
 
     if (apiError.value) {
       console.error("--> Fetch user profile Error");
-      userStore.updateSignIn(false);
       return;
     }
 

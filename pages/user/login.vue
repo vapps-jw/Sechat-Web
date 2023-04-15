@@ -97,8 +97,7 @@ const onSubmit = async () => {
 
     await userApi.getUserData();
 
-    if (userStore.profilePresent) {
-      userStore.updateSignIn(true);
+    if (userStore.isSignedIn) {
       console.log("--> Navigating to Chat");
       navigateTo("/chat");
     }
