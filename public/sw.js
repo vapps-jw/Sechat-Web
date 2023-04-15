@@ -28,12 +28,13 @@ self.addEventListener("push", async (event) => {
     currentNotifications.length
   );
 
-  for (let i = 0; i < currentNotifications.length; i++) {
-    if (currentNotifications[i].title === String(data.title)) {
-      console.log("--> Closing current notification", String(data.title));
-      currentNotifications[i].close();
-    }
-  }
+  const notificationsToClose = currentNotifications.filter(
+    (n) => n.title === String(data.title)
+  );
+  notificationsToClose.forEach((n) => {
+    console.log("--> Closing current notification", String(data.title));
+    n.close();
+  });
 
   const options = {
     body: String(data.options.body),
