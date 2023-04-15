@@ -4,9 +4,8 @@
       <v-window-item value="messages"> <ChatMessages /> </v-window-item>
       <v-window-item value="rooms"> <ChatRooms /> </v-window-item>
       <v-window-item value="contacts"> <ChatContacts /> </v-window-item>
-      <v-window-item value="settings"> <ChatProfile /> </v-window-item>
+      <v-window-item value="settings"> <ChatSettings /> </v-window-item>
     </v-window>
-    <!-- <ChatStatusConnectionIcon /> -->
     <ChatBottomNav />
   </div>
 </template>

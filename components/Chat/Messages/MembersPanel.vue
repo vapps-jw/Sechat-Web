@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    fullscreen
-    :scrim="false"
-    transition="dialog-bottom-transition"
-  >
+  <v-dialog v-model="dialog" :scrim="false">
     <template v-slot:activator="{ props }">
       <v-btn
         v-bind="props"
@@ -19,7 +14,7 @@
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-container>
-          <div class="text-caption pa-3">Add Someone</div>
+          <div class="text-caption pa-3">Add someone to the current room</div>
           <v-autocomplete
             :custom-filter="hasOccurrences"
             item-title="displayName"
@@ -37,9 +32,7 @@
           Cancel
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="success" variant="outlined" @click="invite">
-          Invite
-        </v-btn>
+        <v-btn color="success" variant="outlined" @click="invite"> Add </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

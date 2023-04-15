@@ -6,9 +6,7 @@
         <v-spacer></v-spacer>
         <v-btn
           @click="backToHomePage"
-          size="small"
           icon="mdi-location-exit"
-          color="warning"
           variant="outlined"
         ></v-btn>
       </v-toolbar>
@@ -45,7 +43,6 @@ import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
-const userStore = useUserStore();
 
 const backToHomePage = () => {
   navigateTo("/");
