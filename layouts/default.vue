@@ -3,7 +3,12 @@
     <v-main>
       <v-container class="bg-transparent">
         <div class="d-flex justify-center">
-          <NuxtImg src="/logos/sechat-black-tr-300x300.png" alt=""></NuxtImg>
+          <NuxtImg
+            src="/logos/logo-only-transparent-300x300.png"
+            alt=""
+            width="300"
+            height="150"
+          ></NuxtImg>
         </div>
         <div class="d-flex justify-center flex-wrap">
           <v-chip class="ma-2" color="warning">
