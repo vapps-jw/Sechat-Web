@@ -22,9 +22,17 @@ self.addEventListener("push", async (event) => {
   }
 
   const currentNotifications = await self.registration.getNotifications();
-  console.log("--> Current Notifications", currentNotifications);
+  console.log(
+    "--> Current Notifications",
+    currentNotifications,
+    currentNotifications.length
+  );
+
   for (let i = 0; i < currentNotifications.length; i++) {
-    currentNotifications[i].close();
+    if (currentNotifications[i].title === String(data.title)) {
+      console.log("--> Closing current notification", String(data.title));
+      currentNotifications[i].close();
+    }
   }
 
   const options = {
@@ -32,7 +40,7 @@ self.addEventListener("push", async (event) => {
     icon: "icons/icon_64x64.png",
     badge: "icons/message-badge.png",
     tag: "Sechat",
-    vibrate: [1000, 1000],
+    vibrate: [500, 1000, 1500],
   };
 
   console.warn("--> Showing Notification...");

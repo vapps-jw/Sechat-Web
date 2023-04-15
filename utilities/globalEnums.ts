@@ -35,3 +35,8 @@ export const ChatViews = {
   Contacts: "contacts",
   Settings: "settings",
 };
+
+export const PushNotificationTypes = {
+  NewMessage: "New Message",
+  NewContactRequest: "Contact Request",
+};
