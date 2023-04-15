@@ -1,5 +1,9 @@
 <template>
-  <v-bottom-navigation mode="shift" color="primary" v-model="selectedNav">
+  <v-bottom-navigation
+    mode="shift"
+    color="primary"
+    v-model="chatStore.getActiveChatTab"
+  >
     <v-btn value="messages" @click="chatStore.activateMessagesView">
       <v-icon>mdi-chat-processing</v-icon>
       <span>Messages</span>
@@ -21,10 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChatViews } from "~~/utilities/globalEnums";
-
 const chatStore = useSechatChatStore();
-const selectedNav = ref(ChatViews.Rooms);
 </script>
 
 <style scoped></style>
