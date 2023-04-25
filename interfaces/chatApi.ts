@@ -6,6 +6,10 @@ interface IResourceId {
   id?: number;
 }
 
+interface IStringMessage {
+  message?: string;
+}
+
 interface IUserRoomOptions {
   roomId?: string;
   userName?: string;

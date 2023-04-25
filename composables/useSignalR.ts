@@ -12,6 +12,10 @@ export const useSignalR = () => {
   const signalRStore = useSignalRStore();
 
   const SignalRHubMethods = {
+    VideoCallRequest: "VideoCallRequest",
+    VideoCallRequested: "VideoCallRequested",
+    VideoCallDataIncoming: "VideoCallDataIncoming",
+    SendVideoCallData: "SendVideoCallData",
     ConnectToRooms: "ConnectToRooms",
     ConnectToRoom: "ConnectToRoom",
     CreateRoom: "CreateRoom",
@@ -39,6 +43,8 @@ export const useSignalR = () => {
       .build();
 
     // Connect to events on connection build
+    _onVideoCallRequestedEvent(connection);
+    _onVideoCallDataIncomingEvent(connection);
     _onIncomingMessage(connection);
     _onRoomDeletedEvent(connection);
     _onUserAddedToRoomEvent(connection);
@@ -50,6 +56,8 @@ export const useSignalR = () => {
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
+      _offVideoCallRequestedEvent(connection);
+      _offVideoCallDataIncomingEvent(connection);
       _offIncomingMessage(connection);
       _offRoomDeletedEvent(connection);
       _offUserAddedToRoomEvent(connection);
@@ -154,6 +162,80 @@ export const useSignalR = () => {
         console.error("--> APP Resume Error!");
       }
     }
+  };
+
+  // Video Calls
+
+  const requestVideoCall = (userName: string) => {
+    console.log("--> Requesting Video Call");
+    signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
+      message: userName,
+    });
+  };
+
+  const _onVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting VideoCallRequestedEvent");
+    connection.on(
+      SignalRHubMethods.VideoCallRequested,
+      handleVideoCallRequested
+    );
+  };
+
+  const _offVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting VideoCallRequestedEvent");
+    connection.off(
+      SignalRHubMethods.VideoCallRequested,
+      handleVideoCallRequested
+    );
+  };
+
+  const _onVideoCallDataIncomingEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting VideoCallIncomingEvent");
+    connection.on(
+      SignalRHubMethods.VideoCallDataIncoming,
+      handleVideoCallDataIncoming
+    );
+  };
+
+  const _offVideoCallDataIncomingEvent = (
+    connection: signalR.HubConnection
+  ) => {
+    console.log("--> Disconnecting VideoCallIncomingEvent");
+    connection.off(
+      SignalRHubMethods.VideoCallDataIncoming,
+      handleVideoCallDataIncoming
+    );
+  };
+
+  const handleVideoCallDataIncoming = (data: IVideoCallData) => {
+    let lastIndex = -1;
+    let partBuffer = [];
+    let playing = false;
+
+    signalRStore.connection.on("video-data", async (r) => {
+      if (r.part.length === 0) {
+        return;
+      }
+
+      if (!playing && r.index !== 0) {
+        return;
+      }
+      playing = true;
+
+      if (lastIndex >= r.index) {
+        const ba = base64js.toByteArray(partBuffer.reduce((a, b) => a + b));
+        signalRStore.videoCallChannel.push(ba.buffer);
+        partBuffer = [];
+      }
+
+      partBuffer.push(r.part);
+
+      lastIndex = r.index;
+    });
+  };
+
+  const handleVideoCallRequested = (data: IStringMessage) => {
+    console.warn(`--> CALL INCOMING FROM: ${data.message}`);
   };
 
   // User Connections
@@ -395,6 +477,7 @@ export const useSignalR = () => {
   };
 
   return {
+    requestVideoCall,
     closeConnection,
     createRoom,
     connect,

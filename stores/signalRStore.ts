@@ -1,14 +1,25 @@
 import * as signalR from "@microsoft/signalr";
+import { IChannel, channelFactory } from "~/utilities/channels";
 import { SignalRState } from "~~/utilities/globalEnums";
 
 export const useSignalRStore = defineStore({
   id: "signalR-store",
   state: () => {
     return {
+      videoCallInProgress: <boolean>false,
       connection: <signalR.HubConnection>null,
+      videoCallChannel: <IChannel>channelFactory(),
     };
   },
   actions: {
+    initiateVideoCallChannel() {
+      this.videoCallChannel = channelFactory();
+      this.videoCallInProgress = true;
+    },
+    terminateVideoCallChannel() {
+      this.videoCallChannel = channelFactory();
+      this.videoCallInProgress = false;
+    },
     updateConnectionValue(value: signalR.HubConnection) {
       this.connection = value;
     },
@@ -17,6 +28,8 @@ export const useSignalRStore = defineStore({
     },
   },
   getters: {
+    videoCallChannel: (state) => state.videoCallChannel,
+    videoCall: (state) => state.videoCallInProgress,
     getConnection: (state) => state.connection,
     isConnected: (state) => {
       if (

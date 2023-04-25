@@ -25,14 +25,14 @@ export const useSechatChatStore = defineStore({
     },
     addConnection(value: IConnectionRequest) {
       this.availableConnections = [...this.availableConnections, value].sort(
-        (a, b) => a.invitedName.localeCompare(b.invitedName)
+        (a, b) => a.displayName.localeCompare(b.displayName)
       );
     },
     updateConnection(value: IConnectionRequest) {
       this.availableConnections = [
         ...this.availableConnections.filter((uc) => uc.id !== value.id),
         value,
-      ].sort((a, b) => a.invitedName.localeCompare(b.invitedName));
+      ].sort((a, b) => a.displayName.localeCompare(b.displayName));
     },
     markMessagesAsViewedByUser(userName: string) {
       this.availableRooms.forEach((r) =>
@@ -53,7 +53,9 @@ export const useSechatChatStore = defineStore({
       room.messages.forEach((m) => (m.wasViewed = true));
     },
     loadConnections(value: IConnectionRequest[]) {
-      this.availableConnections = value;
+      this.availableConnections = value.sort((a, b) =>
+        a.displayName.localeCompare(b.displayName)
+      );
     },
     deleteConnection(value: IResourceId) {
       this.availableConnections = this.availableConnections.filter(
@@ -165,20 +167,3 @@ export const useSechatChatStore = defineStore({
     },
   },
 });
-
-// todo: do this in setup script
-
-// const getConnectionsAllowedForActiveRoom = computed(() => {
-//   if (!getActiveRoom.value) {
-//     return [];
-//   }
-//   return availableConnections.value.filter(
-//     (uc) =>
-//       !uc.blocked &&
-//       uc.approved &&
-//       uc.displayName !== userStore.getUserName &&
-//       !getActiveRoom.value.members.some(
-//         (arm) => arm.userName === uc.displayName
-//       )
-//   );
-// });
