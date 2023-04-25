@@ -1,33 +1,47 @@
 import * as signalR from "@microsoft/signalr";
 import { IChannel, channelFactory } from "~/utilities/channels";
-import { SignalRState, VideoCallStatus } from "~~/utilities/globalEnums";
+import { SignalRState } from "~~/utilities/globalEnums";
 
 export const useSignalRStore = defineStore({
   id: "signalR-store",
   state: () => {
     return {
+      videoCallMediaSource: <MediaSource>null,
+      videoCallDialog: <boolean>false,
+      videoCallDialogContact: <IConnectionRequest>null,
+      videoCallViewVisible: <boolean>false,
       videoCallSubject: <signalR.Subject<any>>null,
       videoCallContact: <IConnectionRequest>null,
-      videoCallStatus: <string>VideoCallStatus.None,
       connection: <signalR.HubConnection>null,
       videoCallChannel: <IChannel>channelFactory(),
     };
   },
   actions: {
+    resetMediaSource() {
+      this.videoCallMediaSource = new MediaSource();
+    },
+    showVideoCallDialog(contact: IConnectionRequest) {
+      this.videoCallDialog = true;
+      this.videoCallDialogContact = contact;
+    },
+    hideVideoCallDialog(contact: IConnectionRequest) {
+      this.videoCallDialog = false;
+      this.videoCallDialogContact = null;
+    },
     initializeVideoCall(contact: IConnectionRequest) {
-      this.videoCallStatus = VideoCallStatus.Initialized;
+      this.videoCallViewVisible = true;
       this.videoCallSubject = new signalR.Subject();
       this.videoCallContact = contact;
       this.videoCallChannel = channelFactory();
     },
     answerVideoCall(contact: IConnectionRequest) {
-      this.videoCallStatus = VideoCallStatus.Answered;
+      this.videoCallViewVisible = true;
       this.videoCallSubject = new signalR.Subject();
       this.videoCallContact = contact;
       this.videoCallChannel = channelFactory();
     },
     terminateVideoCall() {
-      this.videoCallStatus = VideoCallStatus.None;
+      this.videoCallViewVisible = false;
       this.videoCallSubject = null;
       this.videoCallContact = null;
       this.videoCallChannel = channelFactory();
@@ -46,9 +60,13 @@ export const useSignalRStore = defineStore({
     },
   },
   getters: {
+    getVideoCallMediaSource: (state) => state.videoCallMediaSource,
+    isVideoCallDialogVisible: (state) => state.videoCallDialog,
+    whoIsCalling: (state) => state.videoCallDialogContact,
+    isVideoCallViewVisible: (state) => state.videoCallViewVisible,
+    videoCallContactPresent: (state) => (state.videoCallContact ? true : false),
     getVideoCallContact: (state) => state.videoCallContact,
     getVideoCallChannel: (state) => state.videoCallChannel,
-    getVideoCallStatus: (state) => state.videoCallStatus,
     getConnection: (state) => state.connection,
     isConnected: (state) => {
       if (

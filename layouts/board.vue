@@ -3,6 +3,7 @@
     <v-main class="overflow-hidden">
       <chat-snackbar />
       <chat-loading-overlay :overlay="sechatAppStore.showLoadingOverlay" />
+      <chat-video-calling-dialog />
       <slot />
     </v-main>
     <!-- <chat-footer /> -->

@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <ChatVideoCall v-if="signalRStore.isVideoCallViewVisible" />
+  <div v-else>
     <v-window v-model="chatStore.activeChatTab">
       <v-window-item value="messages"> <ChatMessages /> </v-window-item>
       <v-window-item value="rooms"> <ChatRooms /> </v-window-item>
@@ -20,6 +21,7 @@ definePageMeta({
 });
 
 const chatStore = useSechatChatStore();
+const signalRStore = useSignalRStore();
 const chatApi = useChatApi();
 const chatApp = useSechatApp();
 

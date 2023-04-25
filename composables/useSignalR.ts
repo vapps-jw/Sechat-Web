@@ -13,7 +13,11 @@ export const useSignalR = () => {
   const signalRStore = useSignalRStore();
 
   const SignalRHubMethods = {
+    ApproveVideoCall: "ApproveVideoCall",
+    RejectVideoCall: "RejectVideoCall",
     VideoCallRequest: "VideoCallRequest",
+    VideoCallApproved: "VideoCallApproved",
+    VideoCallRejected: "VideoCallRejected",
     VideoCallRequested: "VideoCallRequested",
     VideoCallDataIncoming: "VideoCallDataIncoming",
     SendVideoCallData: "SendVideoCallData",
@@ -44,6 +48,8 @@ export const useSignalR = () => {
       .build();
 
     // Connect to events on connection build
+    _onVideoCallApprovedEvent(connection);
+    _onVideoCallRejectedEvent(connection);
     _onVideoCallRequestedEvent(connection);
     _onVideoCallDataIncomingEvent(connection);
     _onIncomingMessage(connection);
@@ -57,6 +63,8 @@ export const useSignalR = () => {
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
+      _offVideoCallApprovedEvent(connection);
+      _offVideoCallRejectedEvent(connection);
       _offVideoCallRequestedEvent(connection);
       _offVideoCallDataIncomingEvent(connection);
       _offIncomingMessage(connection);
@@ -167,6 +175,32 @@ export const useSignalR = () => {
 
   // Video Calls
 
+  const _onVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting VideoCallApprovedEvent");
+    connection.on(SignalRHubMethods.VideoCallApproved, handleVideoCallApproved);
+  };
+
+  const _offVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting VideoCallApprovedEvent");
+    connection.off(
+      SignalRHubMethods.VideoCallApproved,
+      handleVideoCallApproved
+    );
+  };
+
+  const _onVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting VideoCallRejectedEvent");
+    connection.on(SignalRHubMethods.VideoCallRejected, handleVideoCallRejected);
+  };
+
+  const _offVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting VideoCallRejectedEvent");
+    connection.off(
+      SignalRHubMethods.VideoCallRejected,
+      handleVideoCallRejected
+    );
+  };
+
   const _onVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting VideoCallRequestedEvent");
     connection.on(
@@ -227,8 +261,30 @@ export const useSignalR = () => {
     signalRStore.connection.send(SignalRHubMethods.SendVideoCallData, data);
   };
 
+  const sendVideoCallRequest = (data: string) => {
+    console.log("--> Sending video call request", data);
+    signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
+      message: data,
+    });
+  };
+
   const handleVideoCallRequested = (data: IStringMessage) => {
     console.warn(`--> CALL INCOMING FROM: ${data.message}`);
+    let connection = sechatChatStore.getConnections.find(
+      (c) => c.invitedName === data.message || c.invitedName === data.message
+    );
+    signalRStore.showVideoCallDialog(connection);
+  };
+
+  const handleVideoCallApproved = (data: IStringMessage) => {
+    console.warn(`--> Call approved by: ${data.message}`);
+    let connection = sechatChatStore.getConnections.find(
+      (c) => c.invitedName === data.message || c.invitedName === data.message
+    );
+  };
+
+  const handleVideoCallRejected = (data: IStringMessage) => {
+    console.warn(`--> Call rejected by: ${data.message}`);
     let connection = sechatChatStore.getConnections.find(
       (c) => c.invitedName === data.message || c.invitedName === data.message
     );
@@ -473,6 +529,7 @@ export const useSignalR = () => {
   };
 
   return {
+    sendVideoCallRequest,
     sendVideoCallData,
     closeConnection,
     createRoom,

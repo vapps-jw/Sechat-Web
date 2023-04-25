@@ -1,112 +1,73 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    fullscreen
-    :scrim="false"
-    transition="dialog-bottom-transition"
-  >
-    <v-card>
-      <v-toolbar>
-        <v-toolbar-title>Rooms</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn
-          @click="terminateCall"
-          size="small"
-          icon="mdi-phone-hangup"
-          color="error"
-          variant="outlined"
-        ></v-btn>
-      </v-toolbar>
+  <v-container>
+    <v-card class="sechat-v-card">
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <video id="video-stream-source" autoplay></video>
         <video id="video-stream-target" autoplay></video>
       </v-card-text>
+      <!-- <v-card-text
+        v-else
+        class="d-flex ma-0 pa-0 overflow-auto justify-center align-center"
+      >
+        <div class="text-h2">
+          Call {{ signalRStore.videoCallContact.displayName }}?
+        </div>
+      </v-card-text> -->
+      <v-card-actions>
+        <v-btn
+          @click="terminateCall"
+          size="x-large"
+          icon="mdi-phone-hangup"
+          color="error"
+          variant="outlined"
+        ></v-btn>
+        <v-spacer></v-spacer>
+        <v-btn
+          @click="newVideoCall"
+          size="x-large"
+          icon="mdi-phone"
+          color="success"
+          variant="outlined"
+        ></v-btn>
+      </v-card-actions>
     </v-card>
-  </v-dialog>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-import { VideoCallStatus } from "~/utilities/globalEnums";
 import * as base64js from "base64-js";
 
-const dialog = ref<boolean>(false);
 const signalR = useSignalR();
 const signalRStore = useSignalRStore();
 const userStore = useUserStore();
-
-interface PropsModel {
-  contact: IConnectionRequest;
-}
-
-const props = defineProps<PropsModel>();
+const videoCall = useVideoCall();
 
 const webm9MimeCodec = 'video/webm;codecs="vp8,opus"';
 const segmentLimit = 20000;
 let mediaRecorder = null;
 
-const videoSource = <HTMLVideoElement>(
+let videoSource = <HTMLVideoElement>(
   document.getElementById("video-stream-source")
 );
-const videoTarget = <HTMLVideoElement>(
+let videoTarget = <HTMLVideoElement>(
   document.getElementById("video-stream-target")
 );
 
 const mediaSource = new MediaSource();
 
-const newVideoCall = async (uc: IConnectionRequest) => {
-  // listen to contact video
-  signalRStore.initializeVideoCall(uc);
-
-  const sourceBuffer = mediaSource.addSourceBuffer(webm9MimeCodec);
-  sourceBuffer.mode = "sequence";
-  sourceBuffer.addEventListener("updateend", incomingMedia);
-
-  const ab = await signalRStore.getVideoCallChannel.pull();
-  sourceBuffer.appendBuffer(ab);
-
-  videoTarget.src = URL.createObjectURL(mediaSource);
-
-  // record current user video
-  navigator.mediaDevices
-    .getUserMedia({ video: true, audio: true })
-    .then(function (stream) {
-      videoSource.srcObject = stream;
-      videoSource.play();
-      mediaRecorder = new MediaRecorder(stream, { mimeType: webm9MimeCodec });
-      mediaRecorder.ondataavailable = handleDataAvailable;
-      mediaRecorder.start();
-      setInterval(() => mediaRecorder.requestData(), 40);
-    });
+const newVideoCall = async () => {
+  try {
+    videoCall.startListeningForVideo();
+    signalR.sendVideoCallRequest(signalRStore.getVideoCallContact.displayName);
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const answerVideoCall = () => {};
 
 const terminateCall = () => {
-  mediaSource.removeEventListener("updateend", incomingMedia);
   signalRStore.terminateVideoCall();
-};
-
-const { videoCallStatus } = storeToRefs(signalRStore);
-
-watch(videoCallStatus, async (newVal, oldVal) => {
-  console.log("--> Video Call Screen Triggered", newVal, oldVal, props.contact);
-
-  if (newVal == VideoCallStatus.Initialized) {
-  }
-});
-
-const incomingMedia = async () => {
-  const sourceBuffer = mediaSource.addSourceBuffer(webm9MimeCodec);
-  sourceBuffer.mode = "sequence";
-  sourceBuffer.addEventListener("updateend", async () => {
-    if (videoTarget.paused) videoTarget.play();
-
-    const ab = await signalRStore.getVideoCallChannel.pull();
-    sourceBuffer.appendBuffer(ab);
-  });
-
-  const ab = await signalRStore.getVideoCallChannel.pull();
-  sourceBuffer.appendBuffer(ab);
 };
 
 const handleDataAvailable = async (event) => {
@@ -130,4 +91,8 @@ const handleDataAvailable = async (event) => {
     }
   }
 };
+
+onBeforeUnmount(() => {
+  console.warn("--> Vide Call onBeforeUnmount");
+});
 </script>
