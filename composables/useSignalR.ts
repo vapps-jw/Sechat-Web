@@ -1,4 +1,5 @@
 import * as signalR from "@microsoft/signalr";
+import * as base64js from "base64-js";
 import { scrollToBottom } from "~~/utilities/documentFunctions";
 import { VisibilityStates } from "~~/utilities/globalEnums";
 
@@ -166,13 +167,6 @@ export const useSignalR = () => {
 
   // Video Calls
 
-  const requestVideoCall = (userName: string) => {
-    console.log("--> Requesting Video Call");
-    signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
-      message: userName,
-    });
-  };
-
   const _onVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting VideoCallRequestedEvent");
     connection.on(
@@ -210,32 +204,34 @@ export const useSignalR = () => {
   const handleVideoCallDataIncoming = (data: IVideoCallData) => {
     let lastIndex = -1;
     let partBuffer = [];
-    let playing = false;
 
-    signalRStore.connection.on("video-data", async (r) => {
-      if (r.part.length === 0) {
-        return;
-      }
+    if (data.part.length === 0) {
+      return;
+    }
 
-      if (!playing && r.index !== 0) {
-        return;
-      }
-      playing = true;
+    if (data.index !== 0) {
+      return;
+    }
 
-      if (lastIndex >= r.index) {
-        const ba = base64js.toByteArray(partBuffer.reduce((a, b) => a + b));
-        signalRStore.videoCallChannel.push(ba.buffer);
-        partBuffer = [];
-      }
+    if (lastIndex >= data.index) {
+      const ba = base64js.toByteArray(partBuffer.reduce((a, b) => a + b));
+      signalRStore.videoCallChannel.push(ba.buffer);
+      partBuffer = [];
+    }
 
-      partBuffer.push(r.part);
+    partBuffer.push(data.part);
+    lastIndex = data.index;
+  };
 
-      lastIndex = r.index;
-    });
+  const sendVideoCallData = (data: signalR.Subject<any>) => {
+    signalRStore.connection.send(SignalRHubMethods.SendVideoCallData, data);
   };
 
   const handleVideoCallRequested = (data: IStringMessage) => {
     console.warn(`--> CALL INCOMING FROM: ${data.message}`);
+    let connection = sechatChatStore.getConnections.find(
+      (c) => c.invitedName === data.message || c.invitedName === data.message
+    );
   };
 
   // User Connections
@@ -477,7 +473,7 @@ export const useSignalR = () => {
   };
 
   return {
-    requestVideoCall,
+    sendVideoCallData,
     closeConnection,
     createRoom,
     connect,

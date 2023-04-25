@@ -40,3 +40,9 @@ export const PushNotificationTypes = {
   NewMessage: "New Message",
   NewContactRequest: "Contact Request",
 };
+
+export const VideoCallStatus = {
+  Answered: "Answered",
+  Initialized: "Initialized",
+  None: "None",
+};

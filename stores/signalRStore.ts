@@ -1,24 +1,42 @@
 import * as signalR from "@microsoft/signalr";
 import { IChannel, channelFactory } from "~/utilities/channels";
-import { SignalRState } from "~~/utilities/globalEnums";
+import { SignalRState, VideoCallStatus } from "~~/utilities/globalEnums";
 
 export const useSignalRStore = defineStore({
   id: "signalR-store",
   state: () => {
     return {
-      videoCallInProgress: <boolean>false,
+      videoCallSubject: <signalR.Subject<any>>null,
+      videoCallContact: <IConnectionRequest>null,
+      videoCallStatus: <string>VideoCallStatus.None,
       connection: <signalR.HubConnection>null,
       videoCallChannel: <IChannel>channelFactory(),
     };
   },
   actions: {
-    initiateVideoCallChannel() {
+    initializeVideoCall(contact: IConnectionRequest) {
+      this.videoCallStatus = VideoCallStatus.Initialized;
+      this.videoCallSubject = new signalR.Subject();
+      this.videoCallContact = contact;
       this.videoCallChannel = channelFactory();
-      this.videoCallInProgress = true;
     },
-    terminateVideoCallChannel() {
+    answerVideoCall(contact: IConnectionRequest) {
+      this.videoCallStatus = VideoCallStatus.Answered;
+      this.videoCallSubject = new signalR.Subject();
+      this.videoCallContact = contact;
       this.videoCallChannel = channelFactory();
-      this.videoCallInProgress = false;
+    },
+    terminateVideoCall() {
+      this.videoCallStatus = VideoCallStatus.None;
+      this.videoCallSubject = null;
+      this.videoCallContact = null;
+      this.videoCallChannel = channelFactory();
+    },
+    updateVideoCallContact(data: IConnectionRequest) {
+      this.videoCallContact = data;
+    },
+    clearVideoCallContact() {
+      this.videoCallContact = null;
     },
     updateConnectionValue(value: signalR.HubConnection) {
       this.connection = value;
@@ -28,8 +46,9 @@ export const useSignalRStore = defineStore({
     },
   },
   getters: {
-    videoCallChannel: (state) => state.videoCallChannel,
-    videoCall: (state) => state.videoCallInProgress,
+    getVideoCallContact: (state) => state.videoCallContact,
+    getVideoCallChannel: (state) => state.videoCallChannel,
+    getVideoCallStatus: (state) => state.videoCallStatus,
     getConnection: (state) => state.connection,
     isConnected: (state) => {
       if (

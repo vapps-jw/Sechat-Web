@@ -52,17 +52,13 @@
             variant="outlined"
           ></v-btn>
           <v-spacer />
-          <chat-video-call v-if="uc.approved && !uc.blocked" :contact="uc" />
-
-          <!-- <v-btn
-            v-if="uc.approved && !uc.blocked"
-            @click=""
-            class="mx-1"
+          <v-btn
+            @click="startVideoCall(uc)"
             size="small"
             icon="mdi-phone"
             color="success"
             variant="outlined"
-          ></v-btn> -->
+          ></v-btn>
         </v-row>
       </v-expansion-panel-text>
     </v-expansion-panel>
@@ -80,7 +76,9 @@ const signalRStore = useSignalRStore();
 
 const startVideoCall = (uc: IConnectionRequest) => {
   try {
+    signalRStore.initializeVideoCall(uc);
   } catch (error) {
+    console.error("-->", error);
     sechatApp.showErrorSnackbar("Something failed");
   }
 };
