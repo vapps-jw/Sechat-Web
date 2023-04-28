@@ -46,3 +46,26 @@ export const VideoCallStatus = {
   Initialized: "Initialized",
   None: "None",
 };
+
+export const SignalRHubMethods = {
+  ApproveVideoCall: "ApproveVideoCall",
+  RejectVideoCall: "RejectVideoCall",
+  VideoCallRequest: "VideoCallRequest",
+  VideoCallApproved: "VideoCallApproved",
+  VideoCallRejected: "VideoCallRejected",
+  VideoCallRequested: "VideoCallRequested",
+  VideoCallDataIncoming: "VideoCallDataIncoming",
+  SendVideoCallData: "SendVideoCallData",
+  ConnectToRooms: "ConnectToRooms",
+  ConnectToRoom: "ConnectToRoom",
+  CreateRoom: "CreateRoom",
+  MessageIncoming: "MessageIncoming",
+  RoomDeleted: "RoomDeleted",
+  ConnectionRequestReceived: "ConnectionRequestReceived",
+  ConnectionDeleted: "ConnectionDeleted",
+  ConnectionUpdated: "ConnectionUpdated",
+  UserAddedToRoom: "UserAddedToRoom",
+  UserRemovedFromRoom: "UserRemovedFromRoom",
+  DisconnectFromRoom: "DisconnectFromRoom",
+  RoomUpdated: "RoomUpdated",
+};

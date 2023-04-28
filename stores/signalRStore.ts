@@ -20,6 +20,9 @@ export const useSignalRStore = defineStore({
     resetMediaSource() {
       this.videoCallMediaSource = new MediaSource();
     },
+    resetVideoCallSignalRSubject() {
+      this.videoCallSubject = new signalR.Subject();
+    },
     showVideoCallDialog(contact: IConnectionRequest) {
       this.videoCallDialog = true;
       this.videoCallDialogContact = contact;
@@ -30,13 +33,11 @@ export const useSignalRStore = defineStore({
     },
     initializeVideoCall(contact: IConnectionRequest) {
       this.videoCallViewVisible = true;
-      this.videoCallSubject = new signalR.Subject();
       this.videoCallContact = contact;
       this.videoCallChannel = channelFactory();
     },
     answerVideoCall(contact: IConnectionRequest) {
       this.videoCallViewVisible = true;
-      this.videoCallSubject = new signalR.Subject();
       this.videoCallContact = contact;
       this.videoCallChannel = channelFactory();
     },
@@ -60,6 +61,7 @@ export const useSignalRStore = defineStore({
     },
   },
   getters: {
+    getVideoCallSubject: (state) => state.videoCallSubject,
     getVideoCallMediaSource: (state) => state.videoCallMediaSource,
     isVideoCallDialogVisible: (state) => state.videoCallDialog,
     whoIsCalling: (state) => state.videoCallDialogContact,

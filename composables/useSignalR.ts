@@ -1,7 +1,6 @@
 import * as signalR from "@microsoft/signalr";
-import * as base64js from "base64-js";
 import { scrollToBottom } from "~~/utilities/documentFunctions";
-import { VisibilityStates } from "~~/utilities/globalEnums";
+import { SignalRHubMethods, VisibilityStates } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
   const sechatStore = useSechatAppStore();
@@ -11,29 +10,7 @@ export const useSignalR = () => {
   const sechatChatStore = useSechatChatStore();
   const userStore = useUserStore();
   const signalRStore = useSignalRStore();
-
-  const SignalRHubMethods = {
-    ApproveVideoCall: "ApproveVideoCall",
-    RejectVideoCall: "RejectVideoCall",
-    VideoCallRequest: "VideoCallRequest",
-    VideoCallApproved: "VideoCallApproved",
-    VideoCallRejected: "VideoCallRejected",
-    VideoCallRequested: "VideoCallRequested",
-    VideoCallDataIncoming: "VideoCallDataIncoming",
-    SendVideoCallData: "SendVideoCallData",
-    ConnectToRooms: "ConnectToRooms",
-    ConnectToRoom: "ConnectToRoom",
-    CreateRoom: "CreateRoom",
-    MessageIncoming: "MessageIncoming",
-    RoomDeleted: "RoomDeleted",
-    ConnectionRequestReceived: "ConnectionRequestReceived",
-    ConnectionDeleted: "ConnectionDeleted",
-    ConnectionUpdated: "ConnectionUpdated",
-    UserAddedToRoom: "UserAddedToRoom",
-    UserRemovedFromRoom: "UserRemovedFromRoom",
-    DisconnectFromRoom: "DisconnectFromRoom",
-    RoomUpdated: "RoomUpdated",
-  };
+  const videoCall = useVideoCall();
 
   const createNewConnection = async () => {
     const connection = new signalR.HubConnectionBuilder()
@@ -177,27 +154,33 @@ export const useSignalR = () => {
 
   const _onVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting VideoCallApprovedEvent");
-    connection.on(SignalRHubMethods.VideoCallApproved, handleVideoCallApproved);
+    connection.on(
+      SignalRHubMethods.VideoCallApproved,
+      videoCall.videoCallApproved
+    );
   };
 
   const _offVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Disconnecting VideoCallApprovedEvent");
     connection.off(
       SignalRHubMethods.VideoCallApproved,
-      handleVideoCallApproved
+      videoCall.videoCallApproved
     );
   };
 
   const _onVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting VideoCallRejectedEvent");
-    connection.on(SignalRHubMethods.VideoCallRejected, handleVideoCallRejected);
+    connection.on(
+      SignalRHubMethods.VideoCallRejected,
+      videoCall.videoCallRejected
+    );
   };
 
   const _offVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Disconnecting VideoCallRejectedEvent");
     connection.off(
       SignalRHubMethods.VideoCallRejected,
-      handleVideoCallRejected
+      videoCall.videoCallRejected
     );
   };
 
@@ -205,7 +188,7 @@ export const useSignalR = () => {
     console.log("--> Connecting VideoCallRequestedEvent");
     connection.on(
       SignalRHubMethods.VideoCallRequested,
-      handleVideoCallRequested
+      videoCall.videoCallRequested
     );
   };
 
@@ -213,7 +196,7 @@ export const useSignalR = () => {
     console.log("--> Disconnecting VideoCallRequestedEvent");
     connection.off(
       SignalRHubMethods.VideoCallRequested,
-      handleVideoCallRequested
+      videoCall.videoCallRequested
     );
   };
 
@@ -221,7 +204,7 @@ export const useSignalR = () => {
     console.log("--> Connecting VideoCallIncomingEvent");
     connection.on(
       SignalRHubMethods.VideoCallDataIncoming,
-      handleVideoCallDataIncoming
+      videoCall.handleVideoCallDataIncoming
     );
   };
 
@@ -231,30 +214,8 @@ export const useSignalR = () => {
     console.log("--> Disconnecting VideoCallIncomingEvent");
     connection.off(
       SignalRHubMethods.VideoCallDataIncoming,
-      handleVideoCallDataIncoming
+      videoCall.handleVideoCallDataIncoming
     );
-  };
-
-  const handleVideoCallDataIncoming = (data: IVideoCallData) => {
-    let lastIndex = -1;
-    let partBuffer = [];
-
-    if (data.part.length === 0) {
-      return;
-    }
-
-    if (data.index !== 0) {
-      return;
-    }
-
-    if (lastIndex >= data.index) {
-      const ba = base64js.toByteArray(partBuffer.reduce((a, b) => a + b));
-      signalRStore.videoCallChannel.push(ba.buffer);
-      partBuffer = [];
-    }
-
-    partBuffer.push(data.part);
-    lastIndex = data.index;
   };
 
   const sendVideoCallData = (data: signalR.Subject<any>) => {
@@ -266,28 +227,6 @@ export const useSignalR = () => {
     signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
       message: data,
     });
-  };
-
-  const handleVideoCallRequested = (data: IStringMessage) => {
-    console.warn(`--> CALL INCOMING FROM: ${data.message}`);
-    let connection = sechatChatStore.getConnections.find(
-      (c) => c.invitedName === data.message || c.invitedName === data.message
-    );
-    signalRStore.showVideoCallDialog(connection);
-  };
-
-  const handleVideoCallApproved = (data: IStringMessage) => {
-    console.warn(`--> Call approved by: ${data.message}`);
-    let connection = sechatChatStore.getConnections.find(
-      (c) => c.invitedName === data.message || c.invitedName === data.message
-    );
-  };
-
-  const handleVideoCallRejected = (data: IStringMessage) => {
-    console.warn(`--> Call rejected by: ${data.message}`);
-    let connection = sechatChatStore.getConnections.find(
-      (c) => c.invitedName === data.message || c.invitedName === data.message
-    );
   };
 
   // User Connections
