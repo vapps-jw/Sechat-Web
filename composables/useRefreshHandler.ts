@@ -7,7 +7,7 @@ export const useRefreshHandler = () => {
   const handleVisibilityChange = async () => {
     appStore.updateLoadingOverlay(true);
 
-    chatStore.activateRoomsView();
+    //chatStore.activateRoomsView();
 
     const chatState = await chatApi.getState();
     chatStore.loadRooms(chatState.rooms);
@@ -22,7 +22,7 @@ export const useRefreshHandler = () => {
     appStore.updateLoadingOverlay(false);
     appStore.updateOnlineState(true);
 
-    chatStore.activateRoomsView();
+    //chatStore.activateRoomsView();
 
     const chatState = await chatApi.getState();
     chatStore.loadRooms(chatState.rooms);

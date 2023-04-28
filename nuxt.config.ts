@@ -34,6 +34,15 @@ export default defineNuxtConfig({
     strategies: "injectManifest",
     filename: "sw.js",
     manifest: {
+      share_target: {
+        action: "/chat",
+        method: "GET",
+        params: {
+          title: "name",
+          text: "description",
+          url: "link",
+        },
+      },
       name: "Sechat",
       short_name: "Sechat",
       background_color: "#000000",
