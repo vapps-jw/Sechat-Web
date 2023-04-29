@@ -19,6 +19,10 @@ export const useSechatAppStore = defineStore({
     };
   },
   actions: {
+    clearVideoSources() {
+      this.videoTarget.src = "";
+      this.videoSource.src = "";
+    },
     updateVideoTarget(value: HTMLVideoElement) {
       this.videoTarget = value;
     },

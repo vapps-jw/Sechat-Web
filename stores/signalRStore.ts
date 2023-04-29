@@ -6,6 +6,7 @@ export const useSignalRStore = defineStore({
   id: "signalR-store",
   state: () => {
     return {
+      videoCallWaitingForApproval: <boolean>false,
       videoCallPartBuffer: <string[]>[],
       videoCallLastIndex: <number>-1,
       videoCallDataRequestInterval: <NodeJS.Timer>null,
@@ -13,8 +14,6 @@ export const useSignalRStore = defineStore({
       videoCallMediaRecorder: <MediaRecorder>null,
       videoCallInProgress: <boolean>false,
       videoCallMediaSource: <MediaSource>null,
-      videoCallDialog: <boolean>false,
-      videoCallDialogContact: <IConnectionRequest>null,
       videoCallViewVisible: <boolean>false,
       videoCallSubject: <signalR.Subject<any>>null,
       videoCallContact: <IConnectionRequest>null,
@@ -23,6 +22,9 @@ export const useSignalRStore = defineStore({
     };
   },
   actions: {
+    updateCallWaitingForApproval(value: boolean) {
+      this.videoCallWaitingForApproval = value;
+    },
     resetVideoCallPartBuffer() {
       this.videoCallPartBuffer = [];
       this.videoCallLastIndex = -1;
@@ -35,6 +37,7 @@ export const useSignalRStore = defineStore({
     },
     clearVideoCallData() {
       console.log("--> Clearing call data");
+      this.videoCallWaitingForApproval = false;
       if (this.videoCallSubject) {
         this.videoCallSubject.complete();
       }
@@ -46,6 +49,7 @@ export const useSignalRStore = defineStore({
 
       if (this.videoCallStream) {
         this.videoCallStream.getTracks().forEach((track) => track.stop());
+        this.videoCallStream.stop();
       }
       this.videoCallStream = null;
       if (this.videoCallMediaRecorder) {
@@ -81,32 +85,13 @@ export const useSignalRStore = defineStore({
     resetVideoCallSignalRSubject() {
       this.videoCallSubject = new signalR.Subject();
     },
-    showVideoCallDialog(contact: IConnectionRequest) {
-      if (this.videoCallDialog && this.videoCallDialogContact === contact) {
-        return;
-      }
-      this.videoCallDialog = true;
-      this.videoCallDialogContact = contact;
-    },
-    hideVideoCallDialog(contact: IConnectionRequest) {
-      this.videoCallDialog = false;
-      this.videoCallDialogContact = null;
-    },
     initializeVideoCall(contact: IConnectionRequest) {
-      this.videoCallViewVisible = true;
-      this.videoCallContact = contact;
-      this.videoCallChannel = channelFactory();
-    },
-    answerVideoCall(contact: IConnectionRequest) {
       this.videoCallViewVisible = true;
       this.videoCallContact = contact;
       this.videoCallChannel = channelFactory();
     },
     updateVideoCallContact(data: IConnectionRequest) {
       this.videoCallContact = data;
-    },
-    clearVideoCallContact() {
-      this.videoCallContact = null;
     },
     updateConnectionValue(value: signalR.HubConnection) {
       this.connection = value;
@@ -116,12 +101,11 @@ export const useSignalRStore = defineStore({
     },
   },
   getters: {
+    isCallWaitingForApproval: (state) => state.videoCallWaitingForApproval,
     getVideoCallMediaRecorder: (state) => state.videoCallMediaRecorder,
     getVideoCallInProgress: (state) => state.videoCallInProgress,
     getVideoCallSubject: (state) => state.videoCallSubject,
     getVideoCallMediaSource: (state) => state.videoCallMediaSource,
-    isVideoCallDialogVisible: (state) => state.videoCallDialog,
-    whoIsCalling: (state) => state.videoCallDialogContact,
     isVideoCallViewVisible: (state) => state.videoCallViewVisible,
     videoCallContactPresent: (state) => (state.videoCallContact ? true : false),
     getVideoCallContact: (state) => state.videoCallContact,

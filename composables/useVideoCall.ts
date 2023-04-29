@@ -12,24 +12,20 @@ export const useVideoCall = () => {
     const webm9MimeCodec = 'video/webm;codecs="vp8,opus"';
     signalRStore.resetMediaSource();
 
-    signalRStore.getVideoCallMediaSource.addEventListener(
+    signalRStore.videoCallMediaSource.addEventListener(
       "sourceopen",
       async () => {
         try {
           const sourceBuffer =
-            signalRStore.getVideoCallMediaSource.addSourceBuffer(
-              webm9MimeCodec
-            );
+            signalRStore.videoCallMediaSource.addSourceBuffer(webm9MimeCodec);
           sourceBuffer.mode = "sequence";
           sourceBuffer.addEventListener("updateend", async () => {
             if (appStore.getVideoTarget.paused) appStore.getVideoTarget.play();
             const ab = await signalRStore.getVideoCallChannel.pull();
-            console.log("--> Video data received ... updateend");
             sourceBuffer.appendBuffer(ab);
           });
 
           const ab = await signalRStore.getVideoCallChannel.pull();
-          console.log("--> Video data received ... sourceopen");
           sourceBuffer.appendBuffer(ab);
         } catch (error) {
           console.error("--> Video listener error", error);
@@ -38,7 +34,7 @@ export const useVideoCall = () => {
     );
 
     appStore.getVideoTarget.src = URL.createObjectURL(
-      signalRStore.getVideoCallMediaSource
+      signalRStore.videoCallMediaSource
     );
   };
 
@@ -58,15 +54,15 @@ export const useVideoCall = () => {
       const ab64 = base64js.fromByteArray(bytes);
 
       if (ab64.length <= segmentLimit) {
-        console.log("--> Video data sent ...");
-        signalRStore.getVideoCallSubject.next({
-          index: 0,
-          part: ab64,
-          userName: userName,
-        });
+        if (signalRStore.getVideoCallSubject) {
+          signalRStore.getVideoCallSubject.next({
+            index: 0,
+            part: ab64,
+            userName: userName,
+          });
+        }
       } else {
         for (let i = 0, ii = 0; i < ab64.length; i += segmentLimit, ii++) {
-          console.log("--> Video data sent ...");
           if (signalRStore.getVideoCallSubject) {
             signalRStore.getVideoCallSubject.next({
               index: ii,
@@ -88,7 +84,7 @@ export const useVideoCall = () => {
         mediaRecorder = signalRStore.getVideoCallMediaRecorder;
         mediaRecorder.ondataavailable = handleDataAvailable;
         mediaRecorder.start();
-        const interval = setInterval(() => mediaRecorder.requestData(), 200);
+        const interval = setInterval(() => mediaRecorder.requestData(), 100);
         signalRStore.updateVideoCallDataRequestInterval(interval);
       });
   };
@@ -98,14 +94,14 @@ export const useVideoCall = () => {
       (c) => c.displayName === data.message
     );
 
-    console.warn(`--> CALL INCOMING FROM: ${connection?.displayName}`);
+    console.warn(`--> Video call requested: ${connection?.displayName}`);
 
     if (!connection) {
       return;
     }
 
     signalRStore.initializeVideoCall(connection);
-    sendVideo(connection.displayName);
+    signalRStore.updateCallWaitingForApproval(true);
   };
 
   const videoCallApproved = (data: IStringMessage) => {
@@ -113,6 +109,9 @@ export const useVideoCall = () => {
     let connection = sechatChatStore.getConnections.find(
       (c) => c.invitedName === data.message || c.invitedName === data.message
     );
+
+    console.warn(`--> Sending video data to: ${connection.displayName}`);
+    sendVideo(connection.displayName);
   };
 
   const videoCallRejected = (data: IStringMessage) => {
@@ -120,12 +119,12 @@ export const useVideoCall = () => {
     let connection = sechatChatStore.getConnections.find(
       (c) => c.invitedName === data.message || c.invitedName === data.message
     );
-
+    console.warn(`--> Call rejected by: ${connection?.displayName}`);
     signalRStore.clearVideoCallData();
+    appStore.clearVideoSources();
   };
 
   const handleVideoCallDataIncoming = (data: IVideoCallData) => {
-    console.log("--> Video data incoming ...", data);
     if (data.part.length === 0) {
       return;
     }
@@ -201,6 +200,13 @@ export const useVideoCall = () => {
     });
   };
 
+  const sendVideoCallApproved = (data: string) => {
+    console.log("--> Sending video call approved", data);
+    signalRStore.connection.send(SignalRHubMethods.ApproveVideoCall, {
+      message: data,
+    });
+  };
+
   const rejectVideoCall = (data: string) => {
     console.log("--> Sending video call rejection", data);
     signalRStore.connection.send(SignalRHubMethods.RejectVideoCall, {
@@ -218,6 +224,7 @@ export const useVideoCall = () => {
     offVideoCallRequestedEvent,
     offVideoCallDataIncomingEvent,
     rejectVideoCall,
+    sendVideoCallApproved,
     sendVideoCallRequest,
     sendVideoCallData,
     handleVideoCallDataIncoming,
