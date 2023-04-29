@@ -1,5 +1,5 @@
 import * as base64js from "base64-js";
-import { SignalRHubMethods } from "~/utilities/globalEnums";
+import { SignalRHubMethods, VideoCodecs } from "~/utilities/globalEnums";
 
 export const useVideoCall = () => {
   const signalRStore = useSignalRStore();
@@ -9,7 +9,6 @@ export const useVideoCall = () => {
   const listenForVideo = () => {
     console.warn("--> Listening for video ...");
 
-    const webm9MimeCodec = 'video/webm;codecs="vp8,opus"';
     signalRStore.resetMediaSource();
 
     signalRStore.videoCallMediaSource.addEventListener(
@@ -17,7 +16,15 @@ export const useVideoCall = () => {
       async () => {
         try {
           const sourceBuffer =
-            signalRStore.videoCallMediaSource.addSourceBuffer(webm9MimeCodec);
+            signalRStore.videoCallMediaSource.addSourceBuffer(
+              VideoCodecs.webm9MimeCodec
+            );
+
+          console.log("--> Source buffer", sourceBuffer);
+          console.log(
+            "--> Source buffers",
+            signalRStore.videoCallMediaSource.sourceBuffers
+          );
           sourceBuffer.mode = "sequence";
           sourceBuffer.addEventListener("updateend", async () => {
             if (appStore.getVideoTarget.paused) appStore.getVideoTarget.play();
@@ -101,7 +108,7 @@ export const useVideoCall = () => {
     }
 
     signalRStore.initializeVideoCall(connection);
-    signalRStore.updateCallWaitingForApproval(true);
+    signalRStore.updateVideoCallWaitingForApproval(true);
   };
 
   const videoCallApproved = (data: IStringMessage) => {
@@ -110,6 +117,7 @@ export const useVideoCall = () => {
       (c) => c.invitedName === data.message || c.invitedName === data.message
     );
 
+    signalRStore.updateVideoCallEstablished(true);
     console.warn(`--> Sending video data to: ${connection.displayName}`);
     sendVideo(connection.displayName);
   };
@@ -195,6 +203,7 @@ export const useVideoCall = () => {
 
   const sendVideoCallRequest = (data: string) => {
     console.log("--> Sending video call request", data);
+    signalRStore.updateVideoCallRequestSent(true);
     signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
       message: data,
     });

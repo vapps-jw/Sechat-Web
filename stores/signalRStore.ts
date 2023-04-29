@@ -6,6 +6,8 @@ export const useSignalRStore = defineStore({
   id: "signalR-store",
   state: () => {
     return {
+      videoCallRequestSent: <boolean>false,
+      videoCallEstablished: <boolean>false,
       videoCallWaitingForApproval: <boolean>false,
       videoCallPartBuffer: <string[]>[],
       videoCallLastIndex: <number>-1,
@@ -22,8 +24,14 @@ export const useSignalRStore = defineStore({
     };
   },
   actions: {
-    updateCallWaitingForApproval(value: boolean) {
+    updateVideoCallRequestSent(value: boolean) {
+      this.videoCallRequestSent = value;
+    },
+    updateVideoCallWaitingForApproval(value: boolean) {
       this.videoCallWaitingForApproval = value;
+    },
+    updateVideoCallEstablished(value: boolean) {
+      this.videoCallEstablished = value;
     },
     resetVideoCallPartBuffer() {
       this.videoCallPartBuffer = [];
@@ -36,7 +44,6 @@ export const useSignalRStore = defineStore({
       this.videoCallInProgress = value;
     },
     clearVideoCallData() {
-      console.log("--> Clearing call data");
       this.videoCallWaitingForApproval = false;
       if (this.videoCallSubject) {
         this.videoCallSubject.complete();
@@ -64,9 +71,11 @@ export const useSignalRStore = defineStore({
       this.videoCallViewVisible = false;
       this.videoCallContact = null;
 
-      console.log("--> Clearing channel");
       this.videoCallPartBuffer = [];
       this.videoCallLastIndex = -1;
+
+      this.videoCallEstablished = false;
+      this.videoCallRequestSent = false;
 
       this.videoCallChannel.clear();
       this.videoCallChannel = channelFactory();
@@ -101,6 +110,7 @@ export const useSignalRStore = defineStore({
     },
   },
   getters: {
+    isCallEstablished: (state) => state.videoCallEstablished,
     isCallWaitingForApproval: (state) => state.videoCallWaitingForApproval,
     getVideoCallMediaRecorder: (state) => state.videoCallMediaRecorder,
     getVideoCallInProgress: (state) => state.videoCallInProgress,

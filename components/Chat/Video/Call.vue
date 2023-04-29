@@ -7,16 +7,32 @@
       >
         <div>Calling: {{ signalRStore.videoCallContact.displayName }}</div>
       </v-card-text>
+      <v-card-text
+        class="ma-2 pa-02 overflow-auto"
+        v-if="!signalRStore.videoCallRequestSent"
+      >
+        <div class="d-flex justify-center">
+          <p class="text-h5 text-center">
+            Call sadassadasasddas{{
+              signalRStore.videoCallContact.displayName
+            }}?
+          </p>
+        </div>
+      </v-card-text>
       <v-card-text class="ma-0 pa-0 overflow-auto">
-        <v-sheet rounded class="d-flex justify-center">
-          <div class="video-source-size">
-            <video id="video-stream-source" autoplay></video>
-          </div>
+        <v-sheet class="d-flex justify-center video-source-size ma-2">
+          <video id="video-stream-source" class="rounded-lg" autoplay></video>
         </v-sheet>
-
-        <div class="d-flex justify-center"></div>
-        <div class="video-target-size">
-          <video id="video-stream-target" autoplay></video>
+        <div class="video-target-size ma-1">
+          <video id="video-stream-target" class="rounded-lg" autoplay></video>
+        </div>
+        <div
+          v-if="signalRStore.isCallEstablished"
+          class="d-flex justify-center text-center"
+        >
+          <v-chip class="ma-2">
+            {{ signalRStore.videoCallContact.displayName }}
+          </v-chip>
         </div>
       </v-card-text>
 
@@ -60,7 +76,8 @@ const newVideoCall = async () => {
       videoCall.sendVideoCallApproved(
         signalRStore.getVideoCallContact.displayName
       );
-      signalRStore.updateCallWaitingForApproval(false);
+      signalRStore.updateVideoCallEstablished(true);
+      signalRStore.updateVideoCallWaitingForApproval(false);
       videoCall.sendVideo(signalRStore.getVideoCallContact.displayName);
     }
   } catch (error) {
@@ -80,6 +97,7 @@ onMounted(() => {
 
 const endCall = async () => {
   try {
+    console.warn("--> Video call endCall");
     videoCall.rejectVideoCall(signalRStore.getVideoCallContact.displayName);
     signalRStore.clearVideoCallData();
     appStore.clearVideoSources();
@@ -89,6 +107,7 @@ const endCall = async () => {
 };
 
 onBeforeUnmount(() => {
+  console.warn("--> Video call onBeforeUnmount");
   signalRStore.clearVideoCallData();
   appStore.clearVideoSources();
 });
