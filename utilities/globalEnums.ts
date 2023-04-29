@@ -52,6 +52,8 @@ export const VideoCodecs = {
 };
 
 export const SignalRHubMethods = {
+  TerminateVideoCall: "TerminateVideoCall",
+  VideoCallTerminated: "VideoCallTerminated",
   ApproveVideoCall: "ApproveVideoCall",
   RejectVideoCall: "RejectVideoCall",
   VideoCallRequest: "VideoCallRequest",
