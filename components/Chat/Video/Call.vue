@@ -1,24 +1,62 @@
 <template>
   <v-container>
     <v-card class="sechat-v-card">
-      <v-card-text
-        class="ma-0 pa-0 overflow-auto"
-        v-if="signalRStore.isCallWaitingForApproval"
-      >
-        <div>Calling: {{ signalRStore.videoCallContact.displayName }}</div>
-      </v-card-text>
+      <!-- Waiting for approval -->
       <v-card-text
         class="ma-2 pa-02 overflow-auto"
-        v-if="!signalRStore.videoCallRequestSent"
+        v-if="signalRStore.isCallWaitingForApproval"
       >
         <div class="d-flex justify-center">
           <p class="text-h5 text-center">
-            Call sadassadasasddas{{
-              signalRStore.videoCallContact.displayName
-            }}?
+            {{ signalRStore.videoCallContact.displayName }}
+          </p>
+        </div>
+        <div class="d-flex justify-center mt-15">
+          <v-icon
+            class="sechat-shaking"
+            color="warning"
+            size="x-large"
+            icon="mdi-phone-incoming"
+          ></v-icon>
+        </div>
+      </v-card-text>
+      <!-- Want to call someone -->
+      <v-card-text
+        class="ma-2 pa-02 overflow-auto"
+        v-if="
+          !signalRStore.isCallEstablished &&
+          !signalRStore.videoCallRequestSent &&
+          !signalRStore.isCallWaitingForApproval
+        "
+      >
+        <div class="d-flex justify-center">
+          <p class="text-h5 text-center">
+            Call {{ signalRStore.videoCallContact.displayName }}?
           </p>
         </div>
       </v-card-text>
+      <!-- Waiting for approval -->
+      <v-card-text
+        class="ma-2 pa-02 overflow-auto"
+        v-if="
+          signalRStore.videoCallRequestSent && !signalRStore.isCallEstablished
+        "
+      >
+        <div class="d-flex justify-center">
+          <p class="text-h5 text-center">
+            {{ signalRStore.videoCallContact.displayName }}?
+          </p>
+        </div>
+        <div class="d-flex justify-center mt-15">
+          <v-icon
+            class="sechat-shaking"
+            color="warning"
+            size="x-large"
+            icon="mdi-phone-incoming-outgoing"
+          ></v-icon>
+        </div>
+      </v-card-text>
+      <!-- Video call section -->
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-sheet class="d-flex justify-center video-source-size ma-2">
           <video id="video-stream-source" class="rounded-lg" autoplay></video>
