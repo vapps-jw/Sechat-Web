@@ -47,6 +47,10 @@ export const VideoCallStatus = {
   None: "None",
 };
 
+export const VideoCodecs = {
+  webm9MimeCodec: 'video/webm;codecs="vp8,opus"',
+};
+
 export const SignalRHubMethods = {
   ApproveVideoCall: "ApproveVideoCall",
   RejectVideoCall: "RejectVideoCall",

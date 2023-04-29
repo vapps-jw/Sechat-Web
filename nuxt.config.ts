@@ -17,6 +17,14 @@ export default defineNuxtConfig({
       apiBase: process.env.API_BASE_URL || "https://api.sechat.net",
     },
   },
+  security: {
+    headers: {
+      permissionsPolicy: {
+        camera: ["self"],
+        microphone: ["self"],
+      },
+    },
+  },
   modules: [
     "@nuxt/image-edge",
     "@nuxtjs/i18n",

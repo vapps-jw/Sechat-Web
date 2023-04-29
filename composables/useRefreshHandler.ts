@@ -3,11 +3,12 @@ export const useRefreshHandler = () => {
   const signalR = useSignalR();
   const chatApi = useChatApi();
   const chatStore = useSechatChatStore();
+  const signalRStore = useSignalRStore();
 
   const handleVisibilityChange = async () => {
     appStore.updateLoadingOverlay(true);
 
-    //chatStore.activateRoomsView();
+    //signalRStore.clearVideoCallData();
 
     const chatState = await chatApi.getState();
     chatStore.loadRooms(chatState.rooms);
@@ -21,8 +22,6 @@ export const useRefreshHandler = () => {
   const handleOnlineChange = async () => {
     appStore.updateLoadingOverlay(false);
     appStore.updateOnlineState(true);
-
-    //chatStore.activateRoomsView();
 
     const chatState = await chatApi.getState();
     chatStore.loadRooms(chatState.rooms);

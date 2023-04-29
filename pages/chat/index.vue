@@ -23,7 +23,7 @@ definePageMeta({
 const chatStore = useSechatChatStore();
 const signalRStore = useSignalRStore();
 const chatApi = useChatApi();
-const chatApp = useSechatApp();
+const appStore = useSechatAppStore();
 
 const selectedNav = ref(ChatViews.Rooms);
 
@@ -47,12 +47,12 @@ watch(activeChatTab, (newVal, oldVal) => {
     return;
   }
   try {
-    chatApp.showLoadingOverlay();
+    appStore.updateLoadingOverlay(true);
     chatApi.markMessagesAsViewed(chatStore.activeRoomId);
     chatStore.markMessagesAsViewed();
   } catch (error) {
   } finally {
-    chatApp.hideLoadingOverlay();
+    appStore.updateLoadingOverlay(false);
   }
 });
 </script>

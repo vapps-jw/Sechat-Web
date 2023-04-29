@@ -13,7 +13,6 @@
 <script setup lang="ts">
 //const lockResolver = ref(null);
 const sechatAppStore = useSechatAppStore();
-const sechatApp = useSechatApp();
 const signalR = useSignalR();
 const signalRStore = useSignalRStore();
 const chatApi = useChatApi();
@@ -22,7 +21,7 @@ const chatStore = useSechatChatStore();
 
 onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
-  sechatApp.showLoadingOverlay();
+  sechatAppStore.updateLoadingOverlay(true);
 
   console.warn("--> Getting State");
   const chatState = await chatApi.getState();
@@ -42,7 +41,7 @@ onMounted(async () => {
   window.addEventListener("online", refreshHandler.handleOnlineChange);
   window.addEventListener("offline", refreshHandler.handleOfflineChange);
 
-  sechatApp.hideLoadingOverlay();
+  sechatAppStore.updateLoadingOverlay(false);
 });
 
 onBeforeUnmount(() => {

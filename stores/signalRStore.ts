@@ -1,11 +1,17 @@
 import * as signalR from "@microsoft/signalr";
 import { IChannel, channelFactory } from "~/utilities/channels";
-import { SignalRState } from "~~/utilities/globalEnums";
+import { SignalRState, VideoCodecs } from "~~/utilities/globalEnums";
 
 export const useSignalRStore = defineStore({
   id: "signalR-store",
   state: () => {
     return {
+      videoCallPartBuffer: <string[]>[],
+      videoCallLastIndex: <number>-1,
+      videoCallDataRequestInterval: <NodeJS.Timer>null,
+      videoCallStream: <MediaStream>null,
+      videoCallMediaRecorder: <MediaRecorder>null,
+      videoCallInProgress: <boolean>false,
       videoCallMediaSource: <MediaSource>null,
       videoCallDialog: <boolean>false,
       videoCallDialogContact: <IConnectionRequest>null,
@@ -17,6 +23,58 @@ export const useSignalRStore = defineStore({
     };
   },
   actions: {
+    resetVideoCallPartBuffer() {
+      this.videoCallPartBuffer = [];
+      this.videoCallLastIndex = -1;
+    },
+    updateVideoCallDataRequestInterval(value: NodeJS.Timer) {
+      this.videoCallDataRequestInterval = value;
+    },
+    updateVideoCallInProgress(value: boolean) {
+      this.videoCallInProgress = value;
+    },
+    clearVideoCallData() {
+      console.log("--> Clearing call data");
+      if (this.videoCallSubject) {
+        this.videoCallSubject.complete();
+      }
+
+      if (this.videoCallDataRequestInterval) {
+        clearInterval(this.videoCallDataRequestInterval);
+      }
+      this.videoCallDataRequestInterval = null;
+
+      if (this.videoCallStream) {
+        this.videoCallStream.getTracks().forEach((track) => track.stop());
+      }
+      this.videoCallStream = null;
+      if (this.videoCallMediaRecorder) {
+        this.videoCallMediaRecorder.stop();
+      }
+      this.videoCallMediaRecorder = null;
+
+      this.videoCallInProgress = false;
+      this.videoCallMediaSource = null;
+      this.videoCallSubject = null;
+      this.videoCallDialog = false;
+      this.videoCallViewVisible = false;
+      this.videoCallContact = null;
+
+      console.log("--> Clearing channel");
+      this.videoCallPartBuffer = [];
+      this.videoCallLastIndex = -1;
+
+      this.videoCallChannel.clear();
+      this.videoCallChannel = channelFactory();
+    },
+    resetMediaRecorder(stream: MediaStream) {
+      this.videoCallMediaRecorder = new MediaRecorder(stream, {
+        mimeType: VideoCodecs.webm9MimeCodec,
+      });
+    },
+    updateVideoCallStream(stream: MediaStream) {
+      this.videoCallStream = stream;
+    },
     resetMediaSource() {
       this.videoCallMediaSource = new MediaSource();
     },
@@ -24,6 +82,9 @@ export const useSignalRStore = defineStore({
       this.videoCallSubject = new signalR.Subject();
     },
     showVideoCallDialog(contact: IConnectionRequest) {
+      if (this.videoCallDialog && this.videoCallDialogContact === contact) {
+        return;
+      }
       this.videoCallDialog = true;
       this.videoCallDialogContact = contact;
     },
@@ -41,12 +102,6 @@ export const useSignalRStore = defineStore({
       this.videoCallContact = contact;
       this.videoCallChannel = channelFactory();
     },
-    terminateVideoCall() {
-      this.videoCallViewVisible = false;
-      this.videoCallSubject = null;
-      this.videoCallContact = null;
-      this.videoCallChannel = channelFactory();
-    },
     updateVideoCallContact(data: IConnectionRequest) {
       this.videoCallContact = data;
     },
@@ -61,6 +116,8 @@ export const useSignalRStore = defineStore({
     },
   },
   getters: {
+    getVideoCallMediaRecorder: (state) => state.videoCallMediaRecorder,
+    getVideoCallInProgress: (state) => state.videoCallInProgress,
     getVideoCallSubject: (state) => state.videoCallSubject,
     getVideoCallMediaSource: (state) => state.videoCallMediaSource,
     isVideoCallDialogVisible: (state) => state.videoCallDialog,

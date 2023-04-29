@@ -1,15 +1,13 @@
 import * as base64js from "base64-js";
+import { SignalRHubMethods } from "~/utilities/globalEnums";
 
 export const useVideoCall = () => {
   const signalRStore = useSignalRStore();
-  const signalR = useSignalR();
   const sechatChatStore = useSechatChatStore();
-  const userStore = useUserStore();
+  const appStore = useSechatAppStore();
 
   const listenForVideo = () => {
-    const videoTarget = <HTMLVideoElement>(
-      document.getElementById("video-stream-target")
-    );
+    console.warn("--> Listening for video ...");
 
     const webm9MimeCodec = 'video/webm;codecs="vp8,opus"';
     signalRStore.resetMediaSource();
@@ -17,34 +15,42 @@ export const useVideoCall = () => {
     signalRStore.getVideoCallMediaSource.addEventListener(
       "sourceopen",
       async () => {
-        const sourceBuffer =
-          signalRStore.getVideoCallMediaSource.addSourceBuffer(webm9MimeCodec);
-        sourceBuffer.mode = "sequence";
-        sourceBuffer.addEventListener("updateend", async () => {
-          if (videoTarget.paused) videoTarget.play();
-          const ab = await signalRStore.getVideoCallChannel.pull();
-          sourceBuffer.appendBuffer(ab);
-        });
+        try {
+          const sourceBuffer =
+            signalRStore.getVideoCallMediaSource.addSourceBuffer(
+              webm9MimeCodec
+            );
+          sourceBuffer.mode = "sequence";
+          sourceBuffer.addEventListener("updateend", async () => {
+            if (appStore.getVideoTarget.paused) appStore.getVideoTarget.play();
+            const ab = await signalRStore.getVideoCallChannel.pull();
+            console.log("--> Video data received ... updateend");
+            sourceBuffer.appendBuffer(ab);
+          });
 
-        const ab = await signalRStore.getVideoCallChannel.pull();
-        sourceBuffer.appendBuffer(ab);
+          const ab = await signalRStore.getVideoCallChannel.pull();
+          console.log("--> Video data received ... sourceopen");
+          sourceBuffer.appendBuffer(ab);
+        } catch (error) {
+          console.error("--> Video listener error", error);
+        }
       }
     );
 
-    videoTarget.src = URL.createObjectURL(signalRStore.getVideoCallMediaSource);
+    appStore.getVideoTarget.src = URL.createObjectURL(
+      signalRStore.getVideoCallMediaSource
+    );
   };
 
-  const sendVideo = () => {
-    const webm9MimeCodec = 'video/webm;codecs="vp8,opus"';
+  const sendVideo = (userName: string) => {
+    console.warn("--> Send video to", userName);
     const segmentLimit = 20000;
     let mediaRecorder = null;
 
-    const videoSource = <HTMLVideoElement>(
-      document.getElementById("video-stream-source")
-    );
+    console.warn("--> Video source", appStore.getVideoSource);
 
     signalRStore.resetVideoCallSignalRSubject();
-    signalR.sendVideoCallData(signalRStore.getVideoCallSubject);
+    sendVideoCallData(signalRStore.getVideoCallSubject);
 
     async function handleDataAvailable(event) {
       const ab = await event.data.arrayBuffer();
@@ -52,18 +58,22 @@ export const useVideoCall = () => {
       const ab64 = base64js.fromByteArray(bytes);
 
       if (ab64.length <= segmentLimit) {
+        console.log("--> Video data sent ...");
         signalRStore.getVideoCallSubject.next({
           index: 0,
           part: ab64,
-          userName: userStore.getUserName,
+          userName: userName,
         });
       } else {
         for (let i = 0, ii = 0; i < ab64.length; i += segmentLimit, ii++) {
-          signalRStore.getVideoCallSubject.next({
-            index: ii,
-            part: ab64.substr(i, segmentLimit),
-            userName: userStore.getUserName,
-          });
+          console.log("--> Video data sent ...");
+          if (signalRStore.getVideoCallSubject) {
+            signalRStore.getVideoCallSubject.next({
+              index: ii,
+              part: ab64.substr(i, segmentLimit),
+              userName: userName,
+            });
+          }
         }
       }
     }
@@ -71,24 +81,31 @@ export const useVideoCall = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then(function (stream) {
-        videoSource.srcObject = stream;
-        videoSource.play();
-        mediaRecorder = new MediaRecorder(stream, { mimeType: webm9MimeCodec });
+        signalRStore.resetMediaRecorder(stream);
+
+        appStore.getVideoSource.srcObject = stream;
+        appStore.getVideoSource.play();
+        mediaRecorder = signalRStore.getVideoCallMediaRecorder;
         mediaRecorder.ondataavailable = handleDataAvailable;
         mediaRecorder.start();
-        setInterval(() => mediaRecorder.requestData(), 200);
+        const interval = setInterval(() => mediaRecorder.requestData(), 200);
+        signalRStore.updateVideoCallDataRequestInterval(interval);
       });
   };
 
   const videoCallRequested = (data: IStringMessage) => {
-    console.warn(`--> CALL INCOMING FROM: ${data.message}`);
     let connection = sechatChatStore.getConnections.find(
-      (c) => c.invitedName === data.message || c.invitedName === data.message
+      (c) => c.displayName === data.message
     );
 
-    if (connection) {
-      signalRStore.showVideoCallDialog(connection);
+    console.warn(`--> CALL INCOMING FROM: ${connection?.displayName}`);
+
+    if (!connection) {
+      return;
     }
+
+    signalRStore.initializeVideoCall(connection);
+    sendVideo(connection.displayName);
   };
 
   const videoCallApproved = (data: IStringMessage) => {
@@ -103,21 +120,106 @@ export const useVideoCall = () => {
     let connection = sechatChatStore.getConnections.find(
       (c) => c.invitedName === data.message || c.invitedName === data.message
     );
+
+    signalRStore.clearVideoCallData();
   };
 
   const handleVideoCallDataIncoming = (data: IVideoCallData) => {
+    console.log("--> Video data incoming ...", data);
     if (data.part.length === 0) {
       return;
     }
 
-    let partBuffer = [];
-    partBuffer.push(data.part);
+    if (signalRStore.videoCallLastIndex >= data.index) {
+      const ba = base64js.toByteArray(
+        signalRStore.videoCallPartBuffer.reduce((a, b) => a + b)
+      );
+      signalRStore.videoCallChannel.push(ba.buffer);
+      signalRStore.videoCallPartBuffer = [];
+    }
 
-    const ba = base64js.toByteArray(partBuffer.reduce((a, b) => a + b));
-    signalRStore.videoCallChannel.push(ba.buffer);
+    signalRStore.videoCallPartBuffer.push(data.part);
+    signalRStore.videoCallLastIndex = data.index;
+  };
+
+  // Video Calls
+
+  const onVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting VideoCallApprovedEvent");
+    connection.on(SignalRHubMethods.VideoCallApproved, videoCallApproved);
+  };
+
+  const offVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting VideoCallApprovedEvent");
+    connection.off(SignalRHubMethods.VideoCallApproved, videoCallApproved);
+  };
+
+  const onVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting VideoCallRejectedEvent");
+    connection.on(SignalRHubMethods.VideoCallRejected, videoCallRejected);
+  };
+
+  const offVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting VideoCallRejectedEvent");
+    connection.off(SignalRHubMethods.VideoCallRejected, videoCallRejected);
+  };
+
+  const onVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting VideoCallRequestedEvent");
+    connection.on(SignalRHubMethods.VideoCallRequested, videoCallRequested);
+  };
+
+  const offVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting VideoCallRequestedEvent");
+    connection.off(SignalRHubMethods.VideoCallRequested, videoCallRequested);
+  };
+
+  const onVideoCallDataIncomingEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting VideoCallIncomingEvent");
+    connection.on(
+      SignalRHubMethods.VideoCallDataIncoming,
+      handleVideoCallDataIncoming
+    );
+  };
+
+  const offVideoCallDataIncomingEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting VideoCallIncomingEvent");
+    connection.off(
+      SignalRHubMethods.VideoCallDataIncoming,
+      handleVideoCallDataIncoming
+    );
+  };
+
+  const sendVideoCallData = (data: signalR.Subject<any>) => {
+    signalRStore.connection.send(SignalRHubMethods.SendVideoCallData, data);
+  };
+
+  const sendVideoCallRequest = (data: string) => {
+    console.log("--> Sending video call request", data);
+    signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
+      message: data,
+    });
+  };
+
+  const rejectVideoCall = (data: string) => {
+    console.log("--> Sending video call rejection", data);
+    signalRStore.connection.send(SignalRHubMethods.RejectVideoCall, {
+      message: data,
+    });
   };
 
   return {
+    onVideoCallApprovedEvent,
+    onVideoCallRejectedEvent,
+    onVideoCallRequestedEvent,
+    onVideoCallDataIncomingEvent,
+    offVideoCallApprovedEvent,
+    offVideoCallRejectedEvent,
+    offVideoCallRequestedEvent,
+    offVideoCallDataIncomingEvent,
+    rejectVideoCall,
+    sendVideoCallRequest,
+    sendVideoCallData,
     handleVideoCallDataIncoming,
     videoCallApproved,
     videoCallRequested,

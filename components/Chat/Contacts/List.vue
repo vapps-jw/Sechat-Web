@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panels class="mt-2">
+  <v-expansion-panels class="mt-2" variant="accordion">
     <v-expansion-panel
       v-for="uc in chatStore.getConnections"
       :key="`${uc.invitedName}-${uc.inviterName}`"
