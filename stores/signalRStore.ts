@@ -51,18 +51,17 @@ export const useSignalRStore = defineStore({
 
       if (this.videoCallDataRequestInterval) {
         clearInterval(this.videoCallDataRequestInterval);
+        this.videoCallDataRequestInterval = null;
       }
-      this.videoCallDataRequestInterval = null;
 
       if (this.videoCallStream) {
         this.videoCallStream.getTracks().forEach((track) => track.stop());
-        this.videoCallStream.stop();
+        this.videoCallStream = null;
       }
-      this.videoCallStream = null;
       if (this.videoCallMediaRecorder) {
         this.videoCallMediaRecorder.stop();
+        this.videoCallMediaRecorder = null;
       }
-      this.videoCallMediaRecorder = null;
 
       this.videoCallInProgress = false;
       this.videoCallMediaSource = null;
@@ -81,12 +80,10 @@ export const useSignalRStore = defineStore({
       this.videoCallChannel = channelFactory();
     },
     resetMediaRecorder(stream: MediaStream) {
+      this.videoCallStream = stream;
       this.videoCallMediaRecorder = new MediaRecorder(stream, {
         mimeType: VideoCodecs.webm9MimeCodec,
       });
-    },
-    updateVideoCallStream(stream: MediaStream) {
-      this.videoCallStream = stream;
     },
     resetMediaSource() {
       this.videoCallMediaSource = new MediaSource();

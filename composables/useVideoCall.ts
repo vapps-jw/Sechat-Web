@@ -114,8 +114,10 @@ export const useVideoCall = () => {
   const videoCallApproved = (data: IStringMessage) => {
     console.warn(`--> Call approved by: ${data.message}`);
     let connection = sechatChatStore.getConnections.find(
-      (c) => c.invitedName === data.message || c.invitedName === data.message
+      (c) => c.inviterName === data.message || c.invitedName === data.message
     );
+
+    console.warn("--> Connection", connection);
 
     signalRStore.updateVideoCallEstablished(true);
     console.warn(`--> Sending video data to: ${connection.displayName}`);
@@ -125,7 +127,7 @@ export const useVideoCall = () => {
   const videoCallRejected = (data: IStringMessage) => {
     console.warn(`--> Call rejected by: ${data.message}`);
     let connection = sechatChatStore.getConnections.find(
-      (c) => c.invitedName === data.message || c.invitedName === data.message
+      (c) => c.inviterName === data.message || c.invitedName === data.message
     );
     console.warn(`--> Call rejected by: ${connection?.displayName}`);
     signalRStore.clearVideoCallData();

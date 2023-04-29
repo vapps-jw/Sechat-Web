@@ -53,6 +53,7 @@
           ></v-btn>
           <v-spacer />
           <v-btn
+            v-if="uc.approved && !uc.blocked"
             @click="startVideoCall(uc)"
             size="small"
             icon="mdi-phone"
