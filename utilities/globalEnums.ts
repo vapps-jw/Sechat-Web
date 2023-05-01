@@ -49,6 +49,7 @@ export const VideoCallStatus = {
 
 export const VideoCodecs = {
   webm9MimeCodec: 'video/webm;codecs="vp8,opus"',
+  webmOpusCodec: "video/webm;audio/webm;codecs=opus",
 };
 
 export const SignalRHubMethods = {

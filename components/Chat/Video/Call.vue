@@ -44,7 +44,7 @@
       >
         <div class="d-flex justify-center">
           <p class="text-h5 text-center">
-            {{ signalRStore.videoCallContact.displayName }}?
+            Calling {{ signalRStore.videoCallContact.displayName }}
           </p>
         </div>
         <div class="d-flex justify-center mt-15">
@@ -122,6 +122,7 @@ const newVideoCall = async () => {
       signalRStore.updateVideoCallEstablished(true);
       signalRStore.updateVideoCallWaitingForApproval(false);
       videoCall.listenForVideo();
+      console.log("--> Sending video...");
       videoCall.sendVideo(signalRStore.getVideoCallContact.displayName);
       return;
     }
@@ -133,6 +134,7 @@ const newVideoCall = async () => {
 
 onMounted(() => {
   console.warn("--> Video call view Mounted");
+  appStore.clearVideoSources();
   appStore.updateVideoTarget(
     <HTMLVideoElement>document.getElementById("video-stream-target")
   );

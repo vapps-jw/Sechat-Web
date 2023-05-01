@@ -80,8 +80,11 @@ export const useSignalRStore = defineStore({
     },
     resetMediaRecorder(stream: MediaStream) {
       this.videoCallStream = stream;
+
       this.videoCallMediaRecorder = new MediaRecorder(stream, {
         mimeType: VideoCodecs.webm9MimeCodec,
+        audioBitsPerSecond: 64000,
+        videoBitsPerSecond: 750000,
       });
     },
     resetMediaSource() {

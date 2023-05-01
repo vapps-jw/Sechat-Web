@@ -12,9 +12,16 @@ export const useVideoCall = () => {
     signalRStore.resetMediaSource();
 
     signalRStore.videoCallMediaSource.addEventListener(
+      "--> Media Source Error",
+      (e) => signalRStore.videoCallMediaSource.readyState
+    );
+
+    signalRStore.videoCallMediaSource.addEventListener(
       "sourceopen",
       async () => {
         try {
+          console.log("--> Adding Source buffer");
+
           const sourceBuffer =
             signalRStore.videoCallMediaSource.addSourceBuffer(
               VideoCodecs.webm9MimeCodec
@@ -25,15 +32,45 @@ export const useVideoCall = () => {
             "--> Source buffers",
             signalRStore.videoCallMediaSource.sourceBuffers
           );
+
+          sourceBuffer.addEventListener(
+            "--> Source Buffer Error",
+            () => signalRStore.videoCallMediaSource.readyState
+          );
+
           sourceBuffer.mode = "sequence";
+          sourceBuffer.addEventListener("update", async () => {
+            if (!sourceBuffer.updating) {
+              const ab = await signalRStore.getVideoCallChannel.pull();
+              sourceBuffer.appendBuffer(ab);
+            }
+          });
           sourceBuffer.addEventListener("updateend", async () => {
             if (appStore.getVideoTarget.paused) appStore.getVideoTarget.play();
-            const ab = await signalRStore.getVideoCallChannel.pull();
-            sourceBuffer.appendBuffer(ab);
+            try {
+              const ab = await signalRStore.getVideoCallChannel.pull();
+              if (!sourceBuffer.updating) {
+                sourceBuffer.appendBuffer(ab);
+              }
+            } catch (error) {
+              console.log("--> Buffer [updateend] Error", error);
+            }
           });
 
-          const ab = await signalRStore.getVideoCallChannel.pull();
-          sourceBuffer.appendBuffer(ab);
+          try {
+            if (!sourceBuffer.updating) {
+              console.warn("--> Buffer initial pull");
+              const ab = await signalRStore.getVideoCallChannel.pull();
+              sourceBuffer.appendBuffer(ab);
+            }
+          } catch (error) {
+            console.warn("--> Buffer [sourceopen] Error", error);
+          }
+
+          console.warn(
+            "--> Source buffers after initial pull",
+            signalRStore.videoCallMediaSource.sourceBuffers
+          );
         } catch (error) {
           console.error("--> Video listener error", error);
         }
@@ -48,7 +85,6 @@ export const useVideoCall = () => {
   const sendVideo = (userName: string) => {
     console.warn("--> Send video to", userName);
     const segmentLimit = 20000;
-    let mediaRecorder = null;
 
     console.warn("--> Video source", appStore.getVideoSource);
 
@@ -88,10 +124,13 @@ export const useVideoCall = () => {
 
         appStore.getVideoSource.srcObject = stream;
         appStore.getVideoSource.play();
-        mediaRecorder = signalRStore.getVideoCallMediaRecorder;
-        mediaRecorder.ondataavailable = handleDataAvailable;
-        mediaRecorder.start();
-        const interval = setInterval(() => mediaRecorder.requestData(), 100);
+        signalRStore.videoCallMediaRecorder.ondataavailable =
+          handleDataAvailable;
+        signalRStore.videoCallMediaRecorder.start();
+        const interval = setInterval(
+          () => signalRStore.videoCallMediaRecorder.requestData(),
+          200
+        );
         signalRStore.updateVideoCallDataRequestInterval(interval);
       });
   };
