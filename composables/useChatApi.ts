@@ -37,9 +37,9 @@ export const useChatApi = () => {
   };
 
   const markMessagesAsViewed = async (roomId: string) => {
-    console.log("--> Marking messages as viewed");
+    console.log("--> Marking Messages as viewed");
     const { error: apiError } = await useFetch(
-      `${config.public.apiBase}/chat/message-viewed`,
+      `${config.public.apiBase}/chat/messages-viewed`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -77,8 +77,49 @@ export const useChatApi = () => {
     );
   };
 
+  const markMessageAsViewed = async (roomId: string, messageId: number) => {
+    console.log("--> Marking Single Message as viewed");
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/message-viewed/${roomId}/${messageId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PATCH",
+        credentials: "include",
+        onResponseError({ response }) {
+          if (response.status === 400) {
+            sechatApp.showSnackbar({
+              snackbar: true,
+              text: response._data,
+              timeout: 2000,
+              color: "warning",
+              icon: SnackbarIcons.Warning,
+              iconColor: "black",
+            });
+          } else {
+            sechatApp.showSnackbar({
+              snackbar: true,
+              text: "Connection Error",
+              timeout: 2000,
+              color: "error",
+              icon: SnackbarIcons.Error,
+              iconColor: "black",
+            });
+
+            throw createError({
+              ...apiError.value,
+              statusMessage: response._data,
+            });
+          }
+        },
+      }
+    );
+  };
+
   return {
     getState,
+    markMessageAsViewed,
     markMessagesAsViewed,
   };
 };

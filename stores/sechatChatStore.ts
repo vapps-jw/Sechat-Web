@@ -43,6 +43,35 @@ export const useSechatChatStore = defineStore({
         })
       );
     },
+    markRoomMessagesAsViewed(userName: string, roomId: string) {
+      const room: IRoom = this.availableRooms.find(
+        (r: IRoom) => r.id === roomId
+      );
+      room.messages.forEach((m) => {
+        if (!m.messageViewers.find((mv) => mv.user === userName)) {
+          m.messageViewers.push(<IMessageViewer>{ user: userName });
+        }
+      });
+    },
+    markRoomMessageAsViewed(
+      userName: string,
+      roomId: string,
+      messageId: number
+    ) {
+      const room: IRoom = this.availableRooms.find(
+        (r: IRoom) => r.id === roomId
+      );
+
+      const message = room.messages.find((m) => m.id === messageId);
+      if (
+        !message ||
+        message.messageViewers.find((mv) => mv.user === userName)
+      ) {
+        return;
+      }
+
+      message.messageViewers.push(<IMessageViewer>{ user: userName });
+    },
     markMessagesAsViewed() {
       if (!this.activeRoomId) {
         return;

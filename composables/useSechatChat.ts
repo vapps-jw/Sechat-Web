@@ -4,6 +4,7 @@ import { ChatViews } from "~~/utilities/globalEnums";
 export const useSechatChat = () => {
   const userStore = useUserStore();
   const chatStore = useSechatChatStore();
+  const chatApi = useChatApi();
 
   // User Connections
 
@@ -117,6 +118,15 @@ export const useSechatChat = () => {
       message.wasViewed = true;
     }
 
+    if (
+      chatStore.getActiveRoomId &&
+      message.roomId === chatStore.getActiveRoomId &&
+      chatStore.getActiveChatTab === ChatViews.Messages &&
+      message.nameSentBy !== userStore.getUserName
+    ) {
+      chatApi.markMessageAsViewed(message.roomId, message.id);
+    }
+
     chatStore.addNewMessage(message);
 
     if (message.roomId === chatStore.activeRoomId) {
@@ -125,7 +135,25 @@ export const useSechatChat = () => {
     }
   };
 
+  const handleMessagesWereViewed = (message: IRoomUserActionMessage) => {
+    console.warn("--> Incoming MessagesWereViewed Event Handle", message);
+    chatStore.markRoomMessagesAsViewed(message.userName, message.roomId);
+    scrollToBottom("chatView");
+  };
+
+  const handleMessageWasViewed = (message: IRoomMessageUserActionMessage) => {
+    console.warn("--> Incoming MessageWasViewed Event Handle", message);
+    chatStore.markRoomMessageAsViewed(
+      message.userName,
+      message.roomId,
+      message.messageId
+    );
+    scrollToBottom("chatView");
+  };
+
   return {
+    handleMessageWasViewed,
+    handleMessagesWereViewed,
     removeRoom,
     addRoom,
     loadRooms,

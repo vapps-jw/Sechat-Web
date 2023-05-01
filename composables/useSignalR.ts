@@ -30,6 +30,8 @@ export const useSignalR = () => {
     videoCalls.onVideoCallRequestedEvent(connection);
     videoCalls.onVideoCallDataIncomingEvent(connection);
     videoCalls.onVideoCallTerminatedEvent(connection);
+    _onMessageWasViewed(connection);
+    _onMessagesWereViewed(connection);
     _onIncomingMessage(connection);
     _onRoomDeletedEvent(connection);
     _onUserAddedToRoomEvent(connection);
@@ -47,6 +49,8 @@ export const useSignalR = () => {
       videoCalls.offVideoCallRequestedEvent(connection);
       videoCalls.offVideoCallDataIncomingEvent(connection);
       videoCalls.offVideoCallTerminatedEvent(connection);
+      _offMessageWasViewed(connection);
+      _offMessagesWereViewed(connection);
       _offIncomingMessage(connection);
       _offRoomDeletedEvent(connection);
       _offUserAddedToRoomEvent(connection);
@@ -374,6 +378,38 @@ export const useSignalR = () => {
   };
 
   // Messages
+
+  const _onMessageWasViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting MessageWasViewed event");
+    connection.on(
+      SignalRHubMethods.MessageWasViewed,
+      sechatChat.handleMessageWasViewed
+    );
+  };
+
+  const _offMessageWasViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting MessageWasViewed event");
+    connection.off(
+      SignalRHubMethods.MessageWasViewed,
+      sechatChat.handleMessageWasViewed
+    );
+  };
+
+  const _onMessagesWereViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting MessagesWereViewed event");
+    connection.on(
+      SignalRHubMethods.MessagesWereViewed,
+      sechatChat.handleMessagesWereViewed
+    );
+  };
+
+  const _offMessagesWereViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting MessagesWereViewed event");
+    connection.off(
+      SignalRHubMethods.MessagesWereViewed,
+      sechatChat.handleMessagesWereViewed
+    );
+  };
 
   const _onIncomingMessage = (connection: signalR.HubConnection) => {
     console.log("--> Connecting IncomingMessage event");

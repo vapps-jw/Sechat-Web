@@ -2,14 +2,14 @@
   <v-card>
     <v-card-item
       :class="
-        isActiveUser(message)
+        isActiveUser(props.message)
           ? 'flex-end bg-blue-darken-4 rounded-xl rounded-be-0'
           : 'flex-start bg-grey-darken-3 rounded-xl rounded-bs-0'
       "
     >
       <v-card-subtitle
         v-if="userStore.getUserName === props.message.nameSentBy"
-        :class="isActiveUser(message) ? 'text-right' : ''"
+        :class="isActiveUser(props.message) ? 'text-right' : ''"
         class="text-xs"
       >
         {{
@@ -28,11 +28,23 @@
       </v-card-subtitle>
       <v-card-text class="px-0 py-0">
         <p
-          class="text--primary text-sm"
-          :class="isActiveUser(message) ? 'text-right' : ''"
+          class="text--primary text-sm mb-3"
+          :class="isActiveUser(props.message) ? 'text-right' : ''"
         >
           {{ props.message.text }}
         </p>
+        <div class="d-flex justify-end">
+          <v-chip
+            v-for="seenBy in props.message.messageViewers.filter(
+              (mv) => mv.user !== userStore.getUserName
+            )"
+            class="mt-1 ml-1"
+            size="x-small"
+            append-icon="mdi-eye-check-outline"
+          >
+            {{ seenBy.user }}
+          </v-chip>
+        </div>
       </v-card-text>
     </v-card-item>
   </v-card>

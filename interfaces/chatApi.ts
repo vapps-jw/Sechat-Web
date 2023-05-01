@@ -34,6 +34,17 @@ interface IRoom {
   created?: Date;
 }
 
+interface IRoomMessageUserActionMessage {
+  roomId?: string;
+  userName?: string;
+  messageId?: number;
+}
+
+interface IRoomUserActionMessage {
+  roomId?: string;
+  userName?: string;
+}
+
 interface IMessage {
   id?: number;
   nameSentBy?: string;
