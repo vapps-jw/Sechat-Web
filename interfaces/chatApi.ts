@@ -6,6 +6,10 @@ interface IResourceId {
   id?: number;
 }
 
+interface IStringMessage {
+  message?: string;
+}
+
 interface IUserRoomOptions {
   roomId?: string;
   userName?: string;
@@ -28,6 +32,17 @@ interface IRoom {
   creatorName?: string;
   lastActivity?: Date;
   created?: Date;
+}
+
+interface IRoomMessageUserActionMessage {
+  roomId?: string;
+  userName?: string;
+  messageId?: number;
+}
+
+interface IRoomUserActionMessage {
+  roomId?: string;
+  userName?: string;
 }
 
 interface IMessage {
@@ -55,7 +70,7 @@ interface ISentMessage {
 }
 interface IChatState {
   rooms?: IRoom[];
-  userConnections?: IConnectionRequest[];
+  userContacts?: IContactRequest[];
 }
 
 interface IRoomUpdate {
@@ -63,7 +78,7 @@ interface IRoomUpdate {
   roomId?: string;
 }
 
-interface IConnectionRequest {
+interface IContactRequest {
   id?: number;
   inviterName?: string;
   invitedName?: string;

@@ -3,25 +3,20 @@
     <v-card class="mx-auto px-6 py-8" max-width="380">
       <v-form v-model="form" @submit.prevent="onSubmit">
         <v-text-field
-          v-model="credentials.username"
+          v-model="credentials.oldPassword"
           :readonly="loading"
-          :rules="credentials.usernameRules"
-          class="mb-2"
           clearable
-          :counter="10"
-          label="Name"
+          :counter="20"
+          label="Old Password"
         ></v-text-field>
 
         <v-text-field
-          @click:append="showPassword = !showPassword"
-          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          :type="showPassword ? 'text' : 'password'"
-          v-model="credentials.password"
+          v-model="credentials.newPassword"
           :readonly="loading"
           :rules="credentials.passwordRules"
           clearable
           :counter="20"
-          label="Password"
+          label="New Password"
         ></v-text-field>
 
         <br />
@@ -53,31 +48,26 @@
 </template>
 
 <script setup lang="ts">
+const userData = useUserApi();
 const form = ref(false);
 const loading = ref(false);
 const appStore = useSechatApp();
-const sechatApp = useSechatApp();
 const config = useRuntimeConfig();
+const sechatApp = useSechatApp();
 
 interface ICredentials {
   valid: boolean;
-  username: string;
-  password: string;
-  usernameRules: any;
+  oldPassword: string;
+  newPassword: string;
   passwordRules: any;
 }
 
-const showPassword = ref<boolean>(true);
-const buttonText = ref<string>("Sign Up");
+const buttonText = ref<string>("Change Password");
 const buttonColor = ref<string>("warning");
 const credentials = ref<ICredentials>({
   valid: true,
-  username: "",
-  password: "",
-  usernameRules: [
-    (v) => !!v || "Username is required",
-    (v) => (v && v.length <= 10) || "Max 10 characters",
-  ],
+  newPassword: "",
+  oldPassword: "",
   passwordRules: [
     (v) => !!v || "Password is required",
     (v) => (v && v.length <= 20) || "Max 20 characters",
@@ -91,10 +81,9 @@ const credentials = ref<ICredentials>({
 
 const onSubmit = async () => {
   try {
-    console.log("--> Signing Up");
-
-    const { error: apiError, data: response } = await useFetch(
-      `${config.public.apiBase}/account/register`,
+    console.log("--> Changing password");
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/account/change-password`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -102,26 +91,24 @@ const onSubmit = async () => {
         method: "POST",
         credentials: "include",
         body: {
-          username: credentials.value.username,
-          password: credentials.value.password,
+          newPassword: credentials.value.newPassword,
+          oldPassword: credentials.value.oldPassword,
         },
       }
     );
-
-    console.log("--> Response", response);
 
     if (apiError.value) {
       throw createError({
         ...apiError.value,
         statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value?.data ?? "Sign up failed",
+        statusMessage: apiError.value.data,
       });
     }
 
-    appStore.showSuccessSnackbar("User created");
+    appStore.showSuccessSnackbar("Password Changed");
     navigateTo("/user/login");
   } catch (error) {
-    console.log("--> Sign in error", error);
+    console.log("--> Change Password error", error);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
     sechatApp.showErrorSnackbar(error.statusMessage);

@@ -1,44 +1,38 @@
 export const useRefreshHandler = () => {
   const appStore = useSechatAppStore();
-  const sechatApp = useSechatApp();
   const signalR = useSignalR();
   const chatApi = useChatApi();
   const chatStore = useSechatChatStore();
+  const signalRStore = useSignalRStore();
 
   const handleVisibilityChange = async () => {
     appStore.updateLoadingOverlay(true);
 
-    signalR.handleVisibilityChange();
+    //signalRStore.clearVideoCallData();
 
     const chatState = await chatApi.getState();
-
-    chatStore.activateRoomsTab();
     chatStore.loadRooms(chatState.rooms);
-    chatStore.loadConnections(chatState.userConnections);
+    chatStore.loadContacts(chatState.userContacts);
+
+    signalR.handleVisibilityChange();
 
     appStore.updateLoadingOverlay(false);
   };
 
   const handleOnlineChange = async () => {
-    appStore.updateLoadingOverlay(true);
-    // todo: add signalR reconnect
-    sechatApp.handleOnline();
+    appStore.updateLoadingOverlay(false);
+    appStore.updateOnlineState(true);
 
     const chatState = await chatApi.getState();
-
-    chatStore.activateRoomsTab();
     chatStore.loadRooms(chatState.rooms);
-    chatStore.loadConnections(chatState.userConnections);
+    chatStore.loadContacts(chatState.userContacts);
 
-    appStore.updateLoadingOverlay(false);
+    signalR.handleVisibilityChange();
   };
 
   const handleOfflineChange = async () => {
+    appStore.updateOnlineState(false);
     appStore.updateLoadingOverlay(true);
-
-    sechatApp.handleOffline();
-
-    appStore.updateLoadingOverlay(false);
   };
 
   return { handleVisibilityChange, handleOnlineChange, handleOfflineChange };

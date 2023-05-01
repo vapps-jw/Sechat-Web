@@ -1,59 +1,11 @@
-export const useUserData = () => {
+export const useUserApi = () => {
   const userStore = useUserStore();
   const config = useRuntimeConfig();
-
-  const setUserData = (user: IUserProfile | null) => {
-    console.log("--> Setting User Data in the State", user);
-    if (user !== null) {
-      userStore.updateUserProfile(user);
-      userStore.updateSignIn(true);
-      console.log("--> Logged In");
-      return;
-    }
-    userStore.updateSignIn(false);
-    console.log("--> Not Logged In");
-  };
-
-  const signIn = async (username: string, password: string) => {
-    console.log("--> Signing In");
-
-    const { error: loginError } = await useFetch(
-      `${config.public.apiBase}/account/login`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        credentials: "include",
-        body: {
-          username: username,
-          password: password,
-        },
-      }
-    );
-
-    if (loginError.value) {
-      const displayError = createError({
-        ...loginError.value,
-        statusMessage: "Sign in Failed",
-        statusCode: loginError.value.statusCode,
-      });
-      console.log("--> Throwing Error", displayError);
-      throw displayError;
-    }
-
-    await getUserData();
-
-    if (userStore.profilePresent) {
-      console.log("--> Navigating to Chat");
-      navigateTo("/chat");
-    }
-  };
 
   const signOut = async () => {
     console.log("--> Signing Out");
 
-    const { error: loginError } = await useFetch(
+    const { error: apiError } = await useFetch(
       `${config.public.apiBase}/account/logout`,
       {
         headers: {
@@ -64,75 +16,43 @@ export const useUserData = () => {
       }
     );
 
-    if (loginError.value) {
-      console.error("--> No server not responsed for Sign Out");
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
     } else {
-      setUserData(null);
+      userStore.$reset();
     }
     navigateTo("/");
   };
 
-  const signUp = async (username: string, password: string) => {
-    console.log("--> Signing Up");
-
-    const { error: loginError, data: response } = await useFetch(
-      `${config.public.apiBase}/account/register`,
+  const getUserData = async () => {
+    const config = useRuntimeConfig();
+    const { data: newProfile, error: apiError } = await useFetch<IUserProfile>(
+      `${config.public.apiBase}/user/get-profile`,
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
         credentials: "include",
-        body: {
-          username: username,
-          password: password,
-        },
       }
     );
 
-    console.log("--> Response", response);
-
-    if (loginError.value) {
-      const displayError = createError({
-        ...loginError.value,
-        statusMessage: "Sign up Failed",
-        statusCode: loginError.value.statusCode,
-      });
-      console.log("--> Throwing Error", displayError);
-      throw displayError;
-    }
-  };
-
-  const getUserData = async () => {
-    const config = useRuntimeConfig();
-    const { data: newProfile, error: profileFetchError } =
-      await useFetch<IUserProfile>(
-        `${config.public.apiBase}/user/get-profile`,
-        {
-          credentials: "include",
-        }
-      );
-
-    if (profileFetchError.value && profileFetchError.value.statusCode === 405) {
+    if (apiError.value && apiError.value.statusCode === 405) {
       console.error("--> Not logged in - unauthorized");
-      setUserData(null);
       return;
     }
 
-    if (profileFetchError.value) {
+    if (apiError.value) {
       console.error("--> Fetch user profile Error");
-      setUserData(null);
       return;
     }
 
-    setUserData(newProfile.value);
+    userStore.updateUserProfile(newProfile.value);
     console.warn("--> User profile", userStore.userProfile);
   };
 
   return {
     signOut,
     getUserData,
-    signIn,
-    signUp,
   };
 };

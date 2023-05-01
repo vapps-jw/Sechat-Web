@@ -1,6 +1,6 @@
 import * as signalR from "@microsoft/signalr";
 import { scrollToBottom } from "~~/utilities/documentFunctions";
-import { VisibilityStates, SignalRState } from "~~/utilities/globalEnums";
+import { SignalRHubMethods, VisibilityStates } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
   const sechatStore = useSechatAppStore();
@@ -10,22 +10,7 @@ export const useSignalR = () => {
   const sechatChatStore = useSechatChatStore();
   const userStore = useUserStore();
   const signalRStore = useSignalRStore();
-
-  const SignalRHubMethods = {
-    SendMessage: "SendMessage",
-    ConnectToRooms: "ConnectToRooms",
-    ConnectToRoom: "ConnectToRoom",
-    CreateRoom: "CreateRoom",
-    MessageIncoming: "MessageIncoming",
-    RoomDeleted: "RoomDeleted",
-    ConnectionRequestReceived: "ConnectionRequestReceived",
-    ConnectionDeleted: "ConnectionDeleted",
-    ConnectionUpdated: "ConnectionUpdated",
-    UserAddedToRoom: "UserAddedToRoom",
-    UserRemovedFromRoom: "UserRemovedFromRoom",
-    DisconnectFromRoom: "DisconnectFromRoom",
-    RoomUpdated: "RoomUpdated",
-  };
+  const videoCalls = useVideoCall();
 
   const createNewConnection = async () => {
     const connection = new signalR.HubConnectionBuilder()
@@ -40,6 +25,13 @@ export const useSignalR = () => {
       .build();
 
     // Connect to events on connection build
+    videoCalls.onVideoCallApprovedEvent(connection);
+    videoCalls.onVideoCallRejectedEvent(connection);
+    videoCalls.onVideoCallRequestedEvent(connection);
+    videoCalls.onVideoCallDataIncomingEvent(connection);
+    videoCalls.onVideoCallTerminatedEvent(connection);
+    _onMessageWasViewed(connection);
+    _onMessagesWereViewed(connection);
     _onIncomingMessage(connection);
     _onRoomDeletedEvent(connection);
     _onUserAddedToRoomEvent(connection);
@@ -51,6 +43,14 @@ export const useSignalR = () => {
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
+      videoCalls.handleConnectionClose();
+      videoCalls.offVideoCallApprovedEvent(connection);
+      videoCalls.offVideoCallRejectedEvent(connection);
+      videoCalls.offVideoCallRequestedEvent(connection);
+      videoCalls.offVideoCallDataIncomingEvent(connection);
+      videoCalls.offVideoCallTerminatedEvent(connection);
+      _offMessageWasViewed(connection);
+      _offMessagesWereViewed(connection);
       _offIncomingMessage(connection);
       _offRoomDeletedEvent(connection);
       _offUserAddedToRoomEvent(connection);
@@ -59,7 +59,7 @@ export const useSignalR = () => {
       _offConnectionRequestReceivedEvent(connection);
       _offUserConnectionUpdatedEvent(connection);
       _offUserConnectionDeleteEvent(connection);
-      console.warn("--> Connection Closed");
+      console.warn("--> Connection Closed - connection.onclose");
     });
 
     connection.onreconnected(async (connectionId) => {
@@ -67,7 +67,7 @@ export const useSignalR = () => {
         sechatStore.updateLoadingOverlay(true);
 
         // Get the updates
-        console.log("--> Reconnected, getting state ...");
+        console.log("--> Reconnected, getting state ...", connectionId);
         const { error: apiError, data: chatState } = await useFetch<IChatState>(
           `${config.public.apiBase}/chat/get-state`,
           {
@@ -79,13 +79,13 @@ export const useSignalR = () => {
         if (apiError.value) {
           throw createError({
             ...apiError.value,
-            statusMessage: "Failed to pull state",
             statusCode: apiError.value.statusCode,
+            statusMessage: apiError.value.data,
           });
         }
 
         sechatChat.loadRooms(chatState.value.rooms);
-        sechatChat.loadUserConnections(chatState.value.userConnections);
+        sechatChat.loadUserConnections(chatState.value.userContacts);
 
         console.log("--> Reconnected, connectiong to Rooms ...");
         _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
@@ -94,6 +94,7 @@ export const useSignalR = () => {
           scrollToBottom("chatView");
         }
       } catch (error) {
+        console.error("--> Fetch State Failed", error);
       } finally {
         sechatStore.updateLoadingOverlay(false);
       }
@@ -118,10 +119,6 @@ export const useSignalR = () => {
       signalRStore.connection.state === signalR.HubConnectionState.Connected
     ) {
       console.log("--> Already Connected");
-      return;
-    }
-    if (!signalRStore.connection) {
-      await createNewConnection();
     }
     if (
       signalRStore.connection &&
@@ -131,14 +128,15 @@ export const useSignalR = () => {
       await signalRStore.connection.start();
       _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
     }
+    if (!signalRStore.connection) {
+      await createNewConnection();
+    }
   };
 
   const closeConnection = async () => {
-    if (signalRStore.connection) {
+    if (signalRStore.getConnection) {
       console.log("--> Closing connection, calling stop method");
-      await signalRStore.connection.stop();
-      signalRStore.$reset;
-      return;
+      await signalRStore.closeConnection();
     } else {
       console.log("--> No connection to close");
     }
@@ -381,8 +379,40 @@ export const useSignalR = () => {
 
   // Messages
 
+  const _onMessageWasViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting MessageWasViewed event");
+    connection.on(
+      SignalRHubMethods.MessageWasViewed,
+      sechatChat.handleMessageWasViewed
+    );
+  };
+
+  const _offMessageWasViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting MessageWasViewed event");
+    connection.off(
+      SignalRHubMethods.MessageWasViewed,
+      sechatChat.handleMessageWasViewed
+    );
+  };
+
+  const _onMessagesWereViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting MessagesWereViewed event");
+    connection.on(
+      SignalRHubMethods.MessagesWereViewed,
+      sechatChat.handleMessagesWereViewed
+    );
+  };
+
+  const _offMessagesWereViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting MessagesWereViewed event");
+    connection.off(
+      SignalRHubMethods.MessagesWereViewed,
+      sechatChat.handleMessagesWereViewed
+    );
+  };
+
   const _onIncomingMessage = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting SendMessage event");
+    console.log("--> Connecting IncomingMessage event");
     connection.on(
       SignalRHubMethods.MessageIncoming,
       sechatChat.handleIncomingMessage
@@ -390,29 +420,16 @@ export const useSignalR = () => {
   };
 
   const _offIncomingMessage = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting SendMessage event");
+    console.log("--> Disconnecting IncomingMessage event");
     connection.off(
       SignalRHubMethods.MessageIncoming,
       sechatChat.handleIncomingMessage
     );
   };
 
-  const sendMessage = (message: string, roomId: string) => {
-    console.log("--> Connection state:", signalRStore.connection.state);
-    console.log("--> Sending message:", message);
-
-    const newMessage: ISentMessage = {
-      roomId: roomId,
-      text: message,
-    };
-
-    signalRStore.connection.send(SignalRHubMethods.SendMessage, newMessage);
-  };
-
   return {
     closeConnection,
     createRoom,
-    sendMessage,
     connect,
     handleVisibilityChange,
   };

@@ -3,7 +3,12 @@
     <v-main>
       <v-container class="bg-transparent">
         <div class="d-flex justify-center">
-          <NuxtImg src="/logos/sechat-black-tr-300x300.png" alt=""></NuxtImg>
+          <NuxtImg
+            src="/logos/logo-only-transparent-300x300.png"
+            alt=""
+            width="300"
+            height="150"
+          ></NuxtImg>
         </div>
         <div class="d-flex justify-center flex-wrap">
           <v-chip class="ma-2" color="warning">
@@ -25,15 +30,3 @@
 <script setup lang="ts">
 const config = useRuntimeConfig();
 </script>
-
-<style scoped>
-.page-enter-active,
-.page-leave-active {
-  transition: all 0.2s;
-}
-.page-enter-from,
-.page-leave-to {
-  opacity: 0;
-  filter: blur(1rem);
-}
-</style>

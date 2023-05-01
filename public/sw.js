@@ -22,16 +22,26 @@ self.addEventListener("push", async (event) => {
   }
 
   const currentNotifications = await self.registration.getNotifications();
-  console.log("--> Current Notifications", currentNotifications);
-  for (let i = 0; i < currentNotifications.length; i++) {
-    currentNotifications[i].close();
-  }
+  console.log(
+    "--> Current Notifications",
+    currentNotifications,
+    currentNotifications.length
+  );
+
+  const notificationsToClose = currentNotifications.filter(
+    (n) => n.title === String(data.title)
+  );
+  notificationsToClose.forEach((n) => {
+    console.log("--> Closing current notification", String(data.title));
+    n.close();
+  });
 
   const options = {
     body: String(data.options.body),
     icon: "icons/icon_64x64.png",
+    badge: "icons/message-badge.png",
     tag: "Sechat",
-    vibrate: [1000, 1000],
+    vibrate: [500, 1000, 1500],
   };
 
   console.warn("--> Showing Notification...");
@@ -73,21 +83,4 @@ function isClientFocused() {
 
       return clientIsFocused;
     });
-}
-
-async function checkClientIsVisible() {
-  const windowClients = await clients.matchAll({
-    type: "window",
-    includeUncontrolled: true,
-  });
-
-  console.error("Checking visibility", windowClients);
-
-  for (var i = 0; i < windowClients.length; i++) {
-    if (windowClients[i].visibilityState === "visible") {
-      return true;
-    }
-  }
-
-  return false;
 }

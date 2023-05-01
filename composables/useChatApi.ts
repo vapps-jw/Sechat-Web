@@ -7,51 +7,39 @@ export const useChatApi = () => {
 
   const getState = async (): Promise<IChatState> => {
     console.log("--> Getting State from API");
-    try {
-      const { error: apiError, data: chatState } = await useFetch<IChatState>(
-        `${config.public.apiBase}/chat/get-state`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-
-      if (apiError.value) {
-        throw createError({
-          ...apiError.value,
-          statusMessage: "Failed to pull state",
-          statusCode: apiError.value.statusCode,
-        });
+    const { error: apiError, data: chatState } = await useFetch<IChatState>(
+      `${config.public.apiBase}/chat/get-state`,
+      {
+        method: "GET",
+        credentials: "include",
       }
+    );
 
-      console.log("--> State Fetched", chatState.value);
-
-      chatState.value.rooms.forEach((r) =>
-        r.messages.forEach((m) => {
-          if (
-            m.messageViewers.find((mv) => mv.user === userStore.getUserName)
-          ) {
-            m.wasViewed = true;
-          }
-        })
-      );
-
-      chatState.value.userConnections.forEach((uc) => {
-        if (uc.invitedName === userStore.userProfile.userName) {
-          uc.displayName = uc.inviterName;
-        } else {
-          uc.displayName = uc.invitedName;
-        }
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
       });
+    }
 
-      return chatState.value;
-    } catch (error) {}
+    console.log("--> State Fetched", chatState.value);
+
+    chatState.value.userContacts.forEach((uc) => {
+      if (uc.invitedName === userStore.userProfile.userName) {
+        uc.displayName = uc.inviterName;
+      } else {
+        uc.displayName = uc.invitedName;
+      }
+    });
+
+    return chatState.value;
   };
 
   const markMessagesAsViewed = async (roomId: string) => {
-    console.log("--> Marking messages as viewed");
+    console.log("--> Marking Messages as viewed");
     const { error: apiError } = await useFetch(
-      `${config.public.apiBase}/chat/message-viewed`,
+      `${config.public.apiBase}/chat/messages-viewed`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -89,97 +77,49 @@ export const useChatApi = () => {
     );
   };
 
-  const sendMessage = async (message: string, roomId: string) => {
-    console.log("--> Sending message:", message);
-
+  const markMessageAsViewed = async (roomId: string, messageId: number) => {
+    console.log("--> Marking Single Message as viewed");
     const { error: apiError } = await useFetch(
-      `${config.public.apiBase}/chat/send-message`,
+      `${config.public.apiBase}/chat/message-viewed/${roomId}/${messageId}`,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        method: "POST",
+        method: "PATCH",
         credentials: "include",
-        body: {
-          Text: message,
-          RoomId: roomId,
+        onResponseError({ response }) {
+          if (response.status === 400) {
+            sechatApp.showSnackbar({
+              snackbar: true,
+              text: response._data,
+              timeout: 2000,
+              color: "warning",
+              icon: SnackbarIcons.Warning,
+              iconColor: "black",
+            });
+          } else {
+            sechatApp.showSnackbar({
+              snackbar: true,
+              text: "Connection Error",
+              timeout: 2000,
+              color: "error",
+              icon: SnackbarIcons.Error,
+              iconColor: "black",
+            });
+
+            throw createError({
+              ...apiError.value,
+              statusMessage: response._data,
+            });
+          }
         },
       }
     );
-
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusMessage: "Failed to send message",
-        statusCode: apiError.value.statusCode,
-      });
-    }
-  };
-
-  const leaveRoom = async (room: IRoom) => {
-    console.warn("--> API Leave Room", room);
-
-    const { error: apiError } = await useFetch(
-      `${config.public.apiBase}/chat/leave-room`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        credentials: "include",
-        body: {
-          RoomId: room.id,
-        },
-      }
-    );
-
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusMessage: "Failed to leave room",
-        statusCode: apiError.value.statusCode,
-      });
-    }
-  };
-
-  const inviteToRoom = async (
-    chosenConnection: IConnectionRequest,
-    roomId: string
-  ) => {
-    console.warn("--> API Inviting User", chosenConnection);
-
-    const { error: apiError } = await useFetch(
-      `${config.public.apiBase}/chat/add-to-room`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        credentials: "include",
-        body: {
-          userName: chosenConnection.displayName,
-          RoomId: roomId,
-          ConnectionId: chosenConnection.id,
-        },
-      }
-    );
-
-    if (apiError.value) {
-      const displayError = createError({
-        ...apiError.value,
-        statusMessage: "Sign in Failed",
-        statusCode: apiError.value.statusCode,
-      });
-      console.log("--> Throwing Error", displayError);
-      throw displayError;
-    }
   };
 
   return {
     getState,
-    inviteToRoom,
-    leaveRoom,
-    sendMessage,
+    markMessageAsViewed,
     markMessagesAsViewed,
   };
 };

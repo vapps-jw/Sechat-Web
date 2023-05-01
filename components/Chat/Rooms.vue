@@ -61,25 +61,46 @@
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
-const chatApi = useChatApi();
+const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
 const userStore = useUserStore();
+const appStore = useSechatAppStore();
 
 const selectRoomClicked = (roomId: string) => {
-  sechatApp.showLoadingOverlay();
+  appStore.updateLoadingOverlay(true);
   chatStore.selectRoom(roomId);
-  sechatApp.hideLoadingOverlay();
+  appStore.updateLoadingOverlay(false);
 };
 
 const leaveRoom = async (room: IRoom) => {
   try {
-    await chatApi.leaveRoom(room);
-    chatStore.deleteRoom(room.id);
-  } catch (error) {
-    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
-  }
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/leave-room`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          RoomId: room.id,
+        },
+      }
+    );
 
-  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    chatStore.deleteRoom(room.id);
+    sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
+  } catch (error) {
+    sechatApp.showErrorSnackbar(error.statusMessage);
+  }
 };
 </script>
 

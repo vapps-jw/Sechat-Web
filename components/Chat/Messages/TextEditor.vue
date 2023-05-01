@@ -18,29 +18,61 @@
 import { SnackbarIcons } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
-const signalR = useSignalR();
 const signalRstore = useSignalRStore();
 const appStore = useSechatApp();
-const chatApi = useChatApi();
+const config = useRuntimeConfig();
+const sechatApp = useSechatApp();
 
 const newMessage = ref("");
 
-const pushMessage = () => {
-  if (newMessage.value) {
-    if (!signalRstore.isConnected) {
-      appStore.showSnackbar({
-        snackbar: true,
-        text: "You are not connected",
-        timeout: 2000,
-        color: "warning",
-        icon: SnackbarIcons.Warning,
-        iconColor: "black",
+const callMessageApi = async () => {
+  try {
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/send-message`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          Text: newMessage.value,
+          RoomId: chatStore.activeRoomId,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: "Something went wrong",
       });
-      return;
     }
-    chatApi.sendMessage(newMessage.value, chatStore.activeRoomId);
-    newMessage.value = "";
+  } catch (error) {
+    sechatApp.showErrorSnackbar(error.statusMessage);
   }
+};
+
+const pushMessage = async () => {
+  if (!newMessage.value) {
+    return;
+  }
+
+  if (!signalRstore.isConnected) {
+    appStore.showSnackbar({
+      snackbar: true,
+      text: "You are not connected",
+      timeout: 2000,
+      color: "warning",
+      icon: SnackbarIcons.Warning,
+      iconColor: "black",
+    });
+    return;
+  }
+
+  callMessageApi();
+  newMessage.value = "";
 };
 </script>
 

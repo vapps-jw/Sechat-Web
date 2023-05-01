@@ -32,5 +32,48 @@ export const SignalRState = {
 export const ChatViews = {
   Messages: "messages",
   Rooms: "rooms",
+  Contacts: "contacts",
   Settings: "settings",
+};
+
+export const PushNotificationTypes = {
+  NewMessage: "New Message",
+  NewContactRequest: "Contact Request",
+};
+
+export const VideoCallStatus = {
+  Answered: "Answered",
+  Initialized: "Initialized",
+  None: "None",
+};
+
+export const VideoCodecs = {
+  webm9MimeCodec: 'video/webm;codecs="vp8,opus"',
+};
+
+export const SignalRHubMethods = {
+  MessageWasViewed: "MessageWasViewed",
+  MessagesWereViewed: "MessagesWereViewed",
+  TerminateVideoCall: "TerminateVideoCall",
+  VideoCallTerminated: "VideoCallTerminated",
+  ApproveVideoCall: "ApproveVideoCall",
+  RejectVideoCall: "RejectVideoCall",
+  VideoCallRequest: "VideoCallRequest",
+  VideoCallApproved: "VideoCallApproved",
+  VideoCallRejected: "VideoCallRejected",
+  VideoCallRequested: "VideoCallRequested",
+  VideoCallDataIncoming: "VideoCallDataIncoming",
+  SendVideoCallData: "SendVideoCallData",
+  ConnectToRooms: "ConnectToRooms",
+  ConnectToRoom: "ConnectToRoom",
+  CreateRoom: "CreateRoom",
+  MessageIncoming: "MessageIncoming",
+  RoomDeleted: "RoomDeleted",
+  ConnectionRequestReceived: "ConnectionRequestReceived",
+  ConnectionDeleted: "ConnectionDeleted",
+  ConnectionUpdated: "ConnectionUpdated",
+  UserAddedToRoom: "UserAddedToRoom",
+  UserRemovedFromRoom: "UserRemovedFromRoom",
+  DisconnectFromRoom: "DisconnectFromRoom",
+  RoomUpdated: "RoomUpdated",
 };

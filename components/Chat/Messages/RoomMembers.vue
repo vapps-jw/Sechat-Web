@@ -1,9 +1,11 @@
 <template>
   <div class="d-flex">
     <v-chip
+      variant="elevated"
+      size="x-small"
       v-for="u in chatStore.getActiveRoomMembers"
       :key="u.userName"
-      class="ma-2"
+      class="ma-1"
       :color="
         u.userName !== chatStore.getActiveRoom.creatorName
           ? 'primary'
@@ -13,7 +15,10 @@
     >
       {{ u.userName }}
       <v-icon
-        v-if="u.userName !== chatStore.getActiveRoom.creatorName"
+        v-if="
+          u.userName !== chatStore.getActiveRoom.creatorName &&
+          isContact(u.userName)
+        "
         @click="async () => await removeUserFromRoom(u)"
         end
         icon="mdi-close-circle"
@@ -29,6 +34,10 @@ const chatStore = useSechatChatStore();
 const sechatApp = useSechatApp();
 const config = useRuntimeConfig();
 const userStore = useUserStore();
+
+const isContact = (userName: string) => {
+  return chatStore.getContacts.find((c) => c.displayName === userName);
+};
 
 const removeUserFromRoom = async (data: IMemeber) => {
   if (chatStore.getActiveRoom.members.length == 1) {
@@ -48,31 +57,38 @@ const removeUserFromRoom = async (data: IMemeber) => {
   }
 
   console.warn("--> Removing User from Room", data);
-  const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/chat/remove-from-room`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      credentials: "include",
-      body: {
-        userName: data.userName,
-        RoomId: chatStore.getActiveRoom.id,
-        ConnectionId: chatStore.getConnections.find(
-          (c) =>
-            c.invitedName === data.userName || c.inviterName === data.userName
-        )?.id,
-      },
+
+  try {
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/chat/remove-from-room`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          userName: data.userName,
+          RoomId: chatStore.getActiveRoom.id,
+          ConnectionId: chatStore.getContacts.find(
+            (c) =>
+              c.invitedName === data.userName || c.inviterName === data.userName
+          )?.id,
+        },
+      }
+    );
+
+    sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
     }
-  );
-
-  if (apiError.value) {
-    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
-    return;
+  } catch (error) {
+    sechatApp.showErrorSnackbar(error.statusMessage);
   }
-
-  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 </script>
 

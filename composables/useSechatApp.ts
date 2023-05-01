@@ -15,23 +15,6 @@ export const useSechatApp = () => {
     clearInterval(useAppStore.pingServerInterval);
   };
 
-  const handleOffline = () => {
-    console.warn("--> Handling Offline from SignalR");
-    useAppStore.isOnline = false;
-  };
-
-  const handleOnline = async () => {
-    console.warn("--> Handling Online from SignalR");
-    useAppStore.isOnline = true;
-  };
-
-  const showLoadingOverlay = () => {
-    useAppStore.updateLoadingOverlay(true);
-  };
-  const hideLoadingOverlay = () => {
-    useAppStore.updateLoadingOverlay(false);
-  };
-
   const pingServer = async () => {
     console.log("--> Ping Server");
     await useFetch(`${config.public.apiBase}/status/ping-api`, {
@@ -125,11 +108,7 @@ export const useSechatApp = () => {
     showOfflineSnackbar,
     showDisconnectedSnackbar,
     pingServer,
-    showLoadingOverlay,
-    hideLoadingOverlay,
     startPing,
     stopPing,
-    handleOffline,
-    handleOnline,
   };
 };

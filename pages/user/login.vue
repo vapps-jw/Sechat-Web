@@ -35,12 +35,22 @@
           {{ buttonText }}
         </v-btn>
       </v-form>
+      <v-btn
+        @click="navigateTo('/')"
+        class="mt-3"
+        color="tertiary"
+        block
+        size="large"
+        type="submit"
+        variant="elevated"
+      >
+        Go Back
+      </v-btn>
     </v-card>
   </v-sheet>
 </template>
 
 <script setup lang="ts">
-const userData = useUserData();
 const form = ref(false);
 const loading = ref(false);
 
@@ -55,22 +65,52 @@ interface ICredentials {
 const showPassword = ref<boolean>(true);
 const buttonText = ref<string>("Sign In");
 const buttonColor = ref<string>("warning");
+const config = useRuntimeConfig();
+const userStore = useUserStore();
+const userApi = useUserApi();
+const sechatApp = useSechatApp();
 
 const onSubmit = async () => {
   try {
-    await userData.signIn(
-      credentials.value.username,
-      credentials.value.password
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/account/login`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          username: credentials.value.username,
+          password: credentials.value.password,
+        },
+      }
     );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: "Sign in failed",
+      });
+    }
+
+    await userApi.getUserData();
+
+    if (userStore.isSignedIn) {
+      console.log("--> Navigating to Chat");
+      navigateTo("/chat");
+    }
   } catch (error) {
     console.log("--> Sign up error", error);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
+    sechatApp.showErrorSnackbar(error.statusMessage);
     error.value = null;
   }
 };
 
-const credentials = ref({
+const credentials = ref<ICredentials>({
   valid: true,
   username: "",
   password: "",
