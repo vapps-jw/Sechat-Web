@@ -68,7 +68,7 @@
           v-if="signalRStore.isCallEstablished"
           class="d-flex justify-center text-center"
         >
-          <v-chip class="ma-2">
+          <v-chip size="small">
             {{ signalRStore.videoCallContact.displayName }}
           </v-chip>
         </div>
@@ -102,22 +102,30 @@ const appStore = useSechatAppStore();
 
 const newVideoCall = async () => {
   try {
-    if (!signalRStore.isCallWaitingForApproval) {
+    if (
+      !signalRStore.isCallWaitingForApproval &&
+      !signalRStore.videoCallRequestSent
+    ) {
+      console.log("--> Initializing call...");
       videoCall.sendVideoCallRequest(
         signalRStore.getVideoCallContact.displayName
       );
+      videoCall.listenForVideo();
+      return;
     }
 
-    videoCall.listenForVideo();
-
     if (signalRStore.isCallWaitingForApproval) {
+      console.log("--> Approving call...");
       videoCall.sendVideoCallApproved(
         signalRStore.getVideoCallContact.displayName
       );
       signalRStore.updateVideoCallEstablished(true);
       signalRStore.updateVideoCallWaitingForApproval(false);
+      videoCall.listenForVideo();
       videoCall.sendVideo(signalRStore.getVideoCallContact.displayName);
+      return;
     }
+    console.warn("--> Call already in progress");
   } catch (error) {
     console.error(error);
   }
@@ -136,7 +144,14 @@ onMounted(() => {
 const endCall = async () => {
   try {
     console.warn("--> Video call endCall");
-    videoCall.rejectVideoCall(signalRStore.getVideoCallContact.displayName);
+    if (signalRStore.isCallWaitingForApproval) {
+      videoCall.rejectVideoCall(signalRStore.getVideoCallContact.displayName);
+    } else {
+      videoCall.terminateVideoCall(
+        signalRStore.getVideoCallContact.displayName
+      );
+    }
+
     signalRStore.clearVideoCallData();
     appStore.clearVideoSources();
   } catch (error) {
@@ -146,8 +161,24 @@ const endCall = async () => {
 
 onBeforeUnmount(() => {
   console.warn("--> Video call onBeforeUnmount");
-  signalRStore.clearVideoCallData();
-  appStore.clearVideoSources();
+
+  try {
+    console.warn("--> Video call endCall");
+    if (signalRStore.getVideoCallContact) {
+      if (signalRStore.isCallWaitingForApproval) {
+        videoCall.rejectVideoCall(signalRStore.getVideoCallContact.displayName);
+      } else {
+        videoCall.terminateVideoCall(
+          signalRStore.getVideoCallContact.displayName
+        );
+      }
+    }
+
+    signalRStore.clearVideoCallData();
+    appStore.clearVideoSources();
+  } catch (error) {
+    console.error(error);
+  }
 });
 </script>
 

@@ -61,7 +61,7 @@ const removeUserFromRoom = async (data: IMemeber) => {
         body: {
           userName: data.userName,
           RoomId: chatStore.getActiveRoom.id,
-          ConnectionId: chatStore.getConnections.find(
+          ConnectionId: chatStore.getContacts.find(
             (c) =>
               c.invitedName === data.userName || c.inviterName === data.userName
           )?.id,

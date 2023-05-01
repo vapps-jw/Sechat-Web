@@ -5,7 +5,7 @@ export const useSechatChatStore = defineStore({
   state: () => {
     return {
       availableRooms: <IRoom[]>[],
-      availableConnections: <IConnectionRequest[]>[],
+      availableContacts: <IContactRequest[]>[],
       activeChatTab: <string>ChatViews.Rooms,
       activeRoomId: <string>"",
     };
@@ -23,14 +23,14 @@ export const useSechatChatStore = defineStore({
     activateSettingsView() {
       this.activeChatTab = ChatViews.Settings;
     },
-    addConnection(value: IConnectionRequest) {
-      this.availableConnections = [...this.availableConnections, value].sort(
-        (a, b) => a.displayName.localeCompare(b.displayName)
+    addContact(value: IContactRequest) {
+      this.availableContacts = [...this.availableContacts, value].sort((a, b) =>
+        a.displayName.localeCompare(b.displayName)
       );
     },
-    updateConnection(value: IConnectionRequest) {
-      this.availableConnections = [
-        ...this.availableConnections.filter((uc) => uc.id !== value.id),
+    updateContact(value: IContactRequest) {
+      this.availableContacts = [
+        ...this.availableContacts.filter((uc) => uc.id !== value.id),
         value,
       ].sort((a, b) => a.displayName.localeCompare(b.displayName));
     },
@@ -52,13 +52,13 @@ export const useSechatChatStore = defineStore({
       );
       room.messages.forEach((m) => (m.wasViewed = true));
     },
-    loadConnections(value: IConnectionRequest[]) {
-      this.availableConnections = value.sort((a, b) =>
+    loadContacts(value: IContactRequest[]) {
+      this.availableContacts = value.sort((a, b) =>
         a.displayName.localeCompare(b.displayName)
       );
     },
-    deleteConnection(value: IResourceId) {
-      this.availableConnections = this.availableConnections.filter(
+    deleteContact(value: IResourceId) {
+      this.availableContacts = this.availableContacts.filter(
         (uc) => uc.id !== value.id
       );
     },
@@ -158,9 +158,9 @@ export const useSechatChatStore = defineStore({
       return state.availableRooms.find((r) => r.id === state.activeRoomId)
         .members;
     },
-    getConnections: (state) => state.availableConnections,
+    getContacts: (state) => state.availableContacts,
     getApprovedConnections: (state) => {
-      const result = state.availableConnections.filter(
+      const result = state.availableContacts.filter(
         (uc) => !uc.blocked && uc.approved
       );
       return result;

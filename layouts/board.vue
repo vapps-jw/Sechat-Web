@@ -17,6 +17,8 @@ const signalRStore = useSignalRStore();
 const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
 const chatStore = useSechatChatStore();
+const videoCall = useVideoCall();
+const appStore = useSechatAppStore();
 
 onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
@@ -26,7 +28,7 @@ onMounted(async () => {
   const chatState = await chatApi.getState();
 
   chatStore.loadRooms(chatState.rooms);
-  chatStore.loadConnections(chatState.userConnections);
+  chatStore.loadContacts(chatState.userContacts);
 
   await signalR.connect();
 
@@ -45,6 +47,14 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   console.warn("--> Chat Layout onBeforeUnmount");
+
+  if (signalRStore.isVideoCallInProgress) {
+    console.error("--> Video Call in Progress -- Terminating");
+    videoCall.terminateVideoCall(signalRStore.getVideoCallContact.displayName);
+
+    signalRStore.clearVideoCallData();
+    appStore.clearVideoSources();
+  }
 
   signalR.closeConnection();
   signalRStore.$reset();

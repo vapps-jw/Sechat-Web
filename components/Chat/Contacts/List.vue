@@ -1,7 +1,7 @@
 <template>
   <v-expansion-panels class="mt-2" variant="accordion">
     <v-expansion-panel
-      v-for="uc in chatStore.getConnections"
+      v-for="uc in chatStore.getContacts"
       :key="`${uc.invitedName}-${uc.inviterName}`"
     >
       <v-expansion-panel-title disable-icon-rotate>
@@ -18,7 +18,7 @@
         <v-row no-gutters>
           <v-btn
             v-if="uc.blocked && uc.blockedByName === userStore.getUserName"
-            @click="async () => allowConnection(uc.id)"
+            @click="async () => allowContact(uc.id)"
             class="mx-1"
             size="small"
             icon="mdi-checkbox-marked-circle-outline"
@@ -27,7 +27,7 @@
           ></v-btn>
           <v-btn
             v-else
-            @click="async () => blockConnection(uc.id)"
+            @click="async () => blockContact(uc.id)"
             class="mx-1"
             size="small"
             icon="mdi-block-helper"
@@ -36,7 +36,7 @@
           ></v-btn>
           <v-btn
             v-if="!uc.approved && uc.invitedName === userStore.getUserName"
-            @click="async () => approveConnection(uc.id)"
+            @click="async () => approveContact(uc.id)"
             class="mx-1"
             size="small"
             icon="mdi-check-bold"
@@ -44,7 +44,7 @@
             variant="outlined"
           ></v-btn>
           <v-btn
-            @click="async () => deleteConnection(uc.id)"
+            @click="async () => deleteContact(uc.id)"
             class="mx-1"
             size="small"
             icon="mdi-delete"
@@ -75,7 +75,7 @@ const sechatApp = useSechatApp();
 const userStore = useUserStore();
 const signalRStore = useSignalRStore();
 
-const startVideoCall = (uc: IConnectionRequest) => {
+const startVideoCall = (uc: IContactRequest) => {
   try {
     signalRStore.initializeVideoCall(uc);
   } catch (error) {
@@ -84,7 +84,7 @@ const startVideoCall = (uc: IConnectionRequest) => {
   }
 };
 
-const blockConnection = async (id: number) => {
+const blockContact = async (id: number) => {
   console.log("--> Calling connection block");
 
   const { error: apiError } = await useFetch(
@@ -105,7 +105,7 @@ const blockConnection = async (id: number) => {
   sechatApp.showSuccessSnackbar("Contact blocked");
 };
 
-const allowConnection = async (id: number) => {
+const allowContact = async (id: number) => {
   console.log("--> Calling connection block");
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/user/allow-connection/?connectionId=${id}`,
@@ -125,7 +125,7 @@ const allowConnection = async (id: number) => {
   sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
-const approveConnection = async (id: number) => {
+const approveContact = async (id: number) => {
   console.log("--> Calling connection approve");
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/user/approve-connection/?connectionId=${id}`,
@@ -146,7 +146,7 @@ const approveConnection = async (id: number) => {
   sechatApp.showSuccessSnackbar("Contact approved");
 };
 
-const deleteConnection = async (id: number) => {
+const deleteContact = async (id: number) => {
   console.log("--> Deleting connection", id);
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/user/delete-connection/?connectionId=${id}`,

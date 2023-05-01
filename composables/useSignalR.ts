@@ -29,6 +29,7 @@ export const useSignalR = () => {
     videoCalls.onVideoCallRejectedEvent(connection);
     videoCalls.onVideoCallRequestedEvent(connection);
     videoCalls.onVideoCallDataIncomingEvent(connection);
+    videoCalls.onVideoCallTerminatedEvent(connection);
     _onIncomingMessage(connection);
     _onRoomDeletedEvent(connection);
     _onUserAddedToRoomEvent(connection);
@@ -40,10 +41,12 @@ export const useSignalR = () => {
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
+      videoCalls.handleConnectionClose();
       videoCalls.offVideoCallApprovedEvent(connection);
       videoCalls.offVideoCallRejectedEvent(connection);
       videoCalls.offVideoCallRequestedEvent(connection);
       videoCalls.offVideoCallDataIncomingEvent(connection);
+      videoCalls.offVideoCallTerminatedEvent(connection);
       _offIncomingMessage(connection);
       _offRoomDeletedEvent(connection);
       _offUserAddedToRoomEvent(connection);
@@ -78,7 +81,7 @@ export const useSignalR = () => {
         }
 
         sechatChat.loadRooms(chatState.value.rooms);
-        sechatChat.loadUserConnections(chatState.value.userConnections);
+        sechatChat.loadUserConnections(chatState.value.userContacts);
 
         console.log("--> Reconnected, connectiong to Rooms ...");
         _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));

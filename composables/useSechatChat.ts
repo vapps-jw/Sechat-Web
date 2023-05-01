@@ -7,7 +7,7 @@ export const useSechatChat = () => {
 
   // User Connections
 
-  const handleConnectionRequestReceived = (data: IConnectionRequest) => {
+  const handleConnectionRequestReceived = (data: IContactRequest) => {
     console.warn("--> Connection Request Received", data);
     if (data.invitedName === userStore.getUserName) {
       data.displayName = data.inviterName;
@@ -15,25 +15,25 @@ export const useSechatChat = () => {
       data.displayName = data.invitedName;
     }
 
-    chatStore.addConnection(data);
+    chatStore.addContact(data);
   };
 
   const handleConnectionDelete = (resourceId: IResourceId) => {
     console.warn("--> Connection Delete Event Handled", resourceId);
-    chatStore.deleteConnection(resourceId);
+    chatStore.deleteContact(resourceId);
   };
 
-  const handleConnectionUpdated = (data: IConnectionRequest) => {
+  const handleConnectionUpdated = (data: IContactRequest) => {
     console.log("--> User Connection Updated Event Handled", data);
     if (data.invitedName === userStore.getUserName) {
       data.displayName = data.inviterName;
     } else {
       data.displayName = data.invitedName;
     }
-    chatStore.updateConnection(data);
+    chatStore.updateContact(data);
   };
 
-  const loadUserConnections = (data: IConnectionRequest[]) => {
+  const loadUserConnections = (data: IContactRequest[]) => {
     console.log("--> Adding user connecitons to the Store", data);
     data.forEach((uc) => {
       if (uc.invitedName === userStore.getUserName) {
@@ -42,7 +42,7 @@ export const useSechatChat = () => {
         uc.displayName = uc.invitedName;
       }
     });
-    chatStore.loadConnections(data);
+    chatStore.loadContacts(data);
   };
 
   // Rooms

@@ -12,7 +12,7 @@ export const useRefreshHandler = () => {
 
     const chatState = await chatApi.getState();
     chatStore.loadRooms(chatState.rooms);
-    chatStore.loadConnections(chatState.userConnections);
+    chatStore.loadContacts(chatState.userContacts);
 
     signalR.handleVisibilityChange();
 
@@ -25,7 +25,7 @@ export const useRefreshHandler = () => {
 
     const chatState = await chatApi.getState();
     chatStore.loadRooms(chatState.rooms);
-    chatStore.loadConnections(chatState.userConnections);
+    chatStore.loadContacts(chatState.userContacts);
 
     signalR.handleVisibilityChange();
   };

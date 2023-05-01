@@ -97,7 +97,7 @@ export const useVideoCall = () => {
   };
 
   const videoCallRequested = (data: IStringMessage) => {
-    let connection = sechatChatStore.getConnections.find(
+    let connection = sechatChatStore.getContacts.find(
       (c) => c.displayName === data.message
     );
 
@@ -107,31 +107,45 @@ export const useVideoCall = () => {
       return;
     }
 
+    if (signalRStore.isVideoCallInProgress) {
+      console.error("--> Video call already in progress");
+      return;
+    }
+
     signalRStore.initializeVideoCall(connection);
     signalRStore.updateVideoCallWaitingForApproval(true);
   };
 
   const videoCallApproved = (data: IStringMessage) => {
     console.warn(`--> Call approved by: ${data.message}`);
-    let connection = sechatChatStore.getConnections.find(
+    let connection = sechatChatStore.getContacts.find(
       (c) => c.inviterName === data.message || c.invitedName === data.message
     );
 
-    console.warn("--> Connection", connection);
+    if (!connection) {
+      return;
+    }
 
     signalRStore.updateVideoCallEstablished(true);
-    console.warn(`--> Sending video data to: ${connection.displayName}`);
     sendVideo(connection.displayName);
+    appStore.showSuccessSnackbar(`Call Answered by ${data.message}`);
   };
 
   const videoCallRejected = (data: IStringMessage) => {
     console.warn(`--> Call rejected by: ${data.message}`);
-    let connection = sechatChatStore.getConnections.find(
+    let connection = sechatChatStore.getContacts.find(
       (c) => c.inviterName === data.message || c.invitedName === data.message
     );
-    console.warn(`--> Call rejected by: ${connection?.displayName}`);
     signalRStore.clearVideoCallData();
     appStore.clearVideoSources();
+    appStore.showErrorSnackbar(`Call rejected by ${data.message}`);
+  };
+
+  const videoCallTerminated = (data: IStringMessage) => {
+    console.warn(`--> Call terminated by: ${data.message}`);
+    signalRStore.clearVideoCallData();
+    appStore.clearVideoSources();
+    appStore.showWarningSnackbar(`Call ended by ${data.message}`);
   };
 
   const handleVideoCallDataIncoming = (data: IVideoCallData) => {
@@ -152,6 +166,26 @@ export const useVideoCall = () => {
   };
 
   // Video Calls
+
+  const handleConnectionClose = () => {
+    if (signalRStore.isVideoCallInProgress) {
+      console.log(
+        "--> Terminating current call",
+        signalRStore.getVideoCallContactName
+      );
+      terminateVideoCall(signalRStore.getVideoCallContactName);
+    }
+  };
+
+  const onVideoCallTerminatedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting VideoCallTerminatedEvent");
+    connection.on(SignalRHubMethods.VideoCallTerminated, videoCallTerminated);
+  };
+
+  const offVideoCallTerminatedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting VideoCallTerminatedEvent");
+    connection.off(SignalRHubMethods.VideoCallTerminated, videoCallTerminated);
+  };
 
   const onVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting VideoCallApprovedEvent");
@@ -225,15 +259,26 @@ export const useVideoCall = () => {
     });
   };
 
+  const terminateVideoCall = (data: string) => {
+    console.log("--> Sending video call termination", data);
+    signalRStore.connection.send(SignalRHubMethods.TerminateVideoCall, {
+      message: data,
+    });
+  };
+
   return {
+    onVideoCallTerminatedEvent,
     onVideoCallApprovedEvent,
     onVideoCallRejectedEvent,
     onVideoCallRequestedEvent,
     onVideoCallDataIncomingEvent,
+    offVideoCallTerminatedEvent,
     offVideoCallApprovedEvent,
     offVideoCallRejectedEvent,
     offVideoCallRequestedEvent,
     offVideoCallDataIncomingEvent,
+    handleConnectionClose,
+    terminateVideoCall,
     rejectVideoCall,
     sendVideoCallApproved,
     sendVideoCallRequest,

@@ -12,6 +12,9 @@
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list flex align-center>
+          <v-list-subheader>User name</v-list-subheader>
+          <v-list-item> {{ userStore.getUserName }} </v-list-item>
+          <v-divider class="mt-10" />
           <v-list-subheader>Notifications</v-list-subheader>
           <v-list-item>
             <template v-slot:prepend>
@@ -43,6 +46,7 @@ import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
+const userStore = useUserStore();
 
 const backToHomePage = () => {
   navigateTo("/");

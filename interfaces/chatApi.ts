@@ -59,7 +59,7 @@ interface ISentMessage {
 }
 interface IChatState {
   rooms?: IRoom[];
-  userConnections?: IConnectionRequest[];
+  userContacts?: IContactRequest[];
 }
 
 interface IRoomUpdate {
@@ -67,7 +67,7 @@ interface IRoomUpdate {
   roomId?: string;
 }
 
-interface IConnectionRequest {
+interface IContactRequest {
   id?: number;
   inviterName?: string;
   invitedName?: string;

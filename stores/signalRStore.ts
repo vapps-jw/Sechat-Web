@@ -14,11 +14,10 @@ export const useSignalRStore = defineStore({
       videoCallDataRequestInterval: <NodeJS.Timer>null,
       videoCallStream: <MediaStream>null,
       videoCallMediaRecorder: <MediaRecorder>null,
-      videoCallInProgress: <boolean>false,
       videoCallMediaSource: <MediaSource>null,
       videoCallViewVisible: <boolean>false,
       videoCallSubject: <signalR.Subject<any>>null,
-      videoCallContact: <IConnectionRequest>null,
+      videoCallContact: <IContactRequest>null,
       connection: <signalR.HubConnection>null,
       videoCallChannel: <IChannel>channelFactory(),
     };
@@ -91,12 +90,12 @@ export const useSignalRStore = defineStore({
     resetVideoCallSignalRSubject() {
       this.videoCallSubject = new signalR.Subject();
     },
-    initializeVideoCall(contact: IConnectionRequest) {
+    initializeVideoCall(contact: IContactRequest) {
       this.videoCallViewVisible = true;
       this.videoCallContact = contact;
       this.videoCallChannel = channelFactory();
     },
-    updateVideoCallContact(data: IConnectionRequest) {
+    updateVideoCallContact(data: IContactRequest) {
       this.videoCallContact = data;
     },
     updateConnectionValue(value: signalR.HubConnection) {
@@ -107,10 +106,12 @@ export const useSignalRStore = defineStore({
     },
   },
   getters: {
+    getVideoCallContactName: (state) => state.videoCallContact?.displayName,
     isCallEstablished: (state) => state.videoCallEstablished,
     isCallWaitingForApproval: (state) => state.videoCallWaitingForApproval,
     getVideoCallMediaRecorder: (state) => state.videoCallMediaRecorder,
-    getVideoCallInProgress: (state) => state.videoCallInProgress,
+    isVideoCallInProgress: (state) =>
+      state.videoCallWaitingForApproval || state.videoCallRequestSent,
     getVideoCallSubject: (state) => state.videoCallSubject,
     getVideoCallMediaSource: (state) => state.videoCallMediaSource,
     isVideoCallViewVisible: (state) => state.videoCallViewVisible,

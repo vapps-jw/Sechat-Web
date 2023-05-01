@@ -25,7 +25,7 @@ export const useChatApi = () => {
 
     console.log("--> State Fetched", chatState.value);
 
-    chatState.value.userConnections.forEach((uc) => {
+    chatState.value.userContacts.forEach((uc) => {
       if (uc.invitedName === userStore.userProfile.userName) {
         uc.displayName = uc.inviterName;
       } else {
