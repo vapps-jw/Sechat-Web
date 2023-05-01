@@ -23,9 +23,5 @@ export const channelFactory = () => {
         }
         pullResolveQueue.push(res);
       }),
-    clear: () => {
-      _arrayBufferBuffer.length = 0;
-      pullResolveQueue.length = 0;
-    },
   };
 };

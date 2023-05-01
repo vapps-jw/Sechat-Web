@@ -75,7 +75,6 @@ export const useSignalRStore = defineStore({
       this.videoCallEstablished = false;
       this.videoCallRequestSent = false;
 
-      this.videoCallChannel.clear();
       this.videoCallChannel = channelFactory();
     },
     resetMediaRecorder(stream: MediaStream) {

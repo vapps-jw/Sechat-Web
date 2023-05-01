@@ -45,17 +45,17 @@ export const useVideoCall = () => {
               sourceBuffer.appendBuffer(ab);
             }
           });
-          sourceBuffer.addEventListener("updateend", async () => {
-            if (appStore.getVideoTarget.paused) appStore.getVideoTarget.play();
-            try {
-              const ab = await signalRStore.getVideoCallChannel.pull();
-              if (!sourceBuffer.updating) {
-                sourceBuffer.appendBuffer(ab);
-              }
-            } catch (error) {
-              console.log("--> Buffer [updateend] Error", error);
-            }
-          });
+          // sourceBuffer.addEventListener("updateend", async () => {
+          //   if (appStore.getVideoTarget.paused) appStore.getVideoTarget.play();
+          //   try {
+          //     const ab = await signalRStore.getVideoCallChannel.pull();
+          //     if (!sourceBuffer.updating) {
+          //       sourceBuffer.appendBuffer(ab);
+          //     }
+          //   } catch (error) {
+          //     console.log("--> Buffer [updateend] Error", error);
+          //   }
+          // });
 
           try {
             if (!sourceBuffer.updating) {
