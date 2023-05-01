@@ -4,10 +4,11 @@ import { ChatViews } from "~~/utilities/globalEnums";
 export const useSechatChat = () => {
   const userStore = useUserStore();
   const chatStore = useSechatChatStore();
+  const chatApi = useChatApi();
 
   // User Connections
 
-  const handleConnectionRequestReceived = (data: IConnectionRequest) => {
+  const handleConnectionRequestReceived = (data: IContactRequest) => {
     console.warn("--> Connection Request Received", data);
     if (data.invitedName === userStore.getUserName) {
       data.displayName = data.inviterName;
@@ -15,25 +16,25 @@ export const useSechatChat = () => {
       data.displayName = data.invitedName;
     }
 
-    chatStore.addConnection(data);
+    chatStore.addContact(data);
   };
 
   const handleConnectionDelete = (resourceId: IResourceId) => {
     console.warn("--> Connection Delete Event Handled", resourceId);
-    chatStore.deleteConnection(resourceId);
+    chatStore.deleteContact(resourceId);
   };
 
-  const handleConnectionUpdated = (data: IConnectionRequest) => {
+  const handleConnectionUpdated = (data: IContactRequest) => {
     console.log("--> User Connection Updated Event Handled", data);
     if (data.invitedName === userStore.getUserName) {
       data.displayName = data.inviterName;
     } else {
       data.displayName = data.invitedName;
     }
-    chatStore.updateConnection(data);
+    chatStore.updateContact(data);
   };
 
-  const loadUserConnections = (data: IConnectionRequest[]) => {
+  const loadUserConnections = (data: IContactRequest[]) => {
     console.log("--> Adding user connecitons to the Store", data);
     data.forEach((uc) => {
       if (uc.invitedName === userStore.getUserName) {
@@ -42,7 +43,7 @@ export const useSechatChat = () => {
         uc.displayName = uc.invitedName;
       }
     });
-    chatStore.loadConnections(data);
+    chatStore.loadContacts(data);
   };
 
   // Rooms
@@ -117,6 +118,15 @@ export const useSechatChat = () => {
       message.wasViewed = true;
     }
 
+    if (
+      chatStore.getActiveRoomId &&
+      message.roomId === chatStore.getActiveRoomId &&
+      chatStore.getActiveChatTab === ChatViews.Messages &&
+      message.nameSentBy !== userStore.getUserName
+    ) {
+      chatApi.markMessageAsViewed(message.roomId, message.id);
+    }
+
     chatStore.addNewMessage(message);
 
     if (message.roomId === chatStore.activeRoomId) {
@@ -125,7 +135,25 @@ export const useSechatChat = () => {
     }
   };
 
+  const handleMessagesWereViewed = (message: IRoomUserActionMessage) => {
+    console.warn("--> Incoming MessagesWereViewed Event Handle", message);
+    chatStore.markRoomMessagesAsViewed(message.userName, message.roomId);
+    scrollToBottom("chatView");
+  };
+
+  const handleMessageWasViewed = (message: IRoomMessageUserActionMessage) => {
+    console.warn("--> Incoming MessageWasViewed Event Handle", message);
+    chatStore.markRoomMessageAsViewed(
+      message.userName,
+      message.roomId,
+      message.messageId
+    );
+    scrollToBottom("chatView");
+  };
+
   return {
+    handleMessageWasViewed,
+    handleMessagesWereViewed,
     removeRoom,
     addRoom,
     loadRooms,

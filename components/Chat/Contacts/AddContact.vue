@@ -52,6 +52,8 @@ const createInvitation = async () => {
   }
 
   emit("inviteUser", invitaitonData.value.name);
+  invitaitonData.value.name = "";
+  invitaitonData.value.valid = true;
   dialog.value = false;
 };
 </script>

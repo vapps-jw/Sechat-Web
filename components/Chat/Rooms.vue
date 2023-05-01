@@ -64,11 +64,12 @@ const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
 const userStore = useUserStore();
+const appStore = useSechatAppStore();
 
 const selectRoomClicked = (roomId: string) => {
-  sechatApp.showLoadingOverlay();
+  appStore.updateLoadingOverlay(true);
   chatStore.selectRoom(roomId);
-  sechatApp.hideLoadingOverlay();
+  appStore.updateLoadingOverlay(false);
 };
 
 const leaveRoom = async (room: IRoom) => {

@@ -43,7 +43,7 @@ import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
 const dialog = ref<boolean>(false);
-const chosenConnection = ref<IConnectionRequest>();
+const chosenConnection = ref<IContactRequest>();
 
 const appStore = useSechatApp();
 const userStore = useUserStore();
@@ -93,7 +93,7 @@ const getConnectionsAllowedForActiveRoom = computed(() => {
   if (!chatStore.activeRoomId) {
     return [];
   }
-  return chatStore.availableConnections.filter(
+  return chatStore.availableContacts.filter(
     (uc) =>
       !uc.blocked &&
       uc.approved &&

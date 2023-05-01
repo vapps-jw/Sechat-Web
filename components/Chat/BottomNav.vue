@@ -2,7 +2,7 @@
   <v-bottom-navigation
     mode="shift"
     color="primary"
-    v-model="chatStore.getActiveChatTab"
+    v-model="chatStore.activeChatTab"
   >
     <v-btn value="messages" @click="chatStore.activateMessagesView">
       <v-icon>mdi-chat-processing</v-icon>

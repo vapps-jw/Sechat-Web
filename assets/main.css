@@ -9,6 +9,12 @@
   flex-direction: column;
 }
 
+.sechat-v-card {
+  height: 95vh;
+  display: flex !important;
+  flex-direction: column;
+}
+
 /* Scroll Bar Start */
 
 /* width */

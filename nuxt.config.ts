@@ -11,10 +11,18 @@ export default defineNuxtConfig({
   // },
   runtimeConfig: {
     public: {
-      appVersion: "BETA v0.5.0",
+      appVersion: "BETA v0.5.1",
       publicVapidKey:
         "BIazXIHc0G_xFGTio-sMOdSbarBmeVNtcKaQGsV6mLnaO1cn3_b_-j218VFz5YiSOWaVHX58tRo_dbkHh-xXfpg",
       apiBase: process.env.API_BASE_URL || "https://api.sechat.net",
+    },
+  },
+  security: {
+    headers: {
+      permissionsPolicy: {
+        camera: ["self"],
+        microphone: ["self"],
+      },
     },
   },
   modules: [
@@ -34,6 +42,15 @@ export default defineNuxtConfig({
     strategies: "injectManifest",
     filename: "sw.js",
     manifest: {
+      share_target: {
+        action: "/chat",
+        method: "GET",
+        params: {
+          title: "name",
+          text: "description",
+          url: "link",
+        },
+      },
       name: "Sechat",
       short_name: "Sechat",
       background_color: "#000000",
@@ -86,6 +103,7 @@ export default defineNuxtConfig({
     "vuetify/lib/styles/main.sass",
     "@mdi/font/css/materialdesignicons.min.css",
     "@/assets/main.css",
+    "@/assets/main-effects.css",
   ],
   build: {
     transpile: ["vuetify"],

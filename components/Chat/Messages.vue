@@ -27,8 +27,9 @@
         >
           <chat-messages-message :message="message" />
         </div>
-        <!-- 
-        <v-virtual-scroll
+
+        <!-- <v-virtual-scroll
+          ref="messagesVirtualScrollRef"
           scrollToBottom="true"
           :items="chatStore.getActiveRoom.messages"
         >
@@ -57,6 +58,12 @@ import { scrollToBottom } from "@/utilities/documentFunctions";
 
 const chatStore = useSechatChatStore();
 const userStore = useUserStore();
+
+// const messagesVirtualScrollRef = ref()
+
+// const scroll = () => {
+//   messagesVirtualScrollRef.value?.scrollToIndex(500)
+// }
 
 onUpdated(() => {
   console.warn("--> onUpdated Scrolling");

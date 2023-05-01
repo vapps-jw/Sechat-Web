@@ -5,7 +5,7 @@ export const useSechatChatStore = defineStore({
   state: () => {
     return {
       availableRooms: <IRoom[]>[],
-      availableConnections: <IConnectionRequest[]>[],
+      availableContacts: <IContactRequest[]>[],
       activeChatTab: <string>ChatViews.Rooms,
       activeRoomId: <string>"",
     };
@@ -23,16 +23,16 @@ export const useSechatChatStore = defineStore({
     activateSettingsView() {
       this.activeChatTab = ChatViews.Settings;
     },
-    addConnection(value: IConnectionRequest) {
-      this.availableConnections = [...this.availableConnections, value].sort(
-        (a, b) => a.invitedName.localeCompare(b.invitedName)
+    addContact(value: IContactRequest) {
+      this.availableContacts = [...this.availableContacts, value].sort((a, b) =>
+        a.displayName.localeCompare(b.displayName)
       );
     },
-    updateConnection(value: IConnectionRequest) {
-      this.availableConnections = [
-        ...this.availableConnections.filter((uc) => uc.id !== value.id),
+    updateContact(value: IContactRequest) {
+      this.availableContacts = [
+        ...this.availableContacts.filter((uc) => uc.id !== value.id),
         value,
-      ].sort((a, b) => a.invitedName.localeCompare(b.invitedName));
+      ].sort((a, b) => a.displayName.localeCompare(b.displayName));
     },
     markMessagesAsViewedByUser(userName: string) {
       this.availableRooms.forEach((r) =>
@@ -43,6 +43,35 @@ export const useSechatChatStore = defineStore({
         })
       );
     },
+    markRoomMessagesAsViewed(userName: string, roomId: string) {
+      const room: IRoom = this.availableRooms.find(
+        (r: IRoom) => r.id === roomId
+      );
+      room.messages.forEach((m) => {
+        if (!m.messageViewers.find((mv) => mv.user === userName)) {
+          m.messageViewers.push(<IMessageViewer>{ user: userName });
+        }
+      });
+    },
+    markRoomMessageAsViewed(
+      userName: string,
+      roomId: string,
+      messageId: number
+    ) {
+      const room: IRoom = this.availableRooms.find(
+        (r: IRoom) => r.id === roomId
+      );
+
+      const message = room.messages.find((m) => m.id === messageId);
+      if (
+        !message ||
+        message.messageViewers.find((mv) => mv.user === userName)
+      ) {
+        return;
+      }
+
+      message.messageViewers.push(<IMessageViewer>{ user: userName });
+    },
     markMessagesAsViewed() {
       if (!this.activeRoomId) {
         return;
@@ -52,11 +81,13 @@ export const useSechatChatStore = defineStore({
       );
       room.messages.forEach((m) => (m.wasViewed = true));
     },
-    loadConnections(value: IConnectionRequest[]) {
-      this.availableConnections = value;
+    loadContacts(value: IContactRequest[]) {
+      this.availableContacts = value.sort((a, b) =>
+        a.displayName.localeCompare(b.displayName)
+      );
     },
-    deleteConnection(value: IResourceId) {
-      this.availableConnections = this.availableConnections.filter(
+    deleteContact(value: IResourceId) {
+      this.availableContacts = this.availableContacts.filter(
         (uc) => uc.id !== value.id
       );
     },
@@ -156,29 +187,12 @@ export const useSechatChatStore = defineStore({
       return state.availableRooms.find((r) => r.id === state.activeRoomId)
         .members;
     },
-    getConnections: (state) => state.availableConnections,
+    getContacts: (state) => state.availableContacts,
     getApprovedConnections: (state) => {
-      const result = state.availableConnections.filter(
+      const result = state.availableContacts.filter(
         (uc) => !uc.blocked && uc.approved
       );
       return result;
     },
   },
 });
-
-// todo: do this in setup script
-
-// const getConnectionsAllowedForActiveRoom = computed(() => {
-//   if (!getActiveRoom.value) {
-//     return [];
-//   }
-//   return availableConnections.value.filter(
-//     (uc) =>
-//       !uc.blocked &&
-//       uc.approved &&
-//       uc.displayName !== userStore.getUserName &&
-//       !getActiveRoom.value.members.some(
-//         (arm) => arm.userName === uc.displayName
-//       )
-//   );
-// });

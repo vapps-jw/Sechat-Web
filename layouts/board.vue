@@ -12,22 +12,23 @@
 <script setup lang="ts">
 //const lockResolver = ref(null);
 const sechatAppStore = useSechatAppStore();
-const sechatApp = useSechatApp();
 const signalR = useSignalR();
 const signalRStore = useSignalRStore();
 const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
 const chatStore = useSechatChatStore();
+const videoCall = useVideoCall();
+const appStore = useSechatAppStore();
 
 onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
-  sechatApp.showLoadingOverlay();
+  sechatAppStore.updateLoadingOverlay(true);
 
   console.warn("--> Getting State");
   const chatState = await chatApi.getState();
 
   chatStore.loadRooms(chatState.rooms);
-  chatStore.loadConnections(chatState.userConnections);
+  chatStore.loadContacts(chatState.userContacts);
 
   await signalR.connect();
 
@@ -41,11 +42,19 @@ onMounted(async () => {
   window.addEventListener("online", refreshHandler.handleOnlineChange);
   window.addEventListener("offline", refreshHandler.handleOfflineChange);
 
-  sechatApp.hideLoadingOverlay();
+  sechatAppStore.updateLoadingOverlay(false);
 });
 
 onBeforeUnmount(() => {
   console.warn("--> Chat Layout onBeforeUnmount");
+
+  if (signalRStore.isVideoCallInProgress) {
+    console.error("--> Video Call in Progress -- Terminating");
+    videoCall.terminateVideoCall(signalRStore.getVideoCallContact.displayName);
+
+    signalRStore.clearVideoCallData();
+    appStore.clearVideoSources();
+  }
 
   signalR.closeConnection();
   signalRStore.$reset();

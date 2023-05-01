@@ -15,13 +15,6 @@ export const useSechatApp = () => {
     clearInterval(useAppStore.pingServerInterval);
   };
 
-  const showLoadingOverlay = () => {
-    useAppStore.updateLoadingOverlay(true);
-  };
-  const hideLoadingOverlay = () => {
-    useAppStore.updateLoadingOverlay(false);
-  };
-
   const pingServer = async () => {
     console.log("--> Ping Server");
     await useFetch(`${config.public.apiBase}/status/ping-api`, {
@@ -115,8 +108,6 @@ export const useSechatApp = () => {
     showOfflineSnackbar,
     showDisconnectedSnackbar,
     pingServer,
-    showLoadingOverlay,
-    hideLoadingOverlay,
     startPing,
     stopPing,
   };
