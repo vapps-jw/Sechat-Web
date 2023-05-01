@@ -1,9 +1,11 @@
 <template>
   <div class="d-flex">
     <v-chip
+      variant="elevated"
+      size="x-small"
       v-for="u in chatStore.getActiveRoomMembers"
       :key="u.userName"
-      class="ma-2"
+      class="ma-1"
       :color="
         u.userName !== chatStore.getActiveRoom.creatorName
           ? 'primary'
@@ -13,7 +15,10 @@
     >
       {{ u.userName }}
       <v-icon
-        v-if="u.userName !== chatStore.getActiveRoom.creatorName"
+        v-if="
+          u.userName !== chatStore.getActiveRoom.creatorName &&
+          isContact(u.userName)
+        "
         @click="async () => await removeUserFromRoom(u)"
         end
         icon="mdi-close-circle"
@@ -29,6 +34,10 @@ const chatStore = useSechatChatStore();
 const sechatApp = useSechatApp();
 const config = useRuntimeConfig();
 const userStore = useUserStore();
+
+const isContact = (userName: string) => {
+  return chatStore.getContacts.find((c) => c.displayName === userName);
+};
 
 const removeUserFromRoom = async (data: IMemeber) => {
   if (chatStore.getActiveRoom.members.length == 1) {
