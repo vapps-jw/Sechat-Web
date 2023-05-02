@@ -1,162 +1,181 @@
-import * as base64js from "base64-js";
-import { SignalRHubMethods, VideoCodecs } from "~/utilities/globalEnums";
+import { SignalRHubMethods, VideoSettings } from "~/utilities/globalEnums";
 
 export const useVideoCall = () => {
   const signalRStore = useSignalRStore();
   const sechatChatStore = useSechatChatStore();
   const appStore = useSechatAppStore();
+  const webRTCStore = useWebRTCStore();
 
-  const createPeerConnection = () => {};
+  const initializeCall = async () => {
+    const localStream = await navigator.mediaDevices.getUserMedia(
+      VideoSettings
+    );
+    webRTCStore.updateLocalStream(localStream);
+    console.warn("--> Local Stream check", webRTCStore.localStream);
+    webRTCStore.addLocalStreamToPlayer();
 
-  const createOffer = () => {};
+    console.warn(
+      "--> Sending call request",
+      webRTCStore.getVideoCallContactName
+    );
+    signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
+      message: webRTCStore.getVideoCallContactName,
+    });
+    webRTCStore.updateVideoCallRequestSent(true);
+    webRTCStore.updateSourcePlayerVisible(true);
+  };
 
-  const createAnswer = () => {};
+  const approveCall = () => {
+    webRTCStore.updateVideoCallWaitingForApproval(false);
+    approveVideoCall({
+      message: webRTCStore.getVideoCallContact.displayName,
+    });
+  };
 
-  const addAnswer = () => {};
+  const videoCallRequestReceived = (data: IStringMessage) => {
+    let contact = sechatChatStore.getContacts.find(
+      (c) => c.displayName === data.message
+    );
+    console.warn(`--> Video call requested: ${contact?.displayName}`);
+
+    webRTCStore.updateVideoCallWaitingForApproval(true);
+    webRTCStore.updateVideoCallViewVisible(true);
+    webRTCStore.updateVideoCallContact(contact);
+  };
+
+  const offerIncoming = async (data: IStringMessageForUser) => {
+    console.warn("--> Offer Incoming, creating answer", data);
+    await createAndSendAnswer(
+      webRTCStore.getVideoCallContactName,
+      JSON.parse(data.message)
+    );
+  };
+
+  const answerIncoming = (data: IStringMessageForUser) => {
+    console.warn("--> Answer Incoming", data);
+    addAnswer(JSON.parse(data.message));
+    console.warn("--> Answer added...");
+    webRTCStore.updateVideoCallEstablished(true);
+    webRTCStore.updateTargetPlayerVisible(true);
+  };
+
+  const addAnswer = (answer: any) => {
+    if (!webRTCStore.peerConnection.currentRemoteDescription) {
+      console.warn("--> Setting remote description...", answer);
+      webRTCStore.peerConnection.setRemoteDescription(answer);
+    }
+  };
+
+  const ICECandidateIncoming = (data: IStringMessage) => {
+    console.warn(
+      "--> ICE Candidate incoming",
+      data,
+      webRTCStore.peerConnection
+    );
+    if (!webRTCStore.peerConnection) {
+      webRTCStore.peerConnection.addIceCandidate(JSON.parse(data.message));
+    }
+  };
+
+  const createPeerConnection = async (userName: string) => {
+    console.log("--> Creating peer connection", webRTCStore.getPeerConnection);
+    webRTCStore.createPeerConnection();
+    console.log("--> Peer connection created", webRTCStore.getPeerConnection);
+
+    webRTCStore.updateRemoteStream(new MediaStream());
+    webRTCStore.addTargetStreamToPlayer();
+
+    console.log("--> Checking local stream", webRTCStore.localStream);
+    if (!webRTCStore.localStream) {
+      webRTCStore.updateLocalStream(
+        await navigator.mediaDevices.getUserMedia(VideoSettings)
+      );
+      webRTCStore.addLocalStreamToPlayer();
+    }
+
+    console.log("--> Getting tracks", webRTCStore.localStream);
+    webRTCStore.localStream.getTracks().forEach((track) => {
+      webRTCStore.peerConnection.addTrack(track, webRTCStore.localStream);
+    });
+
+    webRTCStore.peerConnection.ontrack = (event) => {
+      event.streams[0].getTracks().forEach((track) => {
+        webRTCStore.remoteStream.addTrack(track);
+      });
+    };
+
+    console.log("--> ICE Candidates Event");
+    webRTCStore.peerConnection.onicecandidate = async (event) => {
+      if (event.candidate) {
+        sendICECandiadate({
+          username: userName,
+          message: JSON.stringify(event.candidate),
+        });
+      }
+    };
+  };
+
+  const createAndSendOffer = async (userName: string) => {
+    console.log("--> Creating and senting offer", userName);
+    await createPeerConnection(userName);
+
+    let offer = await webRTCStore.peerConnection.createOffer();
+    await webRTCStore.peerConnection.setLocalDescription(offer);
+    sendWebRTCOffer({
+      username: userName,
+      message: JSON.stringify(offer),
+    });
+  };
+
+  const createAndSendAnswer = async (
+    userName: string,
+    offer: RTCSessionDescriptionInit
+  ) => {
+    console.log("--> Creating peer connecion...");
+    await createPeerConnection(userName);
+
+    console.warn("--> Setting remote description...");
+    await webRTCStore.peerConnection.setRemoteDescription(offer);
+
+    console.warn("--> Creating answer...");
+    let answer = await webRTCStore.peerConnection.createAnswer();
+
+    console.warn("--> Setting local description...");
+    await webRTCStore.peerConnection.setLocalDescription(answer);
+
+    const answerToSend = {
+      username: userName,
+      message: JSON.stringify(answer),
+    };
+
+    console.warn("--> Sending answer", answerToSend);
+    sendWebRTCAnswer(answerToSend);
+  };
 
   const toggleCamera = () => {};
 
   const toggleMic = () => {};
 
-  // const listenForVideo = () => {
-  //   console.warn("--> Listening for video ...");
+  // WebRTC
 
-  //   signalRStore.resetMediaSource();
+  const sendICECandiadate = (data: IStringMessageForUser) => {
+    signalRStore.connection.send(SignalRHubMethods.SendICECandidate, data);
+  };
 
-  //   signalRStore.videoCallMediaSource.addEventListener(
-  //     "--> Media Source Error",
-  //     (e) => signalRStore.videoCallMediaSource.readyState
-  //   );
+  const sendWebRTCOffer = (data: IStringMessageForUser) => {
+    console.warn("--> Sending WebRTC Offer", data);
+    signalRStore.connection.send(SignalRHubMethods.SendWebRTCOffer, data);
+  };
 
-  //   signalRStore.videoCallMediaSource.addEventListener(
-  //     "sourceopen",
-  //     async () => {
-  //       try {
-  //         console.log("--> Adding Source buffer");
+  const sendWebRTCAnswer = (data: IStringMessageForUser) => {
+    signalRStore.connection.send(SignalRHubMethods.SendWebRTCAnswer, data);
+  };
 
-  //         const sourceBuffer =
-  //           signalRStore.videoCallMediaSource.addSourceBuffer(
-  //             VideoCodecs.webm9MimeCodec
-  //           );
+  // Call approved
 
-  //         console.log("--> Source buffer", sourceBuffer);
-  //         console.log(
-  //           "--> Source buffers",
-  //           signalRStore.videoCallMediaSource.sourceBuffers
-  //         );
-
-  //         sourceBuffer.addEventListener(
-  //           "--> Source Buffer Error",
-  //           () => signalRStore.videoCallMediaSource.readyState
-  //         );
-
-  //         sourceBuffer.mode = "sequence";
-  //         sourceBuffer.addEventListener("update", async () => {
-  //           if (!sourceBuffer.updating) {
-  //             const ab = await signalRStore.getVideoCallChannel.pull();
-  //             sourceBuffer.appendBuffer(ab);
-  //           }
-  //         });
-  //         // sourceBuffer.addEventListener("updateend", async () => {
-  //         //   if (appStore.getVideoTarget.paused) appStore.getVideoTarget.play();
-  //         //   try {
-  //         //     const ab = await signalRStore.getVideoCallChannel.pull();
-  //         //     if (!sourceBuffer.updating) {
-  //         //       sourceBuffer.appendBuffer(ab);
-  //         //     }
-  //         //   } catch (error) {
-  //         //     console.log("--> Buffer [updateend] Error", error);
-  //         //   }
-  //         // });
-
-  //         try {
-  //           if (!sourceBuffer.updating) {
-  //             console.warn("--> Buffer initial pull");
-  //             const ab = await signalRStore.getVideoCallChannel.pull();
-  //             sourceBuffer.appendBuffer(ab);
-  //           }
-  //         } catch (error) {
-  //           console.warn("--> Buffer [sourceopen] Error", error);
-  //         }
-
-  //         console.warn(
-  //           "--> Source buffers after initial pull",
-  //           signalRStore.videoCallMediaSource.sourceBuffers
-  //         );
-  //       } catch (error) {
-  //         console.error("--> Video listener error", error);
-  //       }
-  //     }
-  //   );
-
-  //   appStore.getVideoTarget.src = URL.createObjectURL(
-  //     signalRStore.videoCallMediaSource
-  //   );
-  // };
-
-  // const sendVideo = (userName: string) => {
-  //   console.warn("--> Send video to", userName);
-  //   const segmentLimit = 20000;
-
-  //   console.warn("--> Video source", appStore.getVideoSource);
-
-  //   signalRStore.resetVideoCallSignalRSubject();
-  //   sendVideoCallData(signalRStore.getVideoCallSubject);
-
-  //   async function handleDataAvailable(event) {
-  //     const ab = await event.data.arrayBuffer();
-  //     const bytes = new Uint8Array(ab);
-  //     const ab64 = base64js.fromByteArray(bytes);
-
-  //     if (ab64.length <= segmentLimit) {
-  //       if (signalRStore.getVideoCallSubject) {
-  //         signalRStore.getVideoCallSubject.next({
-  //           index: 0,
-  //           part: ab64,
-  //           userName: userName,
-  //         });
-  //       }
-  //     } else {
-  //       for (let i = 0, ii = 0; i < ab64.length; i += segmentLimit, ii++) {
-  //         if (signalRStore.getVideoCallSubject) {
-  //           signalRStore.getVideoCallSubject.next({
-  //             index: ii,
-  //             part: ab64.substr(i, segmentLimit),
-  //             userName: userName,
-  //           });
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   navigator.mediaDevices
-  //     .getUserMedia({ video: true, audio: true })
-  //     .then(function (stream) {
-  //       signalRStore.resetMediaRecorder(stream);
-
-  //       appStore.getVideoSource.srcObject = stream;
-  //       appStore.getVideoSource.play();
-  //       signalRStore.videoCallMediaRecorder.ondataavailable =
-  //         handleDataAvailable;
-  //       signalRStore.videoCallMediaRecorder.start();
-  //       const interval = setInterval(
-  //         () => signalRStore.videoCallMediaRecorder.requestData(),
-  //         200
-  //       );
-  //       signalRStore.updateVideoCallDataRequestInterval(interval);
-  //     });
-  // };
-
-  const videoCallRequested = (data: IStringMessage) => {
-    let connection = sechatChatStore.getContacts.find(
-      (c) => c.displayName === data.message
-    );
-
-    console.warn(`--> Video call requested: ${connection?.displayName}`);
-
-    if (!connection) {
-      return;
-    }
+  const approveVideoCall = (data: IStringMessageForUser) => {
+    console.log("--> Sending video call approved", data);
+    signalRStore.connection.send(SignalRHubMethods.ApproveVideoCall, data);
   };
 
   const videoCallApproved = (data: IStringMessage) => {
@@ -164,30 +183,66 @@ export const useVideoCall = () => {
     let connection = sechatChatStore.getContacts.find(
       (c) => c.inviterName === data.message || c.invitedName === data.message
     );
-
     if (!connection) {
       return;
     }
 
+    createAndSendOffer(connection.displayName);
     appStore.showSuccessSnackbar(`Call Answered by ${data.message}`);
+  };
+
+  // Call rejected
+
+  const rejectVideoCall = (data: string) => {
+    console.log("--> Sending video call rejection", data);
+    signalRStore.connection.send(SignalRHubMethods.RejectVideoCall, {
+      message: data,
+    });
   };
 
   const videoCallRejected = (data: IStringMessage) => {
     console.warn(`--> Call rejected by: ${data.message}`);
 
-    //signalRStore.clearVideoCallData();
-    appStore.clearVideoSources();
     appStore.showErrorSnackbar(`Call rejected by ${data.message}`);
+  };
+
+  // Call terminated
+
+  const terminateVideoCall = (data: string) => {
+    console.log("--> Sending video call termination", data);
+    signalRStore.connection.send(SignalRHubMethods.TerminateVideoCall, {
+      message: data,
+    });
   };
 
   const videoCallTerminated = (data: IStringMessage) => {
     console.warn(`--> Call terminated by: ${data.message}`);
-    //signalRStore.clearVideoCallData();
-    appStore.clearVideoSources();
+    webRTCStore.cleanup();
+    webRTCStore.$reset();
     appStore.showWarningSnackbar(`Call ended by ${data.message}`);
   };
 
   // Video Call Events
+
+  const onWebRTCAnswerIncomingEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting WebRTCAnswerIncoming");
+    connection.on(SignalRHubMethods.WebRTCAnswerIncoming, answerIncoming);
+  };
+
+  const offWebRTCAnswerIncomingEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting WebRTCAnswerIncoming");
+    connection.off(SignalRHubMethods.WebRTCAnswerIncoming, answerIncoming);
+  };
+
+  const onWebRTCOfferIncomingEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting WebRTCOfferIncoming");
+    connection.on(SignalRHubMethods.WebRTCOfferIncoming, offerIncoming);
+  };
+
+  const offWebRTCOfferIncomingEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting WebRTCOfferIncoming");
+    connection.off(SignalRHubMethods.WebRTCOfferIncoming, offerIncoming);
+  };
 
   const onVideoCallTerminatedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting VideoCallTerminatedEvent");
@@ -221,108 +276,61 @@ export const useVideoCall = () => {
 
   const onVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting VideoCallRequestedEvent");
-    connection.on(SignalRHubMethods.VideoCallRequested, videoCallRequested);
+    connection.on(
+      SignalRHubMethods.VideoCallRequested,
+      videoCallRequestReceived
+    );
   };
 
   const offVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Disconnecting VideoCallRequestedEvent");
-    connection.off(SignalRHubMethods.VideoCallRequested, videoCallRequested);
-  };
-
-  const onVideoCallOfferIncomingEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting VideoCallRequestedEvent");
-    connection.on(SignalRHubMethods.VideoCallOfferIncoming, () => {});
-  };
-
-  const offVideoCallOfferIncomingEvent = (
-    connection: signalR.HubConnection
-  ) => {
-    console.log("--> Disconnecting VideoCallRequestedEvent");
-    connection.off(SignalRHubMethods.VideoCallOfferIncoming, () => {});
+    connection.off(
+      SignalRHubMethods.VideoCallRequested,
+      videoCallRequestReceived
+    );
   };
 
   const onICECandidateIncomingEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting ICECandidateIncoming");
-    connection.on(SignalRHubMethods.ICECandidateIncoming, () => {});
+    connection.on(SignalRHubMethods.ICECandidateIncoming, ICECandidateIncoming);
   };
 
   const offICECandidateIncomingEvent = (connection: signalR.HubConnection) => {
     console.log("--> Disconnecting ICECandidateIncoming");
-    connection.off(SignalRHubMethods.ICECandidateIncoming, () => {});
-  };
-
-  const sendVideoCallRequest = (data: string) => {
-    console.log("--> Sending video call request", data);
-    signalRStore.updateVideoCallRequestSent(true);
-    signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
-      message: data,
-    });
-  };
-
-  const sendICECandiadate = (data: string) => {
-    console.log("--> Sending ICECandiadate", data);
-    signalRStore.updateVideoCallRequestSent(true);
-    signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
-      message: data,
-    });
-  };
-
-  const sendVideoCallOffer = (data: string) => {
-    console.log("--> Sending VideoCallOffer", data);
-    signalRStore.updateVideoCallRequestSent(true);
-    signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
-      message: data,
-    });
-  };
-
-  const sendVideoCallApproved = (data: string) => {
-    console.log("--> Sending video call approved", data);
-    signalRStore.connection.send(SignalRHubMethods.ApproveVideoCall, {
-      message: data,
-    });
-  };
-
-  const rejectVideoCall = (data: string) => {
-    console.log("--> Sending video call rejection", data);
-    signalRStore.connection.send(SignalRHubMethods.RejectVideoCall, {
-      message: data,
-    });
-  };
-
-  const terminateVideoCall = (data: string) => {
-    console.log("--> Sending video call termination", data);
-    signalRStore.connection.send(SignalRHubMethods.TerminateVideoCall, {
-      message: data,
-    });
+    connection.off(
+      SignalRHubMethods.ICECandidateIncoming,
+      ICECandidateIncoming
+    );
   };
 
   return {
-    onVideoCallOfferIncomingEvent,
+    onWebRTCAnswerIncomingEvent,
+    onWebRTCOfferIncomingEvent,
     onICECandidateIncomingEvent,
     onVideoCallTerminatedEvent,
     onVideoCallApprovedEvent,
     onVideoCallRejectedEvent,
     onVideoCallRequestedEvent,
-    offVideoCallOfferIncomingEvent,
+    offWebRTCAnswerIncomingEvent,
+    offWebRTCOfferIncomingEvent,
     offICECandidateIncomingEvent,
     offVideoCallTerminatedEvent,
     offVideoCallApprovedEvent,
     offVideoCallRejectedEvent,
     offVideoCallRequestedEvent,
     sendICECandiadate,
-    sendVideoCallOffer,
     terminateVideoCall,
     rejectVideoCall,
-    sendVideoCallApproved,
-    sendVideoCallRequest,
+    sendVideoCallApproved: approveVideoCall,
     videoCallApproved,
-    videoCallRequested,
     videoCallRejected,
     createPeerConnection,
-    createOffer,
-    createAnswer,
+    createOffer: createAndSendOffer,
+    createAnswer: createAndSendAnswer,
     addAnswer,
     toggleCamera,
     toggleMic,
+    initializeCall,
+    approveCall,
   };
 };

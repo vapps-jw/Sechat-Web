@@ -54,27 +54,33 @@ export const VideoCodecs = {
 
 export const SignalRHubMethods = {
   // Chat Messages
+
   MessageWasViewed: "MessageWasViewed",
   MessagesWereViewed: "MessagesWereViewed",
   MessageIncoming: "MessageIncoming",
 
   // Video Calls
-  SendVideoCallOffer: "SendVideoCallOffer",
+  VideoCallRequest: "VideoCallRequest",
+  SendWebRTCAnswer: "SendWebRTCAnswer",
+  WebRTCAnswerIncoming: "WebRTCAnswerIncoming",
+  SendWebRTCOffer: "SendWebRTCOffer",
+  WebRTCOfferIncoming: "WebRTCOfferIncoming",
   SendICECandidate: "SendICECandidate",
   ApproveVideoCall: "ApproveVideoCall",
   TerminateVideoCall: "TerminateVideoCall",
   SendVideoCallData: "SendVideoCallData",
   RejectVideoCall: "RejectVideoCall",
+
   // Events
-  VideoCallOfferIncoming: "VideoCallOfferIncoming",
+
   ICECandidateIncoming: "ICECandidateIncoming",
   VideoCallTerminated: "VideoCallTerminated",
-  VideoCallRequest: "VideoCallRequest",
+  VideoCallRequested: "VideoCallRequested",
   VideoCallApproved: "VideoCallApproved",
   VideoCallRejected: "VideoCallRejected",
-  VideoCallRequested: "VideoCallRequested",
 
   // Chat Rooms
+
   ConnectToRooms: "ConnectToRooms",
   ConnectToRoom: "ConnectToRoom",
   CreateRoom: "CreateRoom",
@@ -85,25 +91,26 @@ export const SignalRHubMethods = {
   RoomUpdated: "RoomUpdated",
 
   // Contacts
+
   ConnectionRequestReceived: "ConnectionRequestReceived",
   ConnectionDeleted: "ConnectionDeleted",
   ConnectionUpdated: "ConnectionUpdated",
 };
 
-export const servers = {
+export const Servers = {
   iceServers: [
     {
       urls: [
         "stun:stun1.l.google.com:19302",
         "stun:stun2.l.google.com:19302",
-        "stun:stun3.l.google.com:19302",
-        "stun:stun4.l.google.com:19302",
+        // "stun:stun3.l.google.com:19302",
+        // "stun:stun4.l.google.com:19302",
       ],
     },
   ],
 };
 
-export const videoSettings = {
+export const VideoSettings = {
   video: {
     width: { min: 640, ideal: 1920, max: 1920 },
     height: { min: 480, ideal: 1080, max: 1080 },

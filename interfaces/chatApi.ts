@@ -10,6 +10,11 @@ interface IStringMessage {
   message?: string;
 }
 
+interface IStringMessageForUser {
+  username?: string;
+  message?: string;
+}
+
 interface IUserRoomOptions {
   roomId?: string;
   userName?: string;

@@ -73,15 +73,11 @@ const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
 const userStore = useUserStore();
-const signalRStore = useSignalRStore();
+const webRTCStore = useWebRTCStore();
 
 const startVideoCall = (uc: IContactRequest) => {
-  try {
-    signalRStore.initializeVideoCall(uc);
-  } catch (error) {
-    console.error("-->", error);
-    sechatApp.showErrorSnackbar("Something failed");
-  }
+  webRTCStore.updateVideoCallContact(uc);
+  webRTCStore.updateVideoCallViewVisible(true);
 };
 
 const blockContact = async (id: number) => {

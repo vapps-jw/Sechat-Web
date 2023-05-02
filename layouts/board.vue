@@ -51,13 +51,14 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   console.warn("--> Chat Layout onBeforeUnmount");
 
-  if (signalRStore.isVideoCallInProgress) {
-    console.error("--> Video Call in Progress -- Terminating");
-    videoCall.terminateVideoCall(signalRStore.getVideoCallContact.displayName);
+  // TODO: handle call when leaving the chat page
+  // if (signalRStore.isVideoCallInProgress) {
+  //   console.error("--> Video Call in Progress -- Terminating");
+  //   videoCall.terminateVideoCall(signalRStore.getVideoCallContact.displayName);
 
-    signalRStore.clearVideoCallData();
-    appStore.clearVideoSources();
-  }
+  //   signalRStore.clearVideoCallData();
+  //   appStore.clearVideoSources();
+  // }
 
   signalR.closeConnection();
   signalRStore.$reset();

@@ -1,105 +1,14 @@
 import * as signalR from "@microsoft/signalr";
-import { IChannel, channelFactory } from "~/utilities/channels";
-import { SignalRState, VideoCodecs } from "~~/utilities/globalEnums";
+import { SignalRState } from "~~/utilities/globalEnums";
 
 export const useSignalRStore = defineStore({
   id: "signalR-store",
   state: () => {
     return {
-      videoCallRequestSent: <boolean>false,
-      videoCallEstablished: <boolean>false,
-      videoCallWaitingForApproval: <boolean>false,
-      videoCallPartBuffer: <string[]>[],
-      videoCallLastIndex: <number>-1,
-      videoCallDataRequestInterval: <NodeJS.Timer>null,
-      videoCallStream: <MediaStream>null,
-      videoCallMediaRecorder: <MediaRecorder>null,
-      videoCallMediaSource: <MediaSource>null,
-      videoCallViewVisible: <boolean>false,
-      videoCallSubject: <signalR.Subject<any>>null,
-      videoCallContact: <IContactRequest>null,
       connection: <signalR.HubConnection>null,
-      videoCallChannel: <IChannel>channelFactory(),
     };
   },
   actions: {
-    updateVideoCallRequestSent(value: boolean) {
-      this.videoCallRequestSent = value;
-    },
-    updateVideoCallWaitingForApproval(value: boolean) {
-      this.videoCallWaitingForApproval = value;
-    },
-    updateVideoCallEstablished(value: boolean) {
-      this.videoCallEstablished = value;
-    },
-    resetVideoCallPartBuffer() {
-      this.videoCallPartBuffer = [];
-      this.videoCallLastIndex = -1;
-    },
-    updateVideoCallDataRequestInterval(value: NodeJS.Timer) {
-      this.videoCallDataRequestInterval = value;
-    },
-    updateVideoCallInProgress(value: boolean) {
-      this.videoCallInProgress = value;
-    },
-    clearVideoCallData() {
-      this.videoCallWaitingForApproval = false;
-      if (this.videoCallSubject) {
-        this.videoCallSubject.complete();
-      }
-
-      if (this.videoCallDataRequestInterval) {
-        clearInterval(this.videoCallDataRequestInterval);
-        this.videoCallDataRequestInterval = null;
-      }
-
-      if (this.videoCallStream) {
-        this.videoCallStream.getTracks().forEach((track) => track.stop());
-        this.videoCallStream = null;
-      }
-      if (this.videoCallMediaRecorder) {
-        this.videoCallMediaRecorder.stop();
-        this.videoCallMediaRecorder = null;
-      }
-
-      this.videoCallInProgress = false;
-      this.videoCallMediaSource = null;
-      this.videoCallSubject = null;
-      this.videoCallDialog = false;
-      this.videoCallViewVisible = false;
-      this.videoCallContact = null;
-
-      this.videoCallPartBuffer = [];
-      this.videoCallLastIndex = -1;
-
-      this.videoCallEstablished = false;
-      this.videoCallRequestSent = false;
-
-      this.videoCallChannel = channelFactory();
-    },
-    resetMediaRecorder(stream: MediaStream) {
-      this.videoCallStream = stream;
-
-      this.videoCallMediaRecorder = new MediaRecorder(stream, {
-        mimeType: VideoCodecs.webm9MimeCodec,
-        audioBitsPerSecond: 64000,
-        videoBitsPerSecond: 750000,
-      });
-    },
-    resetMediaSource() {
-      this.videoCallMediaSource = new MediaSource();
-    },
-    resetVideoCallSignalRSubject() {
-      this.videoCallSubject = new signalR.Subject();
-    },
-    initializeVideoCall(contact: IContactRequest) {
-      this.videoCallViewVisible = true;
-      this.videoCallContact = contact;
-      this.videoCallChannel = channelFactory();
-    },
-    updateVideoCallContact(data: IContactRequest) {
-      this.videoCallContact = data;
-    },
     updateConnectionValue(value: signalR.HubConnection) {
       this.connection = value;
     },
@@ -108,18 +17,6 @@ export const useSignalRStore = defineStore({
     },
   },
   getters: {
-    getVideoCallContactName: (state) => state.videoCallContact?.displayName,
-    isCallEstablished: (state) => state.videoCallEstablished,
-    isCallWaitingForApproval: (state) => state.videoCallWaitingForApproval,
-    getVideoCallMediaRecorder: (state) => state.videoCallMediaRecorder,
-    isVideoCallInProgress: (state) =>
-      state.videoCallWaitingForApproval || state.videoCallRequestSent,
-    getVideoCallSubject: (state) => state.videoCallSubject,
-    getVideoCallMediaSource: (state) => state.videoCallMediaSource,
-    isVideoCallViewVisible: (state) => state.videoCallViewVisible,
-    videoCallContactPresent: (state) => (state.videoCallContact ? true : false),
-    getVideoCallContact: (state) => state.videoCallContact,
-    getVideoCallChannel: (state) => state.videoCallChannel,
     getConnection: (state) => state.connection,
     isConnected: (state) => {
       if (

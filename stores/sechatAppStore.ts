@@ -4,8 +4,6 @@ export const useSechatAppStore = defineStore({
   id: "sechat-app-store",
   state: () => {
     return {
-      videoTarget: <HTMLVideoElement>null,
-      videoSource: <HTMLVideoElement>null,
       loadingOverlayVisible: <boolean>false,
       pingServerInterval: <NodeJS.Timer>null,
       localLanguage: <string>useI18n().locale.value,
@@ -21,20 +19,6 @@ export const useSechatAppStore = defineStore({
     };
   },
   actions: {
-    clearVideoSources() {
-      if (this.videoTarget) {
-        this.videoTarget.src = "";
-      }
-      if (this.videoSource) {
-        this.videoSource.src = "";
-      }
-    },
-    updateVideoTarget(value: HTMLVideoElement) {
-      this.videoTarget = value;
-    },
-    updateVideoSource(value: HTMLVideoElement) {
-      this.videoSource = value;
-    },
     updateLoadingOverlay(value: boolean) {
       this.loadingOverlayVisible = value;
     },
@@ -110,8 +94,6 @@ export const useSechatAppStore = defineStore({
     },
   },
   getters: {
-    getVideoTarget: (state) => state.videoTarget,
-    getVideoSource: (state) => state.videoSource,
     showLoadingOverlay: (state) => state.loadingOverlayVisible,
     getOnlineState: (state) => state.isOnline,
   },

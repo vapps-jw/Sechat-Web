@@ -29,8 +29,9 @@ export const useSignalR = () => {
     videoCalls.onVideoCallRejectedEvent(connection);
     videoCalls.onVideoCallRequestedEvent(connection);
     videoCalls.onVideoCallTerminatedEvent(connection);
-    videoCalls.onVideoCallOfferIncomingEvent(connection);
     videoCalls.onICECandidateIncomingEvent(connection);
+    videoCalls.onWebRTCOfferIncomingEvent(connection);
+    videoCalls.onWebRTCAnswerIncomingEvent(connection);
     _onMessageWasViewed(connection);
     _onMessagesWereViewed(connection);
     _onIncomingMessage(connection);
@@ -48,8 +49,9 @@ export const useSignalR = () => {
       videoCalls.offVideoCallRejectedEvent(connection);
       videoCalls.offVideoCallRequestedEvent(connection);
       videoCalls.offVideoCallTerminatedEvent(connection);
-      videoCalls.offVideoCallOfferIncomingEvent(connection);
       videoCalls.offICECandidateIncomingEvent(connection);
+      videoCalls.offWebRTCOfferIncomingEvent(connection);
+      videoCalls.offWebRTCAnswerIncomingEvent(connection);
       _offMessageWasViewed(connection);
       _offMessagesWereViewed(connection);
       _offIncomingMessage(connection);

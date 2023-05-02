@@ -4,11 +4,11 @@
       <!-- Waiting for approval -->
       <v-card-text
         class="ma-2 pa-02 overflow-auto"
-        v-if="signalRStore.isCallWaitingForApproval"
+        v-if="webRTCStore.getVideoCallWaitingForApproval"
       >
         <div class="d-flex justify-center">
           <p class="text-h5 text-center">
-            {{ signalRStore.videoCallContact.displayName }}
+            {{ webRTCStore.getVideoCallContact.displayName }}
           </p>
         </div>
         <div class="d-flex justify-center mt-15">
@@ -24,14 +24,14 @@
       <v-card-text
         class="ma-2 pa-02 overflow-auto"
         v-if="
-          !signalRStore.isCallEstablished &&
-          !signalRStore.videoCallRequestSent &&
-          !signalRStore.isCallWaitingForApproval
+          !webRTCStore.getVideoCallEstablished &&
+          !webRTCStore.getVideoCallRequestSent &&
+          !webRTCStore.getVideoCallWaitingForApproval
         "
       >
         <div class="d-flex justify-center">
           <p class="text-h5 text-center">
-            Call {{ signalRStore.videoCallContact.displayName }}?
+            Call {{ webRTCStore.getVideoCallContact.displayName }}?
           </p>
         </div>
       </v-card-text>
@@ -39,12 +39,13 @@
       <v-card-text
         class="ma-2 pa-02 overflow-auto"
         v-if="
-          signalRStore.videoCallRequestSent && !signalRStore.isCallEstablished
+          webRTCStore.videoCallRequestSent &&
+          !webRTCStore.getVideoCallEstablished
         "
       >
         <div class="d-flex justify-center">
           <p class="text-h5 text-center">
-            Calling {{ signalRStore.videoCallContact.displayName }}
+            Calling {{ webRTCStore.getVideoCallContact.displayName }}
           </p>
         </div>
         <div class="d-flex justify-center mt-15">
@@ -61,16 +62,15 @@
         <v-sheet class="d-flex justify-center video-source-size ma-2">
           <video id="video-stream-source" class="rounded-lg" autoplay></video>
         </v-sheet>
-        <div class="video-target-size ma-1">
-          <video id="video-stream-target" class="rounded-lg" autoplay></video>
-        </div>
-        <div
-          v-if="signalRStore.isCallEstablished"
-          class="d-flex justify-center text-center"
-        >
-          <v-chip size="small">
-            {{ signalRStore.videoCallContact.displayName }}
-          </v-chip>
+        <div>
+          <div class="video-target-size ma-1">
+            <video id="video-stream-target" class="rounded-lg" autoplay></video>
+          </div>
+          <div class="d-flex justify-center text-center">
+            <v-chip size="small">
+              {{ webRTCStore.getVideoCallContact.displayName }}
+            </v-chip>
+          </div>
         </div>
       </v-card-text>
 
@@ -96,67 +96,45 @@
 </template>
 
 <script setup lang="ts">
-const signalRStore = useSignalRStore();
 const videoCall = useVideoCall();
-const appStore = useSechatAppStore();
+const webRTCStore = useWebRTCStore();
 
 const newVideoCall = async () => {
-  // try {
-  //   if (
-  //     !signalRStore.isCallWaitingForApproval &&
-  //     !signalRStore.videoCallRequestSent
-  //   ) {
-  //     console.log("--> Initializing call...");
-  //     videoCall.sendVideoCallRequest(
-  //       signalRStore.getVideoCallContact.displayName
-  //     );
-  //     videoCall.listenForVideo();
-  //     return;
-  //   }
-  //   if (signalRStore.isCallWaitingForApproval) {
-  //     console.log("--> Approving call...");
-  //     videoCall.sendVideoCallApproved(
-  //       signalRStore.getVideoCallContact.displayName
-  //     );
-  //     signalRStore.updateVideoCallEstablished(true);
-  //     signalRStore.updateVideoCallWaitingForApproval(false);
-  //     videoCall.listenForVideo();
-  //     console.log("--> Sending video...");
-  //     videoCall.sendVideo(signalRStore.getVideoCallContact.displayName);
-  //     return;
-  //   }
-  //   console.warn("--> Call already in progress");
-  // } catch (error) {
-  //   console.error(error);
-  // }
+  if (
+    !webRTCStore.getVideoCallWaitingForApproval &&
+    !webRTCStore.getVideoCallRequestSent
+  ) {
+    console.log("--> Initializing call...");
+    await videoCall.initializeCall();
+    return;
+  }
+  if (webRTCStore.getVideoCallWaitingForApproval) {
+    console.log("--> Approving call...");
+    videoCall.approveCall();
+    return;
+  }
 };
 
 const endCall = async () => {
-  // try {
-  //   console.warn("--> Video call endCall");
-  //   if (signalRStore.isCallWaitingForApproval) {
-  //     videoCall.rejectVideoCall(signalRStore.getVideoCallContact.displayName);
-  //   } else {
-  //     videoCall.terminateVideoCall(
-  //       signalRStore.getVideoCallContact.displayName
-  //     );
-  //   }
-  //   signalRStore.clearVideoCallData();
-  //   appStore.clearVideoSources();
-  // } catch (error) {
-  //   console.error(error);
-  //}
+  if (!webRTCStore.getVideoCallWaitingForApproval) {
+    videoCall.terminateVideoCall(webRTCStore.getVideoCallContact.displayName);
+  } else {
+    videoCall.rejectVideoCall(webRTCStore.getVideoCallContact.displayName);
+  }
+  webRTCStore.cleanup();
+  webRTCStore.$reset();
 };
 
 onMounted(() => {
   console.warn("--> Video call view Mounted");
-  //   appStore.clearVideoSources();
-  //   appStore.updateVideoTarget(
-  //     <HTMLVideoElement>document.getElementById("video-stream-target")
-  //   );
-  //   appStore.updateVideoSource(
-  //     <HTMLVideoElement>document.getElementById("video-stream-source")
-  //   );
+  if (!webRTCStore.getVideoCallEstablished) {
+    webRTCStore.updateVideoTarget(
+      <HTMLVideoElement>document.getElementById("video-stream-target")
+    );
+    webRTCStore.updateVideoSource(
+      <HTMLVideoElement>document.getElementById("video-stream-source")
+    );
+  }
 });
 
 onBeforeUnmount(() => {
