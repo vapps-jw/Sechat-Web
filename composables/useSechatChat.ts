@@ -136,13 +136,13 @@ export const useSechatChat = () => {
   };
 
   const handleMessagesWereViewed = (message: IRoomUserActionMessage) => {
-    console.warn("--> Incoming MessagesWereViewed Event Handle", message);
+    console.warn("--> Incoming MessagesWereViewed", message);
     chatStore.markRoomMessagesAsViewed(message.userName, message.roomId);
     scrollToBottom("chatView");
   };
 
   const handleMessageWasViewed = (message: IRoomMessageUserActionMessage) => {
-    console.warn("--> Incoming MessageWasViewed Event Handle", message);
+    console.warn("--> Incoming MessageWasViewed", message);
     chatStore.markRoomMessageAsViewed(
       message.userName,
       message.roomId,

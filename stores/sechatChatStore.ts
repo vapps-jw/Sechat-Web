@@ -47,6 +47,7 @@ export const useSechatChatStore = defineStore({
       const room: IRoom = this.availableRooms.find(
         (r: IRoom) => r.id === roomId
       );
+
       room.messages.forEach((m) => {
         if (!m.messageViewers.find((mv) => mv.user === userName)) {
           m.messageViewers.push(<IMessageViewer>{ user: userName });

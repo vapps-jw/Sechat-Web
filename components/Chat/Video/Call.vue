@@ -113,7 +113,6 @@ const newVideoCall = async () => {
   //     videoCall.listenForVideo();
   //     return;
   //   }
-
   //   if (signalRStore.isCallWaitingForApproval) {
   //     console.log("--> Approving call...");
   //     videoCall.sendVideoCallApproved(
@@ -142,26 +141,23 @@ const endCall = async () => {
   //       signalRStore.getVideoCallContact.displayName
   //     );
   //   }
-
   //   signalRStore.clearVideoCallData();
   //   appStore.clearVideoSources();
   // } catch (error) {
   //   console.error(error);
-  // }
+  //}
 };
 
 onMounted(() => {
   console.warn("--> Video call view Mounted");
-//   appStore.clearVideoSources();
-//   appStore.updateVideoTarget(
-//     <HTMLVideoElement>document.getElementById("video-stream-target")
-//   );
-//   appStore.updateVideoSource(
-//     <HTMLVideoElement>document.getElementById("video-stream-source")
-//   );
-// });
-
-
+  //   appStore.clearVideoSources();
+  //   appStore.updateVideoTarget(
+  //     <HTMLVideoElement>document.getElementById("video-stream-target")
+  //   );
+  //   appStore.updateVideoSource(
+  //     <HTMLVideoElement>document.getElementById("video-stream-source")
+  //   );
+});
 
 onBeforeUnmount(() => {
   console.warn("--> Video call onBeforeUnmount");
