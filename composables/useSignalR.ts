@@ -28,8 +28,9 @@ export const useSignalR = () => {
     videoCalls.onVideoCallApprovedEvent(connection);
     videoCalls.onVideoCallRejectedEvent(connection);
     videoCalls.onVideoCallRequestedEvent(connection);
-    videoCalls.onVideoCallDataIncomingEvent(connection);
     videoCalls.onVideoCallTerminatedEvent(connection);
+    videoCalls.onVideoCallOfferIncomingEvent(connection);
+    videoCalls.onICECandidateIncomingEvent(connection);
     _onMessageWasViewed(connection);
     _onMessagesWereViewed(connection);
     _onIncomingMessage(connection);
@@ -43,12 +44,12 @@ export const useSignalR = () => {
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
-      videoCalls.handleConnectionClose();
       videoCalls.offVideoCallApprovedEvent(connection);
       videoCalls.offVideoCallRejectedEvent(connection);
       videoCalls.offVideoCallRequestedEvent(connection);
-      videoCalls.offVideoCallDataIncomingEvent(connection);
       videoCalls.offVideoCallTerminatedEvent(connection);
+      videoCalls.offVideoCallOfferIncomingEvent(connection);
+      videoCalls.offICECandidateIncomingEvent(connection);
       _offMessageWasViewed(connection);
       _offMessagesWereViewed(connection);
       _offIncomingMessage(connection);

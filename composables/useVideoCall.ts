@@ -229,12 +229,46 @@ export const useVideoCall = () => {
     connection.off(SignalRHubMethods.VideoCallRequested, videoCallRequested);
   };
 
-  const sendVideoCallData = (data: signalR.Subject<any>) => {
-    signalRStore.connection.send(SignalRHubMethods.SendVideoCallData, data);
+  const onVideoCallOfferIncomingEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting VideoCallRequestedEvent");
+    connection.on(SignalRHubMethods.VideoCallOfferIncoming, () => {});
+  };
+
+  const offVideoCallOfferIncomingEvent = (
+    connection: signalR.HubConnection
+  ) => {
+    console.log("--> Disconnecting VideoCallRequestedEvent");
+    connection.off(SignalRHubMethods.VideoCallOfferIncoming, () => {});
+  };
+
+  const onICECandidateIncomingEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting ICECandidateIncoming");
+    connection.on(SignalRHubMethods.ICECandidateIncoming, () => {});
+  };
+
+  const offICECandidateIncomingEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting ICECandidateIncoming");
+    connection.off(SignalRHubMethods.ICECandidateIncoming, () => {});
   };
 
   const sendVideoCallRequest = (data: string) => {
     console.log("--> Sending video call request", data);
+    signalRStore.updateVideoCallRequestSent(true);
+    signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
+      message: data,
+    });
+  };
+
+  const sendICECandiadate = (data: string) => {
+    console.log("--> Sending ICECandiadate", data);
+    signalRStore.updateVideoCallRequestSent(true);
+    signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
+      message: data,
+    });
+  };
+
+  const sendVideoCallOffer = (data: string) => {
+    console.log("--> Sending VideoCallOffer", data);
     signalRStore.updateVideoCallRequestSent(true);
     signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
       message: data,
@@ -263,10 +297,14 @@ export const useVideoCall = () => {
   };
 
   return {
+    onVideoCallOfferIncomingEvent,
+    onICECandidateIncomingEvent,
     onVideoCallTerminatedEvent,
     onVideoCallApprovedEvent,
     onVideoCallRejectedEvent,
     onVideoCallRequestedEvent,
+    offVideoCallOfferIncomingEvent,
+    offICECandidateIncomingEvent,
     offVideoCallTerminatedEvent,
     offVideoCallApprovedEvent,
     offVideoCallRejectedEvent,
@@ -275,7 +313,6 @@ export const useVideoCall = () => {
     rejectVideoCall,
     sendVideoCallApproved,
     sendVideoCallRequest,
-    sendVideoCallData,
     videoCallApproved,
     videoCallRequested,
     videoCallRejected,

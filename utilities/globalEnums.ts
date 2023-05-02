@@ -53,28 +53,39 @@ export const VideoCodecs = {
 };
 
 export const SignalRHubMethods = {
+  // Chat Messages
   MessageWasViewed: "MessageWasViewed",
   MessagesWereViewed: "MessagesWereViewed",
-  TerminateVideoCall: "TerminateVideoCall",
-  VideoCallTerminated: "VideoCallTerminated",
+  MessageIncoming: "MessageIncoming",
+
+  // Video Calls
+  SendVideoCallOffer: "SendVideoCallOffer",
+  SendICECandidate: "SendICECandidate",
   ApproveVideoCall: "ApproveVideoCall",
+  TerminateVideoCall: "TerminateVideoCall",
+  SendVideoCallData: "SendVideoCallData",
   RejectVideoCall: "RejectVideoCall",
+  // Events
+  VideoCallOfferIncoming: "VideoCallOfferIncoming",
+  ICECandidateIncoming: "ICECandidateIncoming",
+  VideoCallTerminated: "VideoCallTerminated",
   VideoCallRequest: "VideoCallRequest",
   VideoCallApproved: "VideoCallApproved",
   VideoCallRejected: "VideoCallRejected",
   VideoCallRequested: "VideoCallRequested",
-  VideoCallDataIncoming: "VideoCallDataIncoming",
-  SendVideoCallData: "SendVideoCallData",
+
+  // Chat Rooms
   ConnectToRooms: "ConnectToRooms",
   ConnectToRoom: "ConnectToRoom",
   CreateRoom: "CreateRoom",
-  MessageIncoming: "MessageIncoming",
   RoomDeleted: "RoomDeleted",
-  ConnectionRequestReceived: "ConnectionRequestReceived",
-  ConnectionDeleted: "ConnectionDeleted",
-  ConnectionUpdated: "ConnectionUpdated",
   UserAddedToRoom: "UserAddedToRoom",
   UserRemovedFromRoom: "UserRemovedFromRoom",
   DisconnectFromRoom: "DisconnectFromRoom",
   RoomUpdated: "RoomUpdated",
+
+  // Contacts
+  ConnectionRequestReceived: "ConnectionRequestReceived",
+  ConnectionDeleted: "ConnectionDeleted",
+  ConnectionUpdated: "ConnectionUpdated",
 };
