@@ -23,6 +23,9 @@ export const useVideoCall = () => {
     });
     webRTCStore.updateVideoCallRequestSent(true);
     webRTCStore.updateSourcePlayerVisible(true);
+
+    console.warn("--> Local Player", webRTCStore.localVideo);
+    console.warn("--> Remote Player", webRTCStore.remoteVideo);
   };
 
   const approveCall = () => {
@@ -36,62 +39,81 @@ export const useVideoCall = () => {
     let contact = sechatChatStore.getContacts.find(
       (c) => c.displayName === data.message
     );
-    console.warn(`--> Video call requested: ${contact?.displayName}`);
+    console.warn(`--> Video call requested received: ${contact?.displayName}`);
 
     webRTCStore.updateVideoCallWaitingForApproval(true);
     webRTCStore.updateVideoCallViewVisible(true);
     webRTCStore.updateVideoCallContact(contact);
   };
 
+  // Handle Incoming Offer
   const offerIncoming = async (data: IStringMessageForUser) => {
-    console.warn("--> Offer Incoming, creating answer", data);
-    await createAndSendAnswer(
-      webRTCStore.getVideoCallContactName,
+    console.warn(
+      "--> Offer Incoming, creating answer",
+      data.username,
       JSON.parse(data.message)
     );
+
+    await createPeerConnection(data.username);
+    await webRTCStore.peerConnection.setRemoteDescription(
+      JSON.parse(data.message)
+    );
+
+    let answer = await webRTCStore.peerConnection.createAnswer();
+    await webRTCStore.peerConnection.setLocalDescription(answer);
+
+    const answerToSend = {
+      username: webRTCStore.getVideoCallContactName,
+      message: JSON.stringify(answer),
+    };
+
+    console.warn("--> Sending answer", answerToSend);
+    sendWebRTCAnswer(answerToSend);
   };
 
+  // Handle Incoming Answer
   const answerIncoming = (data: IStringMessageForUser) => {
-    console.warn("--> Answer Incoming", data);
-    addAnswer(JSON.parse(data.message));
+    console.warn("--> Answer Incoming", JSON.parse(data.message));
+
+    if (!webRTCStore.peerConnection.currentRemoteDescription) {
+      console.warn("--> Setting remote description...");
+      webRTCStore.peerConnection.setRemoteDescription(JSON.parse(data.message));
+    }
+
     console.warn("--> Answer added...");
     webRTCStore.updateVideoCallEstablished(true);
     webRTCStore.updateTargetPlayerVisible(true);
   };
 
-  const addAnswer = (answer: any) => {
-    if (!webRTCStore.peerConnection.currentRemoteDescription) {
-      console.warn("--> Setting remote description...", answer);
-      webRTCStore.peerConnection.setRemoteDescription(answer);
-    }
-  };
-
+  // TODO: there is an issue with candidates and remote description, wire up webrtc exchange completed
   const ICECandidateIncoming = (data: IStringMessage) => {
-    console.warn(
-      "--> ICE Candidate incoming",
-      data,
-      webRTCStore.peerConnection
-    );
-    if (!webRTCStore.peerConnection) {
+    if (
+      webRTCStore.peerConnection &&
+      webRTCStore.peerConnection.remoteDescription
+    ) {
+      console.warn("--> ICE Candidate being added!", JSON.parse(data.message));
       webRTCStore.peerConnection.addIceCandidate(JSON.parse(data.message));
+      return;
     }
+    console.error("--> peerConnection not ready!");
   };
 
   const createPeerConnection = async (userName: string) => {
-    console.log("--> Creating peer connection", webRTCStore.getPeerConnection);
+    console.log("--> Creating peer connection", userName);
     webRTCStore.createPeerConnection();
-    console.log("--> Peer connection created", webRTCStore.getPeerConnection);
 
-    webRTCStore.updateRemoteStream(new MediaStream());
-    webRTCStore.addTargetStreamToPlayer();
+    webRTCStore.createRemoteStream();
+    webRTCStore.addRemoteStreamToPlayer();
 
-    console.log("--> Checking local stream", webRTCStore.localStream);
     if (!webRTCStore.localStream) {
       webRTCStore.updateLocalStream(
         await navigator.mediaDevices.getUserMedia(VideoSettings)
       );
       webRTCStore.addLocalStreamToPlayer();
     }
+
+    console.log("--> Checking local stream", webRTCStore.localStream);
+    console.log("--> Checking remote stream", webRTCStore.remoteStream);
 
     console.log("--> Getting tracks", webRTCStore.localStream);
     webRTCStore.localStream.getTracks().forEach((track) => {
@@ -105,12 +127,17 @@ export const useVideoCall = () => {
     };
 
     console.log("--> ICE Candidates Event");
+    // TODO: push those to buffer and send when the cycle is completed
     webRTCStore.peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
-        sendICECandiadate({
+        webRTCStore.addIceCandidate({
           username: userName,
           message: JSON.stringify(event.candidate),
         });
+        // sendICECandiadate({
+        //   username: userName,
+        //   message: JSON.stringify(event.candidate),
+        // });
       }
     };
   };
@@ -125,31 +152,6 @@ export const useVideoCall = () => {
       username: userName,
       message: JSON.stringify(offer),
     });
-  };
-
-  const createAndSendAnswer = async (
-    userName: string,
-    offer: RTCSessionDescriptionInit
-  ) => {
-    console.log("--> Creating peer connecion...");
-    await createPeerConnection(userName);
-
-    console.warn("--> Setting remote description...");
-    await webRTCStore.peerConnection.setRemoteDescription(offer);
-
-    console.warn("--> Creating answer...");
-    let answer = await webRTCStore.peerConnection.createAnswer();
-
-    console.warn("--> Setting local description...");
-    await webRTCStore.peerConnection.setLocalDescription(answer);
-
-    const answerToSend = {
-      username: userName,
-      message: JSON.stringify(answer),
-    };
-
-    console.warn("--> Sending answer", answerToSend);
-    sendWebRTCAnswer(answerToSend);
   };
 
   const toggleCamera = () => {};
@@ -178,6 +180,7 @@ export const useVideoCall = () => {
     signalRStore.connection.send(SignalRHubMethods.ApproveVideoCall, data);
   };
 
+  // Call Approved Sending Offer
   const videoCallApproved = (data: IStringMessage) => {
     console.warn(`--> Call approved by: ${data.message}`);
     let connection = sechatChatStore.getContacts.find(
@@ -325,9 +328,6 @@ export const useVideoCall = () => {
     videoCallApproved,
     videoCallRejected,
     createPeerConnection,
-    createOffer: createAndSendOffer,
-    createAnswer: createAndSendAnswer,
-    addAnswer,
     toggleCamera,
     toggleMic,
     initializeCall,

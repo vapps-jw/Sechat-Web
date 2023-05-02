@@ -6,48 +6,49 @@ export const useWebRTCStore = defineStore({
     return {
       // Sechat
       targetPlayerVisible: <boolean>false,
-      sourcePlayerVisible: <boolean>false,
+      localPlayerVisible: <boolean>false,
       videoCallRequestSent: <boolean>false,
       videoCallEstablished: <boolean>false,
       videoCallWaitingForApproval: <boolean>false,
       videoCallViewVisible: <boolean>false,
       videoCallContact: <IContactRequest>null,
       // Media
-      videoTarget: <HTMLVideoElement>null,
-      videoSource: <HTMLVideoElement>null,
+      remoteVideo: <HTMLVideoElement>null,
+      localVideo: <HTMLVideoElement>null,
       // WebRTC
       localStream: <MediaStream>null,
       remoteStream: <MediaStream>null,
       peerConnection: <RTCPeerConnection>null,
+      iceCandidates: <IStringMessageForUser[]>[],
     };
   },
   actions: {
     // Media
     clearVideoSources() {
-      if (this.videoTarget) {
-        this.videoTarget.src = "";
+      if (this.remoteVideo) {
+        this.remoteVideo.srcObject = null;
       }
-      if (this.videoSource) {
-        this.videoSource.src = "";
+      if (this.localVideo) {
+        this.localVideo.srcObject = null;
       }
     },
     updateLocalStream(value: MediaStream) {
       this.localStream = value;
     },
-    updateRemoteStream(value: MediaStream) {
-      this.remoteStream = value;
+    createRemoteStream() {
+      this.remoteStream = new MediaStream();
     },
-    updateVideoTarget(value: HTMLVideoElement) {
-      this.videoTarget = value;
+    updateRemoteVideoPlayer(value: HTMLVideoElement) {
+      this.remoteVideo = value;
     },
-    updateVideoSource(value: HTMLVideoElement) {
-      this.videoSource = value;
+    addRemoteStreamToPlayer() {
+      this.remoteVideo.srcObject = this.remoteStream;
+    },
+    updateLocalVideoPlayer(value: HTMLVideoElement) {
+      this.localVideo = value;
     },
     addLocalStreamToPlayer() {
-      this.videoSource.srcObject = this.localStream;
-    },
-    addTargetStreamToPlayer() {
-      this.videoTarget.srcObject = this.remoteStream;
+      this.localVideo.srcObject = this.localStream;
     },
     // Sechat
     updateTargetPlayerVisible(value: boolean) {
@@ -75,6 +76,9 @@ export const useWebRTCStore = defineStore({
     createPeerConnection() {
       this.peerConnection = new RTCPeerConnection(Servers);
     },
+    addIceCandidate(value: IStringMessageForUser) {
+      this.iceCandidates.push(value);
+    },
     cleanup() {
       if (this.localStream) {
         this.localStream.getTracks().forEach((track) => track.stop());
@@ -85,7 +89,7 @@ export const useWebRTCStore = defineStore({
   getters: {
     // Sechat
     getTargetPlayerVisible: (state) => state.targetPlayerVisible,
-    getSourcePlayerVisible: (state) => state.sourcePlayerVisible,
+    getSourcePlayerVisible: (state) => state.localPlayerVisible,
     getVideoCallEstablished: (state) => state.videoCallEstablished,
     getVideoCallViewVisible: (state) => state.videoCallViewVisible,
     getVideoCallRequestSent: (state) => state.videoCallRequestSent,
@@ -100,9 +104,5 @@ export const useWebRTCStore = defineStore({
       state.localStream?.getTracks().find((track) => track.kind === "audio"),
     getLocalVideoTrack: (state) =>
       state.localStream?.getTracks().find((track) => track.kind === "video"),
-    getVideoTarget: (state) => state.videoTarget,
-    getVideoSource: (state) => state.videoSource,
-    getLocalStream: (state) => state.peerConnection,
-    getRemoteStream: (state) => state.peerConnection,
   },
 });

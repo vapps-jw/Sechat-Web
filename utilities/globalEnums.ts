@@ -60,11 +60,11 @@ export const SignalRHubMethods = {
   MessageIncoming: "MessageIncoming",
 
   // Video Calls
+
+  SendWebRTCExchangeCompleted: "SendWebRTCExchangeCompleted",
   VideoCallRequest: "VideoCallRequest",
   SendWebRTCAnswer: "SendWebRTCAnswer",
-  WebRTCAnswerIncoming: "WebRTCAnswerIncoming",
   SendWebRTCOffer: "SendWebRTCOffer",
-  WebRTCOfferIncoming: "WebRTCOfferIncoming",
   SendICECandidate: "SendICECandidate",
   ApproveVideoCall: "ApproveVideoCall",
   TerminateVideoCall: "TerminateVideoCall",
@@ -73,6 +73,9 @@ export const SignalRHubMethods = {
 
   // Events
 
+  WebRTCExchangeCompleted: "WebRTCExchangeCompleted",
+  WebRTCOfferIncoming: "WebRTCOfferIncoming",
+  WebRTCAnswerIncoming: "WebRTCAnswerIncoming",
   ICECandidateIncoming: "ICECandidateIncoming",
   VideoCallTerminated: "VideoCallTerminated",
   VideoCallRequested: "VideoCallRequested",

@@ -2,7 +2,7 @@
   <v-container>
     <v-card class="sechat-v-card">
       <!-- Waiting for approval -->
-      <v-card-text
+      <!-- <v-card-text
         class="ma-2 pa-02 overflow-auto"
         v-if="webRTCStore.getVideoCallWaitingForApproval"
       >
@@ -19,9 +19,9 @@
             icon="mdi-phone-incoming"
           ></v-icon>
         </div>
-      </v-card-text>
+      </v-card-text> -->
       <!-- Want to call someone -->
-      <v-card-text
+      <!-- <v-card-text
         class="ma-2 pa-02 overflow-auto"
         v-if="
           !webRTCStore.getVideoCallEstablished &&
@@ -34,9 +34,9 @@
             Call {{ webRTCStore.getVideoCallContact.displayName }}?
           </p>
         </div>
-      </v-card-text>
+      </v-card-text> -->
       <!-- Waiting for approval -->
-      <v-card-text
+      <!-- <v-card-text
         class="ma-2 pa-02 overflow-auto"
         v-if="
           webRTCStore.videoCallRequestSent &&
@@ -56,15 +56,15 @@
             icon="mdi-phone-incoming-outgoing"
           ></v-icon>
         </div>
-      </v-card-text>
+      </v-card-text> -->
       <!-- Video call section -->
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-sheet class="d-flex justify-center video-source-size ma-2">
-          <video id="video-stream-source" class="rounded-lg" autoplay></video>
+          <video id="video-stream-local" class="rounded-lg" autoplay></video>
         </v-sheet>
         <div>
           <div class="video-target-size ma-1">
-            <video id="video-stream-target" class="rounded-lg" autoplay></video>
+            <video id="video-stream-remote" class="rounded-lg" autoplay></video>
           </div>
           <div class="d-flex justify-center text-center">
             <v-chip size="small">
@@ -128,11 +128,11 @@ const endCall = async () => {
 onMounted(() => {
   console.warn("--> Video call view Mounted");
   if (!webRTCStore.getVideoCallEstablished) {
-    webRTCStore.updateVideoTarget(
-      <HTMLVideoElement>document.getElementById("video-stream-target")
+    webRTCStore.updateRemoteVideoPlayer(
+      <HTMLVideoElement>document.getElementById("video-stream-remote")
     );
-    webRTCStore.updateVideoSource(
-      <HTMLVideoElement>document.getElementById("video-stream-source")
+    webRTCStore.updateLocalVideoPlayer(
+      <HTMLVideoElement>document.getElementById("video-stream-local")
     );
   }
 });
