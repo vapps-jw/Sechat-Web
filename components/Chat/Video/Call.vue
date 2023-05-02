@@ -101,86 +101,88 @@ const videoCall = useVideoCall();
 const appStore = useSechatAppStore();
 
 const newVideoCall = async () => {
-  try {
-    if (
-      !signalRStore.isCallWaitingForApproval &&
-      !signalRStore.videoCallRequestSent
-    ) {
-      console.log("--> Initializing call...");
-      videoCall.sendVideoCallRequest(
-        signalRStore.getVideoCallContact.displayName
-      );
-      videoCall.listenForVideo();
-      return;
-    }
+  // try {
+  //   if (
+  //     !signalRStore.isCallWaitingForApproval &&
+  //     !signalRStore.videoCallRequestSent
+  //   ) {
+  //     console.log("--> Initializing call...");
+  //     videoCall.sendVideoCallRequest(
+  //       signalRStore.getVideoCallContact.displayName
+  //     );
+  //     videoCall.listenForVideo();
+  //     return;
+  //   }
 
-    if (signalRStore.isCallWaitingForApproval) {
-      console.log("--> Approving call...");
-      videoCall.sendVideoCallApproved(
-        signalRStore.getVideoCallContact.displayName
-      );
-      signalRStore.updateVideoCallEstablished(true);
-      signalRStore.updateVideoCallWaitingForApproval(false);
-      videoCall.listenForVideo();
-      console.log("--> Sending video...");
-      videoCall.sendVideo(signalRStore.getVideoCallContact.displayName);
-      return;
-    }
-    console.warn("--> Call already in progress");
-  } catch (error) {
-    console.error(error);
-  }
+  //   if (signalRStore.isCallWaitingForApproval) {
+  //     console.log("--> Approving call...");
+  //     videoCall.sendVideoCallApproved(
+  //       signalRStore.getVideoCallContact.displayName
+  //     );
+  //     signalRStore.updateVideoCallEstablished(true);
+  //     signalRStore.updateVideoCallWaitingForApproval(false);
+  //     videoCall.listenForVideo();
+  //     console.log("--> Sending video...");
+  //     videoCall.sendVideo(signalRStore.getVideoCallContact.displayName);
+  //     return;
+  //   }
+  //   console.warn("--> Call already in progress");
+  // } catch (error) {
+  //   console.error(error);
+  // }
+};
+
+const endCall = async () => {
+  // try {
+  //   console.warn("--> Video call endCall");
+  //   if (signalRStore.isCallWaitingForApproval) {
+  //     videoCall.rejectVideoCall(signalRStore.getVideoCallContact.displayName);
+  //   } else {
+  //     videoCall.terminateVideoCall(
+  //       signalRStore.getVideoCallContact.displayName
+  //     );
+  //   }
+
+  //   signalRStore.clearVideoCallData();
+  //   appStore.clearVideoSources();
+  // } catch (error) {
+  //   console.error(error);
+  // }
 };
 
 onMounted(() => {
   console.warn("--> Video call view Mounted");
-  appStore.clearVideoSources();
-  appStore.updateVideoTarget(
-    <HTMLVideoElement>document.getElementById("video-stream-target")
-  );
-  appStore.updateVideoSource(
-    <HTMLVideoElement>document.getElementById("video-stream-source")
-  );
-});
+//   appStore.clearVideoSources();
+//   appStore.updateVideoTarget(
+//     <HTMLVideoElement>document.getElementById("video-stream-target")
+//   );
+//   appStore.updateVideoSource(
+//     <HTMLVideoElement>document.getElementById("video-stream-source")
+//   );
+// });
 
-const endCall = async () => {
-  try {
-    console.warn("--> Video call endCall");
-    if (signalRStore.isCallWaitingForApproval) {
-      videoCall.rejectVideoCall(signalRStore.getVideoCallContact.displayName);
-    } else {
-      videoCall.terminateVideoCall(
-        signalRStore.getVideoCallContact.displayName
-      );
-    }
 
-    signalRStore.clearVideoCallData();
-    appStore.clearVideoSources();
-  } catch (error) {
-    console.error(error);
-  }
-};
 
 onBeforeUnmount(() => {
   console.warn("--> Video call onBeforeUnmount");
 
-  try {
-    console.warn("--> Video call endCall");
-    if (signalRStore.getVideoCallContact) {
-      if (signalRStore.isCallWaitingForApproval) {
-        videoCall.rejectVideoCall(signalRStore.getVideoCallContact.displayName);
-      } else {
-        videoCall.terminateVideoCall(
-          signalRStore.getVideoCallContact.displayName
-        );
-      }
-    }
+  // try {
+  //   console.warn("--> Video call endCall");
+  //   if (signalRStore.getVideoCallContact) {
+  //     if (signalRStore.isCallWaitingForApproval) {
+  //       videoCall.rejectVideoCall(signalRStore.getVideoCallContact.displayName);
+  //     } else {
+  //       videoCall.terminateVideoCall(
+  //         signalRStore.getVideoCallContact.displayName
+  //       );
+  //     }
+  //   }
 
-    signalRStore.clearVideoCallData();
-    appStore.clearVideoSources();
-  } catch (error) {
-    console.error(error);
-  }
+  //   signalRStore.clearVideoCallData();
+  //   appStore.clearVideoSources();
+  // } catch (error) {
+  //   console.error(error);
+  // }
 });
 </script>
 

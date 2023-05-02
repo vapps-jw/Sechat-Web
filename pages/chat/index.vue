@@ -1,5 +1,5 @@
 <template>
-  <ChatVideoCall v-if="signalRStore.isVideoCallViewVisible" />
+  <ChatVideoCall v-if="webRTC.getVideoCallViewVisible" />
   <div v-else>
     <v-window v-model="chatStore.activeChatTab">
       <v-window-item value="messages"> <ChatMessages /> </v-window-item>
@@ -20,6 +20,7 @@ definePageMeta({
   middleware: ["authenticated"],
 });
 
+const webRTC = useWebRTCStore();
 const chatStore = useSechatChatStore();
 const signalRStore = useSignalRStore();
 const chatApi = useChatApi();
