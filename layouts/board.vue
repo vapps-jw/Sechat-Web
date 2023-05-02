@@ -21,6 +21,9 @@ const videoCall = useVideoCall();
 const appStore = useSechatAppStore();
 
 onMounted(async () => {
+  // TODO: Handle cleanup when leaving chat page
+  window.addEventListener("beforeunload", () => {});
+
   console.warn("--> Chat Layout onMounted");
   sechatAppStore.updateLoadingOverlay(true);
 

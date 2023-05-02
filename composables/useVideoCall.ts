@@ -6,6 +6,18 @@ export const useVideoCall = () => {
   const sechatChatStore = useSechatChatStore();
   const appStore = useSechatAppStore();
 
+  const createPeerConnection = () => {};
+
+  const createOffer = () => {};
+
+  const createAnswer = () => {};
+
+  const addAnswer = () => {};
+
+  const toggleCamera = () => {};
+
+  const toggleMic = () => {};
+
   // const listenForVideo = () => {
   //   console.warn("--> Listening for video ...");
 
@@ -145,14 +157,6 @@ export const useVideoCall = () => {
     if (!connection) {
       return;
     }
-
-    // if (signalRStore.isVideoCallInProgress) {
-    //   console.error("--> Video call already in progress");
-    //   return;
-    // }
-
-    //signalRStore.initializeVideoCall(connection);
-    //signalRStore.updateVideoCallWaitingForApproval(true);
   };
 
   const videoCallApproved = (data: IStringMessage) => {
@@ -165,16 +169,12 @@ export const useVideoCall = () => {
       return;
     }
 
-    //signalRStore.updateVideoCallEstablished(true);
-    //sendVideo(connection.displayName);
     appStore.showSuccessSnackbar(`Call Answered by ${data.message}`);
   };
 
   const videoCallRejected = (data: IStringMessage) => {
     console.warn(`--> Call rejected by: ${data.message}`);
-    let connection = sechatChatStore.getContacts.find(
-      (c) => c.inviterName === data.message || c.invitedName === data.message
-    );
+
     //signalRStore.clearVideoCallData();
     appStore.clearVideoSources();
     appStore.showErrorSnackbar(`Call rejected by ${data.message}`);
@@ -187,7 +187,7 @@ export const useVideoCall = () => {
     appStore.showWarningSnackbar(`Call ended by ${data.message}`);
   };
 
-  // Video Calls
+  // Video Call Events
 
   const onVideoCallTerminatedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting VideoCallTerminatedEvent");
@@ -309,6 +309,8 @@ export const useVideoCall = () => {
     offVideoCallApprovedEvent,
     offVideoCallRejectedEvent,
     offVideoCallRequestedEvent,
+    sendICECandiadate,
+    sendVideoCallOffer,
     terminateVideoCall,
     rejectVideoCall,
     sendVideoCallApproved,
@@ -316,5 +318,11 @@ export const useVideoCall = () => {
     videoCallApproved,
     videoCallRequested,
     videoCallRejected,
+    createPeerConnection,
+    createOffer,
+    createAnswer,
+    addAnswer,
+    toggleCamera,
+    toggleMic,
   };
 };

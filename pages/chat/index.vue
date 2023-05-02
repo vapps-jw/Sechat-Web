@@ -22,7 +22,6 @@ definePageMeta({
 
 const webRTC = useWebRTCStore();
 const chatStore = useSechatChatStore();
-const signalRStore = useSignalRStore();
 const chatApi = useChatApi();
 const appStore = useSechatAppStore();
 
