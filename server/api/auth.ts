@@ -1,3 +1,3 @@
 export default defineEventHandler((e) => {
-  setResponseStatus(200);
+  setResponseStatus(e, 200);
 });

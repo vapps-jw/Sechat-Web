@@ -6,7 +6,18 @@ export const useVideoCall = () => {
   const appStore = useSechatAppStore();
   const webRTCStore = useWebRTCStore();
 
+  const getTurnServers = async () => {
+    const { data: res, error: apiError } = await useFetch("/api/webRTC/turn");
+    if (apiError.value) {
+      console.error("--> TURN Error", apiError.value.data);
+      return;
+    }
+
+    console.warn("--> Turn Servers response", res);
+  };
+
   const initializeCall = async () => {
+    //await getTurnServers();
     webRTCStore.updateVideoCallRequestSent(true);
 
     const localStream = await navigator.mediaDevices.getUserMedia(

@@ -17,6 +17,9 @@ jobs:
         run: npm install
       - name: Install Dependencies
         run: npm run build
+      - name: Inject Secrets
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Push to Linode
         run: |
           echo "$ssh_key" > ~/ssh_key
