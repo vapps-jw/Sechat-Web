@@ -98,7 +98,10 @@ export const useVideoCall = () => {
       .setRemoteDescription(JSON.parse(data.message))
       .then(() => {
         webRTCStore.readyToReceiveCandidates = true;
-        console.log("--> Remote description set");
+        console.log(
+          "--> Remote description set, candidates:",
+          webRTCStore.iceCandidatesBuffer.length
+        );
         return Promise.all(
           webRTCStore.iceCandidatesBuffer.map((c) =>
             webRTCStore.peerConnection.addIceCandidate(c)
