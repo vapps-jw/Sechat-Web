@@ -108,14 +108,9 @@ export const useSechatChat = () => {
     message.wasViewed = false;
     if (message.nameSentBy === userStore.getUserName) {
       message.wasViewed = true;
-    }
-
-    if (
-      chatStore.getActiveRoomId &&
-      message.roomId === chatStore.getActiveRoomId &&
-      chatStore.getActiveChatTab === ChatViews.Messages
-    ) {
-      message.wasViewed = true;
+      chatStore.addNewMessage(message);
+      scrollToBottom("chatView");
+      return;
     }
 
     if (
@@ -124,15 +119,42 @@ export const useSechatChat = () => {
       chatStore.getActiveChatTab === ChatViews.Messages &&
       message.nameSentBy !== userStore.getUserName
     ) {
+      message.wasViewed = true;
+      chatStore.addNewMessage(message);
       chatApi.markMessageAsViewed(message.roomId, message.id);
+      scrollToBottom("chatView");
+      return;
     }
 
     chatStore.addNewMessage(message);
+    // message.wasViewed = false;
+    // if (message.nameSentBy === userStore.getUserName) {
+    //   message.wasViewed = true;
+    // }
 
-    if (message.roomId === chatStore.activeRoomId) {
-      console.warn("--> Scrolling from handleIncomingMessage");
-      scrollToBottom("chatView");
-    }
+    // if (
+    //   chatStore.getActiveRoomId &&
+    //   message.roomId === chatStore.getActiveRoomId &&
+    //   chatStore.getActiveChatTab === ChatViews.Messages
+    // ) {
+    //   message.wasViewed = true;
+    // }
+
+    // if (
+    //   chatStore.getActiveRoomId &&
+    //   message.roomId === chatStore.getActiveRoomId &&
+    //   chatStore.getActiveChatTab === ChatViews.Messages &&
+    //   message.nameSentBy !== userStore.getUserName
+    // ) {
+    //   chatApi.markMessageAsViewed(message.roomId, message.id);
+    // }
+
+    // chatStore.addNewMessage(message);
+
+    // if (message.roomId === chatStore.activeRoomId) {
+    //   console.warn("--> Scrolling from handleIncomingMessage");
+    //   scrollToBottom("chatView");
+    // }
   };
 
   const handleMessagesWereViewed = (message: IRoomUserActionMessage) => {

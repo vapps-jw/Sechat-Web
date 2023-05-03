@@ -36,7 +36,9 @@
         <div class="d-flex justify-end">
           <v-chip
             v-for="seenBy in props.message.messageViewers.filter(
-              (mv) => mv.user !== userStore.getUserName
+              (mv) =>
+                mv.user !== userStore.getUserName &&
+                mv.user !== props.message.nameSentBy
             )"
             class="mt-1 ml-1"
             size="x-small"
