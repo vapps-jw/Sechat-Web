@@ -182,9 +182,37 @@ export const useVideoCall = () => {
     });
   };
 
-  const toggleCamera = () => {};
+  const toggleCamera = () => {
+    webRTCStore.camOn = !webRTCStore.camOn;
 
-  const toggleMic = () => {};
+    let videoTrack = webRTCStore.getLocalVideoTrack;
+    if (!videoTrack) {
+      webRTCStore.camOn = !webRTCStore.camOn;
+      return;
+    }
+
+    if (webRTCStore.camOn) {
+      videoTrack.enabled = true;
+    } else {
+      videoTrack.enabled = false;
+    }
+  };
+
+  const toggleMicrophone = () => {
+    webRTCStore.micOn = !webRTCStore.micOn;
+
+    let audioTrack = webRTCStore.getLocalAudioTrack;
+    if (!audioTrack) {
+      webRTCStore.micOn = !webRTCStore.micOn;
+      return;
+    }
+
+    if (webRTCStore.micOn) {
+      audioTrack.enabled = true;
+    } else {
+      audioTrack.enabled = false;
+    }
+  };
 
   // WebRTC
 
@@ -361,7 +389,7 @@ export const useVideoCall = () => {
     videoCallRejected,
     createPeerConnection,
     toggleCamera,
-    toggleMic,
+    toggleMicrophone,
     initializeCall,
     approveCall,
   };

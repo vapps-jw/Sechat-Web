@@ -15,6 +15,8 @@ export const useWebRTCStore = defineStore({
       // Media
       remoteVideo: <HTMLVideoElement>null,
       localVideo: <HTMLVideoElement>null,
+      micOn: <boolean>true,
+      camOn: <boolean>true,
       // WebRTC
       readyToReceiveCandidates: <boolean>false,
       iceCandidatesBuffer: <RTCIceCandidate[]>[],

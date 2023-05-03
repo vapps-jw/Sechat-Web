@@ -58,7 +58,14 @@
       </v-card-text>
       <!-- Video call section -->
       <v-card-text class="ma-0 pa-0 overflow-hidden">
-        <v-sheet class="d-flex justify-center ma-1 video-source-size">
+        <v-sheet
+          class="d-flex justify-center ma-1"
+          :class="
+            webRTCStore.videoCallEstablished
+              ? 'video-source-size'
+              : 'video-target-size'
+          "
+        >
           <video id="video-stream-local" class="rounded-lg" autoplay></video>
         </v-sheet>
 
@@ -70,76 +77,14 @@
             :class="webRTCStore.videoCallEstablished ? '' : 'sechat-hidden'"
           ></video>
         </v-sheet>
-        <!-- <div
-            v-if="webRTCStore.videoCallEstablished"
-            class="d-flex justify-center text-center"
-          >
-            <v-chip size="small">
-              {{ webRTCStore.getVideoCallContact.displayName }}
-            </v-chip>
-          </div> -->
       </v-card-text>
-
-      <v-card-actions
-        :class="
-          !webRTCStore.videoCallEstablished ? '' : 'd-flex justify-center'
-        "
-      >
-        <v-btn
-          @click="endCall"
-          size="x-large"
-          icon="mdi-phone-hangup"
-          color="error"
-          variant="outlined"
-        ></v-btn>
-        <v-spacer v-if="!webRTCStore.videoCallEstablished"></v-spacer>
-        <v-btn
-          v-if="
-            !webRTCStore.videoCallEstablished &&
-            !webRTCStore.videoCallRequestSent
-          "
-          @click="newVideoCall"
-          size="x-large"
-          icon="mdi-phone"
-          color="success"
-          variant="outlined"
-        ></v-btn>
-      </v-card-actions>
+      <chat-video-call-controls />
     </v-card>
   </v-container>
 </template>
 
 <script setup lang="ts">
-const videoCall = useVideoCall();
 const webRTCStore = useWebRTCStore();
-
-const newVideoCall = async () => {
-  console.log("--> Initializing call...");
-  if (
-    !webRTCStore.videoCallWaitingForApproval &&
-    !webRTCStore.videoCallRequestSent
-  ) {
-    console.log("--> Initializing new call...");
-    await videoCall.initializeCall();
-    return;
-  }
-  if (webRTCStore.videoCallWaitingForApproval) {
-    console.log("--> Approving call...");
-    videoCall.approveCall();
-    return;
-  }
-  console.error("--> Call is being processed...");
-};
-
-const endCall = async () => {
-  if (webRTCStore.videoCallWaitingForApproval) {
-    videoCall.rejectVideoCall(webRTCStore.getVideoCallContact.displayName);
-  } else {
-    videoCall.terminateVideoCall(webRTCStore.getVideoCallContact.displayName);
-  }
-  webRTCStore.cleanup();
-  webRTCStore.$reset();
-};
 
 onMounted(() => {
   console.warn("--> Video call view Mounted");
