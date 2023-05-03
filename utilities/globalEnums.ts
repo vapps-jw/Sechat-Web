@@ -116,8 +116,8 @@ export const Servers = {
 
 export const VideoSettings = {
   video: {
-    width: { min: 640, ideal: 1920, max: 1920 },
-    height: { min: 480, ideal: 1080, max: 1080 },
+    width: { min: 320, ideal: 1920, max: 1920 },
+    height: { min: 240, ideal: 1080, max: 1080 },
   },
   audio: true,
 };
