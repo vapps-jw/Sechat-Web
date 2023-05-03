@@ -54,13 +54,13 @@ export const VideoCodecs = {
 
 export const SignalRHubMethods = {
   // Chat Messages
-
   MessageWasViewed: "MessageWasViewed",
   MessagesWereViewed: "MessagesWereViewed",
   MessageIncoming: "MessageIncoming",
 
   // Video Calls
-
+  SendMicStateChange: "SendMicStateChange",
+  SendCamStateChange: "SendCamStateChange",
   SendWebRTCExchangeCompleted: "SendWebRTCExchangeCompleted",
   VideoCallRequest: "VideoCallRequest",
   SendWebRTCAnswer: "SendWebRTCAnswer",
@@ -72,7 +72,8 @@ export const SignalRHubMethods = {
   RejectVideoCall: "RejectVideoCall",
 
   // Events
-
+  MicStateChanged: "MicStateChanged",
+  CamStateChanged: "CamStateChanged",
   WebRTCExchangeCompleted: "WebRTCExchangeCompleted",
   WebRTCOfferIncoming: "WebRTCOfferIncoming",
   WebRTCAnswerIncoming: "WebRTCAnswerIncoming",
@@ -83,7 +84,6 @@ export const SignalRHubMethods = {
   VideoCallRejected: "VideoCallRejected",
 
   // Chat Rooms
-
   ConnectToRooms: "ConnectToRooms",
   ConnectToRoom: "ConnectToRoom",
   CreateRoom: "CreateRoom",
@@ -94,7 +94,6 @@ export const SignalRHubMethods = {
   RoomUpdated: "RoomUpdated",
 
   // Contacts
-
   ConnectionRequestReceived: "ConnectionRequestReceived",
   ConnectionDeleted: "ConnectionDeleted",
   ConnectionUpdated: "ConnectionUpdated",

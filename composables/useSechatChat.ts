@@ -173,6 +173,8 @@ export const useSechatChat = () => {
     scrollToBottom("chatView");
   };
 
+  // SignalR Event handlers
+
   return {
     handleMessageWasViewed,
     handleMessagesWereViewed,

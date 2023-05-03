@@ -44,6 +44,13 @@ export const useVideoCall = () => {
     );
     console.warn(`--> Video call requested received: ${contact?.displayName}`);
 
+    if (
+      webRTCStore.videoCallEstablished ||
+      webRTCStore.videoCallWaitingForApproval
+    ) {
+      return;
+    }
+
     webRTCStore.updateVideoCallWaitingForApproval(true);
     webRTCStore.updateVideoCallViewVisible(true);
     webRTCStore.updateVideoCallContact(contact);
