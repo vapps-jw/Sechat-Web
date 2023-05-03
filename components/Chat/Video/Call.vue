@@ -63,7 +63,7 @@
           :class="
             webRTCStore.videoCallEstablished
               ? 'video-source-size'
-              : 'video-target-size'
+              : 'video-small-size'
           "
         >
           <video id="video-stream-local" class="rounded-lg" autoplay></video>
@@ -107,7 +107,17 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .video-target-size > video {
-  width: 100%;
+  width: 75%;
+  height: 75%;
+}
+
+.video-target-size {
+  overflow: hidden;
+}
+
+.video-small-size > video {
+  width: 50%;
+  height: 50%;
 }
 
 .video-target-size {
