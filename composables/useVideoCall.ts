@@ -7,6 +7,8 @@ export const useVideoCall = () => {
   const webRTCStore = useWebRTCStore();
 
   const initializeCall = async () => {
+    webRTCStore.updateVideoCallRequestSent(true);
+
     const localStream = await navigator.mediaDevices.getUserMedia(
       VideoSettings
     );
@@ -21,7 +23,7 @@ export const useVideoCall = () => {
     signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
       message: webRTCStore.getVideoCallContactName,
     });
-    webRTCStore.updateVideoCallRequestSent(true);
+
     webRTCStore.updateSourcePlayerVisible(true);
 
     console.warn("--> Local Player", webRTCStore.localVideo);
@@ -30,6 +32,7 @@ export const useVideoCall = () => {
 
   const approveCall = () => {
     webRTCStore.updateVideoCallWaitingForApproval(false);
+    webRTCStore.updateVideoCallEstablished(true);
     approveVideoCall({
       message: webRTCStore.getVideoCallContact.displayName,
     });
@@ -55,9 +58,24 @@ export const useVideoCall = () => {
     );
 
     await createPeerConnection(data.username);
-    await webRTCStore.peerConnection.setRemoteDescription(
-      JSON.parse(data.message)
-    );
+    webRTCStore.peerConnection
+      .setRemoteDescription(JSON.parse(data.message))
+      .then(() => {
+        webRTCStore.readyToReceiveCandidates = true;
+        console.log("--> Remote description set");
+        return Promise.all(
+          webRTCStore.iceCandidatesBuffer.map((c) =>
+            webRTCStore.peerConnection.addIceCandidate(c)
+          )
+        );
+      })
+      .then(() => {
+        console.log("--> All stored candidates added");
+        webRTCStore.iceCandidatesBuffer.length = 0;
+      })
+      .catch((err) =>
+        console.error("--> Error when adding ICE candidates", err)
+      );
 
     let answer = await webRTCStore.peerConnection.createAnswer();
     await webRTCStore.peerConnection.setLocalDescription(answer);
@@ -75,27 +93,42 @@ export const useVideoCall = () => {
   const answerIncoming = (data: IStringMessageForUser) => {
     console.warn("--> Answer Incoming", JSON.parse(data.message));
 
-    if (!webRTCStore.peerConnection.currentRemoteDescription) {
-      console.warn("--> Setting remote description...");
-      webRTCStore.peerConnection.setRemoteDescription(JSON.parse(data.message));
-    }
+    console.warn("--> Setting remote description...");
+    webRTCStore.peerConnection
+      .setRemoteDescription(JSON.parse(data.message))
+      .then(() => {
+        webRTCStore.readyToReceiveCandidates = true;
+        console.log("--> Remote description set");
+        return Promise.all(
+          webRTCStore.iceCandidatesBuffer.map((c) =>
+            webRTCStore.peerConnection.addIceCandidate(c)
+          )
+        );
+      })
+      .then(() => {
+        console.log("--> All stored candidates added");
+        webRTCStore.iceCandidatesBuffer.length = 0;
+      })
+      .catch((err) =>
+        console.error("--> Error when adding ICE candidates", err)
+      );
 
     console.warn("--> Answer added...");
     webRTCStore.updateVideoCallEstablished(true);
     webRTCStore.updateTargetPlayerVisible(true);
   };
 
-  // TODO: there is an issue with candidates and remote description, wire up webrtc exchange completed
   const ICECandidateIncoming = (data: IStringMessage) => {
-    if (
-      webRTCStore.peerConnection &&
-      webRTCStore.peerConnection.remoteDescription
-    ) {
+    if (webRTCStore.readyToReceiveCandidates) {
       console.warn("--> ICE Candidate being added!", JSON.parse(data.message));
       webRTCStore.peerConnection.addIceCandidate(JSON.parse(data.message));
-      return;
+    } else {
+      console.warn(
+        "--> ICE Candidate being added to buffer!",
+        JSON.parse(data.message)
+      );
+      webRTCStore.iceCandidatesBuffer.push(JSON.parse(data.message));
     }
-    console.error("--> peerConnection not ready!");
   };
 
   const createPeerConnection = async (userName: string) => {
@@ -127,17 +160,12 @@ export const useVideoCall = () => {
     };
 
     console.log("--> ICE Candidates Event");
-    // TODO: push those to buffer and send when the cycle is completed
     webRTCStore.peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
-        webRTCStore.addIceCandidate({
+        sendICECandiadate({
           username: userName,
           message: JSON.stringify(event.candidate),
         });
-        // sendICECandiadate({
-        //   username: userName,
-        //   message: JSON.stringify(event.candidate),
-        // });
       }
     };
   };
@@ -220,9 +248,13 @@ export const useVideoCall = () => {
 
   const videoCallTerminated = (data: IStringMessage) => {
     console.warn(`--> Call terminated by: ${data.message}`);
+
+    if (webRTCStore.videoCallWaitingForApproval) {
+      appStore.showWarningSnackbar(`Call ended by ${data.message}`);
+    }
+
     webRTCStore.cleanup();
     webRTCStore.$reset();
-    appStore.showWarningSnackbar(`Call ended by ${data.message}`);
   };
 
   // Video Call Events

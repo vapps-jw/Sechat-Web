@@ -76,6 +76,7 @@ const userStore = useUserStore();
 const webRTCStore = useWebRTCStore();
 
 const startVideoCall = (uc: IContactRequest) => {
+  console.log("--> Starting new call with", uc.displayName);
   webRTCStore.updateVideoCallContact(uc);
   webRTCStore.updateVideoCallViewVisible(true);
 };

@@ -1,5 +1,5 @@
 <template>
-  <ChatVideoCall v-if="webRTC.getVideoCallViewVisible" />
+  <ChatVideoCall v-if="webRTC.videoCallViewVisible" />
   <div v-else>
     <v-window v-model="chatStore.activeChatTab">
       <v-window-item value="messages"> <ChatMessages /> </v-window-item>

@@ -16,10 +16,11 @@ export const useWebRTCStore = defineStore({
       remoteVideo: <HTMLVideoElement>null,
       localVideo: <HTMLVideoElement>null,
       // WebRTC
+      readyToReceiveCandidates: <boolean>false,
+      iceCandidatesBuffer: <RTCIceCandidate[]>[],
       localStream: <MediaStream>null,
       remoteStream: <MediaStream>null,
       peerConnection: <RTCPeerConnection>null,
-      iceCandidates: <IStringMessageForUser[]>[],
     };
   },
   actions: {
@@ -76,9 +77,6 @@ export const useWebRTCStore = defineStore({
     createPeerConnection() {
       this.peerConnection = new RTCPeerConnection(Servers);
     },
-    addIceCandidate(value: IStringMessageForUser) {
-      this.iceCandidates.push(value);
-    },
     cleanup() {
       if (this.localStream) {
         this.localStream.getTracks().forEach((track) => track.stop());
@@ -88,13 +86,6 @@ export const useWebRTCStore = defineStore({
   },
   getters: {
     // Sechat
-    getTargetPlayerVisible: (state) => state.targetPlayerVisible,
-    getSourcePlayerVisible: (state) => state.localPlayerVisible,
-    getVideoCallEstablished: (state) => state.videoCallEstablished,
-    getVideoCallViewVisible: (state) => state.videoCallViewVisible,
-    getVideoCallRequestSent: (state) => state.videoCallRequestSent,
-    getVideoCallWaitingForApproval: (state) =>
-      state.videoCallWaitingForApproval,
     getVideoCallContact: (state) => state.videoCallContact,
     getVideoCallContactName: (state) => state.videoCallContact?.displayName,
     // WebRTC
