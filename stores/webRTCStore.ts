@@ -49,6 +49,7 @@ export const useWebRTCStore = defineStore({
     },
     updateLocalVideoPlayer(value: HTMLVideoElement) {
       this.localVideo = value;
+      this.localVideo.muted = true;
     },
     addLocalStreamToPlayer() {
       this.localVideo.srcObject = this.localStream;
