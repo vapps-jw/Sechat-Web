@@ -6,18 +6,24 @@ export const useVideoCall = () => {
   const appStore = useSechatAppStore();
   const webRTCStore = useWebRTCStore();
 
-  const getTurnServers = async () => {
-    const { data: res, error: apiError } = await useFetch("/api/webRTC/turn");
+  const getICECandidates = async () => {
+    const { data: servers, error: apiError } = await (<any>(
+      useFetch("/api/webRTC/turn")
+    ));
     if (apiError.value) {
       console.error("--> TURN Error", apiError.value.data);
       return;
     }
 
-    console.warn("--> Turn Servers response", res);
+    console.log(
+      "--> Final ICE List",
+      JSON.parse(JSON.stringify(servers.value))
+    );
+    return servers.data;
   };
 
   const initializeCall = async () => {
-    //await getTurnServers();
+    await getICECandidates();
     webRTCStore.updateVideoCallRequestSent(true);
 
     const localStream = await navigator.mediaDevices.getUserMedia(
@@ -154,7 +160,11 @@ export const useVideoCall = () => {
 
   const createPeerConnection = async (userName: string) => {
     console.log("--> Creating peer connection", userName);
-    webRTCStore.createPeerConnection();
+
+    const iceCandidates = await getICECandidates();
+    const peerConnection = new RTCPeerConnection(iceCandidates);
+
+    webRTCStore.updatePeerConnection(peerConnection);
 
     webRTCStore.createRemoteStream();
     webRTCStore.addRemoteStreamToPlayer();
@@ -408,7 +418,6 @@ export const useVideoCall = () => {
     sendVideoCallApproved: approveVideoCall,
     videoCallApproved,
     videoCallRejected,
-    createPeerConnection,
     toggleCamera,
     toggleMicrophone,
     initializeCall,

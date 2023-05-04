@@ -1,5 +1,3 @@
-import { Servers } from "~/utilities/globalEnums";
-
 export const useWebRTCStore = defineStore({
   id: "webRTC-store",
   state: () => {
@@ -77,8 +75,8 @@ export const useWebRTCStore = defineStore({
       this.videoCallContact = data;
     },
     // WebRTC
-    createPeerConnection() {
-      this.peerConnection = new RTCPeerConnection(Servers);
+    updatePeerConnection(peerConnection: RTCPeerConnection) {
+      this.peerConnection = peerConnection;
     },
     cleanup() {
       if (this.localStream) {
