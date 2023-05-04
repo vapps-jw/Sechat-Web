@@ -10,7 +10,9 @@ export default defineNuxtConfig({
   //   pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs",
   // },
   runtimeConfig: {
-    turnApiKey: process.env.TURN_SERVER_KEY || "",
+    turnApiKey: process.env.TURN_SERVER_API_KEY || "",
+    turnApiUsername: process.env.TURN_SERVER_USERNAME || "",
+    turnApiPassword: process.env.TURN_SERVER_PASSWORD || "",
     public: {
       appVersion: "BETA v0.5.2.3",
       publicVapidKey:
@@ -19,6 +21,10 @@ export default defineNuxtConfig({
     },
   },
   security: {
+    corsHandler: {
+      origin: "*",
+      methods: "*",
+    },
     headers: {
       permissionsPolicy: {
         camera: ["self"],
