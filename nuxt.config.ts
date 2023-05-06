@@ -10,6 +10,7 @@ export default defineNuxtConfig({
   //   pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs",
   // },
   runtimeConfig: {
+    stunServer: process.env.NUXT_STUN_SERVER ?? "not set",
     turnServer: process.env.NUXT_TURN_SERVER ?? "not set",
     turnUser: process.env.NUXT_TURN_USER ?? "not set",
     turnPassword: process.env.NUXT_TURN_PASSWORD ?? "not set",
