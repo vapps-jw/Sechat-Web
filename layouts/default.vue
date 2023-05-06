@@ -11,9 +11,7 @@
           ></NuxtImg>
         </div>
         <div class="d-flex justify-center flex-wrap">
-          <v-chip class="ma-2" color="warning">
-            {{ config.public.appVersion }}
-          </v-chip>
+          <v-chip class="ma-2" color="warning"> BETA v0.5.2.4 </v-chip>
           <v-chip class="ma-2" color="warning">
             For best experience use as PWA
           </v-chip>
@@ -26,7 +24,3 @@
     </v-main>
   </v-app>
 </template>
-
-<script setup lang="ts">
-const config = useRuntimeConfig();
-</script>

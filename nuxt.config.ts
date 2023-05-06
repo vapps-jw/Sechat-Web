@@ -12,7 +12,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     turnApiKey: "",
     public: {
-      appVersion: "BETA v0.5.2.4",
       publicVapidKey: "",
       apiBase: "",
     },
