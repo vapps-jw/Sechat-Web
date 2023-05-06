@@ -161,8 +161,12 @@ export const useVideoCall = () => {
   const createPeerConnection = async (userName: string) => {
     console.log("--> Creating peer connection", userName);
 
-    const iceCandidates = await getICECandidates();
-    const peerConnection = new RTCPeerConnection(iceCandidates);
+    const servers = await getICECandidates();
+    const peerConnection = new RTCPeerConnection({
+      iceServers: servers,
+      iceTransportPolicy: "all",
+      iceCandidatePoolSize: 0,
+    });
 
     webRTCStore.updatePeerConnection(peerConnection);
 
@@ -189,6 +193,23 @@ export const useVideoCall = () => {
         webRTCStore.remoteStream.addTrack(track);
       });
     };
+
+    //   webRTCStore.peerConnection.onicegatheringstatechange = e => {
+    //     console.log('onicegatheringstatechange', webRTCStore.peerConnection.iceGatheringState);
+    //     switch (webRTCStore.peerConnection.iceGatheringState) {
+    //         case 'complete':
+    //             console.log('icegatheringChange: complete')
+    //             if (!candidatesComplete) {
+    //                 ws.send('call/request', { to: userID, sdp: peer.localDescription })
+    //                 this.setState({ candidatesComplete: true })
+    //             }
+    //             break
+
+    //         default:
+    //             console.log('icegatheringChange: state not complete')
+    //             break
+    //     }
+    // }
 
     webRTCStore.peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
