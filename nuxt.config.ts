@@ -10,7 +10,9 @@ export default defineNuxtConfig({
   //   pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs",
   // },
   runtimeConfig: {
-    turnApiKey: process.env.NUXT_TURN_API_KEY ?? "not set",
+    turnServer: process.env.NUXT_TURN_SERVER ?? "not set",
+    turnUser: process.env.NUXT_TURN_USER ?? "not set",
+    turnPassword: process.env.NUXT_TURN_PASSWORD ?? "not set",
     public: {
       vapidKey: process.env.NUXT_PUBLIC_VAPID_KEY ?? "not set",
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? "not set",
