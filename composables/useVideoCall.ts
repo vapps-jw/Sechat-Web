@@ -23,7 +23,6 @@ export const useVideoCall = () => {
   };
 
   const initializeCall = async () => {
-    await getICECandidates();
     webRTCStore.updateVideoCallRequestSent(true);
 
     const localStream = await navigator.mediaDevices.getUserMedia(
