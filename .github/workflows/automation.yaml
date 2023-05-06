@@ -15,11 +15,11 @@ jobs:
           node-version: "18"
       - name: Install Dependencies
         run: npm install
-      - name: Install Dependencies
-        run: npm run build
       - name: Inject Secrets
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
+      - name: Install Dependencies
+        run: npm run build
       - name: Push to Linode
         run: |
           echo "$ssh_key" > ~/ssh_key
