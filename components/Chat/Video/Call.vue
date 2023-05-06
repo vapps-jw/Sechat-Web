@@ -62,14 +62,14 @@
           class="d-flex justify-center ma-1"
           :class="
             webRTCStore.videoCallEstablished
-              ? 'video-source-size'
+              ? 'video-local-size'
               : 'video-small-size'
           "
         >
           <video id="video-stream-local" class="rounded-lg" autoplay></video>
         </v-sheet>
 
-        <v-sheet class="d-flex justify-center video-target-size ma-1">
+        <v-sheet class="d-flex justify-center video-remote-size ma-1">
           <video
             id="video-stream-remote"
             autoplay
@@ -106,12 +106,13 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.video-target-size > video {
+.video-remote-size > video {
   width: 75%;
   height: 75%;
+  max-height: 75%;
 }
 
-.video-target-size {
+.video-remote-size {
   overflow: hidden;
 }
 
@@ -120,15 +121,15 @@ onBeforeUnmount(() => {
   height: 50%;
 }
 
-.video-target-size {
+.video-remote-size {
   overflow: hidden;
 }
 
-.video-source-size > video {
+.video-local-size > video {
   width: 25%;
 }
 
-.video-source-size {
+.video-local-size {
   overflow: hidden;
 }
 </style>
