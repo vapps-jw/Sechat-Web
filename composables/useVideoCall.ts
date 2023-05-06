@@ -194,22 +194,12 @@ export const useVideoCall = () => {
       });
     };
 
-    //   webRTCStore.peerConnection.onicegatheringstatechange = e => {
-    //     console.log('onicegatheringstatechange', webRTCStore.peerConnection.iceGatheringState);
-    //     switch (webRTCStore.peerConnection.iceGatheringState) {
-    //         case 'complete':
-    //             console.log('icegatheringChange: complete')
-    //             if (!candidatesComplete) {
-    //                 ws.send('call/request', { to: userID, sdp: peer.localDescription })
-    //                 this.setState({ candidatesComplete: true })
-    //             }
-    //             break
-
-    //         default:
-    //             console.log('icegatheringChange: state not complete')
-    //             break
-    //     }
-    // }
+    webRTCStore.peerConnection.onconnectionstatechange = (e) => {
+      console.warn(
+        "--> Connection state change",
+        webRTCStore.peerConnection.connectionState
+      );
+    };
 
     webRTCStore.peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
