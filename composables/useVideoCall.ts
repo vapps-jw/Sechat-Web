@@ -195,10 +195,23 @@ export const useVideoCall = () => {
     };
 
     webRTCStore.peerConnection.onconnectionstatechange = (e) => {
+      // TODO: handle connection failed
       console.warn(
         "--> Connection state change",
         webRTCStore.peerConnection.connectionState
       );
+
+      switch (webRTCStore.peerConnection.connectionState) {
+        case "connecting":
+          break;
+        case "failed":
+          break;
+        case "connected":
+          break;
+
+        default:
+          break;
+      }
     };
 
     webRTCStore.peerConnection.onicecandidate = async (event) => {
