@@ -8,4 +8,3 @@ node_modules
 dist
 localhost-key.pem
 localhost.pem
-.env
