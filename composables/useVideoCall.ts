@@ -76,11 +76,11 @@ export const useVideoCall = () => {
   const offerIncoming = async (data: IStringMessageForUser) => {
     console.warn(
       "--> Offer Incoming, creating answer",
-      data.username,
+      data.userName,
       JSON.parse(data.message)
     );
 
-    await createPeerConnection(data.username);
+    await createPeerConnection(data.userName);
     webRTCStore.peerConnection
       .setRemoteDescription(JSON.parse(data.message))
       .then(() => {
@@ -122,7 +122,7 @@ export const useVideoCall = () => {
       .then(() => {
         webRTCStore.readyToReceiveCandidates = true;
         console.log(
-          "--> Remote description set, candidates:",
+          "--> Remote description set, candidates in buffer:",
           webRTCStore.iceCandidatesBuffer.length
         );
         return Promise.all(
@@ -145,6 +145,7 @@ export const useVideoCall = () => {
   };
 
   const ICECandidateIncoming = (data: IStringMessage) => {
+    console.warn("--> ICE Candidate Incoming!", JSON.parse(data.message));
     if (webRTCStore.readyToReceiveCandidates) {
       console.warn("--> ICE Candidate being added!", JSON.parse(data.message));
       webRTCStore.peerConnection.addIceCandidate(JSON.parse(data.message));
@@ -189,11 +190,11 @@ export const useVideoCall = () => {
       });
     };
 
-    console.log("--> ICE Candidates Event");
     webRTCStore.peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
+        console.warn("--> Sending ICE Candidate to", userName);
         sendICECandiadate({
-          username: userName,
+          userName: userName,
           message: JSON.stringify(event.candidate),
         });
       }
@@ -207,7 +208,7 @@ export const useVideoCall = () => {
     let offer = await webRTCStore.peerConnection.createOffer();
     await webRTCStore.peerConnection.setLocalDescription(offer);
     sendWebRTCOffer({
-      username: userName,
+      userName: userName,
       message: JSON.stringify(offer),
     });
   };

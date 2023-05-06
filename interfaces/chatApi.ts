@@ -11,7 +11,7 @@ interface IStringMessage {
 }
 
 interface IStringMessageForUser {
-  username?: string;
+  userName?: string;
   message?: string;
 }
 
