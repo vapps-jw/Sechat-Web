@@ -12,7 +12,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     turnApiKey: process.env.TURN_API_KEY,
     public: {
-      publicVapidKey: process.env.PUBLIC_VAPID_KEY,
+      vapidKey: process.env.VAPID_KEY,
       apiBase: process.env.API_BASE_URL,
     },
   },

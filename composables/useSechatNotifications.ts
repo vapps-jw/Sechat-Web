@@ -56,14 +56,12 @@ export const useSechatNotifications = () => {
 
       console.log(
         "--> Registering Push...",
-        config.public.publicVapidKey,
+        config.public.vapidKey,
         config.public.apiBase
       );
       subscription = await register.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          config.public.publicVapidKey
-        ),
+        applicationServerKey: urlBase64ToUint8Array(config.public.vapidKey),
       });
       console.log("--> Push Registered...");
     } catch (error) {
