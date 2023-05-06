@@ -11,7 +11,7 @@
           ></NuxtImg>
         </div>
         <div class="d-flex justify-center flex-wrap">
-          <v-chip class="ma-2" color="warning"> BETA v0.5.2.4 </v-chip>
+          <v-chip class="ma-2" color="warning"> BETA v0.5.2.5 </v-chip>
           <v-chip class="ma-2" color="warning">
             For best experience use as PWA
           </v-chip>
