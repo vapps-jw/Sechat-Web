@@ -30,6 +30,7 @@ export const useUserApi = () => {
 
   const getUserData = async () => {
     const config = useRuntimeConfig();
+    console.warn("--> API Base", config.public.apiBase);
     const { data: newProfile, error: apiError } = await useFetch<IUserProfile>(
       `${config.public.apiBase}/user/get-profile`,
       {
