@@ -5,7 +5,7 @@
         (ou) =>
           ou.displayName === props.roomMember.userName &&
           ou.contactState === ContactState.Online
-      )
+      ) || userStore.getUserName === props.roomMember
     "
     dot
     color="success"
@@ -29,6 +29,7 @@
 <script setup lang="ts">
 import { ContactState } from "~~/utilities/globalEnums";
 const chatStore = useSechatChatStore();
+const userStore = useUserStore();
 
 interface PropsModel {
   roomMember: IMemeber;
