@@ -5,7 +5,7 @@
         (ou) =>
           ou.displayName === props.roomMember.userName &&
           ou.contactState === ContactState.Online
-      ) || userStore.getUserName === props.roomMember
+      ) || userStore.getUserName === props.roomMember.userName
     "
     dot
     color="success"
