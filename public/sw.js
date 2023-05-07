@@ -1,5 +1,6 @@
 import { precacheAndRoute } from "workbox-precaching";
 import { clientsClaim } from "workbox-core";
+import { PushNotificationTypes } from "~~/utilities/globalEnums";
 
 precacheAndRoute(self.__WB_MANIFEST);
 
@@ -36,13 +37,24 @@ self.addEventListener("push", async (event) => {
     n.close();
   });
 
-  const options = {
-    body: String(data.options.body),
-    icon: "icons/icon_64x64.png",
-    badge: "icons/message-badge.png",
-    tag: "Sechat",
-    vibrate: [500, 1000, 1500],
-  };
+  let options = {};
+  if (String(data.title) === PushNotificationTypes.VideoCall) {
+    options = {
+      body: String(data.options.body),
+      icon: "icons/icon_64x64.png",
+      badge: "icons/message-badge.png",
+      tag: "Sechat",
+      vibrate: [500, 500, 500, 500, 500, 500, 500, 500, 500],
+    };
+  } else {
+    options = {
+      body: String(data.options.body),
+      icon: "icons/icon_64x64.png",
+      badge: "icons/message-badge.png",
+      tag: "Sechat",
+      vibrate: [500, 1000, 1500],
+    };
+  }
 
   console.warn("--> Showing Notification...");
   self.registration.showNotification(String(data.title), options);

@@ -1,4 +1,4 @@
-import { ChatViews } from "~~/utilities/globalEnums";
+import { ChatViews, ContactState } from "~~/utilities/globalEnums";
 
 export const useSechatChatStore = defineStore({
   id: "sechat-chat-store",
@@ -27,6 +27,14 @@ export const useSechatChatStore = defineStore({
       this.availableContacts = [...this.availableContacts, value].sort((a, b) =>
         a.displayName.localeCompare(b.displayName)
       );
+    },
+    updateContactState(name: string, value: string) {
+      const contact = <IContactRequest>(
+        this.availableContacts.find((c) => c.displayName === name)
+      );
+      if (contact) {
+        contact.contactState = value;
+      }
     },
     updateContact(value: IContactRequest) {
       this.availableContacts = [
@@ -167,6 +175,10 @@ export const useSechatChatStore = defineStore({
     addNewMessages(value: string, roomId: string) {},
   },
   getters: {
+    getOnlineUsers: (state) =>
+      state.availableContacts.filter(
+        (c) => c.contactState === ContactState.Online
+      ),
     getActiveRoomId: (state) => state.activeRoomId,
     getActiveChatTab: (state) => state.activeChatTab,
     isSettingsViewActive: (state) => state.activeChatTab === ChatViews.Settings,

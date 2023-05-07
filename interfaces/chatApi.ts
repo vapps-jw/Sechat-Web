@@ -10,7 +10,7 @@ interface IStringMessage {
   message?: string;
 }
 
-interface IStringMessageForUser {
+interface IStringUserMessage {
   userName?: string;
   message?: string;
 }
@@ -87,6 +87,7 @@ interface IContactRequest {
   id?: number;
   inviterName?: string;
   invitedName?: string;
+  contactState?: string;
   approved?: boolean;
   displayName?: string;
   blocked?: boolean;

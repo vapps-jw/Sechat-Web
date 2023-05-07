@@ -1,5 +1,5 @@
 import { scrollToBottom } from "~~/utilities/documentFunctions";
-import { ChatViews } from "~~/utilities/globalEnums";
+import { ChatViews, SignalRHubMethods } from "~~/utilities/globalEnums";
 
 export const useSechatChat = () => {
   const userStore = useUserStore();
@@ -7,6 +7,21 @@ export const useSechatChat = () => {
   const chatApi = useChatApi();
 
   // User Connections
+
+  const onContactStateChangedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting ContactStateChanged");
+    connection.on(SignalRHubMethods.ContactStateChanged, contactStateChanged);
+  };
+
+  const offContactStateChangedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Disconnecting ContactStateChanged");
+    connection.off(SignalRHubMethods.ContactStateChanged, contactStateChanged);
+  };
+
+  const contactStateChanged = (data: IStringUserMessage) => {
+    console.warn("--> Contact state changed", data);
+    chatStore.updateContactState(data.userName, data.message);
+  };
 
   const handleConnectionRequestReceived = (data: IContactRequest) => {
     console.warn("--> Connection Request Received", data);
@@ -127,34 +142,6 @@ export const useSechatChat = () => {
     }
 
     chatStore.addNewMessage(message);
-    // message.wasViewed = false;
-    // if (message.nameSentBy === userStore.getUserName) {
-    //   message.wasViewed = true;
-    // }
-
-    // if (
-    //   chatStore.getActiveRoomId &&
-    //   message.roomId === chatStore.getActiveRoomId &&
-    //   chatStore.getActiveChatTab === ChatViews.Messages
-    // ) {
-    //   message.wasViewed = true;
-    // }
-
-    // if (
-    //   chatStore.getActiveRoomId &&
-    //   message.roomId === chatStore.getActiveRoomId &&
-    //   chatStore.getActiveChatTab === ChatViews.Messages &&
-    //   message.nameSentBy !== userStore.getUserName
-    // ) {
-    //   chatApi.markMessageAsViewed(message.roomId, message.id);
-    // }
-
-    // chatStore.addNewMessage(message);
-
-    // if (message.roomId === chatStore.activeRoomId) {
-    //   console.warn("--> Scrolling from handleIncomingMessage");
-    //   scrollToBottom("chatView");
-    // }
   };
 
   const handleMessagesWereViewed = (message: IRoomUserActionMessage) => {
@@ -191,5 +178,7 @@ export const useSechatChat = () => {
     handleConnectionDelete,
     handleUserAddedToRoom,
     handleUserRemovedFromRoom,
+    onContactStateChangedEvent,
+    offContactStateChangedEvent,
   };
 };

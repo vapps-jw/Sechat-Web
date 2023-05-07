@@ -32,6 +32,7 @@ export const useSignalR = () => {
     videoCalls.onICECandidateIncomingEvent(connection);
     videoCalls.onWebRTCOfferIncomingEvent(connection);
     videoCalls.onWebRTCAnswerIncomingEvent(connection);
+    sechatChat.onContactStateChangedEvent(connection);
     _onMessageWasViewed(connection);
     _onMessagesWereViewed(connection);
     _onIncomingMessage(connection);
@@ -52,6 +53,7 @@ export const useSignalR = () => {
       videoCalls.offICECandidateIncomingEvent(connection);
       videoCalls.offWebRTCOfferIncomingEvent(connection);
       videoCalls.offWebRTCAnswerIncomingEvent(connection);
+      sechatChat.offContactStateChangedEvent(connection);
       _offMessageWasViewed(connection);
       _offMessagesWereViewed(connection);
       _offIncomingMessage(connection);

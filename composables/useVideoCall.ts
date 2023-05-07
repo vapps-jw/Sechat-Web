@@ -73,7 +73,7 @@ export const useVideoCall = () => {
   };
 
   // Handle Incoming Offer
-  const offerIncoming = async (data: IStringMessageForUser) => {
+  const offerIncoming = async (data: IStringUserMessage) => {
     console.warn(
       "--> Offer Incoming, creating answer",
       data.userName,
@@ -113,7 +113,7 @@ export const useVideoCall = () => {
   };
 
   // Handle Incoming Answer
-  const answerIncoming = (data: IStringMessageForUser) => {
+  const answerIncoming = (data: IStringUserMessage) => {
     console.warn("--> Answer Incoming", JSON.parse(data.message));
 
     console.warn("--> Setting remote description...");
@@ -274,22 +274,22 @@ export const useVideoCall = () => {
 
   // WebRTC
 
-  const sendICECandiadate = (data: IStringMessageForUser) => {
+  const sendICECandiadate = (data: IStringUserMessage) => {
     signalRStore.connection.send(SignalRHubMethods.SendICECandidate, data);
   };
 
-  const sendWebRTCOffer = (data: IStringMessageForUser) => {
+  const sendWebRTCOffer = (data: IStringUserMessage) => {
     console.warn("--> Sending WebRTC Offer", data);
     signalRStore.connection.send(SignalRHubMethods.SendWebRTCOffer, data);
   };
 
-  const sendWebRTCAnswer = (data: IStringMessageForUser) => {
+  const sendWebRTCAnswer = (data: IStringUserMessage) => {
     signalRStore.connection.send(SignalRHubMethods.SendWebRTCAnswer, data);
   };
 
   // Call approved
 
-  const approveVideoCall = (data: IStringMessageForUser) => {
+  const approveVideoCall = (data: IStringUserMessage) => {
     console.log("--> Sending video call approved", data);
     signalRStore.connection.send(SignalRHubMethods.ApproveVideoCall, data);
   };

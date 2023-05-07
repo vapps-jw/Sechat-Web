@@ -39,12 +39,19 @@ export const ChatViews = {
 export const PushNotificationTypes = {
   NewMessage: "New Message",
   NewContactRequest: "Contact Request",
+  VideoCall: "Video Call",
 };
 
 export const VideoCallStatus = {
   Answered: "Answered",
   Initialized: "Initialized",
   None: "None",
+};
+
+export const ContactState = {
+  Online: "Online",
+  Offline: "Offline",
+  Unknown: "Unknown",
 };
 
 export const VideoCodecs = {
@@ -68,7 +75,6 @@ export const SignalRHubMethods = {
   SendICECandidate: "SendICECandidate",
   ApproveVideoCall: "ApproveVideoCall",
   TerminateVideoCall: "TerminateVideoCall",
-  SendVideoCallData: "SendVideoCallData",
   RejectVideoCall: "RejectVideoCall",
 
   // Events
@@ -94,6 +100,8 @@ export const SignalRHubMethods = {
   RoomUpdated: "RoomUpdated",
 
   // Contacts
+  ContactStateChanged: "ContactStateChanged",
+  CheckOnlineState: "CheckOnlineState",
   ConnectionRequestReceived: "ConnectionRequestReceived",
   ConnectionDeleted: "ConnectionDeleted",
   ConnectionUpdated: "ConnectionUpdated",

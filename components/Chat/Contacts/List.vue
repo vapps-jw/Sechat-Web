@@ -5,6 +5,7 @@
       :key="`${uc.invitedName}-${uc.inviterName}`"
     >
       <v-expansion-panel-title disable-icon-rotate>
+        <chat-status-contact-state-icon :contact="uc" />
         {{ uc.displayName }}
         <template v-slot:actions>
           <v-icon v-if="uc.blocked" color="error">mdi-alert-circle</v-icon>
@@ -67,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarMessages } from "~~/utilities/globalEnums";
+import { SnackbarMessages, ContactState } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();

@@ -1,11 +1,11 @@
 <template>
   <div class="d-flex">
     <v-chip
-      variant="elevated"
+      variant="outlined"
       size="x-small"
       v-for="u in chatStore.getActiveRoomMembers"
       :key="u.userName"
-      class="ma-1"
+      class="mr-1"
       :color="
         u.userName !== chatStore.getActiveRoom.creatorName
           ? 'primary'
@@ -13,6 +13,9 @@
       "
       label
     >
+      <template v-slot:prepend>
+        <chat-messages-user-status-bagde :room-member="u" />
+      </template>
       {{ u.userName }}
       <v-icon
         v-if="
@@ -28,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarMessages } from "~~/utilities/globalEnums";
+import { SnackbarMessages, ContactState } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
 const sechatApp = useSechatApp();
