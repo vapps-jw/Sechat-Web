@@ -21,8 +21,11 @@ const videoCall = useVideoCall();
 const appStore = useSechatAppStore();
 
 onMounted(async () => {
-  // TODO: Handle cleanup when leaving chat page
-  window.addEventListener("beforeunload", () => {});
+  window.addEventListener("beforeunload", () => {
+    signalR.closeConnection();
+    signalRStore.$reset();
+    chatStore.$reset();
+  });
 
   console.warn("--> Chat Layout onMounted");
   sechatAppStore.updateLoadingOverlay(true);
@@ -50,15 +53,6 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   console.warn("--> Chat Layout onBeforeUnmount");
-
-  // TODO: handle call when leaving the chat page
-  // if (signalRStore.isVideoCallInProgress) {
-  //   console.error("--> Video Call in Progress -- Terminating");
-  //   videoCall.terminateVideoCall(signalRStore.getVideoCallContact.displayName);
-
-  //   signalRStore.clearVideoCallData();
-  //   appStore.clearVideoSources();
-  // }
 
   signalR.closeConnection();
   signalRStore.$reset();

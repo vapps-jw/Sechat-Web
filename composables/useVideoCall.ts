@@ -195,11 +195,14 @@ export const useVideoCall = () => {
     };
 
     webRTCStore.peerConnection.onconnectionstatechange = (e) => {
-      // TODO: handle connection failed
       console.warn(
         "--> Connection state change",
-        webRTCStore.peerConnection.connectionState
+        webRTCStore.peerConnection?.connectionState
       );
+
+      if (!webRTCStore.peerConnection) {
+        return;
+      }
 
       switch (webRTCStore.peerConnection.connectionState) {
         case "connecting":
@@ -319,7 +322,8 @@ export const useVideoCall = () => {
 
   const videoCallRejected = (data: IStringMessage) => {
     console.warn(`--> Call rejected by: ${data.message}`);
-
+    webRTCStore.cleanup();
+    webRTCStore.$reset();
     appStore.showErrorSnackbar(`Call rejected by ${data.message}`);
   };
 

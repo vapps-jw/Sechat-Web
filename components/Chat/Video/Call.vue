@@ -1,14 +1,22 @@
 <template>
-  <v-container>
-    <v-card class="sechat-v-card">
+  <v-card class="sechat-v-card ma-0">
+    <v-card-text
+      class="ma-2 pa-02 overflow-auto"
+      v-if="!webRTCStore.videoCallEstablished"
+    >
       <chat-video-call-info />
-      <v-card-text class="ma-0 pa-0 overflow-hidden">
-        <chat-video-call-local-player />
-        <chat-video-call-remote-player />
-      </v-card-text>
+    </v-card-text>
+    <v-card-text class="ma-0 pa-0 overflow-hidden">
+      <chat-video-call-local-player />
+      <chat-video-call-remote-player />
+    </v-card-text>
+    <v-card-actions
+      class="ma-0"
+      :class="!webRTCStore.videoCallEstablished ? '' : 'd-flex justify-center'"
+    >
       <chat-video-call-controls />
-    </v-card>
-  </v-container>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script setup lang="ts">

@@ -1,42 +1,38 @@
 <template>
-  <v-card-actions
-    :class="!webRTCStore.videoCallEstablished ? '' : 'd-flex justify-center'"
-  >
-    <v-btn
-      @click="endCall"
-      size="x-large"
-      icon="mdi-phone-hangup"
-      color="error"
-      variant="outlined"
-    ></v-btn>
-    <v-spacer v-if="!webRTCStore.videoCallEstablished"></v-spacer>
-    <v-btn
-      v-if="
-        !webRTCStore.videoCallEstablished && !webRTCStore.videoCallRequestSent
-      "
-      @click="newVideoCall"
-      size="x-large"
-      icon="mdi-phone"
-      color="success"
-      variant="outlined"
-    ></v-btn>
-    <v-btn
-      v-if="webRTCStore.videoCallEstablished"
-      @click="videoCall.toggleCamera"
-      size="x-large"
-      :icon="webRTCStore.camOn ? 'mdi-video' : 'mdi-video-off'"
-      :color="webRTCStore.camOn ? 'success' : 'error'"
-      variant="outlined"
-    ></v-btn>
-    <v-btn
-      v-if="webRTCStore.videoCallEstablished"
-      @click="videoCall.toggleMicrophone"
-      size="x-large"
-      :icon="webRTCStore.micOn ? 'mdi-microphone' : 'mdi-microphone-off'"
-      :color="webRTCStore.micOn ? 'success' : 'error'"
-      variant="outlined"
-    ></v-btn>
-  </v-card-actions>
+  <v-btn
+    @click="endCall"
+    size="x-large"
+    icon="mdi-phone-hangup"
+    color="error"
+    variant="outlined"
+  ></v-btn>
+  <v-spacer v-if="!webRTCStore.videoCallEstablished"></v-spacer>
+  <v-btn
+    v-if="
+      !webRTCStore.videoCallEstablished && !webRTCStore.videoCallRequestSent
+    "
+    @click="newVideoCall"
+    size="x-large"
+    icon="mdi-phone"
+    color="success"
+    variant="outlined"
+  ></v-btn>
+  <v-btn
+    v-if="webRTCStore.videoCallEstablished"
+    @click="videoCall.toggleCamera"
+    size="x-large"
+    :icon="webRTCStore.camOn ? 'mdi-video' : 'mdi-video-off'"
+    :color="webRTCStore.camOn ? 'success' : 'error'"
+    variant="outlined"
+  ></v-btn>
+  <v-btn
+    v-if="webRTCStore.videoCallEstablished"
+    @click="videoCall.toggleMicrophone"
+    size="x-large"
+    :icon="webRTCStore.micOn ? 'mdi-microphone' : 'mdi-microphone-off'"
+    :color="webRTCStore.micOn ? 'success' : 'error'"
+    variant="outlined"
+  ></v-btn>
 </template>
 
 <script setup lang="ts">

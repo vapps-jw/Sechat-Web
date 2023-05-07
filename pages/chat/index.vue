@@ -7,7 +7,7 @@
       <v-window-item value="contacts"> <ChatContacts /> </v-window-item>
       <v-window-item value="settings"> <ChatSettings /> </v-window-item>
     </v-window>
-    <ChatBottomNav />
+    <ChatBottomNav v-if="!webRTC.videoCallViewVisible" />
   </div>
 </template>
 

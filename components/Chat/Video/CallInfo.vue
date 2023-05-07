@@ -1,8 +1,10 @@
 <template>
   <!-- Waiting for approval -->
-  <v-card-text
-    class="ma-2 pa-02 overflow-auto"
-    v-if="webRTCStore.videoCallWaitingForApproval"
+  <div
+    v-if="
+      webRTCStore.videoCallWaitingForApproval &&
+      !webRTCStore.videoCallEstablished
+    "
   >
     <div class="d-flex justify-center">
       <p class="text-h5 text-center">
@@ -17,10 +19,9 @@
         icon="mdi-phone-incoming"
       ></v-icon>
     </div>
-  </v-card-text>
+  </div>
   <!-- Want to call someone -->
-  <v-card-text
-    class="ma-2 pa-02 overflow-auto"
+  <div
     v-else-if="
       !webRTCStore.videoCallEstablished &&
       !webRTCStore.videoCallRequestSent &&
@@ -32,10 +33,9 @@
         Call {{ webRTCStore.getVideoCallContact.displayName }}?
       </p>
     </div>
-  </v-card-text>
+  </div>
   <!-- Request sent -->
-  <v-card-text
-    class="ma-2 pa-02 overflow-auto"
+  <div
     v-else-if="
       webRTCStore.videoCallRequestSent && !webRTCStore.videoCallEstablished
     "
@@ -53,7 +53,7 @@
         icon="mdi-phone-incoming-outgoing"
       ></v-icon>
     </div>
-  </v-card-text>
+  </div>
 </template>
 
 <script setup lang="ts">
