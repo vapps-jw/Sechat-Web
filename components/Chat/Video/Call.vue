@@ -1,82 +1,10 @@
 <template>
   <v-container>
     <v-card class="sechat-v-card">
-      <!-- Waiting for approval -->
-      <v-card-text
-        class="ma-2 pa-02 overflow-auto"
-        v-if="webRTCStore.videoCallWaitingForApproval"
-      >
-        <div class="d-flex justify-center">
-          <p class="text-h5 text-center">
-            {{ webRTCStore.getVideoCallContact.displayName }}
-          </p>
-        </div>
-        <div class="d-flex justify-center mt-15">
-          <v-icon
-            class="sechat-shaking"
-            color="warning"
-            size="x-large"
-            icon="mdi-phone-incoming"
-          ></v-icon>
-        </div>
-      </v-card-text>
-      <!-- Want to call someone -->
-      <v-card-text
-        class="ma-2 pa-02 overflow-auto"
-        v-if="
-          !webRTCStore.videoCallEstablished &&
-          !webRTCStore.videoCallRequestSent &&
-          !webRTCStore.videoCallWaitingForApproval
-        "
-      >
-        <div class="d-flex justify-center">
-          <p class="text-h5 text-center">
-            Call {{ webRTCStore.getVideoCallContact.displayName }}?
-          </p>
-        </div>
-      </v-card-text>
-      <!-- Waiting for approval -->
-      <v-card-text
-        class="ma-2 pa-02 overflow-auto"
-        v-if="
-          webRTCStore.videoCallRequestSent && !webRTCStore.videoCallEstablished
-        "
-      >
-        <div class="d-flex justify-center">
-          <p class="text-h5 text-center">
-            Calling {{ webRTCStore.getVideoCallContact.displayName }}
-          </p>
-        </div>
-        <div class="d-flex justify-center mt-15">
-          <v-icon
-            class="sechat-shaking"
-            color="warning"
-            size="x-large"
-            icon="mdi-phone-incoming-outgoing"
-          ></v-icon>
-        </div>
-      </v-card-text>
-      <!-- Video call section -->
+      <chat-video-call-info />
       <v-card-text class="ma-0 pa-0 overflow-hidden">
-        <v-sheet
-          class="d-flex justify-center ma-1"
-          :class="
-            webRTCStore.videoCallEstablished
-              ? 'video-local-size'
-              : 'video-small-size'
-          "
-        >
-          <video id="video-stream-local" class="rounded-lg" autoplay></video>
-        </v-sheet>
-
-        <v-sheet class="d-flex justify-center video-remote-size ma-1">
-          <video
-            id="video-stream-remote"
-            autoplay
-            class="rounded-lg"
-            :class="webRTCStore.videoCallEstablished ? '' : 'sechat-hidden'"
-          ></video>
-        </v-sheet>
+        <chat-video-call-local-player />
+        <chat-video-call-remote-player />
       </v-card-text>
       <chat-video-call-controls />
     </v-card>

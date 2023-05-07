@@ -42,7 +42,7 @@ const isContact = (userName: string) => {
   return chatStore.getContacts.find((c) => c.displayName === userName);
 };
 
-const removeUserFromRoom = async (data: IMemeber) => {
+const removeUserFromRoom = async (data: IRoomMemeber) => {
   if (chatStore.getActiveRoom.members.length == 1) {
     sechatApp.showWarningSnackbar("Last member has to delete Room");
     return;

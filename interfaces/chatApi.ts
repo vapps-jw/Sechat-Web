@@ -33,7 +33,7 @@ interface IRoom {
   id?: string;
   name?: string;
   messages?: IMessage[];
-  members?: IMemeber[];
+  members?: IRoomMemeber[];
   creatorName?: string;
   lastActivity?: Date;
   created?: Date;
@@ -64,7 +64,7 @@ interface IMessageViewer {
   user?: string;
 }
 
-interface IMemeber {
+interface IRoomMemeber {
   userName?: string;
   lastActivity?: Date;
 }

@@ -32,7 +32,7 @@ const chatStore = useSechatChatStore();
 const userStore = useUserStore();
 
 interface PropsModel {
-  roomMember: IMemeber;
+  roomMember: IRoomMemeber;
 }
 
 const props = defineProps<PropsModel>();
