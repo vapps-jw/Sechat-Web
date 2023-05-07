@@ -90,6 +90,7 @@ export const useWebRTCStore = defineStore({
     getVideoCallContact: (state) => state.videoCallContact,
     getVideoCallContactName: (state) => state.videoCallContact?.displayName,
     // WebRTC
+    getPeerConnectionState: (state) => state.peerConnection?.connectionState,
     getPeerConnection: (state) => state.peerConnection,
     // Media
     getLocalAudioTrack: (state) =>

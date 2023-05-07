@@ -205,10 +205,13 @@ export const useVideoCall = () => {
         case "connecting":
           break;
         case "failed":
+          appStore.showErrorSnackbar("Connection error");
+          webRTCStore.cleanup();
+          webRTCStore.$reset();
           break;
         case "connected":
+          appStore.showSuccessSnackbar("You are connected");
           break;
-
         default:
           break;
       }
