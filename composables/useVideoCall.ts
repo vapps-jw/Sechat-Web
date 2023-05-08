@@ -15,11 +15,7 @@ export const useVideoCall = () => {
       return;
     }
 
-    console.log(
-      "--> Final ICE List",
-      JSON.parse(JSON.stringify(servers.value))
-    );
-    return servers.data;
+    return JSON.parse(JSON.stringify(servers.value));
   };
 
   const initializeCall = async () => {
@@ -162,6 +158,7 @@ export const useVideoCall = () => {
     console.log("--> Creating peer connection", userName);
 
     const servers = await getICECandidates();
+    console.warn("--> ICE SERVERS", servers);
     const peerConnection = new RTCPeerConnection({
       iceServers: servers,
       iceTransportPolicy: "all",
@@ -222,11 +219,7 @@ export const useVideoCall = () => {
 
     webRTCStore.peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
-        // if (event.candidate.candidate.includes("typ host")) {
-        //   console.warn("--> Candidate is there:", event.candidate);
-        //   return;
-        // }
-        console.warn("--> Sending ICE Candidate to", userName);
+        ``;
         sendICECandiadate({
           userName: userName,
           message: JSON.stringify(event.candidate),
