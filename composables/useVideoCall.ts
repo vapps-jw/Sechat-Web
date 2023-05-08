@@ -222,6 +222,10 @@ export const useVideoCall = () => {
 
     webRTCStore.peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
+        // if (event.candidate.candidate.includes("typ host")) {
+        //   console.warn("--> Candidate is there:", event.candidate);
+        //   return;
+        // }
         console.warn("--> Sending ICE Candidate to", userName);
         sendICECandiadate({
           userName: userName,
