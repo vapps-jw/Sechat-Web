@@ -141,7 +141,6 @@ export const useVideoCall = () => {
   };
 
   const ICECandidateIncoming = (data: IStringMessage) => {
-    console.warn("--> ICE Candidate Incoming!", JSON.parse(data.message));
     if (webRTCStore.readyToReceiveCandidates) {
       console.warn("--> ICE Candidate being added!", JSON.parse(data.message));
       webRTCStore.peerConnection.addIceCandidate(JSON.parse(data.message));
