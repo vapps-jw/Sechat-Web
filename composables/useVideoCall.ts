@@ -38,13 +38,18 @@ export const useVideoCall = () => {
 
     webRTCStore.updateSourcePlayerVisible(true);
 
+    await createPeerConnection(webRTCStore.getVideoCallContactName);
+
     console.warn("--> Local Player", webRTCStore.localVideo);
     console.warn("--> Remote Player", webRTCStore.remoteVideo);
   };
 
-  const approveCall = () => {
+  const approveCall = async () => {
     webRTCStore.updateVideoCallWaitingForApproval(false);
     webRTCStore.updateVideoCallEstablished(true);
+
+    await createPeerConnection(webRTCStore.getVideoCallContactName);
+
     approveVideoCall({
       message: webRTCStore.getVideoCallContact.displayName,
     });
@@ -76,21 +81,20 @@ export const useVideoCall = () => {
       JSON.parse(data.message)
     );
 
-    await createPeerConnection(data.userName);
     webRTCStore.peerConnection
       .setRemoteDescription(JSON.parse(data.message))
       .then(() => {
         webRTCStore.readyToReceiveCandidates = true;
         console.log("--> Remote description set");
         return Promise.all(
-          webRTCStore.iceCandidatesBuffer.map((c) =>
+          webRTCStore.remoteIceCandidatesBuffer.map((c) =>
             webRTCStore.peerConnection.addIceCandidate(c)
           )
         );
       })
       .then(() => {
         console.log("--> All stored candidates added");
-        webRTCStore.iceCandidatesBuffer.length = 0;
+        webRTCStore.remoteIceCandidatesBuffer.length = 0;
       })
       .catch((err) =>
         console.error("--> Error when adding ICE candidates", err)
@@ -119,17 +123,17 @@ export const useVideoCall = () => {
         webRTCStore.readyToReceiveCandidates = true;
         console.log(
           "--> Remote description set, candidates in buffer:",
-          webRTCStore.iceCandidatesBuffer.length
+          webRTCStore.remoteIceCandidatesBuffer.length
         );
         return Promise.all(
-          webRTCStore.iceCandidatesBuffer.map((c) =>
+          webRTCStore.remoteIceCandidatesBuffer.map((c) =>
             webRTCStore.peerConnection.addIceCandidate(c)
           )
         );
       })
       .then(() => {
         console.log("--> All stored candidates added");
-        webRTCStore.iceCandidatesBuffer.length = 0;
+        webRTCStore.remoteIceCandidatesBuffer.length = 0;
       })
       .catch((err) =>
         console.error("--> Error when adding ICE candidates", err)
@@ -149,12 +153,12 @@ export const useVideoCall = () => {
         "--> ICE Candidate being added to buffer!",
         JSON.parse(data.message)
       );
-      webRTCStore.iceCandidatesBuffer.push(JSON.parse(data.message));
+      webRTCStore.remoteIceCandidatesBuffer.push(JSON.parse(data.message));
     }
   };
 
   const createPeerConnection = async (userName: string) => {
-    console.log("--> Creating peer connection", userName);
+    console.log("--> Creating peer connection");
 
     const servers = await getICECandidates();
     console.warn("--> ICE SERVERS", servers);
@@ -218,7 +222,7 @@ export const useVideoCall = () => {
 
     webRTCStore.peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
-        ``;
+        console.log("--> Sending ICE Candidate");
         sendICECandiadate({
           userName: userName,
           message: JSON.stringify(event.candidate),
@@ -229,7 +233,6 @@ export const useVideoCall = () => {
 
   const createAndSendOffer = async (userName: string) => {
     console.log("--> Creating and senting offer", userName);
-    await createPeerConnection(userName);
 
     let offer = await webRTCStore.peerConnection.createOffer();
     await webRTCStore.peerConnection.setLocalDescription(offer);

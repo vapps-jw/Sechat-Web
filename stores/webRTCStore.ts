@@ -17,7 +17,7 @@ export const useWebRTCStore = defineStore({
       camOn: <boolean>true,
       // WebRTC
       readyToReceiveCandidates: <boolean>false,
-      iceCandidatesBuffer: <RTCIceCandidate[]>[],
+      remoteIceCandidatesBuffer: <RTCIceCandidate[]>[],
       localStream: <MediaStream>null,
       remoteStream: <MediaStream>null,
       peerConnection: <RTCPeerConnection>null,
