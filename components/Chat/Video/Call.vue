@@ -1,22 +1,30 @@
 <template>
-  <v-card class="sechat-v-card ma-0">
-    <v-card-text
-      class="ma-2 pa-02 overflow-auto"
-      v-if="!webRTCStore.videoCallEstablished"
-    >
+  <div>
+    <div v-if="!webRTCStore.videoCallEstablished" class="call-info-container">
       <chat-video-call-info />
-    </v-card-text>
-    <v-card-text class="ma-0 pa-0 overflow-hidden">
-      <chat-video-call-local-player />
-      <chat-video-call-remote-player />
-    </v-card-text>
-    <v-card-actions
-      class="ma-0"
-      :class="!webRTCStore.videoCallEstablished ? '' : 'd-flex justify-center'"
-    >
+    </div>
+
+    <div class="videos-container">
+      <video
+        id="video-stream-local"
+        autoplay
+        :class="
+          webRTCStore.videoCallEstablished ? 'smallFrame' : 'video-player'
+        "
+      ></video>
+      <video
+        id="video-stream-remote"
+        autoplay
+        :class="
+          webRTCStore.videoCallEstablished ? 'video-player' : 'sechat-hidden'
+        "
+      ></video>
+    </div>
+
+    <div class="control-container">
       <chat-video-call-controls />
-    </v-card-actions>
-  </v-card>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -42,30 +50,50 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.video-remote-size > video {
-  width: 75%;
-  height: 75%;
-  max-height: 75%;
+.smallFrame {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  height: 100px;
+  width: 100px;
+  border-radius: 5px;
+  -webkit-box-shadow: 3px 3px 15px -1px rgba(0, 0, 0, 0.77);
+  box-shadow: 3px 3px 15px -1px rgba(0, 0, 0, 0.77);
+  z-index: 999;
 }
 
-.video-remote-size {
+.video-player {
+  background-color: black;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.call-info-container {
+  width: 80%;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.videos-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 100vh;
   overflow: hidden;
 }
-
-.video-small-size > video {
-  width: 50%;
-  height: 50%;
-}
-
-.video-remote-size {
-  overflow: hidden;
-}
-
-.video-local-size > video {
-  width: 25%;
-}
-
-.video-local-size {
-  overflow: hidden;
+.control-container {
+  width: 80%;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 </style>
