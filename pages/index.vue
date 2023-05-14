@@ -1,42 +1,35 @@
 <template>
-  <div>
-    <v-container>
-      <client-only>
-        <div class="d-flex flex-column align-center">
-          <v-btn v-if="userStore.isSignedIn" class="my-2" size="large">
-            <NuxtLink class="sechat-link-clear" :to="`/chat`">Chat</NuxtLink>
-          </v-btn>
-          <v-btn v-if="userStore.isSignedIn" class="my-2" size="large">
-            <NuxtLink class="sechat-link-clear" :to="`/user/changePassword`"
-              >Change Password</NuxtLink
-            >
-          </v-btn>
-          <v-btn
-            v-if="userStore.isSignedIn"
-            class="my-2"
-            size="large"
-            @click="signOut"
-            >Sign Out</v-btn
-          >
-          <v-btn v-if="!userStore.isSignedIn" class="my-2" size="large">
-            <NuxtLink class="sechat-link-clear" :to="`/user/login`"
-              >Sign In</NuxtLink
-            >
-          </v-btn>
-          <v-btn v-if="!userStore.isSignedIn" class="my-2" size="large">
-            <NuxtLink class="sechat-link-clear" :to="`/user/register`"
-              >Sign Up</NuxtLink
-            >
-          </v-btn>
-          <v-btn class="my-2" size="large">
-            <NuxtLink class="sechat-link-clear" :to="`/details/about`"
-              >FAQ</NuxtLink
-            >
-          </v-btn>
-        </div>
-      </client-only>
-    </v-container>
-  </div>
+  <v-container class="d-flex flex-column align-center">
+    <v-btn v-if="userStore.isSignedIn" class="my-2" size="large">
+      <NuxtLink class="sechat-link-clear" :to="`/chat`">Chat</NuxtLink>
+    </v-btn>
+    <v-btn v-if="userStore.isSignedIn" class="my-2" size="large">
+      <NuxtLink class="sechat-link-clear" :to="`/user/changePassword`"
+        >Change Password</NuxtLink
+      >
+    </v-btn>
+    <v-btn
+      v-if="userStore.isSignedIn"
+      class="my-2"
+      size="large"
+      @click="signOut"
+      >Sign Out</v-btn
+    >
+    <v-btn v-if="!userStore.isSignedIn" class="my-2" size="large">
+      <NuxtLink class="sechat-link-clear" :to="`/user/login`">Sign In</NuxtLink>
+    </v-btn>
+    <v-btn v-if="!userStore.isSignedIn" class="my-2" size="large">
+      <NuxtLink class="sechat-link-clear" :to="`/user/register`"
+        >Sign Up</NuxtLink
+      >
+    </v-btn>
+    <v-btn class="my-2" size="large">
+      <NuxtLink class="sechat-link-clear" :to="`/details/about`">FAQ</NuxtLink>
+    </v-btn>
+    <v-btn class="my-2" size="large">
+      <NuxtLink class="sechat-link-clear" :to="`policies`">Policies</NuxtLink>
+    </v-btn>
+  </v-container>
 </template>
 
 <script setup lang="ts">

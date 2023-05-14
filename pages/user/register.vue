@@ -23,6 +23,17 @@
           :counter="20"
           label="Password"
         ></v-text-field>
+        <v-checkbox
+          v-model="credentials.policiesAccepted"
+          :rules="[(v) => !!v || 'You must agree to continue!']"
+          required
+        >
+          <template v-slot:label>
+            <span style="font-size: 10px"
+              >I accept privacy policy and terms of service</span
+            >
+          </template>
+        </v-checkbox>
 
         <br />
         <v-btn
@@ -61,8 +72,10 @@ const config = useRuntimeConfig();
 
 interface ICredentials {
   valid: boolean;
+  policiesAccepted: boolean;
   username: string;
   password: string;
+  agreementRoles: any;
   usernameRules: any;
   passwordRules: any;
 }
@@ -72,8 +85,10 @@ const buttonText = ref<string>("Sign Up");
 const buttonColor = ref<string>("warning");
 const credentials = ref<ICredentials>({
   valid: true,
+  policiesAccepted: false,
   username: "",
   password: "",
+  agreementRoles: [(v) => !!v || "You must agree to continue!"],
   usernameRules: [
     (v) => !!v || "Username is required",
     (v) => (v && v.length <= 10) || "Max 10 characters",
