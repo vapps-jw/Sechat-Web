@@ -9,6 +9,7 @@
 <script setup lang="ts">
 const route = useRoute();
 const token = ref(route.query.token ? route.query.token : "");
+const userName = ref(route.query.userName ? route.query.userName : "");
 const email = ref(route.query.email ? route.query.email : "");
 const config = useRuntimeConfig();
 const appStore = useSechatAppStore();
@@ -16,13 +17,14 @@ const appStore = useSechatAppStore();
 const message = ref("");
 
 onMounted(async () => {
-  console.warn("--> Confirmation request", email.value, token.value);
-  if (!email || !token) {
+  console.warn("--> Confirmation request", userName.value, token.value);
+  if (!userName.value || !token.value) {
     return;
   }
 
-  const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/account/update-email`,
+  console.log("--> Sending confirmation");
+  const { error: apiError, data: apiData } = await useFetch(
+    `${config.public.apiBase}/account/confirm-email`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -30,19 +32,18 @@ onMounted(async () => {
       method: "POST",
       credentials: "include",
       body: {
-        email: email.value,
+        userName: userName.value,
         token: token.value,
+        email: email.value,
       },
     }
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(apiError.value.message);
+    console.error("--> API Error", apiError.value.data);
+    message.value = apiError.value.data;
     return;
   }
-
-  appStore.showSuccessSnackbar(
-    `Confirmation request sent to ${emailForm.value.email}`
-  );
+  message.value = <any>apiData.value;
 });
 </script>

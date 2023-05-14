@@ -7,10 +7,9 @@
         @click:append-inner="onSubmit"
         v-model="emailForm.email"
         :rules="emailForm.emailRules"
-        label="Email"
         variant="outlined"
       >
-        <template v-slot:prepend>
+        <template v-slot:append>
           <v-icon
             v-if="userStore.getUserEmail && userStore.isEmailConfirmed"
             color="success"
@@ -42,7 +41,7 @@ interface IEmail {
 
 const emailForm = ref<IEmail>({
   valid: true,
-  email: "",
+  email: userStore.getUserEmail,
   emailRules: [(v) => /.+@.+/.test(v) || "Invalid Email address"],
 });
 
@@ -64,10 +63,9 @@ const onSubmit = async () => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(apiError.value.message);
+    appStore.showErrorSnackbar(apiError.value.data);
     return;
   }
-
   appStore.showSuccessSnackbar(
     `Confirmation request sent to ${emailForm.value.email}`
   );
