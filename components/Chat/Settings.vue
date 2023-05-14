@@ -14,7 +14,10 @@
         <v-list flex align-center>
           <v-list-subheader>User name</v-list-subheader>
           <v-list-item> {{ userStore.getUserName }} </v-list-item>
-          <v-divider class="mt-10" />
+          <v-divider class="mt-5" />
+          <v-list-subheader>Email</v-list-subheader>
+          <ChatProfileEmailSection />
+          <v-divider class="mt-5" />
           <v-list-subheader>Notifications</v-list-subheader>
           <v-list-item>
             <template v-slot:prepend>
@@ -26,7 +29,7 @@
               <ChatProfileRemoveSubscriptions />
             </template>
           </v-list-item>
-          <v-divider class="mt-10" />
+          <v-divider class="mt-5" />
           <v-list-subheader color="error">Danger Zone</v-list-subheader>
           <v-list-item>
             <template v-slot:prepend>

@@ -13,5 +13,7 @@ export const useUserStore = defineStore({
   getters: {
     isSignedIn: (state) => (state.userProfile ? true : false),
     getUserName: (state) => state.userProfile?.userName,
+    getUserEmail: (state) => state.userProfile?.email,
+    isEmailConfirmed: (state) => state.userProfile?.emailConfirmed,
   },
 });
