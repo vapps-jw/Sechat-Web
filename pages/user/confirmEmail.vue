@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <p>forgot password ups - one field for wmail address</p>
-  </div>
+  <div>Success</div>
 </template>
 
 <script setup lang="ts"></script>
