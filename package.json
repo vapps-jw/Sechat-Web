@@ -24,7 +24,7 @@
     "@pinia/nuxt": "^0.4.11",
     "base64-js": "^1.5.1",
     "sass": "^1.57.1",
-    "vuetify": "^3.2.5"
+    "vuetify": "^3.3.0"
   },
   "overrides": {
     "vue": "latest"
