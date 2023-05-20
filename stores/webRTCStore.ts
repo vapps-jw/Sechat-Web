@@ -88,6 +88,8 @@ export const useWebRTCStore = defineStore({
         this.localStream.getTracks().forEach((track) => track.stop());
         this.localStream = null;
       }
+      clearInterval(this.callNotificationInterval);
+      this.callNotificationInterval = null;
     },
   },
   getters: {

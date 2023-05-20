@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     turnUser: process.env.NUXT_TURN_USER ?? "not set",
     turnPassword: process.env.NUXT_TURN_PASSWORD ?? "not set",
     public: {
-      appVersion: "BETA v0.5.3.2",
+      appVersion: "BETA v0.5.3.3",
       vapidKey: process.env.NUXT_PUBLIC_VAPID_KEY ?? "not set",
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? "not set",
     },

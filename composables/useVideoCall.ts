@@ -5,6 +5,7 @@ export const useVideoCall = () => {
   const sechatChatStore = useSechatChatStore();
   const appStore = useSechatAppStore();
   const webRTCStore = useWebRTCStore();
+  const sechatApp = useSechatApp();
 
   const getICECandidates = async () => {
     const { data: servers, error: apiError } = await (<any>(
@@ -52,6 +53,11 @@ export const useVideoCall = () => {
         message: webRTCStore.getVideoCallContactName,
       });
     }, 3000);
+  };
+
+  const stopCalling = async () => {
+    console.warn("--> Stopped Calling...");
+    webRTCStore.stopCalling();
   };
 
   const approveCall = async () => {
@@ -301,15 +307,16 @@ export const useVideoCall = () => {
 
   // Call approved
 
-  const approveVideoCall = (data: IStringUserMessage) => {
+  const approveVideoCall = async (data: IStringUserMessage) => {
     console.log("--> Sending video call approved", data);
     signalRStore.connection.send(SignalRHubMethods.ApproveVideoCall, data);
+    await sechatApp.clearVideoCallNotifications();
   };
 
   // Call Approved Sending Offer
   const videoCallApproved = (data: IStringMessage) => {
     console.warn(`--> Call approved by: ${data.message}`);
-    webRTCStore.stopCalling();
+    stopCalling();
     let connection = sechatChatStore.getContacts.find(
       (c) => c.inviterName === data.message || c.invitedName === data.message
     );
@@ -323,16 +330,17 @@ export const useVideoCall = () => {
 
   // Call rejected
 
-  const rejectVideoCall = (data: string) => {
+  const rejectVideoCall = async (data: string) => {
     console.log("--> Sending video call rejection", data);
     signalRStore.connection.send(SignalRHubMethods.RejectVideoCall, {
       message: data,
     });
+    await sechatApp.clearVideoCallNotifications();
   };
 
   const videoCallRejected = (data: IStringMessage) => {
     console.warn(`--> Call rejected by: ${data.message}`);
-    webRTCStore.stopCalling();
+    stopCalling();
     webRTCStore.cleanup();
     webRTCStore.$reset();
     appStore.showErrorSnackbar(`Call rejected by ${data.message}`);

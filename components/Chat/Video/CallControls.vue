@@ -57,7 +57,7 @@ const newVideoCall = async () => {
   }
   if (webRTCStore.videoCallWaitingForApproval) {
     console.log("--> Approving call...");
-    videoCall.approveCall();
+    await videoCall.approveCall();
     return;
   }
   console.error("--> Call is being processed...");
@@ -65,7 +65,9 @@ const newVideoCall = async () => {
 
 const endCall = async () => {
   if (webRTCStore.videoCallWaitingForApproval) {
-    videoCall.rejectVideoCall(webRTCStore.getVideoCallContact.displayName);
+    await videoCall.rejectVideoCall(
+      webRTCStore.getVideoCallContact.displayName
+    );
   } else {
     videoCall.terminateVideoCall(webRTCStore.getVideoCallContact.displayName);
   }
