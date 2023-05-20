@@ -62,6 +62,13 @@ self.addEventListener("push", async (event) => {
 });
 
 self.addEventListener("notificationclick", (event) => {
+  const clickedNotification = event.notification;
+
+  if (clickedNotification.title === PushNotificationTypes.VideoCall) {
+    clickedNotification.close();
+    return;
+  }
+
   const promiseChain = clients
     .matchAll({ type: "window", includeUncontrolled: true })
     .then((windowClients) => {
@@ -71,8 +78,6 @@ self.addEventListener("notificationclick", (event) => {
     });
 
   event.waitUntil(promiseChain);
-
-  const clickedNotification = event.notification;
   clickedNotification.close();
 });
 
@@ -89,7 +94,7 @@ function isClientFocused() {
       for (let i = 0; i < windowClients.length; i++) {
         const windowClient = windowClients[i];
         if (windowClient.focused) {
-          clientIsFocused.focus();
+          clientIsFocused = true;
           break;
         }
       }
