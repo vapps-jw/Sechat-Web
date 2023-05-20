@@ -12,7 +12,6 @@ const token = ref(route.query.token ? route.query.token : "");
 const userName = ref(route.query.userName ? route.query.userName : "");
 const email = ref(route.query.email ? route.query.email : "");
 const config = useRuntimeConfig();
-const appStore = useSechatAppStore();
 
 const message = ref("");
 
