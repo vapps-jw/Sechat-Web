@@ -51,7 +51,7 @@ export const useVideoCall = () => {
       signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
         message: webRTCStore.getVideoCallContactName,
       });
-    }, 2000);
+    }, 3000);
   };
 
   const approveCall = async () => {
