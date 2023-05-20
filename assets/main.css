@@ -4,15 +4,19 @@
 }
 
 .sechat-v-card-full {
-  height: 85vh;
+  height: 85dvh;
   display: flex !important;
   flex-direction: column;
 }
 
 .sechat-v-card {
-  height: 95vh;
+  height: 95dvh;
   display: flex !important;
   flex-direction: column;
+}
+
+.sechat-layout {
+  height: 100dvh;
 }
 
 .sechat-hidden {

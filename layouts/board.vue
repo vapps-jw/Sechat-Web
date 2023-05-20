@@ -1,6 +1,6 @@
 <template>
   <v-app id="chat-view">
-    <v-main class="overflow-hidden">
+    <v-main class="overflow-hidden sechat-layout">
       <chat-snackbar />
       <chat-loading-overlay :overlay="sechatAppStore.showLoadingOverlay" />
       <slot />
