@@ -16,6 +16,7 @@ export const useWebRTCStore = defineStore({
       micOn: <boolean>true,
       camOn: <boolean>true,
       // WebRTC
+      callNotificationInterval: <NodeJS.Timer>null,
       readyToReceiveCandidates: <boolean>false,
       remoteIceCandidatesBuffer: <RTCIceCandidate[]>[],
       localStream: <MediaStream>null,
@@ -75,6 +76,10 @@ export const useWebRTCStore = defineStore({
       this.videoCallContact = data;
     },
     // WebRTC
+    stopCalling() {
+      clearInterval(this.callNotificationInterval);
+      this.callNotificationInterval = null;
+    },
     updatePeerConnection(peerConnection: RTCPeerConnection) {
       this.peerConnection = peerConnection;
     },

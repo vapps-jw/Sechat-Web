@@ -42,6 +42,16 @@ export const useVideoCall = () => {
 
     console.warn("--> Local Player", webRTCStore.localVideo);
     console.warn("--> Remote Player", webRTCStore.remoteVideo);
+
+    startCalling();
+  };
+
+  const startCalling = () => {
+    webRTCStore.callNotificationInterval = setInterval(function () {
+      signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
+        message: webRTCStore.getVideoCallContactName,
+      });
+    }, 2000);
   };
 
   const approveCall = async () => {
@@ -299,6 +309,7 @@ export const useVideoCall = () => {
   // Call Approved Sending Offer
   const videoCallApproved = (data: IStringMessage) => {
     console.warn(`--> Call approved by: ${data.message}`);
+    webRTCStore.stopCalling();
     let connection = sechatChatStore.getContacts.find(
       (c) => c.inviterName === data.message || c.invitedName === data.message
     );
@@ -321,6 +332,7 @@ export const useVideoCall = () => {
 
   const videoCallRejected = (data: IStringMessage) => {
     console.warn(`--> Call rejected by: ${data.message}`);
+    webRTCStore.stopCalling();
     webRTCStore.cleanup();
     webRTCStore.$reset();
     appStore.showErrorSnackbar(`Call rejected by ${data.message}`);

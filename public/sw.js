@@ -37,14 +37,15 @@ self.addEventListener("push", async (event) => {
     n.close();
   });
 
+  console.warn("--> Push notification received", data);
   let options = {};
   if (String(data.title) === PushNotificationTypes.VideoCall) {
     options = {
       body: String(data.options.body),
       icon: "icons/icon_64x64.png",
-      badge: "icons/message-badge.png",
+      badge: "icons/phone-badge.png",
       tag: "Sechat",
-      vibrate: [500, 500, 500, 500, 500, 500, 500, 500, 500],
+      vibrate: [1000],
     };
   } else {
     options = {
