@@ -48,7 +48,6 @@
 </template>
 
 <script setup lang="ts">
-const userData = useUserApi();
 const form = ref(false);
 const loading = ref(false);
 const appStore = useSechatApp();

@@ -3,13 +3,11 @@
     <v-form v-model="form" @submit.prevent="onSubmit">
       <v-text-field
         class="mt-2"
-        append-inner-icon="mdi-send"
-        @click:append-inner="onSubmit"
         v-model="emailForm.email"
         :rules="emailForm.emailRules"
         variant="outlined"
       >
-        <template v-slot:append>
+        <template v-slot:append-inner>
           <v-icon
             v-if="userStore.getUserEmail && userStore.isEmailConfirmed"
             color="success"
@@ -21,6 +19,9 @@
             >mdi-check-bold</v-icon
           >
           <v-icon v-else color="tertiary">mdi-email-off-outline</v-icon>
+        </template>
+        <template v-slot:append>
+          <v-icon @click="onSubmit" color="warning">mdi-send</v-icon>
         </template>
       </v-text-field>
     </v-form>

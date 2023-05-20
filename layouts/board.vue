@@ -5,20 +5,18 @@
       <chat-loading-overlay :overlay="sechatAppStore.showLoadingOverlay" />
       <slot />
     </v-main>
-    <!-- <chat-footer /> -->
   </v-app>
 </template>
 
 <script setup lang="ts">
 //const lockResolver = ref(null);
 const sechatAppStore = useSechatAppStore();
+const appStore = useSechatAppStore();
 const signalR = useSignalR();
 const signalRStore = useSignalRStore();
 const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
 const chatStore = useSechatChatStore();
-const videoCall = useVideoCall();
-const appStore = useSechatAppStore();
 
 onMounted(async () => {
   window.addEventListener("beforeunload", () => {
@@ -53,6 +51,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   console.warn("--> Chat Layout onBeforeUnmount");
+  appStore.updateLoadingOverlay(true);
 
   signalR.closeConnection();
   signalRStore.$reset();
@@ -69,6 +68,8 @@ onBeforeUnmount(() => {
   console.info("--> Removing Hook to online change");
   window.removeEventListener("online", refreshHandler.handleOnlineChange);
   window.removeEventListener("offline", refreshHandler.handleOfflineChange);
+  window.location.reload();
+  appStore.updateLoadingOverlay(false);
 });
 
 // console.info("--> Handling lock");
