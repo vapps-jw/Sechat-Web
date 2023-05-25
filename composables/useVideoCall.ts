@@ -52,7 +52,7 @@ export const useVideoCall = () => {
       signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
         message: webRTCStore.getVideoCallContactName,
       });
-    }, 3000);
+    }, 5000);
   };
 
   const stopCalling = async () => {
