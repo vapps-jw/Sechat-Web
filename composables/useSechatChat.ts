@@ -6,16 +6,21 @@ export const useSechatChat = () => {
   const chatStore = useSechatChatStore();
   const chatApi = useChatApi();
 
-  // User Connections
+  // Users
+
+  const onUserConnectionDeleteEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting UserConnectionRemoved event");
+    connection.on(SignalRHubMethods.ConnectionDeleted, handleConnectionDelete);
+  };
+
+  const onUserConnectionUpdatedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting UserConnectionUpdated event");
+    connection.on(SignalRHubMethods.ConnectionUpdated, handleConnectionUpdated);
+  };
 
   const onContactStateChangedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting ContactStateChanged");
     connection.on(SignalRHubMethods.ContactStateChanged, contactStateChanged);
-  };
-
-  const offContactStateChangedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting ContactStateChanged");
-    connection.off(SignalRHubMethods.ContactStateChanged, contactStateChanged);
   };
 
   const contactStateChanged = (data: IStringUserMessage) => {
@@ -62,6 +67,26 @@ export const useSechatChat = () => {
   };
 
   // Rooms
+
+  const onConnectionRequestReceivedEvent = (
+    connection: signalR.HubConnection
+  ) => {
+    console.log("--> Connecting ConnectionRequestReceived event");
+    connection.on(
+      SignalRHubMethods.ConnectionRequestReceived,
+      handleConnectionRequestReceived
+    );
+  };
+
+  const onRoomUpdatedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting RoomUpdated event");
+    connection.on(SignalRHubMethods.RoomUpdated, handleUpdateRoom);
+  };
+
+  const onRoomDeletedEvent = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting RoomDeleted event");
+    connection.on(SignalRHubMethods.RoomDeleted, handleDeleteRoom);
+  };
 
   const addRoom = (room: IRoom) => {
     console.log("--> Adding room to the Store", room.name);
@@ -113,6 +138,24 @@ export const useSechatChat = () => {
 
   // Messages
 
+  const onMessageWasViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting MessageWasViewed event");
+    connection.on(SignalRHubMethods.MessageWasViewed, handleMessageWasViewed);
+  };
+
+  const onMessagesWereViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting MessagesWereViewed event");
+    connection.on(
+      SignalRHubMethods.MessagesWereViewed,
+      handleMessagesWereViewed
+    );
+  };
+
+  const onIncomingMessage = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting IncomingMessage event");
+    connection.on(SignalRHubMethods.MessageIncoming, handleIncomingMessage);
+  };
+
   const handleIncomingMessage = (message: IMessage) => {
     console.warn(
       "--> Incoming Message Event Handle",
@@ -163,6 +206,14 @@ export const useSechatChat = () => {
   // SignalR Event handlers
 
   return {
+    onUserConnectionDeleteEvent,
+    onUserConnectionUpdatedEvent,
+    onConnectionRequestReceivedEvent,
+    onRoomUpdatedEvent,
+    onRoomDeletedEvent,
+    onIncomingMessage,
+    onMessagesWereViewed,
+    onMessageWasViewed,
     handleMessageWasViewed,
     handleMessagesWereViewed,
     removeRoom,
@@ -179,6 +230,5 @@ export const useSechatChat = () => {
     handleUserAddedToRoom,
     handleUserRemovedFromRoom,
     onContactStateChangedEvent,
-    offContactStateChangedEvent,
   };
 };

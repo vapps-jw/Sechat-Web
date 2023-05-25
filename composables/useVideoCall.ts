@@ -259,6 +259,7 @@ export const useVideoCall = () => {
   };
 
   const toggleCamera = () => {
+    // TODO: fire signalR signal to peer
     webRTCStore.camOn = !webRTCStore.camOn;
 
     let videoTrack = webRTCStore.getLocalVideoTrack;
@@ -275,6 +276,7 @@ export const useVideoCall = () => {
   };
 
   const toggleMicrophone = () => {
+    // TODO: fire signalR signal to peer
     webRTCStore.micOn = !webRTCStore.micOn;
 
     let audioTrack = webRTCStore.getLocalAudioTrack;
@@ -373,19 +375,9 @@ export const useVideoCall = () => {
     connection.on(SignalRHubMethods.WebRTCAnswerIncoming, answerIncoming);
   };
 
-  const offWebRTCAnswerIncomingEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting WebRTCAnswerIncoming");
-    connection.off(SignalRHubMethods.WebRTCAnswerIncoming, answerIncoming);
-  };
-
   const onWebRTCOfferIncomingEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting WebRTCOfferIncoming");
     connection.on(SignalRHubMethods.WebRTCOfferIncoming, offerIncoming);
-  };
-
-  const offWebRTCOfferIncomingEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting WebRTCOfferIncoming");
-    connection.off(SignalRHubMethods.WebRTCOfferIncoming, offerIncoming);
   };
 
   const onVideoCallTerminatedEvent = (connection: signalR.HubConnection) => {
@@ -393,29 +385,14 @@ export const useVideoCall = () => {
     connection.on(SignalRHubMethods.VideoCallTerminated, videoCallTerminated);
   };
 
-  const offVideoCallTerminatedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting VideoCallTerminatedEvent");
-    connection.off(SignalRHubMethods.VideoCallTerminated, videoCallTerminated);
-  };
-
   const onVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting VideoCallApprovedEvent");
     connection.on(SignalRHubMethods.VideoCallApproved, videoCallApproved);
   };
 
-  const offVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting VideoCallApprovedEvent");
-    connection.off(SignalRHubMethods.VideoCallApproved, videoCallApproved);
-  };
-
   const onVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting VideoCallRejectedEvent");
     connection.on(SignalRHubMethods.VideoCallRejected, videoCallRejected);
-  };
-
-  const offVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting VideoCallRejectedEvent");
-    connection.off(SignalRHubMethods.VideoCallRejected, videoCallRejected);
   };
 
   const onVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
@@ -426,25 +403,9 @@ export const useVideoCall = () => {
     );
   };
 
-  const offVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting VideoCallRequestedEvent");
-    connection.off(
-      SignalRHubMethods.VideoCallRequested,
-      videoCallRequestReceived
-    );
-  };
-
   const onICECandidateIncomingEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting ICECandidateIncoming");
     connection.on(SignalRHubMethods.ICECandidateIncoming, ICECandidateIncoming);
-  };
-
-  const offICECandidateIncomingEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting ICECandidateIncoming");
-    connection.off(
-      SignalRHubMethods.ICECandidateIncoming,
-      ICECandidateIncoming
-    );
   };
 
   return {
@@ -455,13 +416,6 @@ export const useVideoCall = () => {
     onVideoCallApprovedEvent,
     onVideoCallRejectedEvent,
     onVideoCallRequestedEvent,
-    offWebRTCAnswerIncomingEvent,
-    offWebRTCOfferIncomingEvent,
-    offICECandidateIncomingEvent,
-    offVideoCallTerminatedEvent,
-    offVideoCallApprovedEvent,
-    offVideoCallRejectedEvent,
-    offVideoCallRequestedEvent,
     sendICECandiadate,
     terminateVideoCall,
     rejectVideoCall,

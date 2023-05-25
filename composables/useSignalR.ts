@@ -33,37 +33,37 @@ export const useSignalR = () => {
     videoCalls.onWebRTCOfferIncomingEvent(connection);
     videoCalls.onWebRTCAnswerIncomingEvent(connection);
     sechatChat.onContactStateChangedEvent(connection);
-    _onMessageWasViewed(connection);
-    _onMessagesWereViewed(connection);
-    _onIncomingMessage(connection);
-    _onRoomDeletedEvent(connection);
+    sechatChat.onMessageWasViewed(connection);
+    sechatChat.onMessagesWereViewed(connection);
+    sechatChat.onIncomingMessage(connection);
+    sechatChat.onRoomDeletedEvent(connection);
+    sechatChat.onRoomUpdatedEvent(connection);
+    sechatChat.onConnectionRequestReceivedEvent(connection);
+    sechatChat.onUserConnectionUpdatedEvent(connection);
+    sechatChat.onUserConnectionDeleteEvent(connection);
     _onUserAddedToRoomEvent(connection);
-    _onRoomUpdatedEvent(connection);
     _onUserRemovedFromRoomEvent(connection);
-    _onConnectionRequestReceivedEvent(connection);
-    _onUserConnectionUpdatedEvent(connection);
-    _onUserConnectionDeleteEvent(connection);
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
-      videoCalls.offVideoCallApprovedEvent(connection);
-      videoCalls.offVideoCallRejectedEvent(connection);
-      videoCalls.offVideoCallRequestedEvent(connection);
-      videoCalls.offVideoCallTerminatedEvent(connection);
-      videoCalls.offICECandidateIncomingEvent(connection);
-      videoCalls.offWebRTCOfferIncomingEvent(connection);
-      videoCalls.offWebRTCAnswerIncomingEvent(connection);
-      sechatChat.offContactStateChangedEvent(connection);
-      _offMessageWasViewed(connection);
-      _offMessagesWereViewed(connection);
-      _offIncomingMessage(connection);
-      _offRoomDeletedEvent(connection);
-      _offUserAddedToRoomEvent(connection);
-      _offRoomUpdatedEvent(connection);
-      _offUserRemovedFromRoomEvent(connection);
-      _offConnectionRequestReceivedEvent(connection);
-      _offUserConnectionUpdatedEvent(connection);
-      _offUserConnectionDeleteEvent(connection);
+      connection.off(SignalRHubMethods.VideoCallApproved);
+      connection.off(SignalRHubMethods.VideoCallRejected);
+      connection.off(SignalRHubMethods.VideoCallRequested);
+      connection.off(SignalRHubMethods.VideoCallTerminated);
+      connection.off(SignalRHubMethods.ICECandidateIncoming);
+      connection.off(SignalRHubMethods.WebRTCOfferIncoming);
+      connection.off(SignalRHubMethods.WebRTCAnswerIncoming);
+      connection.off(SignalRHubMethods.ContactStateChanged);
+      connection.off(SignalRHubMethods.MessageWasViewed);
+      connection.off(SignalRHubMethods.MessagesWereViewed);
+      connection.off(SignalRHubMethods.MessageIncoming);
+      connection.off(SignalRHubMethods.RoomDeleted);
+      connection.off(SignalRHubMethods.UserAddedToRoom);
+      connection.off(SignalRHubMethods.RoomUpdated);
+      connection.off(SignalRHubMethods.UserRemovedFromRoom);
+      connection.off(SignalRHubMethods.ConnectionRequestReceived);
+      connection.off(SignalRHubMethods.ConnectionUpdated);
+      connection.off(SignalRHubMethods.ConnectionDeleted);
       console.warn("--> Connection Closed - connection.onclose");
     });
 
@@ -162,85 +162,11 @@ export const useSignalR = () => {
     }
   };
 
-  // User Connections
-
-  const _onUserConnectionDeleteEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting UserConnectionRemoved event");
-    connection.on(
-      SignalRHubMethods.ConnectionDeleted,
-      sechatChat.handleConnectionDelete
-    );
-  };
-
-  const _offUserConnectionDeleteEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting UserConnectionRemoved event");
-    connection.off(
-      SignalRHubMethods.ConnectionDeleted,
-      sechatChat.handleConnectionDelete
-    );
-  };
-
-  const _onUserConnectionUpdatedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting UserConnectionUpdated event");
-    connection.on(
-      SignalRHubMethods.ConnectionUpdated,
-      sechatChat.handleConnectionUpdated
-    );
-  };
-
-  const _offUserConnectionUpdatedEvent = (
-    connection: signalR.HubConnection
-  ) => {
-    console.log("--> Disconnecting UserConnectionChange event");
-    connection.off(
-      SignalRHubMethods.ConnectionUpdated,
-      sechatChat.handleConnectionUpdated
-    );
-  };
-
-  const _onConnectionRequestReceivedEvent = (
-    connection: signalR.HubConnection
-  ) => {
-    console.log("--> Connecting ConnectionRequestReceived event");
-    connection.on(
-      SignalRHubMethods.ConnectionRequestReceived,
-      sechatChat.handleConnectionRequestReceived
-    );
-  };
-
-  const _offConnectionRequestReceivedEvent = (
-    connection: signalR.HubConnection
-  ) => {
-    console.log("--> Disconnecting ConnectionRequestReceived event");
-    connection.off(
-      SignalRHubMethods.ConnectionRequestReceived,
-      sechatChat.handleConnectionRequestReceived
-    );
-  };
-
   // Rooms
-
-  const _onRoomUpdatedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting RoomUpdated event");
-    connection.on(SignalRHubMethods.RoomUpdated, sechatChat.handleUpdateRoom);
-  };
-
-  const _offRoomUpdatedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting RoomUpdated event");
-    connection.off(SignalRHubMethods.RoomUpdated, sechatChat.handleUpdateRoom);
-  };
 
   const _onUserAddedToRoomEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting UserAddedToRoom event");
     connection.on(
-      SignalRHubMethods.UserAddedToRoom,
-      _handleUserAddedToRoomActions
-    );
-  };
-
-  const _offUserAddedToRoomEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting UserAddedToRoom event");
-    connection.off(
       SignalRHubMethods.UserAddedToRoom,
       _handleUserAddedToRoomActions
     );
@@ -252,24 +178,6 @@ export const useSignalR = () => {
       SignalRHubMethods.UserRemovedFromRoom,
       _handleUserRemovedFromRoomActions
     );
-  };
-
-  const _offUserRemovedFromRoomEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting UserRemovedFromRoom event");
-    connection.off(
-      SignalRHubMethods.UserRemovedFromRoom,
-      _handleUserRemovedFromRoomActions
-    );
-  };
-
-  const _onRoomDeletedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting RoomDeleted event");
-    connection.on(SignalRHubMethods.RoomDeleted, sechatChat.handleDeleteRoom);
-  };
-
-  const _offRoomDeletedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting RoomDeleted event");
-    connection.off(SignalRHubMethods.RoomDeleted, sechatChat.handleDeleteRoom);
   };
 
   const _connectToRooms = (roomIds: string[]) => {
@@ -380,56 +288,6 @@ export const useSignalR = () => {
 
     console.warn("--> Other user is being removed - signalR");
     sechatChat.handleUserRemovedFromRoom(options);
-  };
-
-  // Messages
-
-  const _onMessageWasViewed = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting MessageWasViewed event");
-    connection.on(
-      SignalRHubMethods.MessageWasViewed,
-      sechatChat.handleMessageWasViewed
-    );
-  };
-
-  const _offMessageWasViewed = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting MessageWasViewed event");
-    connection.off(
-      SignalRHubMethods.MessageWasViewed,
-      sechatChat.handleMessageWasViewed
-    );
-  };
-
-  const _onMessagesWereViewed = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting MessagesWereViewed event");
-    connection.on(
-      SignalRHubMethods.MessagesWereViewed,
-      sechatChat.handleMessagesWereViewed
-    );
-  };
-
-  const _offMessagesWereViewed = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting MessagesWereViewed event");
-    connection.off(
-      SignalRHubMethods.MessagesWereViewed,
-      sechatChat.handleMessagesWereViewed
-    );
-  };
-
-  const _onIncomingMessage = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting IncomingMessage event");
-    connection.on(
-      SignalRHubMethods.MessageIncoming,
-      sechatChat.handleIncomingMessage
-    );
-  };
-
-  const _offIncomingMessage = (connection: signalR.HubConnection) => {
-    console.log("--> Disconnecting IncomingMessage event");
-    connection.off(
-      SignalRHubMethods.MessageIncoming,
-      sechatChat.handleIncomingMessage
-    );
   };
 
   return {
