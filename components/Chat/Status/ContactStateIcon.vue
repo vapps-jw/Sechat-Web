@@ -1,25 +1,23 @@
 <template>
   <v-icon
     v-if="props.contact.contactState === ContactState.Offline"
-    class="mr-2"
     color="error"
     size="x-small"
     >mdi-web-off</v-icon
   >
   <v-icon
     v-else-if="props.contact.contactState === ContactState.Online"
-    class="mr-2"
     color="success"
     size="x-small"
     >mdi-web-check</v-icon
   >
   <v-icon
-    v-else="props.contact.contactState === ContactState.Unknown"
-    class="mr-2"
-    color="success"
+    v-else-if="props.contact.contactState === ContactState.Unknown"
+    color="tertiary"
     size="x-small"
-    >web-sync</v-icon
+    >mdi-web-off</v-icon
   >
+  <v-icon v-else color="success" size="x-small">mdi-web-off</v-icon>
 </template>
 
 <script setup lang="ts">

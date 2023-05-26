@@ -1,70 +1,94 @@
 <template>
-  <v-expansion-panels class="mt-2" variant="accordion">
-    <v-expansion-panel
+  <v-list>
+    <v-list-item
+      class="pa-2"
       v-for="uc in chatStore.getContacts"
       :key="`${uc.invitedName}-${uc.inviterName}`"
+      :title="uc.displayName"
     >
-      <v-expansion-panel-title disable-icon-rotate>
-        <chat-status-contact-state-icon :contact="uc" />
-        {{ uc.displayName }}
-        <template v-slot:actions>
-          <v-icon v-if="uc.blocked" color="error">mdi-alert-circle</v-icon>
-          <v-icon v-else-if="uc.approved" color="success"
-            >mdi-check-bold</v-icon
-          >
-          <v-icon v-else color="warning">mdi-help-circle-outline</v-icon>
-        </template>
-      </v-expansion-panel-title>
-      <v-expansion-panel-text>
-        <v-row no-gutters>
-          <v-btn
-            v-if="uc.blocked && uc.blockedByName === userStore.getUserName"
-            @click="async () => allowContact(uc.id)"
-            class="mx-1"
-            size="small"
-            icon="mdi-checkbox-marked-circle-outline"
-            color="success"
-            variant="outlined"
-          ></v-btn>
-          <v-btn
-            v-else
-            @click="async () => blockContact(uc.id)"
-            class="mx-1"
-            size="small"
-            icon="mdi-block-helper"
-            color="error"
-            variant="outlined"
-          ></v-btn>
-          <v-btn
-            v-if="!uc.approved && uc.invitedName === userStore.getUserName"
-            @click="async () => approveContact(uc.id)"
-            class="mx-1"
-            size="small"
-            icon="mdi-check-bold"
-            color="success"
-            variant="outlined"
-          ></v-btn>
-          <v-btn
-            @click="async () => deleteContact(uc.id)"
-            class="mx-1"
-            size="small"
-            icon="mdi-delete"
-            color="error"
-            variant="outlined"
-          ></v-btn>
-          <v-spacer />
-          <v-btn
-            v-if="uc.approved && !uc.blocked"
-            @click="startVideoCall(uc)"
-            size="small"
-            icon="mdi-phone"
-            color="success"
-            variant="outlined"
-          ></v-btn>
-        </v-row>
-      </v-expansion-panel-text>
-    </v-expansion-panel>
-  </v-expansion-panels>
+      <template v-slot:prepend>
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn
+              icon="mdi-dots-vertical"
+              variant="plain"
+              v-bind="props"
+            ></v-btn>
+          </template>
+          <v-list>
+            <v-list-item>
+              <v-btn
+                v-if="uc.blocked && uc.blockedByName === userStore.getUserName"
+                @click="async () => allowContact(uc.id)"
+                class="mx-1"
+                size="small"
+                icon="mdi-checkbox-marked-circle-outline"
+                color="success"
+                variant="outlined"
+              ></v-btn>
+              <v-btn
+                v-else
+                @click="async () => blockContact(uc.id)"
+                class="mx-1"
+                size="small"
+                icon="mdi-block-helper"
+                color="error"
+                variant="outlined"
+              ></v-btn>
+            </v-list-item>
+            <v-list-item
+              v-if="!uc.approved && uc.invitedName === userStore.getUserName"
+            >
+              <v-btn
+                @click="async () => approveContact(uc.id)"
+                class="mx-1"
+                size="small"
+                icon="mdi-check-bold"
+                color="success"
+                variant="outlined"
+              ></v-btn
+            ></v-list-item>
+            <v-list-item>
+              <v-btn
+                @click="async () => deleteContact(uc.id)"
+                class="mx-1"
+                size="small"
+                icon="mdi-delete"
+                color="error"
+                variant="outlined"
+              ></v-btn
+            ></v-list-item>
+          </v-list>
+        </v-menu>
+        <div class="d-flex flex-column mr-2">
+          <div class="d-flex align-center justify-center">
+            <chat-status-contact-state-icon :contact="uc" />
+          </div>
+          <div class="d-flex align-center justify-center">
+            <v-icon v-if="uc.blocked" size="x-small" color="error"
+              >mdi-alert-circle</v-icon
+            >
+            <v-icon v-else-if="uc.approved" size="x-small" color="success"
+              >mdi-check-bold</v-icon
+            >
+            <v-icon v-else size="x-small" color="warning"
+              >mdi-help-circle-outline</v-icon
+            >
+          </div>
+        </div>
+      </template>
+      <template v-slot:append>
+        <v-btn
+          v-if="uc.approved && !uc.blocked"
+          @click="startVideoCall(uc)"
+          size="small"
+          icon="mdi-phone"
+          color="success"
+          variant="outlined"
+        ></v-btn>
+      </template>
+    </v-list-item>
+  </v-list>
 </template>
 
 <script setup lang="ts">

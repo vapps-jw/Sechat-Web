@@ -1,14 +1,25 @@
 <template>
   <v-list>
     <v-list-item
+      class="ma-0 pa-1"
       v-for="room in chatStore.availableRooms"
       :key="room.id"
       :title="room.name"
     >
       <template v-slot:prepend>
-        <v-menu>
+        <v-icon
+          :color="
+            chatStore.activeRoomId && chatStore.activeRoomId === room.id
+              ? 'warning'
+              : 'transparent'
+          "
+          class="ma-0"
+          >mdi-circle-half</v-icon
+        >
+        <v-menu class="ma-0">
           <template v-slot:activator="{ props }">
             <v-btn
+              class="ma-0"
               icon="mdi-dots-vertical"
               variant="plain"
               v-bind="props"
@@ -106,4 +117,8 @@ const leaveRoom = async (room: IRoom) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.active-room-icon {
+  width: 10px;
+}
+</style>
