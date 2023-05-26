@@ -8,6 +8,7 @@
           color="error"
           size="small"
           variant="outlined"
+          class="ma-3"
         ></v-btn>
       </template>
       <v-card>
