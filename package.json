@@ -22,6 +22,7 @@
     "@microsoft/signalr": "^7.0.5",
     "@nuxt/image-edge": "^1.0.0-27840416.dc1ed65",
     "@pinia/nuxt": "^0.4.11",
+    "@tiptap/extension-link": "^2.0.3",
     "@tiptap/pm": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.3",
     "@tiptap/vue-3": "^2.0.3",

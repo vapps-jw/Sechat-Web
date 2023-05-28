@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
 
 const props = defineProps({
   modelValue: {
@@ -30,7 +31,7 @@ watch(
 
 const editor = useEditor({
   content: props.modelValue,
-  extensions: [StarterKit],
+  extensions: [StarterKit, Link],
   onUpdate: ({ editor }) => {
     let content = editor.getHTML();
     emit("update:modelValue", content);
