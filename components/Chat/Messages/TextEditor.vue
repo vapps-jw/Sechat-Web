@@ -1,17 +1,22 @@
 <template>
-  <v-card-actions>
-    <v-textarea
-      variant="solo"
-      clear-icon="mdi-close-circle"
-      clearable
-      counter
-      no-resize
-      rows="3"
-      v-model="newMessage"
-      v-on:keyup.enter="pushMessage"
-    ></v-textarea>
-    <v-btn icon="mdi-send" color="warning" @click="pushMessage"></v-btn>
-  </v-card-actions>
+  <v-row no-gutters class="mt-2 mb-2 ml-1">
+    <v-col cols="10">
+      <v-sheet>
+        <chat-messages-tip-tap-editor v-model:model-value="newMessage" />
+      </v-sheet>
+    </v-col>
+    <v-col cols="2" class="d-flex align-center justify-center">
+      <v-sheet>
+        <v-btn
+          variant="outlined"
+          icon="mdi-send"
+          size="small"
+          color="warning"
+          @click="pushMessage"
+        ></v-btn>
+      </v-sheet>
+    </v-col>
+  </v-row>
 </template>
 
 <script setup lang="ts">
@@ -23,7 +28,7 @@ const appStore = useSechatApp();
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
 
-const newMessage = ref("");
+const newMessage = ref<string>("");
 
 const callMessageApi = async () => {
   try {

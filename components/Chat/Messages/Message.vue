@@ -27,12 +27,12 @@
         }}
       </v-card-subtitle>
       <v-card-text class="px-0 py-0">
-        <p
+        <div
           class="text--primary text-sm mb-3"
           :class="isActiveUser(props.message) ? 'text-right' : ''"
-        >
-          {{ props.message.text }}
-        </p>
+          v-html="props.message.text"
+        ></div>
+
         <div class="d-flex justify-end">
           <v-chip
             v-for="seenBy in props.message.messageViewers.filter(

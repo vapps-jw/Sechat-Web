@@ -4,7 +4,7 @@
 }
 
 .sechat-v-card-full {
-  height: 85dvh;
+  height: 87dvh;
   display: flex !important;
   flex-direction: column;
 }
@@ -67,3 +67,19 @@
 }
 
 /* Video End */
+
+.ProseMirror {
+  background-color: #616161;
+  color: whitesmoke;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  overflow: auto;
+  max-height: 10dvh;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5rem;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}

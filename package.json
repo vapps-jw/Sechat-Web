@@ -22,6 +22,9 @@
     "@microsoft/signalr": "^7.0.5",
     "@nuxt/image-edge": "^1.0.0-27840416.dc1ed65",
     "@pinia/nuxt": "^0.4.11",
+    "@tiptap/pm": "^2.0.3",
+    "@tiptap/starter-kit": "^2.0.3",
+    "@tiptap/vue-3": "^2.0.3",
     "base64-js": "^1.5.1",
     "sass": "^1.57.1",
     "vuetify": "^3.3.1"
