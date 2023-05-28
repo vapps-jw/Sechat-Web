@@ -42,7 +42,11 @@ const editor = useEditor({
   content: props.modelValue,
   extensions: [
     StarterKit,
-    Link,
+    Link.configure({
+      linkOnPaste: true,
+      openOnClick: true,
+      autolink: true,
+    }),
     Underline,
     Image,
     CharacterCount.configure({
