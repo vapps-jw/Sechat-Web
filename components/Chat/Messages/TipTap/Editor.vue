@@ -1,6 +1,10 @@
 <template>
-  <div>
-    <editor-content :editor="editor" />
+  <chat-messages-tip-tap-options :editor="editor" />
+  <editor-content :editor="editor" />
+  <div class="d-flex justify-center">
+    <p class="tiny-font">
+      {{ editor?.storage.characterCount.characters() }} / {{ limit }}
+    </p>
   </div>
 </template>
 
@@ -8,6 +12,9 @@
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
+import CharacterCount from "@tiptap/extension-character-count";
+import Underline from "@tiptap/extension-underline";
+import Image from "@tiptap/extension-image";
 
 const props = defineProps({
   modelValue: {
@@ -25,13 +32,23 @@ watch(
     if (isSame) {
       return;
     }
-    editor.value?.commands.setContent(newValue, false);
+    let content = newValue.replace(/\s/g, "\u00a0");
+    editor.value?.commands.setContent(content, false);
   }
 );
 
+const limit = 3000;
 const editor = useEditor({
   content: props.modelValue,
-  extensions: [StarterKit, Link],
+  extensions: [
+    StarterKit,
+    Link,
+    Underline,
+    Image,
+    CharacterCount.configure({
+      limit: limit,
+    }),
+  ],
   onUpdate: ({ editor }) => {
     let content = editor.getHTML();
     emit("update:modelValue", content);
@@ -43,4 +60,8 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.tiny-font {
+  font-size: xx-small;
+}
+</style>

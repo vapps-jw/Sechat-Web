@@ -10,7 +10,7 @@
       <v-card-subtitle
         v-if="userStore.getUserName === props.message.nameSentBy"
         :class="isActiveUser(props.message) ? 'text-right' : ''"
-        class="text-xs"
+        class="tiny-font"
       >
         {{
           new Date(props.message.created).toLocaleString(appStore.localLanguage)
@@ -19,9 +19,9 @@
       <v-card-subtitle
         v-else
         :class="isActiveUser(message) ? 'text-right' : ''"
-        class="text-xs"
+        class="tiny-font"
       >
-        <strong> {{ props.message.nameSentBy }}</strong>
+        <p class="sender-details d-inline">{{ props.message.nameSentBy }}</p>
         {{
           new Date(props.message.created).toLocaleString(appStore.localLanguage)
         }}
@@ -67,4 +67,12 @@ const isActiveUser = (message: IMessage) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.tiny-font {
+  font-size: x-small;
+}
+.sender-details {
+  color: #ffc107;
+  font-weight: bold;
+}
+</style>
