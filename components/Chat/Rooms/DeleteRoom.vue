@@ -13,7 +13,7 @@
       </template>
       <v-card>
         <v-card-title class="text-h6 text-center">
-          Wanna delete {{ props.room.name }}?
+          Delete {{ props.room.name }}?
         </v-card-title>
         <v-card-actions>
           <v-btn color="success" variant="text" @click="dialog = false">

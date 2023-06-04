@@ -8,6 +8,7 @@ export const useSechatChatStore = defineStore({
       availableContacts: <IContactRequest[]>[],
       activeChatTab: <string>ChatViews.Rooms,
       activeRoomId: <string>"",
+      activeRoom: <IRoom>null,
     };
   },
   actions: {
@@ -140,6 +141,7 @@ export const useSechatChatStore = defineStore({
     selectRoom(value: string) {
       this.activeRoomId = value;
       this.activeChatTab = ChatViews.Messages;
+      this.activeRoom = this.availableRooms.find((r) => r.id === value);
     },
     deleteUserFromRoom(value: IUserRoomOptions) {
       const updatedRoom = this.availableRooms.find(

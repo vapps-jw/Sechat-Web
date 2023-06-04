@@ -1,60 +1,60 @@
 <template>
-  <v-sheet id="chatView" class="ma-0 pa-0 overflow-auto">
-    <div
-      class="d-flex"
-      :class="
-        isActiveUser(message)
-          ? 'flex-row-reverse ma-1 '
-          : 'flex-row flex-start ma-1 '
-      "
-      v-for="message in chatStore.getActiveRoom.messages"
-    >
-      <chat-messages-message :message="message" />
-    </div>
-
-    <!-- <v-virtual-scroll
+  <div id="chatView" style="display: flex; height: 51dvh">
+    <v-virtual-scroll
       ref="messagesVirtualScrollRef"
-      scrollToBottom="true"
-      :items="chatStore.getActiveRoom.messages"
+      :items="chatStore.activeRoom.messages"
     >
       <template v-slot:default="{ item }">
-        <div
-          class="d-flex"
-          :class="
-            isActiveUser(item)
-              ? 'flex-row-reverse ma-1 '
-              : 'flex-row flex-start ma-1 '
-          "
-        >
-          <chat-messages-message :message="item" />
-        </div>
+        <chat-messages-message :message="item" />
       </template>
-    </v-virtual-scroll> -->
-  </v-sheet>
+    </v-virtual-scroll>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { scrollToBottom } from "@/utilities/documentFunctions";
-
 const chatStore = useSechatChatStore();
 const userStore = useUserStore();
+const appStore = useSechatAppStore();
 
-const messagesVirtualScrollRef = ref();
+let messagesVirtualScrollRef = ref();
+
+const scrollToBottom = (elementId: string) => {
+  const chatSection = document.getElementById(elementId);
+
+  if (chatSection) {
+    console.log("--> Scrolling chat section");
+    chatSection.scrollTop = chatSection.scrollHeight;
+  }
+};
 
 const scroll = () => {
+  console.log("--> Scrolling", activeRoom.value.messages.length);
+  //scrollToBottom("chatView");
+  messagesVirtualScrollRef.value?.scrollToIndex(0);
   messagesVirtualScrollRef.value?.scrollToIndex(
-    chatStore.getActiveRoom.messages.length
+    activeRoom.value.messages.length
   );
 };
 
+const { activeRoom } = storeToRefs(chatStore);
+
+watch(activeRoom.value.messages, (newVal, oldVal) => {
+  console.warn("--> Message list changed");
+  scroll();
+});
+
 onUpdated(() => {
-  console.warn("--> onUpdated Scrolling");
-  scrollToBottom("chatView");
+  messagesVirtualScrollRef = ref();
+  if (messagesVirtualScrollRef.value) {
+    console.warn("--> onUpdated Scrolling");
+    scroll();
+  }
 });
 
 onMounted(() => {
+  messagesVirtualScrollRef = ref();
   console.warn("--> onMounted Scrolling");
-  scrollToBottom("chatView");
+  scroll();
 });
 
 const isActiveUser = (message: IMessage) => {
@@ -62,4 +62,12 @@ const isActiveUser = (message: IMessage) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.tiny-font {
+  font-size: x-small;
+}
+.sender-details {
+  color: #ffc107;
+  font-weight: bold;
+}
+</style>

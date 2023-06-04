@@ -1,5 +1,4 @@
 import * as signalR from "@microsoft/signalr";
-import { scrollToBottom } from "~~/utilities/documentFunctions";
 import { SignalRHubMethods, VisibilityStates } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
@@ -94,10 +93,6 @@ export const useSignalR = () => {
 
         console.log("--> Reconnected, connectiong to Rooms ...");
         _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
-
-        if (sechatChatStore.activeRoomId) {
-          scrollToBottom("chatView");
-        }
       } catch (error) {
         console.error("--> Fetch State Failed", error);
       } finally {
