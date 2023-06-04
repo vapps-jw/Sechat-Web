@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     turnUser: process.env.NUXT_TURN_USER ?? "not set",
     turnPassword: process.env.NUXT_TURN_PASSWORD ?? "not set",
     public: {
-      appVersion: "BETA v0.5.3.6",
+      appVersion: "BETA v0.5.3.7",
       vapidKey: process.env.NUXT_PUBLIC_VAPID_KEY ?? "not set",
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? "not set",
     },
@@ -50,11 +50,11 @@ export default defineNuxtConfig({
     filename: "sw.js",
     manifest: {
       share_target: {
-        action: "/chat",
+        action: "/chat/share",
         method: "GET",
         params: {
-          title: "name",
-          text: "description",
+          title: "title",
+          text: "text",
           url: "link",
         },
       },

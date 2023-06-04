@@ -1,3 +1,4 @@
+import { scrollToBottom } from "~/utilities/documentFunctions";
 import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 import { ChatViews, SignalRHubMethods } from "~~/utilities/globalEnums";
 
@@ -173,6 +174,7 @@ export const useSechatChat = () => {
     if (message.nameSentBy === userStore.getUserName) {
       message.wasViewed = true;
       chatStore.addNewMessage(message);
+      scrollToBottom("chatView");
       return;
     }
 
@@ -185,7 +187,15 @@ export const useSechatChat = () => {
       message.wasViewed = true;
       chatStore.addNewMessage(message);
       chatApi.markMessageAsViewed(message.roomId, message.id);
+      scrollToBottom("chatView");
       return;
+    }
+
+    if (
+      chatStore.getActiveRoomId &&
+      message.roomId === chatStore.getActiveRoomId
+    ) {
+      scrollToBottom("chatView");
     }
 
     chatStore.addNewMessage(message);

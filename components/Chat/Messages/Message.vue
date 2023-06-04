@@ -2,7 +2,10 @@
   <v-list-item :key="props.message.id" class="mx-0 px-0">
     <template v-slot:title>
       <v-card-subtitle class="tiny-font mx-0 px-0">
-        <p class="sender-details d-inline text-subtitle-2">
+        <p
+          class="sender-details d-inline text-subtitle-2"
+          :style="`color: ${props.message.colorSentBy}`"
+        >
           {{ props.message.nameSentBy }}
         </p>
         {{
@@ -10,17 +13,7 @@
         }}
       </v-card-subtitle>
       <v-card-subtitle class="tiny-font mx-0 px-0">
-        <p
-          v-for="seenBy in props.message.messageViewers.filter(
-            (mv) =>
-              mv.user !== userStore.getUserName &&
-              mv.user !== props.message.nameSentBy
-          )"
-        >
-          {{ seenBy.user }}
-        </p>
-
-        <!-- <v-chip
+        <v-chip
           variant="text"
           v-for="seenBy in props.message.messageViewers.filter(
             (mv) =>
@@ -32,7 +25,7 @@
           append-icon="mdi-eye-check-outline"
         >
           {{ seenBy.user }}
-        </v-chip> -->
+        </v-chip>
       </v-card-subtitle>
     </template>
     <template v-slot:subtitle>
@@ -122,7 +115,6 @@ const props = defineProps<PropsModel>();
   font-size: x-small;
 }
 .sender-details {
-  color: #ffc107;
   font-weight: bold;
 }
 </style>
