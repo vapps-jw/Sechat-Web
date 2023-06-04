@@ -12,6 +12,7 @@
 </template>
 
 <script setup lang="ts">
+import { scrollToBottom } from "~/utilities/documentFunctions";
 import { ChatViews } from "~~/utilities/globalEnums";
 
 definePageMeta({
@@ -33,6 +34,10 @@ watch(activeChatTab, (newVal, oldVal) => {
 
   if (selectedNav.value !== newVal) {
     selectedNav.value = newVal;
+  }
+
+  if (newVal === ChatViews.Messages) {
+    scrollToBottom("chatView");
   }
 
   if (!chatStore.activeRoomId) {
