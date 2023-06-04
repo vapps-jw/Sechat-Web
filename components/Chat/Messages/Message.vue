@@ -2,10 +2,7 @@
   <v-list-item :key="props.message.id" class="mx-0 px-0">
     <template v-slot:title>
       <v-card-subtitle class="tiny-font mx-0 px-0">
-        <p
-          class="sender-details d-inline text-subtitle-2"
-          :style="`color: ${props.message.colorSentBy}`"
-        >
+        <p class="d-inline text-subtitle-2 font-weight-bold text-white">
           {{ props.message.nameSentBy }}
         </p>
         {{
@@ -22,6 +19,7 @@
           )"
           class="ma- 0 pa-1"
           size="x-small"
+          color="success"
           append-icon="mdi-eye-check-outline"
         >
           {{ seenBy.user }}
@@ -113,8 +111,5 @@ const props = defineProps<PropsModel>();
 <style scoped>
 .tiny-font {
   font-size: x-small;
-}
-.sender-details {
-  font-weight: bold;
 }
 </style>
