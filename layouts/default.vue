@@ -1,6 +1,6 @@
 <template>
   <v-app id="main-view">
-    <v-main class="overflow-hidden sechat-layout">
+    <v-main class="sechat-layout">
       <v-container class="bg-transparent">
         <div class="d-flex justify-center">
           <NuxtImg

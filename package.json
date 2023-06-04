@@ -15,12 +15,12 @@
     "cross-env": "^7.0.3",
     "nuxt": "^3.5.2",
     "nuxt-security": "^0.13.0",
-    "workbox-precaching": "^6.5.4"
+    "workbox-precaching": "^7.0.0"
   },
   "dependencies": {
-    "@mdi/font": "^7.1.96",
+    "@mdi/font": "^7.2.96",
     "@microsoft/signalr": "^7.0.5",
-    "@nuxt/image-edge": "^1.0.0-27840416.dc1ed65",
+    "@nuxt/image-edge": "1.0.0-28094923.e859bba",
     "@pinia/nuxt": "^0.4.11",
     "@tiptap/extension-character-count": "^2.0.3",
     "@tiptap/extension-image": "^2.0.3",
@@ -30,8 +30,8 @@
     "@tiptap/starter-kit": "^2.0.3",
     "@tiptap/vue-3": "^2.0.3",
     "base64-js": "^1.5.1",
-    "sass": "^1.57.1",
-    "vuetify": "^3.3.1"
+    "sass": "^1.62.1",
+    "vuetify": "^3.3.2"
   },
   "overrides": {
     "vue": "latest"

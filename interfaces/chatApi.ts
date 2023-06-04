@@ -92,4 +92,6 @@ interface IContactRequest {
   displayName?: string;
   blocked?: boolean;
   blockedByName?: string;
+  initials?: string;
+  color?: string;
 }

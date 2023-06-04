@@ -1,3 +1,4 @@
+import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 import { scrollToBottom } from "~~/utilities/documentFunctions";
 import { ChatViews, SignalRHubMethods } from "~~/utilities/globalEnums";
 
@@ -35,6 +36,9 @@ export const useSechatChat = () => {
     } else {
       data.displayName = data.invitedName;
     }
+
+    data.initials = getInitials(data.displayName);
+    data.color = stringToColor(data.displayName);
 
     chatStore.addContact(data);
   };

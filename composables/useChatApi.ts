@@ -1,3 +1,4 @@
+import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 import { SnackbarIcons } from "~~/utilities/globalEnums";
 
 export const useChatApi = () => {
@@ -31,6 +32,9 @@ export const useChatApi = () => {
       } else {
         uc.displayName = uc.invitedName;
       }
+
+      uc.initials = getInitials(uc.displayName);
+      uc.color = stringToColor(uc.displayName);
     });
 
     return chatState.value;

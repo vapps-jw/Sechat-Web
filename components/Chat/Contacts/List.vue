@@ -76,6 +76,9 @@
             >
           </div>
         </div>
+        <div class="d-flex align-center justify-center mr-2">
+          <v-avatar :color="uc.color"> {{ uc.initials }} </v-avatar>
+        </div>
       </template>
       <template v-slot:append>
         <v-btn
