@@ -53,8 +53,6 @@ interface IRoomUserActionMessage {
 interface IMessage {
   id?: number;
   nameSentBy?: string;
-  initialsSentBy?: string;
-  colorSentBy?: string;
   text?: string;
   roomId?: string;
   created?: Date;
@@ -94,6 +92,4 @@ interface IContactRequest {
   displayName?: string;
   blocked?: boolean;
   blockedByName?: string;
-  initials?: string;
-  color?: string;
 }

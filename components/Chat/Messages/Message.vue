@@ -35,8 +35,8 @@
       </v-card-text>
     </template>
     <template v-slot:prepend>
-      <v-avatar :color="props.message.colorSentBy" class="mx-2">
-        {{ props.message.initialsSentBy }}</v-avatar
+      <v-avatar :color="stringToColor(props.message.nameSentBy)" class="mx-2">
+        {{ getInitials(props.message.nameSentBy) }}</v-avatar
       >
     </template>
   </v-list-item>
@@ -98,6 +98,8 @@
 </template>
 
 <script setup lang="ts">
+import { getInitials, stringToColor } from "~/utilities/stringFunctions";
+
 const appStore = useSechatAppStore();
 const userStore = useUserStore();
 

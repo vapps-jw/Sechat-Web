@@ -77,7 +77,9 @@
           </div>
         </div>
         <div class="d-flex align-center justify-center mr-2">
-          <v-avatar :color="uc.color"> {{ uc.initials }} </v-avatar>
+          <v-avatar :color="stringToColor(uc.displayName)">
+            {{ getInitials(uc.displayName) }}
+          </v-avatar>
         </div>
       </template>
       <template v-slot:append>
@@ -95,7 +97,8 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarMessages, ContactState } from "~~/utilities/globalEnums";
+import { getInitials, stringToColor } from "~/utilities/stringFunctions";
+import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();

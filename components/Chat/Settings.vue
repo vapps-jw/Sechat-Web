@@ -2,6 +2,9 @@
   <v-container>
     <v-card class="sechat-v-card-full">
       <v-toolbar>
+        <v-avatar :color="stringToColor(userStore.getUserName)" class="mx-2">
+          {{ getInitials(userStore.getUserName) }}</v-avatar
+        >
         <v-toolbar-title>Settings</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn
@@ -45,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const config = useRuntimeConfig();

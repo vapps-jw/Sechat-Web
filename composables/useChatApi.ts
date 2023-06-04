@@ -26,22 +26,12 @@ export const useChatApi = () => {
 
     console.log("--> State Fetched", chatState.value);
 
-    chatState.value.rooms.forEach((r) =>
-      r.messages.forEach((m) => {
-        m.colorSentBy = stringToColor(m.nameSentBy);
-        m.initialsSentBy = getInitials(m.nameSentBy);
-      })
-    );
-
     chatState.value.userContacts.forEach((uc) => {
       if (uc.invitedName === userStore.userProfile.userName) {
         uc.displayName = uc.inviterName;
       } else {
         uc.displayName = uc.invitedName;
       }
-
-      uc.initials = getInitials(uc.displayName);
-      uc.color = stringToColor(uc.displayName);
     });
 
     return chatState.value;
