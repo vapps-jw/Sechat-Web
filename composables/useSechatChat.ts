@@ -166,6 +166,9 @@ export const useSechatChat = () => {
       chatStore.activeRoomId
     );
 
+    message.colorSentBy = stringToColor(message.nameSentBy);
+    message.initialsSentBy = getInitials(message.nameSentBy);
+
     message.wasViewed = false;
     if (message.nameSentBy === userStore.getUserName) {
       message.wasViewed = true;

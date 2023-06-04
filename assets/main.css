@@ -77,6 +77,8 @@
   max-height: 10dvh;
   margin-bottom: 0;
   padding: 0.5rem;
+  min-height: 60px;
+  max-height: 60px;
 }
 
 .ProseMirror:focus {

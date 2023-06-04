@@ -2,13 +2,25 @@
   <v-list-item :key="props.message.id" class="mx-0 px-0">
     <template v-slot:title>
       <v-card-subtitle class="tiny-font mx-0 px-0">
-        <p class="sender-details d-inline">{{ props.message.nameSentBy }}</p>
+        <p class="sender-details d-inline text-subtitle-2">
+          {{ props.message.nameSentBy }}
+        </p>
         {{
           new Date(props.message.created).toLocaleString(appStore.localLanguage)
         }}
       </v-card-subtitle>
       <v-card-subtitle class="tiny-font mx-0 px-0">
-        <v-chip
+        <p
+          v-for="seenBy in props.message.messageViewers.filter(
+            (mv) =>
+              mv.user !== userStore.getUserName &&
+              mv.user !== props.message.nameSentBy
+          )"
+        >
+          {{ seenBy.user }}
+        </p>
+
+        <!-- <v-chip
           variant="text"
           v-for="seenBy in props.message.messageViewers.filter(
             (mv) =>
@@ -20,7 +32,7 @@
           append-icon="mdi-eye-check-outline"
         >
           {{ seenBy.user }}
-        </v-chip>
+        </v-chip> -->
       </v-card-subtitle>
     </template>
     <template v-slot:subtitle>
@@ -32,7 +44,9 @@
       </v-card-text>
     </template>
     <template v-slot:prepend>
-      <v-avatar color="surface-variant" class="mx-2"></v-avatar>
+      <v-avatar :color="props.message.colorSentBy" class="mx-2">
+        {{ props.message.initialsSentBy }}</v-avatar
+      >
     </template>
   </v-list-item>
 
@@ -101,10 +115,6 @@ interface PropsModel {
 }
 
 const props = defineProps<PropsModel>();
-
-const isActiveUser = (message: IMessage) => {
-  return message.nameSentBy === userStore.getUserName;
-};
 </script>
 
 <style scoped>

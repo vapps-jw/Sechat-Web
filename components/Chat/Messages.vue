@@ -16,7 +16,6 @@
       <chat-messages-room-members />
       <v-divider />
       <chat-messages-container />
-      <v-spacer />
       <chat-messages-text-editor />
     </v-card>
   </v-container>

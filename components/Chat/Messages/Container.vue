@@ -1,5 +1,5 @@
 <template>
-  <div id="chatView" style="display: flex; height: 51dvh">
+  <div id="chatView" class="d-flex container-style flex-grow-1">
     <v-virtual-scroll
       ref="messagesVirtualScrollRef"
       :items="chatStore.activeRoom.messages"
@@ -9,52 +9,59 @@
       </template>
     </v-virtual-scroll>
   </div>
+  <div class="d-flex justify-end align-center">
+    <v-btn
+      icon="mdi-arrow-down-drop-circle"
+      size="small"
+      color="accent"
+      @click="scroll"
+    ></v-btn>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ChatViews } from "~/utilities/globalEnums";
+
 const chatStore = useSechatChatStore();
 const userStore = useUserStore();
-const appStore = useSechatAppStore();
 
-let messagesVirtualScrollRef = ref();
-
-const scrollToBottom = (elementId: string) => {
-  const chatSection = document.getElementById(elementId);
-
-  if (chatSection) {
-    console.log("--> Scrolling chat section");
-    chatSection.scrollTop = chatSection.scrollHeight;
-  }
-};
-
+const messagesVirtualScrollRef = ref();
 const scroll = () => {
-  console.log("--> Scrolling", activeRoom.value.messages.length);
-  //scrollToBottom("chatView");
-  messagesVirtualScrollRef.value?.scrollToIndex(0);
+  console.log(
+    "--> Scrolling",
+    messagesVirtualScrollRef.value,
+    chatStore.activeRoom.messages.length
+  );
   messagesVirtualScrollRef.value?.scrollToIndex(
-    activeRoom.value.messages.length
+    chatStore.activeRoom.messages.length
   );
 };
 
-const { activeRoom } = storeToRefs(chatStore);
-
-watch(activeRoom.value.messages, (newVal, oldVal) => {
-  console.warn("--> Message list changed");
-  scroll();
-});
-
-onUpdated(() => {
-  messagesVirtualScrollRef = ref();
-  if (messagesVirtualScrollRef.value) {
-    console.warn("--> onUpdated Scrolling");
+const { activeChatTab, getActiveRoomMessagesCount } = storeToRefs(chatStore);
+watch(activeChatTab, (newVal, oldVal) => {
+  if (newVal === ChatViews.Messages) {
+    console.warn("--> Watcher scroll", newVal, oldVal);
     scroll();
   }
 });
+watch(getActiveRoomMessagesCount, (newVal, oldVal) => {
+  scroll();
+});
+
+// onUpdated(() => {
+//   console.warn("--> onUpdated Scrolling", messagesVirtualScrollRef.value);
+//   if (messagesVirtualScrollRef.value) {
+//     scroll();
+//   }
+// });
 
 onMounted(() => {
-  messagesVirtualScrollRef = ref();
-  console.warn("--> onMounted Scrolling");
+  console.warn("--> onMounted Scrolling", messagesVirtualScrollRef.value);
   scroll();
+});
+
+onBeforeUnmount(() => {
+  console.info("--> onBeforeUnmount Messages Container");
 });
 
 const isActiveUser = (message: IMessage) => {
@@ -69,5 +76,8 @@ const isActiveUser = (message: IMessage) => {
 .sender-details {
   color: #ffc107;
   font-weight: bold;
+}
+.container-style {
+  height: 42dvh;
 }
 </style>

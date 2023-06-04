@@ -195,6 +195,12 @@ export const useSechatChatStore = defineStore({
       }
       return "";
     },
+    getActiveRoomMessagesCount: (state) => {
+      if (!state.activeRoom) {
+        return 0;
+      }
+      return state.activeRoom.messages.length;
+    },
     getActiveRoomMembers: (state) => {
       if (!state.activeRoomId) {
         return [];
