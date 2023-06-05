@@ -1,41 +1,21 @@
 <template>
-  <v-dialog v-model="dialog" :scrim="false">
-    <template v-slot:activator="{ props }">
-      <v-btn
-        v-bind="props"
-        icon="mdi-account-multiple-plus"
-        variant="outlined"
-      ></v-btn>
-    </template>
-    <v-card>
-      <v-toolbar>
-        <v-toolbar-title>Add To Room</v-toolbar-title>
-        <v-spacer></v-spacer>
-      </v-toolbar>
-      <v-card-text class="ma-0 pa-0 overflow-auto">
-        <v-container>
-          <div class="text-caption pa-3">Add someone to the current room</div>
-          <v-autocomplete
-            :custom-filter="hasOccurrences"
-            item-title="displayName"
-            item-text="displayName"
-            :items="getConnectionsAllowedForActiveRoom"
-            item-value="id"
-            v-model="chosenConnection"
-            return-object
-            no-data-text="You have no friends?"
-          ></v-autocomplete>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn color="error" variant="outlined" @click="dialog = false">
-          Cancel
-        </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn color="success" variant="outlined" @click="invite"> Add </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <v-container>
+    <div class="text-caption my-3">Add someone to the current room</div>
+    <v-autocomplete
+      :custom-filter="hasOccurrences"
+      item-title="displayName"
+      item-text="displayName"
+      :items="getConnectionsAllowedForActiveRoom"
+      item-value="id"
+      v-model="chosenConnection"
+      return-object
+      no-data-text="You have no friends?"
+    >
+      <template v-slot:append>
+        <v-icon @click="invite" color="warning">mdi-send</v-icon>
+      </template>
+    </v-autocomplete>
+  </v-container>
 </template>
 
 <script setup lang="ts">

@@ -1,37 +1,43 @@
 <template>
-  <div class="d-flex">
-    <v-chip
-      variant="outlined"
-      size="x-small"
-      v-for="u in chatStore.getActiveRoomMembers"
-      :key="u.userName"
-      class="mr-1"
-      :color="
-        u.userName !== chatStore.getActiveRoom.creatorName
-          ? 'primary'
-          : 'warning'
-      "
-      label
-    >
-      <template v-slot:prepend>
-        <chat-messages-user-status-bagde :room-member="u" />
-      </template>
-      {{ u.userName }}
-      <v-icon
-        v-if="
-          u.userName !== chatStore.getActiveRoom.creatorName &&
-          isContact(u.userName)
+  <v-container>
+    <v-list density="compact">
+      <div class="text-caption">Room members</div>
+      <v-list-item
+        v-for="u in chatStore.getActiveRoomMembers"
+        :key="u.userName"
+        class="mr-1"
+        :color="
+          u.userName !== chatStore.getActiveRoom.creatorName
+            ? 'primary'
+            : 'warning'
         "
-        @click="async () => await removeUserFromRoom(u)"
-        end
-        icon="mdi-close-circle"
-      ></v-icon>
-    </v-chip>
-  </div>
+      >
+        <template v-slot:prepend>
+          <v-avatar :color="stringToColor(u.userName)">
+            {{ getInitials(u.userName) }}
+          </v-avatar>
+        </template>
+        <v-list-item-title v-text="u.userName"></v-list-item-title>
+        <template v-slot:append>
+          <v-btn
+            v-if="
+              u.userName !== chatStore.getActiveRoom.creatorName &&
+              isContact(u.userName)
+            "
+            color="error"
+            icon="mdi-close-circle"
+            variant="text"
+            @click="async () => await removeUserFromRoom(u)"
+          ></v-btn>
+        </template>
+      </v-list-item>
+    </v-list>
+  </v-container>
 </template>
 
 <script setup lang="ts">
 import { SnackbarMessages, ContactState } from "~~/utilities/globalEnums";
+import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 
 const chatStore = useSechatChatStore();
 const sechatApp = useSechatApp();

@@ -5,7 +5,10 @@
       :message="m"
     />
   </v-sheet>
-  <div class="d-flex justify-end align-center">
+  <div
+    v-if="chatStore.activeRoom.messages.length > 10"
+    class="d-flex justify-end align-center"
+  >
     <v-btn
       icon="mdi-arrow-down-drop-circle"
       size="small"
