@@ -18,10 +18,26 @@
           <v-list-subheader>User name</v-list-subheader>
           <v-list-item> {{ userStore.getUserName }} </v-list-item>
           <v-divider class="mt-5" />
-          <v-list-subheader>Email</v-list-subheader>
+          <v-container>
+            <v-alert
+              density="compact"
+              type="info"
+              variant="tonal"
+              title="Email"
+              text="Add email if you want to reset your password if you forget it"
+            ></v-alert>
+          </v-container>
           <ChatProfileEmailSection />
           <v-divider class="mt-5" />
-          <v-list-subheader>Notifications</v-list-subheader>
+          <v-container>
+            <v-alert
+              density="compact"
+              type="info"
+              variant="tonal"
+              title="Notifications"
+              text="Subscribe to receive push nitifications on this device"
+            ></v-alert>
+          </v-container>
           <v-list-item>
             <template v-slot:prepend>
               <ChatProfileAllowNotifications />
