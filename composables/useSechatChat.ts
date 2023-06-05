@@ -37,9 +37,6 @@ export const useSechatChat = () => {
       data.displayName = data.invitedName;
     }
 
-    data.initials = getInitials(data.displayName);
-    data.color = stringToColor(data.displayName);
-
     chatStore.addContact(data);
   };
 
@@ -166,9 +163,6 @@ export const useSechatChat = () => {
       message,
       chatStore.activeRoomId
     );
-
-    message.colorSentBy = stringToColor(message.nameSentBy);
-    message.initialsSentBy = getInitials(message.nameSentBy);
 
     message.wasViewed = false;
     if (message.nameSentBy === userStore.getUserName) {
