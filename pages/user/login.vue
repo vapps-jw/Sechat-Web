@@ -88,24 +88,20 @@ const onSubmit = async () => {
     );
 
     if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: "Sign in failed",
-      });
+      sechatApp.showErrorSnackbar(apiError.value.data);
     }
 
-    await userApi.getUserData();
+    if (!apiError.value) {
+      await userApi.getUserData();
 
-    if (userStore.isSignedIn) {
-      console.log("--> Navigating to Chat");
-      navigateTo("/chat");
+      if (userStore.isSignedIn) {
+        console.log("--> Navigating to Chat");
+        navigateTo("/chat");
+      }
     }
   } catch (error) {
-    console.log("--> Sign up error", error);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
-    sechatApp.showErrorSnackbar(error.statusMessage);
     error.value = null;
   }
 };
