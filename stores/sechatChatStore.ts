@@ -8,10 +8,14 @@ export const useSechatChatStore = defineStore({
       availableContacts: <IContactRequest[]>[],
       activeChatTab: <string>ChatViews.Rooms,
       activeRoomId: <string>"",
+      newMessage: <string>"",
       activeRoom: <IRoom>null,
     };
   },
   actions: {
+    clearNewMessage() {
+      this.newMessage = "";
+    },
     activateMessagesView() {
       this.activeChatTab = ChatViews.Messages;
     },

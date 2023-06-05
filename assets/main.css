@@ -9,6 +9,12 @@
   flex-direction: column;
 }
 
+.sechat-v-card-full-h {
+  height: 95dvh;
+  display: flex !important;
+  flex-direction: column;
+}
+
 .sechat-v-card {
   height: 95dvh;
   display: flex !important;
@@ -17,6 +23,10 @@
 
 .sechat-layout {
   height: 100dvh;
+}
+
+.tiny-font {
+  font-size: xx-small;
 }
 
 .sechat-hidden {

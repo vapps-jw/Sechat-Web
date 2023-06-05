@@ -1,6 +1,6 @@
 <template>
   <div class="ma-2">
-    <chat-messages-tip-tap-editor v-model:model-value="newMessage" />
+    <chat-messages-tip-tap-editor v-model:model-value="chatStore.newMessage" />
   </div>
   <div class="d-flex justify-space-between mx-2 my-1">
     <v-btn
@@ -9,7 +9,7 @@
       icon="mdi-close-circle"
       size="small"
       color="tertiary"
-      @click="clearMessage"
+      @click="chatStore.clearNewMessage"
     ></v-btn>
     <v-btn
       variant="outlined"
@@ -30,12 +30,6 @@ const appStore = useSechatApp();
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
 
-const newMessage = ref<string>("");
-
-const clearMessage = () => {
-  newMessage.value = "";
-};
-
 const callMessageApi = async () => {
   try {
     const { error: apiError } = await useFetch(
@@ -47,7 +41,7 @@ const callMessageApi = async () => {
         method: "POST",
         credentials: "include",
         body: {
-          Text: newMessage.value,
+          Text: chatStore.newMessage,
           RoomId: chatStore.activeRoomId,
         },
       }
@@ -66,7 +60,7 @@ const callMessageApi = async () => {
 };
 
 const pushMessage = async () => {
-  if (!newMessage.value) {
+  if (!chatStore.newMessage) {
     return;
   }
 
@@ -83,7 +77,7 @@ const pushMessage = async () => {
   }
 
   callMessageApi();
-  newMessage.value = "";
+  chatStore.clearNewMessage();
 };
 </script>
 

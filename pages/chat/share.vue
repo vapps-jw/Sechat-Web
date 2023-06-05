@@ -1,20 +1,43 @@
 <template>
-  <div>Route: {{ route.fullPath }}</div>
-  <div>Title: {{ title }}</div>
-  <div>Text: {{ text }}</div>
-  <div>Url: {{ url }}</div>
+  <v-container>
+    <v-card class="sechat-v-card-full-h">
+      <v-toolbar>
+        <v-toolbar-title>Share</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon="mdi-share" variant="outlined"></v-btn>
+      </v-toolbar>
+      <v-card-text class="ma-0 pa-0 overflow-auto">
+        <v-container>
+          <ChatShareRoomsList @share-target-selected="shareTargetUpdate" />
+        </v-container>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <script setup lang="ts">
 const route = useRoute();
 const title = ref(route.query.title ? route.query.title : "");
 const text = ref(route.query.text ? route.query.text : "");
-const url = ref(route.query.url ? route.query.url : "");
+const chatStore = useSechatChatStore();
 
 definePageMeta({
   layout: "board",
   middleware: ["authenticated"],
 });
+
+const shareTargetUpdate = (roomId: string) => {
+  console.log("--> ShareTarget", roomId);
+  const shareData = {
+    roomId: roomId,
+    title: title.value,
+    text: text.value,
+  } as IShareDetails;
+
+  chatStore.selectRoom(shareData.roomId);
+  chatStore.newMessage = `${shareData.title} ${shareData.text} `;
+  navigateTo("/chat");
+};
 </script>
 
 <style scoped></style>

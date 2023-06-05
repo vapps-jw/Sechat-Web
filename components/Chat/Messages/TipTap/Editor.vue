@@ -64,8 +64,4 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped>
-.tiny-font {
-  font-size: xx-small;
-}
-</style>
+<style scoped></style>
