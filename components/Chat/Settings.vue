@@ -35,7 +35,7 @@
               type="info"
               variant="tonal"
               title="Notifications"
-              text="Subscribe to receive push nitifications on this device"
+              text="Subscribe to receive push notifications on this device"
             ></v-alert>
           </v-container>
           <v-list-item>
