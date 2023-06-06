@@ -185,19 +185,26 @@ export const useSechatChat = () => {
       return;
     }
 
+    chatStore.addNewMessage(message);
+
     if (
       chatStore.getActiveRoomId &&
       message.roomId === chatStore.getActiveRoomId
     ) {
       scrollToBottom("chatView");
     }
-
-    chatStore.addNewMessage(message);
   };
 
   const handleMessagesWereViewed = (message: IRoomUserActionMessage) => {
     console.warn("--> Incoming MessagesWereViewed", message);
     chatStore.markRoomMessagesAsViewed(message.userName, message.roomId);
+    if (
+      chatStore.activeRoomId &&
+      message.roomId === chatStore.activeRoomId &&
+      chatStore.activeChatTab === ChatViews.Messages
+    ) {
+      scrollToBottom("chatView");
+    }
   };
 
   const handleMessageWasViewed = (message: IRoomMessageUserActionMessage) => {

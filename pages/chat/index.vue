@@ -47,19 +47,15 @@ watch(activeChatTab, (newVal, oldVal) => {
     return;
   }
   try {
-    appStore.updateLoadingOverlay(true);
     const markMessagesAsVided =
       chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length > 0;
 
     if (markMessagesAsVided) {
-      console.log("--> Nav Update -> Marking messages as vived");
+      console.log("--> Nav Update -> Marking messages as viewed");
       chatApi.markMessagesAsViewed(chatStore.activeRoomId);
       chatStore.markMessagesAsViewed();
     }
-  } catch (error) {
-  } finally {
-    appStore.updateLoadingOverlay(false);
-  }
+  } catch (error) {}
 });
 </script>
 
