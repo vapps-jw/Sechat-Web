@@ -9,7 +9,6 @@ export const useSechatChatStore = defineStore({
       activeChatTab: <string>ChatViews.Rooms,
       activeRoomId: <string>"",
       newMessage: <string>"",
-      activeRoom: <IRoom>null,
     };
   },
   actions: {
@@ -107,6 +106,9 @@ export const useSechatChatStore = defineStore({
     },
     loadRooms(value: IRoom[]) {
       this.availableRooms = value.sort((a, b) => a.name.localeCompare(b.name));
+      if (this.activeRoomId) {
+        this.activeRoom = this.availableRooms.find((r) => r.id === value);
+      }
     },
     addRoom(value: IRoom) {
       this.availableRooms = [...this.availableRooms, value].sort((a, b) =>
@@ -145,7 +147,6 @@ export const useSechatChatStore = defineStore({
     selectRoom(value: string) {
       this.activeRoomId = value;
       this.activeChatTab = ChatViews.Messages;
-      this.activeRoom = this.availableRooms.find((r) => r.id === value);
     },
     deleteUserFromRoom(value: IUserRoomOptions) {
       const updatedRoom = this.availableRooms.find(
@@ -198,12 +199,6 @@ export const useSechatChatStore = defineStore({
           .creatorName;
       }
       return "";
-    },
-    getActiveRoomMessagesCount: (state) => {
-      if (!state.activeRoom) {
-        return 0;
-      }
-      return state.activeRoom.messages.length;
     },
     getActiveRoomMembers: (state) => {
       if (!state.activeRoomId) {

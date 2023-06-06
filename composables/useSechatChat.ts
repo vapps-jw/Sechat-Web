@@ -1,5 +1,4 @@
 import { scrollToBottom } from "~/utilities/documentFunctions";
-import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 import { ChatViews, SignalRHubMethods } from "~~/utilities/globalEnums";
 
 export const useSechatChat = () => {
@@ -214,6 +213,9 @@ export const useSechatChat = () => {
       message.roomId,
       message.messageId
     );
+    if (chatStore.activeRoomId && chatStore.activeRoomId === message.roomId) {
+      scrollToBottom("chatView");
+    }
   };
 
   // SignalR Event handlers

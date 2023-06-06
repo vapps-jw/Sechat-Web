@@ -9,6 +9,14 @@
           new Date(props.message.created).toLocaleString(appStore.localLanguage)
         }}
       </v-card-subtitle>
+    </template>
+    <template v-slot:subtitle>
+      <v-card-text class="px-0 py-0">
+        <div
+          class="text--primary text-sm mb-3"
+          v-html="props.message.text"
+        ></div>
+      </v-card-text>
       <v-card-subtitle class="tiny-font mx-0 px-0">
         <v-chip
           variant="text"
@@ -25,14 +33,6 @@
           {{ seenBy.user }}
         </v-chip>
       </v-card-subtitle>
-    </template>
-    <template v-slot:subtitle>
-      <v-card-text class="px-0 py-0">
-        <div
-          class="text--primary text-sm mb-3"
-          v-html="props.message.text"
-        ></div>
-      </v-card-text>
     </template>
     <template v-slot:prepend>
       <v-avatar :color="stringToColor(props.message.nameSentBy)" class="mx-2">

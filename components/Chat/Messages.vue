@@ -9,7 +9,7 @@
   <v-container v-else>
     <v-card class="sechat-v-card-full">
       <v-toolbar>
-        <v-toolbar-title>{{ chatStore.activeRoom.name }}</v-toolbar-title>
+        <v-toolbar-title>{{ chatStore.getActiveRoom.name }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <chat-rooms-settings :room-id="chatStore.getActiveRoom.id" />
       </v-toolbar>

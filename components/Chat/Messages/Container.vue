@@ -1,21 +1,14 @@
 <template>
   <v-sheet id="chatView" class="ma-0 pr-2 overflow-auto">
     <chat-messages-message
-      v-for="m in chatStore.activeRoom.messages"
+      v-for="m in chatStore.getActiveRoom.messages"
       :message="m"
     />
   </v-sheet>
   <div
-    v-if="chatStore.activeRoom.messages.length > 10"
+    v-if="chatStore.getActiveRoom.messages.length > 10"
     class="d-flex justify-end align-center"
-  >
-    <v-btn
-      icon="mdi-arrow-down-drop-circle"
-      size="small"
-      color="accent"
-      @click="scrollToBottom"
-    ></v-btn>
-  </div>
+  ></div>
 </template>
 
 <script setup lang="ts">

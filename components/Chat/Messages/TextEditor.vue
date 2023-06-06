@@ -3,14 +3,23 @@
     <chat-messages-tip-tap-editor v-model:model-value="chatStore.newMessage" />
   </div>
   <div class="d-flex justify-space-between mx-2 my-1">
-    <v-btn
-      class="mr-5"
-      variant="outlined"
-      icon="mdi-close-circle"
-      size="small"
-      color="tertiary"
-      @click="chatStore.clearNewMessage"
-    ></v-btn>
+    <div>
+      <v-btn
+        class="mr-5"
+        variant="outlined"
+        icon="mdi-close-circle"
+        size="small"
+        color="tertiary"
+        @click="chatStore.clearNewMessage"
+      ></v-btn>
+      <v-btn
+        icon="mdi-arrow-down-drop-circle"
+        size="small"
+        variant="outlined"
+        color="tertiary"
+        @click="() => scrollToBottom('chatView')"
+      ></v-btn>
+    </div>
     <v-btn
       variant="outlined"
       icon="mdi-send"
@@ -22,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { scrollToBottom } from "~/utilities/documentFunctions";
 import { SnackbarIcons } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
