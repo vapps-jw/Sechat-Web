@@ -1,21 +1,19 @@
 <template>
   <v-list>
     <v-list-item
-      class="ma-0 pa-1"
+      @click="selectRoomClicked(room.id)"
+      :border="true"
+      class="my-2 pa-1"
+      :class="
+        chatStore.activeRoomId && chatStore.activeRoomId === room.id
+          ? 'active-room'
+          : ''
+      "
       v-for="room in chatStore.availableRooms"
       :key="room.id"
       :title="room.name"
     >
       <template v-slot:prepend>
-        <v-icon
-          :color="
-            chatStore.activeRoomId && chatStore.activeRoomId === room.id
-              ? 'warning'
-              : 'transparent'
-          "
-          class="ma-0"
-          >mdi-circle-half</v-icon
-        >
         <v-menu class="ma-0">
           <template v-slot:activator="{ props }">
             <v-btn
@@ -35,36 +33,22 @@
               <v-btn
                 v-if="room.creatorName !== userStore.getUserName"
                 @click="leaveRoom(room)"
-                size="small"
-                icon="mdi-exit-to-app"
                 color="warning"
-                variant="outlined"
-              >
+                >Leave
               </v-btn>
             </v-list-item>
           </v-list>
         </v-menu>
       </template>
       <template v-slot:append>
-        <v-btn
-          @click="selectRoomClicked(room.id)"
-          size="small"
-          icon
-          color="success"
-          variant="outlined"
-          class="mr-2"
+        <v-badge
+          class="mr-5"
+          v-if="room.messages.filter((m) => !m.wasViewed).length > 0"
+          :content="room.messages.filter((m) => !m.wasViewed).length"
+          color="error"
         >
-          <v-icon v-if="room.messages.filter((m) => !m.wasViewed).length === 0"
-            >mdi-arrow-right</v-icon
-          >
-          <v-badge
-            v-if="room.messages.filter((m) => !m.wasViewed).length > 0"
-            :content="room.messages.filter((m) => !m.wasViewed).length"
-            color="error"
-          >
-            <v-icon>mdi-arrow-right</v-icon>
-          </v-badge>
-        </v-btn>
+          <v-icon size="x-large">mdi-email</v-icon>
+        </v-badge>
       </template>
     </v-list-item>
   </v-list>
@@ -118,6 +102,9 @@ const leaveRoom = async (room: IRoom) => {
 </script>
 
 <style scoped>
+.active-room {
+  background: linear-gradient(0.6turn, transparent, transparent, #ffc107);
+}
 .active-room-icon {
   width: 10px;
 }

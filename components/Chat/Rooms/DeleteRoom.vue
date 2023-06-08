@@ -2,14 +2,7 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="500">
       <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          icon="mdi-delete"
-          color="error"
-          size="small"
-          variant="outlined"
-          class="ma-3"
-        ></v-btn>
+        <v-btn v-bind="props" color="error" class="ma-3">Delete</v-btn>
       </template>
       <v-card>
         <v-card-title class="text-h6 text-center">

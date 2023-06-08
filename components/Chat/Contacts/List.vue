@@ -1,7 +1,8 @@
 <template>
   <v-list>
     <v-list-item
-      class="pa-2"
+      :border="true"
+      class="my-2 pa-1"
       v-for="uc in chatStore.getContacts"
       :key="`${uc.invitedName}-${uc.inviterName}`"
       :title="uc.displayName"
@@ -22,19 +23,17 @@
                 @click="async () => allowContact(uc.id)"
                 class="mx-1"
                 size="small"
-                icon="mdi-checkbox-marked-circle-outline"
                 color="success"
-                variant="outlined"
-              ></v-btn>
+                >Allow</v-btn
+              >
               <v-btn
                 v-else
                 @click="async () => blockContact(uc.id)"
                 class="mx-1"
                 size="small"
-                icon="mdi-block-helper"
                 color="error"
-                variant="outlined"
-              ></v-btn>
+                >Block</v-btn
+              >
             </v-list-item>
             <v-list-item
               v-if="!uc.approved && uc.invitedName === userStore.getUserName"
@@ -43,21 +42,19 @@
                 @click="async () => approveContact(uc.id)"
                 class="mx-1"
                 size="small"
-                icon="mdi-check-bold"
                 color="success"
-                variant="outlined"
-              ></v-btn
-            ></v-list-item>
+                >Approve</v-btn
+              ></v-list-item
+            >
             <v-list-item>
               <v-btn
                 @click="async () => deleteContact(uc.id)"
                 class="mx-1"
                 size="small"
-                icon="mdi-delete"
                 color="error"
-                variant="outlined"
-              ></v-btn
-            ></v-list-item>
+                >Delete</v-btn
+              ></v-list-item
+            >
           </v-list>
         </v-menu>
         <div class="d-flex flex-column mr-2">
