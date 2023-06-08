@@ -15,18 +15,14 @@ interface IStringUserMessage {
   message?: string;
 }
 
+interface IRoomCreateRequest {
+  roomName?: string;
+  userEncrypted?: boolean;
+}
+
 interface IUserRoomOptions {
   roomId?: string;
   userName?: string;
-}
-
-interface INewRoomCreateMessage {
-  id?: string;
-  name?: string;
-  owner?: string;
-  ownerName?: string;
-  lastActivity?: Date;
-  created?: Date;
 }
 
 interface IRoom {
@@ -37,6 +33,7 @@ interface IRoom {
   creatorName?: string;
   lastActivity?: Date;
   created?: Date;
+  userEncrypted?: boolean;
 }
 
 interface IRoomMessageUserActionMessage {

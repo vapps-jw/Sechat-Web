@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" persistent>
+    <v-dialog v-model="dialog" persistent width="500">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
@@ -13,7 +13,7 @@
       </template>
       <v-card>
         <v-card-title class="text-h6 text-center">
-          Delete {{ props.room.name }}?
+          Delete Room: {{ props.room.name }}?
         </v-card-title>
         <v-card-actions>
           <v-btn color="success" variant="text" @click="dialog = false">

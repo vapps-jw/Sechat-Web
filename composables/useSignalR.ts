@@ -229,11 +229,14 @@ export const useSignalR = () => {
       });
   };
 
-  const createRoom = (name: string) => {
+  const createRoom = (data: IRoomCreateRequest) => {
     console.log("--> Connection state:", signalRStore.connection.state);
-    console.log("--> SignalR Creating Room:", name);
+    console.log("--> SignalR Creating Room:", data);
     signalRStore.connection
-      .invoke(SignalRHubMethods.CreateRoom, { RoomName: name })
+      .invoke(SignalRHubMethods.CreateRoom, {
+        RoomName: data.roomName,
+        UserEncrypted: data.userEncrypted,
+      })
       .then((newRoom: IRoom) => {
         console.log("--> New room created", newRoom);
         sechatChatStore.addRoom(newRoom);

@@ -1,17 +1,11 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    fullscreen
-    :scrim="false"
-    transition="dialog-bottom-transition"
-  >
+  <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ props }">
       <v-btn v-bind="props" icon="mdi-account-cog" variant="outlined"></v-btn>
     </template>
     <v-card>
-      <v-toolbar dark color="primary">
+      <v-toolbar>
         <v-toolbar-title>Room Settings</v-toolbar-title>
-        <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn icon dark @click="dialog = false">
             <v-icon>mdi-close</v-icon>

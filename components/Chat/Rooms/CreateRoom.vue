@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog">
+  <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ props }">
       <v-btn
         v-bind="props"
@@ -54,7 +54,7 @@ const createRoom = async () => {
     return;
   }
 
-  signalR.createRoom(roomData.value.name);
+  signalR.createRoom({ roomName: roomData.value.name, userEncrypted: false });
   roomData.value.name = "";
   dialog.value = false;
 };
