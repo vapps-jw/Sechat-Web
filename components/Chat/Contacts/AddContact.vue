@@ -5,24 +5,29 @@
     </template>
 
     <v-card>
-      <v-card-title>
-        <p class="text-h4 text-center">Send Invitation</p>
-      </v-card-title>
+      <v-toolbar>
+        <v-toolbar-title>Add Contact</v-toolbar-title>
+        <v-toolbar-items>
+          <v-btn icon dark @click="dialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
       <v-card-text>
         <v-form ref="invitationCreateForm" @submit.prevent>
           <v-text-field
             v-model="invitaitonData.name"
             :rules="invitaitonData.nameRules"
             :counter="50"
-            label="Username"
+            label="User Name"
             required
           ></v-text-field>
         </v-form>
       </v-card-text>
-      <v-card-actions>
-        <v-btn color="warning" @click="dialog = false"> Close </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn color="success" @click="createInvitation"> Send </v-btn>
+      <v-card-actions class="justify-center">
+        <v-btn variant="tonal" @click="createInvitation">
+          Send Invitation
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

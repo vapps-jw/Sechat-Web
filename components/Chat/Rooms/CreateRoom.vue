@@ -9,9 +9,14 @@
     </template>
 
     <v-card>
-      <v-card-title>
-        <p class="text-h4 text-center">Create Room</p>
-      </v-card-title>
+      <v-toolbar>
+        <v-toolbar-title>Create Room</v-toolbar-title>
+        <v-toolbar-items>
+          <v-btn icon dark @click="dialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
       <v-card-text>
         <v-form ref="roomCreateForm" @submit.prevent>
           <v-text-field
@@ -23,10 +28,8 @@
           ></v-text-field>
         </v-form>
       </v-card-text>
-      <v-card-actions>
-        <v-btn color="warning" @click="dialog = false"> Close </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn color="success" @click="createRoom"> Create </v-btn>
+      <v-card-actions class="justify-center">
+        <v-btn variant="tonal" @click="createRoom"> Create </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
