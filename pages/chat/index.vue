@@ -23,7 +23,6 @@ definePageMeta({
 const webRTC = useWebRTCStore();
 const chatStore = useSechatChatStore();
 const chatApi = useChatApi();
-const appStore = useSechatAppStore();
 
 const selectedNav = ref(ChatViews.Rooms);
 
@@ -55,7 +54,9 @@ watch(activeChatTab, (newVal, oldVal) => {
       chatApi.markMessagesAsViewed(chatStore.activeRoomId);
       chatStore.markMessagesAsViewed();
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 });
 </script>
 

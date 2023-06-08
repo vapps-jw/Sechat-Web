@@ -142,21 +142,6 @@ export const useSignalR = () => {
     }
   };
 
-  const handleVisibilityChange = () => {
-    console.warn("--> Visibility changed", document?.visibilityState);
-    if (!document) return;
-    if (document.visibilityState === VisibilityStates.VISIBLE) {
-      try {
-        console.log(
-          `--> APP Resumed, Connection: ${signalRStore.connection} State: ${signalRStore.connection?.state}`
-        );
-        connect();
-      } catch (error) {
-        console.error("--> APP Resume Error!");
-      }
-    }
-  };
-
   // Rooms
 
   const _onUserAddedToRoomEvent = (connection: signalR.HubConnection) => {
@@ -289,6 +274,5 @@ export const useSignalR = () => {
     closeConnection,
     createRoom,
     connect,
-    handleVisibilityChange,
   };
 };

@@ -1,5 +1,9 @@
 import { scrollToBottom } from "~/utilities/documentFunctions";
-import { ChatViews, SignalRHubMethods } from "~~/utilities/globalEnums";
+import {
+  ChatViews,
+  SignalRHubMethods,
+  VisibilityStates,
+} from "~~/utilities/globalEnums";
 
 export const useSechatChat = () => {
   const userStore = useUserStore();
@@ -164,6 +168,7 @@ export const useSechatChat = () => {
     );
 
     message.wasViewed = false;
+
     if (message.nameSentBy === userStore.getUserName) {
       message.wasViewed = true;
       chatStore.addNewMessage(message);
@@ -172,6 +177,7 @@ export const useSechatChat = () => {
     }
 
     if (
+      document.visibilityState === VisibilityStates.VISIBLE &&
       chatStore.getActiveRoomId &&
       message.roomId === chatStore.getActiveRoomId &&
       chatStore.getActiveChatTab === ChatViews.Messages &&

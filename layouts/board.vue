@@ -33,7 +33,6 @@ onMounted(async () => {
 
   chatStore.loadRooms(chatState.rooms);
   chatStore.loadContacts(chatState.userContacts);
-
   await signalR.connect();
 
   console.info("--> Hooking to visibility change");
