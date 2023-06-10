@@ -1,5 +1,5 @@
 import * as signalR from "@microsoft/signalr";
-import { SignalRHubMethods, VisibilityStates } from "~~/utilities/globalEnums";
+import { SignalRHubMethods } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
   const sechatStore = useSechatAppStore();
@@ -10,6 +10,7 @@ export const useSignalR = () => {
   const userStore = useUserStore();
   const signalRStore = useSignalRStore();
   const videoCalls = useVideoCall();
+  const chatApi = useChatApi();
 
   const createNewConnection = async () => {
     const connection = new signalR.HubConnectionBuilder()
@@ -88,8 +89,12 @@ export const useSignalR = () => {
           });
         }
 
-        sechatChat.loadRooms(chatState.value.rooms);
-        sechatChat.loadUserConnections(chatState.value.userContacts);
+        await Promise.all([
+          chatApi
+            .getConstacts()
+            .then((res) => sechatChatStore.loadContacts(res)),
+          chatApi.getRooms().then((res) => sechatChatStore.loadRooms(res)),
+        ]);
 
         console.log("--> Reconnected, connectiong to Rooms ...");
         _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));

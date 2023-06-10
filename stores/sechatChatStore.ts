@@ -110,6 +110,29 @@ export const useSechatChatStore = defineStore({
         this.activeRoom = this.availableRooms.find((r) => r.id === value);
       }
     },
+    updateRooms(value: IRoom[]) {
+      // TODO: finish this
+      // this.availableRooms.forEach(ar => {
+      //   if (!this.value.some(ur => ur.id === ar.id)) {
+      //     this.availableRooms.push(ur);
+      //   }
+      //   else{
+      //   }
+      // });
+      // value.forEach((updatedRoom) => {
+      //   const roomToUpdate = this.availableRooms.find(
+      //     (r) => r.id === updatedRoom.id
+      //   );
+      //   if (roomToUpdate) {
+      //     updatedRoom.messages.forEach((m) => roomToUpdate.messages.push(m));
+      //     console.warn("Room after update", roomToUpdate);
+      //     roomToUpdate.members = updatedRoom.members;
+      //     return;
+      //   }
+      //   this.availableRooms.push(updatedRoom);
+      // });
+      // this.availableRooms = value.sort((a, b) => a.name.localeCompare(b.name));
+    },
     addRoom(value: IRoom) {
       this.availableRooms = [...this.availableRooms, value].sort((a, b) =>
         a.name.localeCompare(b.name)
@@ -172,12 +195,14 @@ export const useSechatChatStore = defineStore({
         (r) => r.id === value.roomId
       );
 
-      updatedRoom.messages.push(value);
-      updatedRoom.lastActivity = value.created;
+      if (!updatedRoom.messages.some((m) => m.id === value.id)) {
+        updatedRoom.messages.push(value);
+        updatedRoom.lastActivity = value.created;
 
-      updatedRoom.messages = updatedRoom.messages.sort(
-        (a, b) => Number(a.created) - Number(b.created)
-      );
+        updatedRoom.messages = updatedRoom.messages.sort(
+          (a, b) => Number(a.created) - Number(b.created)
+        );
+      }
     },
     addNewMessages(value: string, roomId: string) {},
   },

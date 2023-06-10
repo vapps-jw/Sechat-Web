@@ -22,7 +22,6 @@
                 v-if="uc.blocked && uc.blockedByName === userStore.getUserName"
                 @click="async () => allowContact(uc.id)"
                 class="mx-1"
-                size="small"
                 color="success"
                 >Allow</v-btn
               >
@@ -30,7 +29,6 @@
                 v-else
                 @click="async () => blockContact(uc.id)"
                 class="mx-1"
-                size="small"
                 color="error"
                 >Block</v-btn
               >
@@ -41,7 +39,6 @@
               <v-btn
                 @click="async () => approveContact(uc.id)"
                 class="mx-1"
-                size="small"
                 color="success"
                 >Approve</v-btn
               ></v-list-item
@@ -50,7 +47,6 @@
               <v-btn
                 @click="async () => deleteContact(uc.id)"
                 class="mx-1"
-                size="small"
                 color="error"
                 >Delete</v-btn
               ></v-list-item

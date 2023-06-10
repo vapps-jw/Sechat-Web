@@ -35,7 +35,15 @@
       </v-card-subtitle>
     </template>
     <template v-slot:prepend>
-      <v-avatar :color="stringToColor(props.message.nameSentBy)" class="mx-2">
+      <v-avatar
+        :color="stringToColor(props.message.nameSentBy)"
+        class="mx-2"
+        :variant="
+          userStore.getUserName === props.message.nameSentBy
+            ? 'elevated'
+            : 'tonal'
+        "
+      >
         {{ getInitials(props.message.nameSentBy) }}</v-avatar
       >
     </template>

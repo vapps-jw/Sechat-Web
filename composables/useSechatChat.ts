@@ -58,18 +58,6 @@ export const useSechatChat = () => {
     chatStore.updateContact(data);
   };
 
-  const loadUserConnections = (data: IContactRequest[]) => {
-    console.log("--> Adding user connecitons to the Store", data);
-    data.forEach((uc) => {
-      if (uc.invitedName === userStore.getUserName) {
-        uc.displayName = uc.inviterName;
-      } else {
-        uc.displayName = uc.invitedName;
-      }
-    });
-    chatStore.loadContacts(data);
-  };
-
   // Rooms
 
   const onConnectionRequestReceivedEvent = (
@@ -128,11 +116,6 @@ export const useSechatChat = () => {
   const handleDeleteRoom = (message: IResourceGuid) => {
     console.warn("--> Handling Room Delete Event Handled", message);
     chatStore.deleteRoom(message.id);
-  };
-
-  const loadRooms = (data: IRoom[]) => {
-    console.log("--> Adding room to the Store", data);
-    chatStore.loadRooms(data);
   };
 
   const selectRoom = (room: IRoom) => {
@@ -239,14 +222,12 @@ export const useSechatChat = () => {
     handleMessagesWereViewed,
     removeRoom,
     addRoom,
-    loadRooms,
     selectRoom,
     handleUpdateRoom,
     handleIncomingMessage,
     handleDeleteRoom,
     handleConnectionRequestReceived,
     handleConnectionUpdated,
-    loadUserConnections,
     handleConnectionDelete,
     handleUserAddedToRoom,
     handleUserRemovedFromRoom,

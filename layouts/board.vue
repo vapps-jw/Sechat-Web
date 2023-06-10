@@ -28,11 +28,11 @@ onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
   sechatAppStore.updateLoadingOverlay(true);
 
-  console.warn("--> Getting State");
-  const chatState = await chatApi.getState();
+  await Promise.all([
+    chatApi.getConstacts().then((res) => chatStore.loadContacts(res)),
+    chatApi.getRooms().then((res) => chatStore.loadRooms(res)),
+  ]);
 
-  chatStore.loadRooms(chatState.rooms);
-  chatStore.loadContacts(chatState.userContacts);
   await signalR.connect();
 
   console.info("--> Hooking to visibility change");

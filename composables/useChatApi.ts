@@ -6,10 +6,40 @@ export const useChatApi = () => {
   const userStore = useUserStore();
   const sechatApp = useSechatApp();
 
-  const getState = async (): Promise<IChatState> => {
-    console.log("--> Getting State from API");
-    const { error: apiError, data: chatState } = await useFetch<IChatState>(
-      `${config.public.apiBase}/chat/get-state`,
+  const getConstacts = async (): Promise<IContactRequest[]> => {
+    console.log("--> Getting Contacts from API");
+    const { error: apiError, data: chatState } = await useFetch<
+      IContactRequest[]
+    >(`${config.public.apiBase}/chat/contacts`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    console.log("--> Contacts Fetched", chatState.value);
+
+    chatState.value.forEach((uc) => {
+      if (uc.invitedName === userStore.userProfile.userName) {
+        uc.displayName = uc.inviterName;
+      } else {
+        uc.displayName = uc.invitedName;
+      }
+    });
+
+    return chatState.value;
+  };
+
+  const getRooms = async (): Promise<IRoom[]> => {
+    console.log("--> Getting Rooms from API");
+    const { error: apiError, data: chatState } = await useFetch<IRoom[]>(
+      `${config.public.apiBase}/chat/rooms`,
       {
         method: "GET",
         credentials: "include",
@@ -24,15 +54,34 @@ export const useChatApi = () => {
       });
     }
 
-    console.log("--> State Fetched", chatState.value);
+    console.log("--> Rooms Fetched", chatState.value);
 
-    chatState.value.userContacts.forEach((uc) => {
-      if (uc.invitedName === userStore.userProfile.userName) {
-        uc.displayName = uc.inviterName;
-      } else {
-        uc.displayName = uc.invitedName;
+    return chatState.value;
+  };
+
+  const getRoomsUpdate = async (
+    updateRequests: IRoomUpdateRequest[]
+  ): Promise<IRoom[]> => {
+    console.log("--> Getting Rooms Updates from API", updateRequests);
+    const { error: apiError, data: chatState } = await useFetch<IRoom[]>(
+      `${config.public.apiBase}/chat/rooms-update`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: updateRequests,
       }
-    });
+    );
+
+    if (apiError.value) {
+      console.error(apiError.value);
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    console.log("--> Rooms Updates Fetched", chatState.value);
 
     return chatState.value;
   };
@@ -119,7 +168,9 @@ export const useChatApi = () => {
   };
 
   return {
-    getState,
+    getConstacts,
+    getRooms,
+    getRoomsUpdate,
     markMessageAsViewed,
     markMessagesAsViewed,
   };

@@ -7,7 +7,7 @@ export const useRefreshHandler = () => {
   const chatStore = useSechatChatStore();
 
   const handleVisibilityChange = async () => {
-    //signalRStore.clearVideoCallData();
+    console.log("Visibility changed", document.visibilityState);
     if (document.visibilityState !== VisibilityStates.VISIBLE) {
       return;
     }
@@ -31,9 +31,45 @@ export const useRefreshHandler = () => {
   };
 
   const refreshActions = async () => {
-    const chatState = await chatApi.getState();
-    chatStore.loadRooms(chatState.rooms);
-    chatStore.loadContacts(chatState.userContacts);
+    const promises = [
+      chatApi.getConstacts().then((res) => chatStore.loadContacts(res)),
+    ];
+
+    if (chatStore.availableRooms.length > 0) {
+      console.warn("Available Rooms", chatStore.availableRooms);
+      const updates = chatStore.availableRooms
+        .filter((r) => r.messages.length > 0)
+        .map(
+          (r) =>
+            <IRoomUpdateRequest>{
+              roomId: r.id,
+              lastMessage: r.messages.at(-1).created,
+            }
+        );
+      if (updates.length > 0) {
+        console.log("Calling Room Updates", updates);
+        promises.push(
+          chatApi
+            .getRoomsUpdate(updates)
+            .then((res) => chatStore.updateRooms(res))
+        );
+      } else {
+        console.warn("Getting All Rooms");
+        promises.push(
+          chatApi.getRooms().then((res) => chatStore.loadRooms(res))
+        );
+      }
+    } else {
+      console.warn("Getting All Rooms");
+      promises.push(chatApi.getRooms().then((res) => chatStore.loadRooms(res)));
+    }
+
+    try {
+      await Promise.all(promises);
+    } catch (error) {
+      console.error("Update Error", error);
+    }
+
     await signalR.connect();
 
     console.log(
