@@ -1,9 +1,11 @@
-const puppeteer = require("puppeteer-extra");
-const pluginStealth = require("puppeteer-extra-plugin-stealth");
-const util = require("util");
-const request = util.promisify(require("request"));
-const getUrls = require("get-urls");
-const isBase64 = require("is-base64");
+import puppeteer from "puppeteer-extra";
+import pluginStealth from "puppeteer-extra-plugin-stealth";
+import util from "util";
+import getUrls from "get-urls";
+import isBase64 from "is-base64";
+import request from "request";
+
+const requestUtil = util.promisify(request);
 
 const urlImageIsAccessible = async (url) => {
   const correctedUrls = getUrls(url);
@@ -11,7 +13,7 @@ const urlImageIsAccessible = async (url) => {
     return true;
   }
   if (correctedUrls.size !== 0) {
-    const urlResponse = await request(correctedUrls.values().next().value);
+    const urlResponse = await requestUtil(correctedUrls.values().next().value);
     const contentType = urlResponse.headers["content-type"];
     return new RegExp("image/*").test(contentType);
   }
@@ -212,7 +214,7 @@ const getFavicon = async (page, uri) => {
   return favicon;
 };
 
-module.exports = async (
+export const linkPreview = async (
   uri,
   puppeteerArgs = [],
   puppeteerAgent = "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
@@ -221,7 +223,7 @@ module.exports = async (
   puppeteer.use(pluginStealth());
 
   const params = {
-    headless: true,
+    headless: "new",
     args: [...puppeteerArgs],
   };
   if (executablePath) {
@@ -233,7 +235,7 @@ module.exports = async (
   page.setUserAgent(puppeteerAgent);
 
   await page.goto(uri);
-  await page.exposeFunction("request", request);
+  await page.exposeFunction("request", requestUtil);
   await page.exposeFunction("urlImageIsAccessible", urlImageIsAccessible);
 
   const obj = {};

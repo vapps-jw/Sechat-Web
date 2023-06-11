@@ -93,9 +93,16 @@ watch(
             }
 
             console.warn("Setting Title", prev.title);
-            editor.value?.commands.insertContent(
-              `<h4>${prev.title}</h4><h5>${prev.description}</h5>`
-            );
+
+            if (prev.title) {
+              editor.value?.commands.insertContent(`<h4>${prev.title}</h4>`);
+            }
+
+            if (prev.description) {
+              editor.value?.commands.insertContent(
+                `<h5>${prev.description}</h5>`
+              );
+            }
 
             console.warn("Setting image", prev.img);
             editor.value?.commands.setImage({

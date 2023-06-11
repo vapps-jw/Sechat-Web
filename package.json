@@ -11,16 +11,16 @@
   },
   "devDependencies": {
     "@nuxtjs/i18n": "8.0.0-beta.12",
-    "@vite-pwa/nuxt": "^0.0.10",
+    "@vite-pwa/nuxt": "^0.1.0",
     "cross-env": "^7.0.3",
-    "nuxt": "^3.5.2",
+    "nuxt": "^3.5.3",
     "nuxt-security": "^0.13.0",
     "workbox-precaching": "^7.0.0"
   },
   "dependencies": {
     "@mdi/font": "^7.2.96",
     "@microsoft/signalr": "^7.0.5",
-    "@nuxt/image-edge": "1.0.0-28094923.e859bba",
+    "@nuxt/image-edge": "1.0.0-rc.1-28106434.299e03e",
     "@pinia/nuxt": "^0.4.11",
     "@tiptap/extension-character-count": "^2.0.3",
     "@tiptap/extension-image": "^2.0.3",
@@ -30,9 +30,14 @@
     "@tiptap/starter-kit": "^2.0.3",
     "@tiptap/vue-3": "^2.0.3",
     "base64-js": "^1.5.1",
-    "link-preview-generator": "^1.1.0",
+    "get-urls": "^11.0.0",
+    "is-base64": "^1.1.0",
+    "puppeteer": "^20.5.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "request": "^2.88.2",
     "sass": "^1.62.1",
-    "vuetify": "^3.3.2"
+    "vuetify": "^3.3.3"
   },
   "overrides": {
     "vue": "latest"
