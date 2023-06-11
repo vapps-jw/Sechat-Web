@@ -9,12 +9,14 @@
 </template>
 
 <script setup lang="ts">
+import { isAnchor, findAll } from "~/utilities/stringFunctions";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import CharacterCount from "@tiptap/extension-character-count";
 import Underline from "@tiptap/extension-underline";
 import Image from "@tiptap/extension-image";
+import { ConsoleLogger } from "@microsoft/signalr/dist/esm/Utils";
 
 const props = defineProps({
   modelValue: {
@@ -34,6 +36,12 @@ watch(
     }
     let content = newValue.replace(/\s/g, "\u00a0");
     editor.value?.commands.setContent(content, false);
+
+    const anchors = findAll(/<a[^>]*href=["']([^"']*)["']/g, content);
+    console.log("Anchors", anchors);
+    if (anchors.length > 0) {
+      console.warn("anchors found");
+    }
   }
 );
 

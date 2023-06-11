@@ -32,3 +32,22 @@ export const stringToColor = (value: string) => {
 
   return `hsl(${hash % 360}, 85%, 35%)`;
 };
+
+export const isAnchor = (str: string) => {
+  return /^\<a.*\>.*\<\/a\>/i.test(str);
+};
+
+export const findAll = (regexPattern, sourceString) => {
+  var output = [];
+  var match;
+  var regexPatternWithGlobal = regexPattern.global
+    ? regexPattern
+    : RegExp(regexPattern, regexPattern.flags + "g");
+  while ((match = regexPatternWithGlobal.exec(sourceString))) {
+    output.push(match);
+    if (match[0].length == 0) {
+      regexPatternWithGlobal.lastIndex += 1;
+    }
+  }
+  return output;
+};
