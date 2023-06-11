@@ -103,18 +103,21 @@ watch(
               alt: prev.domain,
               title: prev.title,
             });
+            emit("editorStateUpdate", {
+              busy: false,
+              editable: false,
+              readyToShare: true,
+            });
           })
           .catch((err) => {
             console.error(err);
             editor.value?.setOptions({ editable: true });
-            // TODO: handle error
-            //editor.value?.commands.setContent(content, false);
+            emit("editorStateUpdate", {
+              busy: false,
+              editable: false,
+              readyToShare: false,
+            });
           });
-        emit("editorStateUpdate", {
-          busy: false,
-          editable: false,
-          readyToShare: true,
-        });
       } catch (error) {
         editor.value?.setOptions({ editable: true });
         emit("editorStateUpdate", {
