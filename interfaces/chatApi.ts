@@ -95,3 +95,11 @@ interface IContactRequest {
   blocked?: boolean;
   blockedByName?: string;
 }
+
+interface ILinkPreview {
+  title?: string;
+  description?: string;
+  domain?: string;
+  img?: string;
+  favicon?: string;
+}

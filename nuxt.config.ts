@@ -30,6 +30,10 @@ export default defineNuxtConfig({
         camera: ["self"],
         microphone: ["self"],
       },
+      crossOriginEmbedderPolicy: false,
+      contentSecurityPolicy: {
+        "img-src": ["*", "data:"],
+      },
     },
   },
   modules: [

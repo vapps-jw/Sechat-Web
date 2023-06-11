@@ -35,10 +35,6 @@ watch(activeChatTab, (newVal, oldVal) => {
     selectedNav.value = newVal;
   }
 
-  if (newVal === ChatViews.Messages) {
-    scrollToBottom("chatView");
-  }
-
   if (!chatStore.activeRoomId) {
     return;
   }
@@ -56,6 +52,9 @@ watch(activeChatTab, (newVal, oldVal) => {
     }
   } catch (error) {
     console.error(error);
+  }
+  if (newVal === ChatViews.Messages) {
+    scrollToBottom("chatView");
   }
 });
 </script>

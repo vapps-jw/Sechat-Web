@@ -30,6 +30,7 @@
     "@tiptap/starter-kit": "^2.0.3",
     "@tiptap/vue-3": "^2.0.3",
     "base64-js": "^1.5.1",
+    "link-preview-generator": "^1.1.0",
     "sass": "^1.62.1",
     "vuetify": "^3.3.2"
   },

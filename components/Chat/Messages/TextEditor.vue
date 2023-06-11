@@ -1,6 +1,9 @@
 <template>
   <div class="ma-2">
-    <chat-messages-tip-tap-editor v-model:model-value="chatStore.newMessage" />
+    <chat-messages-tip-tap-editor
+      v-model:model-value="chatStore.newMessage"
+      @editorStateUpdate="editorUpdate"
+    />
   </div>
   <div class="d-flex justify-space-between mx-2 my-1">
     <div>
@@ -21,9 +24,9 @@
       ></v-btn>
     </div>
     <v-btn
+      v-if="!editorState.busy"
       variant="outlined"
-      icon="mdi-send"
-      size="small"
+      :icon="editorState.readyToShare ? 'mdi-share' : 'mdi-send'"
       color="warning"
       @click="pushMessage"
     ></v-btn>
@@ -39,6 +42,17 @@ const signalRstore = useSignalRStore();
 const appStore = useSechatApp();
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
+
+const editorState = ref<IEditorState>({
+  busy: false,
+  editable: true,
+  readyToShare: false,
+});
+
+const editorUpdate = (state: IEditorState) => {
+  console.log("Editor state update", state);
+  editorState.value = state;
+};
 
 const callMessageApi = async () => {
   try {

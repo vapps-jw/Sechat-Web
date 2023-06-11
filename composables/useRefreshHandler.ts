@@ -82,16 +82,16 @@ export const useRefreshHandler = () => {
       chatStore.activeChatTab === ChatViews.Messages
     ) {
       try {
-        const markMessagesAsVided =
+        const markMessagesAsVieved =
           chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length >
           0;
 
         console.log(
           "--> Nav Update -> Marking messages as viewed",
-          markMessagesAsVided
+          markMessagesAsVieved
         );
 
-        if (markMessagesAsVided) {
+        if (markMessagesAsVieved) {
           console.log("--> Nav Update -> Marking messages as viewed");
           await chatApi.markMessagesAsViewed(chatStore.activeRoomId);
           chatStore.markMessagesAsViewed();

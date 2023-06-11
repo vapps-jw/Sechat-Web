@@ -1,10 +1,21 @@
-import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 import { SnackbarIcons } from "~~/utilities/globalEnums";
 
 export const useChatApi = () => {
   const config = useRuntimeConfig();
   const userStore = useUserStore();
   const sechatApp = useSechatApp();
+
+  const getLinkPreview = async (link: string) => {
+    const { data: res, error: apiError } = await (<any>(
+      useFetch(`/api/link-preview?link=${link}`)
+    ));
+    if (apiError.value) {
+      console.error("--> Link Preview Error", apiError.value.data);
+      return;
+    }
+
+    return JSON.parse(JSON.stringify(res.value));
+  };
 
   const getConstacts = async (): Promise<IContactRequest[]> => {
     console.log("--> Getting Contacts from API");
@@ -168,6 +179,7 @@ export const useChatApi = () => {
   };
 
   return {
+    getLinkPreview,
     getConstacts,
     getRooms,
     getRoomsUpdate,
