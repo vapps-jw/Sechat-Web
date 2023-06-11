@@ -88,6 +88,9 @@ watch(
           .getLinkPreview(anchors[0][1])
           .then((prev) => {
             console.warn("PREV", prev);
+            if (!prev || prev === undefined) {
+              throw new Error("No prev");
+            }
 
             console.warn("Setting Title", prev.title);
             editor.value?.commands.insertContent(
