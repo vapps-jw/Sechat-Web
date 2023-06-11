@@ -114,7 +114,7 @@ watch(
             editor.value?.setOptions({ editable: true });
             emit("editorStateUpdate", {
               busy: false,
-              editable: false,
+              editable: true,
               readyToShare: false,
             });
           });
