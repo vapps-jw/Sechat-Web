@@ -68,7 +68,7 @@ interface IRoomMemeber {
 
 interface IRoomUpdateRequest {
   roomId?: string;
-  lastMessage?: Date;
+  lastMessage?: number;
 }
 
 interface ISentMessage {

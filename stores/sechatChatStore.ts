@@ -1,5 +1,13 @@
 import { ChatViews, ContactState } from "~~/utilities/globalEnums";
 
+interface IChatStore {
+  availableRooms: IRoom[];
+  availableContacts: IContactRequest[];
+  activeChatTab: string;
+  activeRoomId: string;
+  newMessage: string;
+}
+
 export const useSechatChatStore = defineStore({
   id: "sechat-chat-store",
   state: () => {
@@ -85,7 +93,7 @@ export const useSechatChatStore = defineStore({
 
       message.messageViewers.push(<IMessageViewer>{ user: userName });
     },
-    markMessagesAsViewed() {
+    markMessagesAsViewed(this: IChatStore) {
       if (!this.activeRoomId) {
         return;
       }
@@ -110,28 +118,33 @@ export const useSechatChatStore = defineStore({
         this.activeRoom = this.availableRooms.find((r) => r.id === value);
       }
     },
-    updateRooms(value: IRoom[]) {
-      // TODO: finish this
-      // this.availableRooms.forEach(ar => {
-      //   if (!this.value.some(ur => ur.id === ar.id)) {
-      //     this.availableRooms.push(ur);
-      //   }
-      //   else{
-      //   }
-      // });
-      // value.forEach((updatedRoom) => {
-      //   const roomToUpdate = this.availableRooms.find(
-      //     (r) => r.id === updatedRoom.id
-      //   );
-      //   if (roomToUpdate) {
-      //     updatedRoom.messages.forEach((m) => roomToUpdate.messages.push(m));
-      //     console.warn("Room after update", roomToUpdate);
-      //     roomToUpdate.members = updatedRoom.members;
-      //     return;
-      //   }
-      //   this.availableRooms.push(updatedRoom);
-      // });
-      // this.availableRooms = value.sort((a, b) => a.name.localeCompare(b.name));
+    updateRooms(this: IChatStore, value: IRoom[]) {
+      const updates = JSON.parse(JSON.stringify(value));
+
+      const newRooms = updates.filter(
+        (nr) => !this.availableRooms.some((ar) => ar.id === nr.id)
+      );
+      const presentRooms = updates.filter((nr) =>
+        this.availableRooms.some((ar) => ar.id === nr.id)
+      );
+
+      newRooms.forEach((newRoom) => {
+        this.availableRooms.push(newRoom);
+      });
+
+      this.availableRooms.forEach((r) => {
+        const updatedRoom = presentRooms.find((ur) => ur.id == r.id);
+        if (updatedRoom) {
+          updatedRoom.messages.forEach((msg) => {
+            r.messages.push(msg);
+          });
+          r.members = updatedRoom.members;
+        }
+      });
+
+      this.availableRooms = this.availableRooms.sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
     },
     addRoom(value: IRoom) {
       this.availableRooms = [...this.availableRooms, value].sort((a, b) =>

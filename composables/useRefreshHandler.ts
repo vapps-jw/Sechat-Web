@@ -43,7 +43,7 @@ export const useRefreshHandler = () => {
           (r) =>
             <IRoomUpdateRequest>{
               roomId: r.id,
-              lastMessage: r.messages.at(-1).created,
+              lastMessage: r.messages.at(-1).id,
             }
         );
       if (updates.length > 0) {

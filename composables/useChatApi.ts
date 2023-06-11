@@ -8,7 +8,7 @@ export const useChatApi = () => {
 
   const getConstacts = async (): Promise<IContactRequest[]> => {
     console.log("--> Getting Contacts from API");
-    const { error: apiError, data: chatState } = await useFetch<
+    const { error: apiError, data: contacts } = await useFetch<
       IContactRequest[]
     >(`${config.public.apiBase}/chat/contacts`, {
       method: "GET",
@@ -23,9 +23,9 @@ export const useChatApi = () => {
       });
     }
 
-    console.log("--> Contacts Fetched", chatState.value);
+    console.log("--> Contacts Fetched", contacts.value);
 
-    chatState.value.forEach((uc) => {
+    contacts.value.forEach((uc) => {
       if (uc.invitedName === userStore.userProfile.userName) {
         uc.displayName = uc.inviterName;
       } else {
@@ -33,12 +33,12 @@ export const useChatApi = () => {
       }
     });
 
-    return chatState.value;
+    return contacts.value;
   };
 
   const getRooms = async (): Promise<IRoom[]> => {
     console.log("--> Getting Rooms from API");
-    const { error: apiError, data: chatState } = await useFetch<IRoom[]>(
+    const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
       `${config.public.apiBase}/chat/rooms`,
       {
         method: "GET",
@@ -54,16 +54,16 @@ export const useChatApi = () => {
       });
     }
 
-    console.log("--> Rooms Fetched", chatState.value);
+    console.log("--> Rooms Fetched", rooms.value);
 
-    return chatState.value;
+    return rooms.value;
   };
 
   const getRoomsUpdate = async (
     updateRequests: IRoomUpdateRequest[]
   ): Promise<IRoom[]> => {
     console.log("--> Getting Rooms Updates from API", updateRequests);
-    const { error: apiError, data: chatState } = await useFetch<IRoom[]>(
+    const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
       `${config.public.apiBase}/chat/rooms-update`,
       {
         method: "POST",
@@ -81,9 +81,9 @@ export const useChatApi = () => {
       });
     }
 
-    console.log("--> Rooms Updates Fetched", chatState.value);
+    console.log("--> Rooms Updates Fetched", rooms.value);
 
-    return chatState.value;
+    return rooms.value;
   };
 
   const markMessagesAsViewed = async (roomId: string) => {
