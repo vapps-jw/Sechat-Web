@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: "18"
       - name: Install Dependencies
-        run: npm install --ignore-scripts puppeteer
+        run: npm install
       - name: Inject Secrets
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
