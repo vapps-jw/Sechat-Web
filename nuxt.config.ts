@@ -123,6 +123,51 @@ export default defineNuxtConfig({
     pageTransition: { name: "page", mode: "out-in" },
     head: {
       title: "Sechat",
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: "Secure chat and video calls",
+        },
+        {
+          hid: "og:title",
+          property: "og:title",
+          content: "Sechat - communicator",
+        },
+        { hid: "og:url", property: "og:url", content: "https://sechat.app" },
+        {
+          hid: "og:description",
+          property: "og:description",
+          content: "Secure chat and video calls",
+        },
+        {
+          hid: "og:image",
+          property: "og:image",
+          content: "/logos/logo-only-transparent-300x300.png",
+        },
+
+        // twitter card
+        {
+          hid: "twitter:title",
+          name: "twitter:title",
+          content: "Sechat - communicator",
+        },
+        {
+          hid: "twitter:url",
+          name: "twitter:url",
+          content: "https://sechat.app",
+        },
+        {
+          hid: "twitter:description",
+          name: "twitter:description",
+          content: "Secure chat and video calls",
+        },
+        {
+          hid: "twitter:image",
+          name: "twitter:image",
+          content: "/logos/logo-only-transparent-300x300.png",
+        },
+      ],
       link: [
         {
           rel: "icon",
