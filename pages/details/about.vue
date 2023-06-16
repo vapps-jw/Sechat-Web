@@ -15,7 +15,7 @@
         ></v-expansion-panel>
         <v-expansion-panel
           title="Is it open source?"
-          text="It will be when I decide its ready."
+          text="It is and it will be"
         ></v-expansion-panel>
         <v-expansion-panel
           title="Where are data being stored?"

@@ -138,7 +138,7 @@ export default defineNuxtConfig({
         {
           hid: "og:description",
           property: "og:description",
-          content: "Secure chat and video calls",
+          content: "Open Source Secure Chat and Video Calls",
         },
         {
           hid: "og:image",
@@ -160,7 +160,7 @@ export default defineNuxtConfig({
         {
           hid: "twitter:description",
           name: "twitter:description",
-          content: "Secure chat and video calls",
+          content: "Open Source Secure Chat and Video Calls",
         },
         {
           hid: "twitter:image",
