@@ -38,10 +38,8 @@
       <v-avatar
         :color="stringToColor(props.message.nameSentBy)"
         class="mx-2"
-        :variant="
-          userStore.getUserName === props.message.nameSentBy
-            ? 'elevated'
-            : 'tonal'
+        :class="
+          userStore.getUserName === props.message.nameSentBy ? 'glow' : ''
         "
       >
         {{ getInitials(props.message.nameSentBy) }}</v-avatar
@@ -66,5 +64,9 @@ const props = defineProps<PropsModel>();
 <style scoped>
 .tiny-font {
   font-size: x-small;
+}
+.glow {
+  box-shadow: 0 0 4px 2px #000000, 0 0 4px 2px #616161, 0 0 6px 4px #bdbdbd,
+    0 0 4px 2px #616161;
 }
 </style>

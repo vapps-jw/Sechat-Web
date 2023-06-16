@@ -3,7 +3,7 @@
     <v-list-item
       @click="selectRoomClicked(room.id)"
       :border="true"
-      class="my-2 pa-1"
+      class="my-2 mx-1 pa-1"
       :class="
         chatStore.activeRoomId && chatStore.activeRoomId === room.id
           ? 'active-room'

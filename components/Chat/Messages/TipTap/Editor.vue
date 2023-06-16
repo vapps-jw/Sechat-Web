@@ -105,11 +105,20 @@ watch(
             }
 
             console.warn("Setting image", prev.img);
-            editor.value?.commands.setImage({
-              src: prev.img,
-              alt: prev.domain,
-              title: prev.title,
-            });
+            if (prev.img) {
+              editor.value?.commands.setImage({
+                src: prev.img,
+                alt: prev.domain,
+                title: prev.title,
+              });
+            } else {
+              if (prev.favicon) {
+                editor.value?.commands.setImage({
+                  src: prev.favicon,
+                });
+              }
+            }
+
             emit("editorStateUpdate", {
               busy: false,
               editable: false,

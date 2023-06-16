@@ -2,13 +2,14 @@
   <v-list>
     <v-list-item
       color="warning"
-      class="ma-0 pa-1"
+      :border="true"
+      class="my-1"
       v-for="room in chatStore.availableRooms"
       :key="room.id"
       :title="room.name"
       @click="selection = room.id"
     >
-      <template v-slot:append>
+      <!-- <template v-slot:append>
         <div
           v-for="rm in room.members"
           class="d-flex flex-column justify-center align-center ma-1"
@@ -22,7 +23,7 @@
           </v-avatar>
           <div class="tiny-font">{{ rm.userName }}</div>
         </div>
-      </template>
+      </template> -->
     </v-list-item>
   </v-list>
 </template>

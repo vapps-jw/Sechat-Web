@@ -2,7 +2,7 @@
   <v-list>
     <v-list-item
       :border="true"
-      class="my-2 pa-1"
+      class="my-2 mx-1 pa-1"
       v-for="uc in chatStore.getContacts"
       :key="`${uc.invitedName}-${uc.inviterName}`"
       :title="uc.displayName"

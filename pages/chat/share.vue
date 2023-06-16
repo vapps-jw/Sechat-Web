@@ -15,6 +15,16 @@
           <ChatShareRoomsList @share-target-selected="shareTargetUpdate" />
         </v-container>
       </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          icon="mdi-cancel"
+          variant="outlined"
+          color="error"
+          @click="exitPage"
+        ></v-btn>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
@@ -29,6 +39,10 @@ definePageMeta({
   layout: "board",
   middleware: ["authenticated"],
 });
+
+const exitPage = () => {
+  navigateTo("/chat");
+};
 
 const shareData = ref<IShareDetails>(null);
 const shareTargetUpdate = (roomId: string) => {
