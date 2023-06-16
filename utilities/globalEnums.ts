@@ -14,6 +14,7 @@ export const SnackbarMessages = {
 };
 
 export const CustomCookies = {
+  RoomKeys: "room-keys",
   GDPR: "gdpr-consent",
   AUTH: "sechatid",
 };

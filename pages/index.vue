@@ -55,10 +55,13 @@ const userStore = useUserStore();
 const sechatStore = useSechatChatStore();
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
-const gdprCookie = useCookie(CustomCookies.GDPR);
-const authCookie = useCookie(CustomCookies.AUTH);
 
 const rejectCookies = () => {
+  const gdprCookie = useCookie(CustomCookies.GDPR);
+  const authCookie = useCookie(CustomCookies.AUTH);
+  const roomKeysCookie = useCookie(CustomCookies.RoomKeys);
+
+  roomKeysCookie.value = null;
   gdprCookie.value = null;
   authCookie.value = null;
   window.location.reload();
