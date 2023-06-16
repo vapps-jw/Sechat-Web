@@ -143,7 +143,7 @@ export default defineNuxtConfig({
         {
           hid: "og:image",
           property: "og:image",
-          content: "/logos/logo-only-transparent-300x300.png",
+          content: "https://sechat.app/logos/logo-only-transparent-300x300.png",
         },
 
         // twitter card
@@ -165,7 +165,7 @@ export default defineNuxtConfig({
         {
           hid: "twitter:image",
           name: "twitter:image",
-          content: "/logos/logo-only-transparent-300x300.png",
+          content: "https://sechat.app/logos/logo-only-transparent-300x300.png",
         },
       ],
       link: [
