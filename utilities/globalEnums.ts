@@ -15,6 +15,7 @@ export const SnackbarMessages = {
 
 export const CustomCookies = {
   GDPR: "gdpr-consent",
+  AUTH: "sechatid",
 };
 
 export const VisibilityStates = {

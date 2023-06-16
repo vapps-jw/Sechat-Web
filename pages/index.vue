@@ -34,6 +34,9 @@
     <v-btn class="my-2" size="large">
       <NuxtLink class="sechat-link-clear" :to="`policies`">Policies</NuxtLink>
     </v-btn>
+    <v-btn @click="rejectCookies" class="my-2" size="large" color="error"
+      >Reject Cookies
+    </v-btn>
     <v-btn
       class="mt-10 glow"
       size="small"
@@ -46,10 +49,20 @@
 </template>
 
 <script setup lang="ts">
+import { CustomCookies } from "~/utilities/globalEnums";
+
 const userStore = useUserStore();
 const sechatStore = useSechatChatStore();
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
+const gdprCookie = useCookie(CustomCookies.GDPR);
+const authCookie = useCookie(CustomCookies.AUTH);
+
+const rejectCookies = () => {
+  gdprCookie.value = null;
+  authCookie.value = null;
+  window.location.reload();
+};
 
 const signOut = async () => {
   console.log("--> Signing Out");

@@ -30,7 +30,7 @@
         >
           <template v-slot:label>
             <span style="font-size: 10px"
-              >I accept privacy policy and terms of service</span
+              >I accept privacy policy, cookie policy and terms of service</span
             >
           </template>
         </v-checkbox>

@@ -17,7 +17,7 @@ import { ChatViews } from "~~/utilities/globalEnums";
 
 definePageMeta({
   layout: "board",
-  middleware: ["authenticated"],
+  middleware: ["authenticated", "chat-middleware"],
 });
 
 const webRTC = useWebRTCStore();

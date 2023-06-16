@@ -4,8 +4,9 @@
       <v-card>
         <v-card-title class="text-h5"> Cookies Consent </v-card-title>
         <v-card-text
-          >Chat use cookies for storing user preferences and login, accept it or
-          leave this page</v-card-text
+          >Chat use cookies for storing user preferences, login and monitor site
+          activity, we do not use any third-party services. Accept it or leave
+          this page</v-card-text
         >
         <v-card-actions>
           <v-spacer></v-spacer>

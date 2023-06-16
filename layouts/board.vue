@@ -9,7 +9,6 @@
 </template>
 
 <script setup lang="ts">
-//const lockResolver = ref(null);
 const sechatAppStore = useSechatAppStore();
 const appStore = useSechatAppStore();
 const signalR = useSignalR();
@@ -70,15 +69,4 @@ onBeforeUnmount(() => {
   window.location.reload();
   appStore.updateLoadingOverlay(false);
 });
-
-// console.info("--> Handling lock");
-// if (navigator && navigator.locks && navigator.locks.request) {
-//   const promise = new Promise((res) => {
-//     lockResolver.value = res;
-//   });
-
-//   navigator.locks.request("unique_lock_name", { mode: "shared" }, () => {
-//     return promise;
-//   });
-// }
 </script>
