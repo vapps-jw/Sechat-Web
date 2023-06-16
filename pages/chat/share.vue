@@ -4,11 +4,6 @@
       <v-toolbar>
         <v-toolbar-title>Share</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn
-          icon="mdi-share"
-          variant="outlined"
-          @click="executeShare"
-        ></v-btn>
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-container>
@@ -17,12 +12,18 @@
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
-        <v-spacer />
         <v-btn
           icon="mdi-cancel"
           variant="outlined"
           color="error"
           @click="exitPage"
+        ></v-btn>
+        <v-spacer />
+        <v-btn
+          icon="mdi-share"
+          variant="outlined"
+          color="success"
+          @click="executeShare"
         ></v-btn>
       </v-card-actions>
     </v-card>
