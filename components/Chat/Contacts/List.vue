@@ -17,22 +17,6 @@
             ></v-btn>
           </template>
           <v-list>
-            <v-list-item>
-              <v-btn
-                v-if="uc.blocked && uc.blockedByName === userStore.getUserName"
-                @click="async () => allowContact(uc.id)"
-                class="mx-1"
-                color="success"
-                >Allow</v-btn
-              >
-              <v-btn
-                v-else
-                @click="async () => blockContact(uc.id)"
-                class="mx-1"
-                color="error"
-                >Block</v-btn
-              >
-            </v-list-item>
             <v-list-item
               v-if="!uc.approved && uc.invitedName === userStore.getUserName"
             >
@@ -51,6 +35,22 @@
                 >Delete</v-btn
               ></v-list-item
             >
+            <v-list-item>
+              <v-btn
+                v-if="uc.blocked && uc.blockedByName === userStore.getUserName"
+                @click="async () => allowContact(uc.id)"
+                class="mx-1"
+                color="success"
+                >Allow</v-btn
+              >
+              <v-btn
+                v-else
+                @click="async () => blockContact(uc.id)"
+                class="mx-1"
+                color="error"
+                >Block</v-btn
+              >
+            </v-list-item>
           </v-list>
         </v-menu>
         <div class="d-flex flex-column mr-2">
