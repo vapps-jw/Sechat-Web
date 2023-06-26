@@ -34,7 +34,7 @@
     <v-btn class="my-2" size="large">
       <NuxtLink class="sechat-link-clear" :to="`policies`">Policies</NuxtLink>
     </v-btn>
-    <v-btn @click="rejectCookies" class="my-2" size="large" color="error"
+    <v-btn @click="rejectCookies" class="my-2" size="large"
       >Reject Cookies
     </v-btn>
     <v-btn
@@ -45,6 +45,9 @@
       href="https://github.com/vapps-jw"
     >
     </v-btn>
+    <v-chip class="mt-5" size="x-small" variant="text" color="warning">
+      {{ config.public.appVersion }}
+    </v-chip>
   </v-container>
 </template>
 

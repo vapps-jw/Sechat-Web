@@ -12,9 +12,6 @@
         </div>
         <div class="d-flex justify-center flex-wrap">
           <v-chip class="ma-2" color="warning">
-            {{ conf.public.appVersion }}
-          </v-chip>
-          <v-chip class="ma-2" color="warning">
             For best experience use as PWA
           </v-chip>
         </div>
