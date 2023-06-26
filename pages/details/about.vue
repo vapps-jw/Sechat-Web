@@ -11,7 +11,7 @@
         ></v-expansion-panel>
         <v-expansion-panel
           title="Why it is secure?"
-          text="Messages are stored encrypted on the server, we use TLS 1.3, we do not store any personal data, when you delete a Room all messages are being purged along with a key used to encrypt them, thats it for now."
+          text="Messages are stored encrypted on the server, we use TLS 1.3, we do not store any personal data, when you delete a Room all messages are being purged along with a key used to encrypt them. I`m workign on end to end encryption."
         ></v-expansion-panel>
         <v-expansion-panel
           title="Is it open source?"
