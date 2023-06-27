@@ -20,6 +20,7 @@
           <v-divider class="mt-5" />
           <v-container>
             <v-alert
+              class="alert-font"
               density="compact"
               type="info"
               variant="tonal"
@@ -31,6 +32,7 @@
           <v-divider class="mt-5" />
           <v-container>
             <v-alert
+              class="alert-font"
               density="compact"
               type="info"
               variant="tonal"

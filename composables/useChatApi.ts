@@ -1,4 +1,4 @@
-import { SnackbarIcons } from "~~/utilities/globalEnums";
+import { SnackbarIcons } from "~/utilities/globalEnums";
 
 export const useChatApi = () => {
   const config = useRuntimeConfig();

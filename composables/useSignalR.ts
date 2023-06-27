@@ -11,6 +11,7 @@ export const useSignalR = () => {
   const signalRStore = useSignalRStore();
   const videoCalls = useVideoCall();
   const chatApi = useChatApi();
+  const e2e = useE2Encryption();
 
   const createNewConnection = async () => {
     const connection = new signalR.HubConnectionBuilder()
@@ -245,6 +246,9 @@ export const useSignalR = () => {
       .then((newRoom: IRoom) => {
         console.log("--> New room created", newRoom);
         sechatChatStore.addRoom(newRoom);
+        if (newRoom.encryptedByUser) {
+          e2e.updateRoomId(newRoom.name, newRoom.id);
+        }
         _connectToRoom(newRoom.id);
         sechatApp.showSuccessSnackbar("Room created");
       })

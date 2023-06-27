@@ -29,6 +29,10 @@
   font-size: xx-small;
 }
 
+.alert-font {
+  font-size: small;
+}
+
 .sechat-hidden {
   display: none;
 }

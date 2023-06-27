@@ -40,6 +40,7 @@ const props = defineProps<PropsModel>();
 const appStore = useSechatApp();
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
+const e2e = useE2Encryption();
 
 const deleteRoom = async (roomId: string) => {
   try {
@@ -60,6 +61,7 @@ const deleteRoom = async (roomId: string) => {
       });
     }
 
+    e2e.removeRoomKey(roomId);
     dialog.value = false;
     appStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {

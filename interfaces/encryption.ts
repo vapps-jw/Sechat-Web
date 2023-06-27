@@ -3,7 +3,7 @@ interface IRoomData {
 }
 
 interface IRoomKey {
+  roomName?: string;
   roomId?: string;
   key?: string;
-  salt?: string;
 }
