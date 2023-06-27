@@ -33,7 +33,7 @@ interface IRoom {
   creatorName?: string;
   lastActivity?: Date;
   created?: Date;
-  userEncrypted?: boolean;
+  encryptedByUser?: boolean;
 }
 
 interface IRoomMessageUserActionMessage {

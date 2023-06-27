@@ -44,8 +44,10 @@ watch(
     if (isSame || editorBusy.value) {
       return;
     }
-    let content = newValue.replace(/\s/g, "\u00a0");
-    editor.value?.commands.setContent(content, false);
+    let content = newValue;
+    editor.value?.commands.setContent(content, false, {
+      preserveWhitespace: "full",
+    });
 
     if (!newValue) {
       console.log("Editor Empty");
@@ -60,7 +62,6 @@ watch(
     }
 
     const anchors = findAll(/<a[^>]*href=["']([^"']*)["']/g, content);
-    console.log("Anchors", anchors);
     if (anchors.length > 0) {
       if (editorBusy.value) {
         console.error("Prev Busy");
