@@ -54,6 +54,7 @@ const deleteRoom = async (roomId: string) => {
     );
 
     if (apiError.value) {
+      console.error("API error", apiError.value);
       throw createError({
         ...apiError.value,
         statusCode: apiError.value.statusCode,
@@ -61,7 +62,10 @@ const deleteRoom = async (roomId: string) => {
       });
     }
 
-    e2e.removeRoomKey(roomId);
+    console.log("Removing room key", roomId);
+    if (props.room.encryptedByUser) {
+      e2e.removeRoomKey(roomId);
+    }
     dialog.value = false;
     appStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {

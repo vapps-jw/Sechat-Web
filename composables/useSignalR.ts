@@ -235,7 +235,7 @@ export const useSignalR = () => {
       });
   };
 
-  const createRoom = (data: IRoomCreateRequest) => {
+  const createRoom = (data: IRoomCreateRequest, key: string) => {
     console.log("--> Connection state:", signalRStore.connection.state);
     console.log("--> SignalR Creating Room:", data);
     signalRStore.connection
@@ -247,10 +247,15 @@ export const useSignalR = () => {
         console.log("--> New room created", newRoom);
         sechatChatStore.addRoom(newRoom);
         if (newRoom.encryptedByUser) {
-          e2e.updateRoomId(newRoom.name, newRoom.id);
+          e2e.addRoomKey({
+            roomName: newRoom.name,
+            key: key,
+            roomId: newRoom.id,
+          });
         }
         _connectToRoom(newRoom.id);
         sechatApp.showSuccessSnackbar("Room created");
+        return newRoom.id;
       })
       .catch((err) => {
         if (err.message.indexOf("auth_expired") > 0) {

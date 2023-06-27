@@ -144,6 +144,8 @@ export const useSechatChat = () => {
   };
 
   const handleIncomingMessage = (message: IMessage) => {
+    // TODO: handle e2e encrypted message
+
     console.warn(
       "--> Incoming Message Event Handle",
       message,

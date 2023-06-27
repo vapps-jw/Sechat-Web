@@ -89,14 +89,13 @@ const createRoom = async () => {
   }
 
   try {
-    signalR.createRoom({
-      roomName: roomData.value.name,
-      userEncrypted: roomData.value.userEncrypted,
-    });
-    e2e.addRoomKey({
-      roomName: roomData.value.name,
-      key: roomData.value.password,
-    });
+    signalR.createRoom(
+      {
+        roomName: roomData.value.name,
+        userEncrypted: roomData.value.userEncrypted,
+      },
+      roomData.value.password
+    );
   } catch (error) {
     console.error("--> Room creation error", error);
   }

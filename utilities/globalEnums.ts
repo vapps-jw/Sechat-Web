@@ -14,9 +14,13 @@ export const SnackbarMessages = {
 };
 
 export const CustomCookies = {
-  RoomKeys: "room-keys",
+  E2E: "E2E",
   GDPR: "gdpr-consent",
   AUTH: "sechatid",
+};
+
+export const LocalStorage = {
+  E2E: "E2E",
 };
 
 export const VisibilityStates = {

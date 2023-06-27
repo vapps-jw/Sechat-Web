@@ -18,6 +18,7 @@ interface IStringUserMessage {
 interface IRoomCreateRequest {
   roomName?: string;
   userEncrypted?: boolean;
+  userKey?: string;
 }
 
 interface IUserRoomOptions {
