@@ -123,6 +123,13 @@ export default defineNuxtConfig({
     pageTransition: { name: "page", mode: "out-in" },
     head: {
       title: "Sechat",
+      script: [
+        {
+          src: "https://stats.sechat.app/js/script.js",
+          "data-domain": "sechat.app",
+          defer: true,
+        },
+      ],
       meta: [
         {
           hid: "description",
