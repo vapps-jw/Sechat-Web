@@ -75,7 +75,7 @@ const callMessageApi = async () => {
       throw createError({
         ...apiError.value,
         statusCode: apiError.value.statusCode,
-        statusMessage: "Something went wrong",
+        statusMessage: apiError.value.data,
       });
     }
   } catch (error) {

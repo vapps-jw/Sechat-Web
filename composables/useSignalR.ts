@@ -241,7 +241,6 @@ export const useSignalR = () => {
       })
       .then((newRoom: IRoom) => {
         console.log("--> New room created", newRoom);
-        sechatChatStore.addRoom(newRoom);
         if (newRoom.encryptedByUser) {
           e2e.addRoomKey({
             key: key,
@@ -249,6 +248,7 @@ export const useSignalR = () => {
           });
           newRoom.hasKey = true;
         }
+        sechatChatStore.addRoom(newRoom);
         _connectToRoom(newRoom.id);
         sechatApp.showSuccessSnackbar("Room created");
         return newRoom.id;
