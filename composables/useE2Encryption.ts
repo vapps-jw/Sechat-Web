@@ -2,10 +2,13 @@ import { CookieOptions } from "nuxt/app";
 import { CustomCookies } from "~/utilities/globalEnums";
 
 const cookieOptions = () => {
+  const config = useRuntimeConfig();
+
   return {
     maxAge: 600 * 24 * 60 * 60,
     secure: true,
     sameSite: true,
+    domain: config.public.mainDomain,
   } as CookieOptions<string>;
 };
 
