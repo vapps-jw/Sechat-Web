@@ -19,7 +19,8 @@ export default defineNuxtConfig({
     turnUser: process.env.NUXT_TURN_USER ?? "not set",
     turnPassword: process.env.NUXT_TURN_PASSWORD ?? "not set",
     public: {
-      mainDomain: "sechat.app",
+      mainDomain:
+        process.env.NODE_ENV !== "production" ? "sechat.app" : "localhost",
       appVersion: "v1.0.3",
       vapidKey: process.env.NUXT_PUBLIC_VAPID_KEY ?? "not set",
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? "not set",

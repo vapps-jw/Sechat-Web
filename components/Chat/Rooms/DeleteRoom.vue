@@ -56,8 +56,8 @@ const deleteRoom = async (roomId: string) => {
       });
     }
 
-    console.log("Removing room key", roomId);
     if (props.room.encryptedByUser) {
+      console.log("Removing room E2E key", roomId);
       e2e.removeRoomKey(roomId);
     }
     dialog.value = false;

@@ -8,19 +8,19 @@ const cookieOptions = () => {
     maxAge: 600 * 24 * 60 * 60,
     secure: true,
     sameSite: true,
-    domain: config.public.mainDomain,
+    //domain: config.public.mainDomain,
   } as CookieOptions<string>;
 };
 
 export const useE2Encryption = () => {
   const addRoomKey = (data: IRoomKey) => {
-    const cookie = useCookie(CustomCookies.E2E, cookieOptions());
+    let cookie = useCookie(CustomCookies.E2E, cookieOptions());
 
     if (cookie.value === undefined || !cookie.value) {
       console.log("--> E2E Store Empty");
       const newData = [{ key: data.key, roomId: data.roomId }];
       cookie.value = JSON.stringify(newData);
-      console.log("--> E2E Updated", newData);
+      console.log("--> E2E Updated", cookie.value);
       return;
     }
 
@@ -47,6 +47,10 @@ export const useE2Encryption = () => {
 
   const removeRoomKey = (roomId: string) => {
     const cookie = useCookie(CustomCookies.E2E, cookieOptions());
+
+    console.log("--> E2E Cookie taken", cookie);
+    if (cookie.value === undefined || !cookie.value) return;
+
     let e2eData = JSON.parse(JSON.stringify(cookie.value)) as IRoomKey[];
 
     console.log("--> E2E Remove", e2eData);
