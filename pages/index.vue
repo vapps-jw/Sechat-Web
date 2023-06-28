@@ -37,16 +37,6 @@
     <v-btn @click="rejectCookies" class="my-2" size="large"
       >Reject Cookies
     </v-btn>
-    <v-btn
-      class="mt-10 glow"
-      icon="mdi-github"
-      variant="text"
-      href="https://github.com/vapps-jw"
-    >
-    </v-btn>
-    <v-chip class="mt-5" size="x-small" variant="text" color="warning">
-      {{ config.public.appVersion }}
-    </v-chip>
   </v-container>
 </template>
 
@@ -95,10 +85,3 @@ const signOut = async () => {
   }
 };
 </script>
-
-<style scoped>
-.glow {
-  box-shadow: 0 0 4px 2px #000000, 0 0 4px 2px #616161, 0 0 4px 6px #bdbdbd,
-    0 0 4px 2px #616161;
-}
-</style>

@@ -22,7 +22,7 @@
           <v-text-field
             v-model="roomData.name"
             :rules="roomData.nameRules"
-            :counter="25"
+            :counter="20"
             label="Room Name"
             required
           ></v-text-field>

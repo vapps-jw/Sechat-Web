@@ -1,12 +1,12 @@
 <template>
-  <v-icon
+  <Icon
     v-if="
       signalRStore.connectionState === SignalRState.Connected &&
       appStore.getOnlineState
     "
-    icon="mdi-web-check"
-    color="success"
-  ></v-icon>
+    name="svg-spinners:wifi-fade"
+    color="#43A047"
+  />
   <v-icon
     v-if="
       signalRStore.connectionState === SignalRState.Connecting &&
