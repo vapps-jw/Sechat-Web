@@ -39,7 +39,6 @@
     </v-btn>
     <v-btn
       class="mt-10 glow"
-      size="small"
       icon="mdi-github"
       variant="text"
       href="https://github.com/vapps-jw"
