@@ -70,6 +70,28 @@ export const useChatApi = () => {
     return rooms.value;
   };
 
+  const getRoom = async (roomId: string) => {
+    console.log("--> Getting Rooms from API");
+    const { error: apiError, data: room } = await useFetch<IRoom>(
+      `${config.public.apiBase}/chat/room/${roomId}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    console.log("--> Room Fetched", room.value);
+    return room.value;
+  };
+
   const getRoomsUpdate = async (
     updateRequests: IRoomUpdateRequest[]
   ): Promise<IRoom[]> => {
@@ -213,6 +235,7 @@ export const useChatApi = () => {
   };
 
   return {
+    getRoom,
     decryptMessage,
     getLinkPreview,
     getConstacts,

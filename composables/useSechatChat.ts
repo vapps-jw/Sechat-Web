@@ -93,6 +93,11 @@ export const useSechatChat = () => {
 
   const handleUpdateRoom = (room: IRoom) => {
     console.warn("--> Handling Room Updated Event", room);
+
+    const keyCheck = e2e.checkE2ECookie(room.id);
+    if (keyCheck) {
+      room.hasKey = true;
+    }
     chatStore.updateRoom(room);
   };
 

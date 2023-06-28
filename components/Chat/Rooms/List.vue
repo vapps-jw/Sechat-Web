@@ -27,20 +27,30 @@
           :content="room.messages.filter((m) => !m.wasViewed).length"
           color="error"
         >
-          <v-icon size="x-large">mdi-email</v-icon>
+          <v-icon>mdi-email</v-icon>
         </v-badge>
-        <v-icon
-          v-if="!room.hasKey && room.encryptedByUser"
-          color="error"
-          size="x-large"
+        <v-icon v-if="!room.hasKey && room.encryptedByUser" color="error"
           >mdi-lock</v-icon
         >
         <v-icon
-          v-if="room.hasKey && room.encryptedByUser"
+          v-if="
+            room.hasKey &&
+            room.encryptedByUser &&
+            room.messages?.some((m) => m.error)
+          "
+          color="warning"
+          >mdi-lock-alert</v-icon
+        >
+        <v-icon
+          v-if="
+            room.hasKey &&
+            room.encryptedByUser &&
+            !room.messages?.some((m) => m.error)
+          "
           color="success"
-          size="x-large"
           >mdi-lock-open</v-icon
         >
+        <v-icon v-if="!room.encryptedByUser">mdi-lock</v-icon>
       </template>
     </v-list-item>
   </v-list>

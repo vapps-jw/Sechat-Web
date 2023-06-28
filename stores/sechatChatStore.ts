@@ -146,7 +146,8 @@ export const useSechatChatStore = defineStore({
       );
     },
     addRoom(value: IRoom) {
-      this.availableRooms = [...this.availableRooms, value].sort((a, b) =>
+      const rooms = this.availableRooms.filter((r) => r.id !== value.id);
+      this.availableRooms = [...rooms, value].sort((a, b) =>
         a.name.localeCompare(b.name)
       );
     },

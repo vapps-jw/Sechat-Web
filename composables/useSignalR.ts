@@ -247,6 +247,7 @@ export const useSignalR = () => {
             key: key,
             roomId: newRoom.id,
           });
+          newRoom.hasKey = true;
         }
         _connectToRoom(newRoom.id);
         sechatApp.showSuccessSnackbar("Room created");

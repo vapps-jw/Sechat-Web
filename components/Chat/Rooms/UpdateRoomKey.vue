@@ -42,6 +42,8 @@ const props = defineProps<PropsModel>();
 
 const e2e = useE2Encryption();
 const appStore = useSechatAppStore();
+const chatStore = useSechatChatStore();
+const chatApi = useChatApi();
 
 const invitationCreateForm = ref<HTMLFormElement>();
 const formData = ref({
@@ -63,9 +65,11 @@ const updateKey = async () => {
     roomId: props.room.id,
     key: formData.value.roomKey,
   });
-
-  // TODO: new endpoint to update all messages in this room
+  const updatedRoom = await chatApi.getRoom(props.room.id);
+  updatedRoom.hasKey = true;
+  chatStore.addRoom(updatedRoom);
   appStore.updateLoadingOverlay(false);
+  dialog.value = false;
 };
 </script>
 
