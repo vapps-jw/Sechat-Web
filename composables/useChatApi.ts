@@ -54,6 +54,7 @@ export const useChatApi = () => {
       {
         method: "GET",
         credentials: "include",
+        headers: useRequestHeaders(["cookie"]),
       }
     );
 
@@ -77,6 +78,7 @@ export const useChatApi = () => {
       {
         method: "GET",
         credentials: "include",
+        headers: useRequestHeaders(["cookie"]),
       }
     );
 
@@ -102,6 +104,7 @@ export const useChatApi = () => {
         method: "POST",
         credentials: "include",
         body: updateRequests,
+        headers: useRequestHeaders(["cookie"]),
       }
     );
 
@@ -210,11 +213,10 @@ export const useChatApi = () => {
       await useFetch<IMessageDecryptionRequest>(
         `${config.public.apiBase}/crypto/decrypt-message`,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: useRequestHeaders(["cookie"]),
           method: "POST",
           credentials: "include",
+
           body: {
             id: id,
             message: message,
