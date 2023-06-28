@@ -175,6 +175,7 @@ export const useSechatChat = () => {
           message.roomId
         );
         message.text = decryptedData.message;
+        message.error = decryptedData.error;
       } catch (error) {
         return;
       }

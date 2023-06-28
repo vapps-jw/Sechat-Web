@@ -74,22 +74,6 @@ export const useSignalR = () => {
 
         // Get the updates
         console.log("--> Reconnected, getting state ...", connectionId);
-        const { error: apiError, data: chatState } = await useFetch<IChatState>(
-          `${config.public.apiBase}/chat/get-state`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-
-        if (apiError.value) {
-          throw createError({
-            ...apiError.value,
-            statusCode: apiError.value.statusCode,
-            statusMessage: apiError.value.data,
-          });
-        }
-
         await Promise.all([
           chatApi
             .getConstacts()
@@ -260,7 +244,6 @@ export const useSignalR = () => {
         sechatChatStore.addRoom(newRoom);
         if (newRoom.encryptedByUser) {
           e2e.addRoomKey({
-            roomName: newRoom.name,
             key: key,
             roomId: newRoom.id,
           });

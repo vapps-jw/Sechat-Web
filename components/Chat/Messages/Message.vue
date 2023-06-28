@@ -14,6 +14,7 @@
       <v-card-text class="px-0 py-0">
         <div
           class="text--primary text-sm mb-3"
+          :class="props.message.error ? 'error-font' : ''"
           v-html="props.message.text"
         ></div>
       </v-card-text>

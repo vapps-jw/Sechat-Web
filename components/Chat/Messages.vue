@@ -9,8 +9,23 @@
   <v-container v-else>
     <v-card class="sechat-v-card-full">
       <v-toolbar>
-        <v-toolbar-title>{{ chatStore.getActiveRoom.name }}</v-toolbar-title>
+        <div class="d-flex ml-2 justify-start flex-column">
+          <v-toolbar-title>{{ chatStore.getActiveRoom.name }}</v-toolbar-title>
+          <div class="d-flex justify-start flex-row">
+            <v-chip
+              v-if="chatStore.getActiveRoom.encryptedByUser"
+              color="warning"
+              size="x-small"
+            >
+              E2E
+            </v-chip>
+            <v-chip v-else color="warning" size="x-small">
+              Standard Encryption
+            </v-chip>
+          </div>
+        </div>
         <v-spacer></v-spacer>
+
         <chat-rooms-settings :room-id="chatStore.getActiveRoom.id" />
       </v-toolbar>
       <v-divider />

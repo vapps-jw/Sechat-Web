@@ -6,6 +6,7 @@ interface IMessageDecryptionRequest {
   id?: number;
   message?: string;
   roomId?: string;
+  error?: boolean;
 }
 
 interface IResourceId {
@@ -63,6 +64,7 @@ interface IMessage {
   created?: Date;
   messageViewers?: IMessageViewer[];
   wasViewed?: boolean;
+  error?: boolean;
 }
 
 interface IMessageViewer {

@@ -29,6 +29,20 @@
   font-size: xx-small;
 }
 
+.error-font {
+  color: crimson;
+  font-size: small;
+  font-weight: bold;
+}
+
+.x-small-font {
+  font-size: x-small;
+}
+
+.small-font {
+  font-size: small;
+}
+
 .alert-font {
   font-size: small;
 }

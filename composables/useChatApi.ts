@@ -196,7 +196,7 @@ export const useChatApi = () => {
           body: {
             id: id,
             message: message,
-            RoomId: roomId,
+            roomId: roomId,
           },
         }
       );

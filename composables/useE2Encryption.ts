@@ -3,7 +3,7 @@ import { CustomCookies } from "~/utilities/globalEnums";
 
 const cookieOptions = () => {
   return {
-    maxAge: 100 * 1000000,
+    maxAge: 600 * 24 * 60 * 60,
     secure: true,
     sameSite: true,
   } as CookieOptions<string>;
@@ -15,19 +15,17 @@ export const useE2Encryption = () => {
 
     if (cookie.value === undefined || !cookie.value) {
       console.log("--> E2E Store Empty");
-      const newData = [
-        { RoomName: data.roomName, Key: data.key, RoomId: data.roomId },
-      ];
+      const newData = [{ Key: data.key, RoomId: data.roomId }];
       cookie.value = JSON.stringify(newData);
       console.log("--> E2E Updated", newData);
       return;
     }
 
-    const e2eData = JSON.parse(JSON.stringify(cookie.value)) as IRoomKey[];
+    let e2eData = JSON.parse(JSON.stringify(cookie.value)) as IRoomKey[];
     console.log("--> E2E Update", e2eData);
 
+    e2eData = e2eData.filter((key) => key.roomId !== data.roomId);
     e2eData.push({
-      roomName: data.roomName,
       key: data.key,
       roomId: data.roomId,
     });
@@ -55,12 +53,9 @@ export const useE2Encryption = () => {
     console.log("--> E2E Updated", e2eData);
   };
 
-  const decryptMessages = (messages: IMessage) => {};
-
   return {
     checkE2ECookie,
     addRoomKey,
     removeRoomKey,
-    decryptMessages,
   };
 };

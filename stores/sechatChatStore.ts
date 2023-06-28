@@ -17,6 +17,7 @@ export const useSechatChatStore = defineStore({
       activeChatTab: <string>ChatViews.Rooms,
       activeRoomId: <string>"",
       newMessage: <string>"",
+      keyInputDialog: <boolean>false,
     };
   },
   actions: {
@@ -118,9 +119,7 @@ export const useSechatChatStore = defineStore({
         this.activeRoom = this.availableRooms.find((r) => r.id === value);
       }
     },
-    updateRooms(this: IChatStore, value: IRoom[]) {
-      const updates = JSON.parse(JSON.stringify(value));
-
+    updateRooms(this: IChatStore, updates: IRoom[]) {
       const newRooms = updates.filter(
         (nr) => !this.availableRooms.some((ar) => ar.id === nr.id)
       );
@@ -183,6 +182,10 @@ export const useSechatChatStore = defineStore({
     selectRoom(value: string) {
       this.activeRoomId = value;
       this.activeChatTab = ChatViews.Messages;
+    },
+    rejectRoomSelection() {
+      this.activeRoomId = "";
+      this.activeChatTab = ChatViews.Rooms;
     },
     deleteUserFromRoom(value: IUserRoomOptions) {
       const updatedRoom = this.availableRooms.find(

@@ -61,12 +61,7 @@ const sechatApp = useSechatApp();
 
 const rejectCookies = () => {
   const gdprCookie = useCookie(CustomCookies.GDPR);
-  const authCookie = useCookie(CustomCookies.AUTH);
-  const roomKeysCookie = useCookie(CustomCookies.RoomKeys);
-
-  roomKeysCookie.value = null;
   gdprCookie.value = null;
-  authCookie.value = null;
   window.location.reload();
 };
 

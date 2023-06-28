@@ -47,14 +47,22 @@ watch(activeChatTab, async (newVal, oldVal) => {
     if (chatStore.getActiveRoom.encryptedByUser) {
       console.log("Active encrypted room");
 
-      const updates = <IRoomUpdateRequest>{
+      const e2eCheck = e2e.checkE2ECookie(chatStore.getActiveRoom.id);
+      if (!e2eCheck) {
+        console.log("Key missing");
+        chatStore.rejectRoomSelection();
+        app.showErrorSnackbar("Room Key is missing, add it first");
+        return;
+      }
+
+      const updateRequest = <IRoomUpdateRequest>{
         roomId: chatStore.getActiveRoom.id,
         lastMessage:
           chatStore.getActiveRoom.messages.length == 0
             ? 0
             : chatStore.getActiveRoom.messages.at(-1).id,
       };
-      const data = await chatApi.getRoomsUpdate([updates]);
+      const data = await chatApi.getRoomsUpdate([updateRequest]);
       data.forEach((r) => {
         if (r.encryptedByUser) {
           if (e2e.checkE2ECookie(r.id)) {

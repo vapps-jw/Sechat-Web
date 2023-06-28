@@ -40,14 +40,14 @@
           ></v-checkbox>
           <v-text-field
             v-if="roomData.userEncrypted"
-            @click:append="showPassword = !showPassword"
-            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            :type="showPassword ? 'text' : 'password'"
-            v-model="roomData.password"
-            :rules="roomData.passwordRules"
+            @click:append="roomKey = !roomKey"
+            :append-icon="roomKey ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="roomKey ? 'text' : 'password'"
+            v-model="roomData.roomKey"
+            :rules="roomData.roomKeyRules"
             clearable
             :counter="100"
-            label="Password"
+            label="Room Secret Key"
           ></v-text-field>
         </v-form>
       </v-card-text>
@@ -61,7 +61,7 @@
 <script setup lang="ts">
 const dialog = ref<boolean>(false);
 const signalR = useSignalR();
-const showPassword = ref<boolean>(true);
+const roomKey = ref<boolean>(true);
 const e2e = useE2Encryption();
 
 const roomCreateForm = ref<HTMLFormElement>();
@@ -69,15 +69,15 @@ const roomData = ref({
   valid: true,
   name: "",
   userEncrypted: false,
-  password: "",
+  roomKey: "",
   nameRules: [
     (v) => !!v || "Room Name is required",
     (v) =>
-      (v && v.length <= 25) || "Room Name cant be longer than 25 characters",
+      (v && v.length <= 20) || "Room Name cant be longer than 20 characters",
   ],
-  passwordRules: [
+  roomKeyRules: [
     (v) =>
-      (v && v.length <= 100) || "Password must have less than 100 characters",
+      (v && v.length <= 100) || "Room Key must have less than 100 characters",
   ],
 });
 
@@ -94,14 +94,14 @@ const createRoom = async () => {
         roomName: roomData.value.name,
         userEncrypted: roomData.value.userEncrypted,
       },
-      roomData.value.password
+      roomData.value.roomKey
     );
   } catch (error) {
     console.error("--> Room creation error", error);
   }
 
   roomData.value.name = "";
-  roomData.value.password = "";
+  roomData.value.roomKey = "";
   dialog.value = false;
 };
 </script>
