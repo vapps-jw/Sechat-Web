@@ -15,7 +15,7 @@ export const useE2Encryption = () => {
 
     if (cookie.value === undefined || !cookie.value) {
       console.log("--> E2E Store Empty");
-      const newData = [{ Key: data.key, RoomId: data.roomId }];
+      const newData = [{ key: data.key, roomId: data.roomId }];
       cookie.value = JSON.stringify(newData);
       console.log("--> E2E Updated", newData);
       return;
