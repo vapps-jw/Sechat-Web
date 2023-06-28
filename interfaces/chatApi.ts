@@ -2,6 +2,12 @@ interface IResourceGuid {
   id?: string;
 }
 
+interface IMessageDecryptionRequest {
+  id?: number;
+  message?: string;
+  roomId?: string;
+}
+
 interface IResourceId {
   id?: number;
 }
@@ -35,6 +41,7 @@ interface IRoom {
   lastActivity?: Date;
   created?: Date;
   encryptedByUser?: boolean;
+  hasKey?: boolean;
 }
 
 interface IRoomMessageUserActionMessage {

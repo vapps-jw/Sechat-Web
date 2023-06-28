@@ -36,6 +36,14 @@ export const useE2Encryption = () => {
     console.log("--> E2E Store Data", e2eData);
   };
 
+  const checkE2ECookie = (roomId: string) => {
+    const cookie = useCookie(CustomCookies.E2E, cookieOptions());
+    if (cookie.value === undefined || !cookie.value) return false;
+
+    const e2eData = JSON.parse(JSON.stringify(cookie.value)) as IRoomKey[];
+    return e2eData.some((key) => key.roomId === roomId);
+  };
+
   const removeRoomKey = (roomId: string) => {
     const cookie = useCookie(CustomCookies.E2E, cookieOptions());
     let e2eData = JSON.parse(JSON.stringify(cookie.value)) as IRoomKey[];
@@ -50,6 +58,7 @@ export const useE2Encryption = () => {
   const decryptMessages = (messages: IMessage) => {};
 
   return {
+    checkE2ECookie,
     addRoomKey,
     removeRoomKey,
     decryptMessages,

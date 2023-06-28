@@ -66,7 +66,7 @@ export const useChatApi = () => {
     }
 
     console.log("--> Rooms Fetched", rooms.value);
-
+    rooms.value.forEach((r) => (r.hasKey = false));
     return rooms.value;
   };
 
@@ -93,7 +93,7 @@ export const useChatApi = () => {
     }
 
     console.log("--> Rooms Updates Fetched", rooms.value);
-
+    rooms.value.forEach((r) => (r.hasKey = false));
     return rooms.value;
   };
 
@@ -178,7 +178,42 @@ export const useChatApi = () => {
     );
   };
 
+  const decryptMessage = async (
+    id: number,
+    message: string,
+    roomId: string
+  ) => {
+    console.log("--> Decrypting message");
+    const { error: apiError, data: messageData } =
+      await useFetch<IMessageDecryptionRequest>(
+        `${config.public.apiBase}/crypto/decrypt-message`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          credentials: "include",
+          body: {
+            id: id,
+            message: message,
+            RoomId: roomId,
+          },
+        }
+      );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    return messageData.value;
+  };
+
   return {
+    decryptMessage,
     getLinkPreview,
     getConstacts,
     getRooms,

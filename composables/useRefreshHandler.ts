@@ -5,6 +5,7 @@ export const useRefreshHandler = () => {
   const signalR = useSignalR();
   const chatApi = useChatApi();
   const chatStore = useSechatChatStore();
+  const e2e = useE2Encryption();
 
   const handleVisibilityChange = async () => {
     console.log("Visibility changed", document.visibilityState);
@@ -37,31 +38,65 @@ export const useRefreshHandler = () => {
 
     if (chatStore.availableRooms.length > 0) {
       console.warn("Available Rooms", chatStore.availableRooms);
-      const updates = chatStore.availableRooms
-        .filter((r) => r.messages.length > 0)
-        .map(
-          (r) =>
-            <IRoomUpdateRequest>{
-              roomId: r.id,
-              lastMessage: r.messages.at(-1).id,
-            }
-        );
+      const updates = chatStore.availableRooms.map(
+        (r) =>
+          <IRoomUpdateRequest>{
+            roomId: r.id,
+            lastMessage: r.messages.length == 0 ? 0 : r.messages.at(-1).id,
+          }
+      );
       if (updates.length > 0) {
         console.log("Calling Room Updates", updates);
         promises.push(
-          chatApi
-            .getRoomsUpdate(updates)
-            .then((res) => chatStore.updateRooms(res))
+          chatApi.getRoomsUpdate(updates).then((res) => {
+            res.forEach((r) => {
+              if (r.encryptedByUser) {
+                if (e2e.checkE2ECookie(r.id)) {
+                  r.hasKey = true;
+                  return;
+                }
+                r.hasKey = false;
+              }
+            });
+
+            chatStore.updateRooms(res);
+          })
         );
       } else {
         console.warn("Getting All Rooms");
         promises.push(
-          chatApi.getRooms().then((res) => chatStore.loadRooms(res))
+          chatApi.getRooms().then((res) => {
+            res.forEach((r) => {
+              if (r.encryptedByUser) {
+                if (e2e.checkE2ECookie(r.id)) {
+                  r.hasKey = true;
+                  return;
+                }
+                r.hasKey = false;
+              }
+            });
+
+            chatStore.loadRooms(res);
+          })
         );
       }
     } else {
       console.warn("Getting All Rooms");
-      promises.push(chatApi.getRooms().then((res) => chatStore.loadRooms(res)));
+      promises.push(
+        chatApi.getRooms().then((res) => {
+          res.forEach((r) => {
+            if (r.encryptedByUser) {
+              if (e2e.checkE2ECookie(r.id)) {
+                r.hasKey = true;
+                return;
+              }
+              r.hasKey = false;
+            }
+          });
+
+          chatStore.loadRooms(res);
+        })
+      );
     }
 
     try {

@@ -94,7 +94,19 @@ export const useSignalR = () => {
           chatApi
             .getConstacts()
             .then((res) => sechatChatStore.loadContacts(res)),
-          chatApi.getRooms().then((res) => sechatChatStore.loadRooms(res)),
+          chatApi.getRooms().then((res) => {
+            res.forEach((r) => {
+              if (r.encryptedByUser) {
+                if (e2e.checkE2ECookie(r.id)) {
+                  r.hasKey = true;
+                  return;
+                }
+                r.hasKey = false;
+              }
+            });
+
+            sechatChatStore.loadRooms(res);
+          }),
         ]);
 
         console.log("--> Reconnected, connectiong to Rooms ...");

@@ -49,6 +49,18 @@
         >
           <v-icon size="x-large">mdi-email</v-icon>
         </v-badge>
+        <v-icon
+          v-if="!room.hasKey && room.encryptedByUser"
+          color="error"
+          size="x-large"
+          >mdi-lock</v-icon
+        >
+        <v-icon
+          v-if="room.hasKey && room.encryptedByUser"
+          color="success"
+          size="x-large"
+          >mdi-lock-open</v-icon
+        >
       </template>
     </v-list-item>
   </v-list>

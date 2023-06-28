@@ -13,14 +13,15 @@
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text class="ma-0 pa-0">
-        <v-alert
-          density="comfortable"
-          icon="mdi-hexagram"
-          type="info"
-          title="Room Owner"
-          :text="chatStore.getActiveRoom.creatorName"
-          variant="tonal"
-        ></v-alert>
+        <v-container>
+          <v-alert
+            density="comfortable"
+            type="info"
+            title="Room Owner"
+            :text="chatStore.getActiveRoom.creatorName"
+            variant="tonal"
+          ></v-alert>
+        </v-container>
         <ChatRoomsAddMember :room-id="props.roomId" />
         <ChatRoomsRemoveMemeber />
       </v-card-text>

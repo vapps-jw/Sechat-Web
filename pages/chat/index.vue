@@ -23,12 +23,14 @@ definePageMeta({
 const webRTC = useWebRTCStore();
 const chatStore = useSechatChatStore();
 const chatApi = useChatApi();
+const e2e = useE2Encryption();
+const app = useSechatApp();
 
 const selectedNav = ref(ChatViews.Rooms);
 
 const { activeChatTab } = storeToRefs(chatStore);
 
-watch(activeChatTab, (newVal, oldVal) => {
+watch(activeChatTab, async (newVal, oldVal) => {
   console.log("--> Nav Update", newVal, oldVal);
 
   if (selectedNav.value !== newVal) {
@@ -42,6 +44,30 @@ watch(activeChatTab, (newVal, oldVal) => {
     return;
   }
   try {
+    if (chatStore.getActiveRoom.encryptedByUser) {
+      console.log("Active encrypted room");
+
+      const updates = <IRoomUpdateRequest>{
+        roomId: chatStore.getActiveRoom.id,
+        lastMessage:
+          chatStore.getActiveRoom.messages.length == 0
+            ? 0
+            : chatStore.getActiveRoom.messages.at(-1).id,
+      };
+      const data = await chatApi.getRoomsUpdate([updates]);
+      data.forEach((r) => {
+        if (r.encryptedByUser) {
+          if (e2e.checkE2ECookie(r.id)) {
+            r.hasKey = true;
+            return;
+          }
+          r.hasKey = false;
+        }
+      });
+
+      chatStore.updateRooms(data);
+    }
+
     const markMessagesAsVided =
       chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length > 0;
 
@@ -51,6 +77,7 @@ watch(activeChatTab, (newVal, oldVal) => {
       chatStore.markMessagesAsViewed();
     }
   } catch (error) {
+    app.showErrorSnackbar("Room update failed");
     console.error(error);
   }
   if (newVal === ChatViews.Messages) {

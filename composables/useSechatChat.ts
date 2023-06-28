@@ -9,6 +9,7 @@ export const useSechatChat = () => {
   const userStore = useUserStore();
   const chatStore = useSechatChatStore();
   const chatApi = useChatApi();
+  const e2e = useE2Encryption();
 
   // Users
 
@@ -97,6 +98,13 @@ export const useSechatChat = () => {
 
   const handleUserAddedToRoom = (room: IRoom) => {
     console.warn("--> Handling UserAddedToRoom Event", room);
+    if (room.encryptedByUser) {
+      if (e2e.checkE2ECookie(room.id)) {
+        room.hasKey = true;
+        return;
+      }
+      room.hasKey = false;
+    }
     chatStore.addUserToRoom(room);
   };
 
@@ -105,6 +113,12 @@ export const useSechatChat = () => {
 
     if (userStore.getUserName === options.userName) {
       console.warn("--> Current User is removed from room", options);
+      if (
+        chatStore.availableRooms.find((r) => r.id === options.roomId)
+          ?.encryptedByUser
+      ) {
+        e2e.removeRoomKey(options.roomId);
+      }
       chatStore.deleteCurrentUserFromRoom(options);
       return;
     }
@@ -138,19 +152,33 @@ export const useSechatChat = () => {
     );
   };
 
-  const onIncomingMessage = (connection: signalR.HubConnection) => {
+  const onIncomingMessage = async (connection: signalR.HubConnection) => {
     console.log("--> Connecting IncomingMessage event");
     connection.on(SignalRHubMethods.MessageIncoming, handleIncomingMessage);
   };
 
-  const handleIncomingMessage = (message: IMessage) => {
-    // TODO: handle e2e encrypted message
-
+  const handleIncomingMessage = async (message: IMessage) => {
     console.warn(
       "--> Incoming Message Event Handle",
       message,
       chatStore.activeRoomId
     );
+
+    if (chatStore.getActiveRoom.encryptedByUser) {
+      const hasKey = e2e.checkE2ECookie(message.roomId);
+      if (!hasKey) return;
+
+      try {
+        const decryptedData = await chatApi.decryptMessage(
+          message.id,
+          message.text,
+          message.roomId
+        );
+        message.text = decryptedData.message;
+      } catch (error) {
+        return;
+      }
+    }
 
     message.wasViewed = false;
 
