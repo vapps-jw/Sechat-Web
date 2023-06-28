@@ -1,22 +1,21 @@
 <template>
   <v-app id="main-view">
     <v-main class="sechat-layout">
-      <v-container class="bg-transparent">
-        <div class="d-flex justify-center">
-          <NuxtImg
-            src="/logos/logo-only-transparent-300x300.png"
-            alt=""
-            width="300"
-            height="150"
-          ></NuxtImg>
-        </div>
-        <div class="d-flex justify-center flex-wrap">
-          <v-chip class="ma-2" color="warning">
-            For best experience use as PWA
-          </v-chip>
-        </div>
-        <v-divider class="my-4"></v-divider>
+      <v-container
+        class="bg-transparent d-flex justify-center align-center flex-column"
+      >
+        <NuxtImg
+          src="/logos/logo-only-transparent-300x300.png"
+          alt=""
+          width="300"
+          height="150"
+        ></NuxtImg>
+        <div class="text-h6">Encrypted chat & video calls</div>
       </v-container>
+      <v-divider
+        class="border-opacity-50 mx-10 my-5"
+        color="warning"
+      ></v-divider>
       <GdprDialog />
       <chat-snackbar />
       <slot />

@@ -10,8 +10,12 @@
           text="Yes it is an it will be, but donations are welcome (there will be a button for that using Stripe in the future)"
         ></v-expansion-panel>
         <v-expansion-panel
-          title="Why it is secure?"
-          text="Messages are stored encrypted on the server, we use TLS 1.3, we do not store any personal data, when you delete a Room all messages are being purged along with a key used to encrypt them. I`m workign on end to end encryption."
+          title="Is it secure?"
+          text="Messages are stored encrypted on the server by default, we use TLS 1.3, we do not store any personal data, when you delete a Room all messages are being purged along with the key used to encrypt them. E2E encryption can be chosen during Room creation. It`s open source so you can check the code."
+        ></v-expansion-panel>
+        <v-expansion-panel
+          title="Video Calls"
+          text="We have our own TURN server, communication is encrtpted"
         ></v-expansion-panel>
         <v-expansion-panel
           title="Is it open source?"
@@ -19,7 +23,11 @@
         ></v-expansion-panel>
         <v-expansion-panel
           title="Where are data being stored?"
-          text="In a data center in the UK"
+          text="In a data center in the UK (Akamai/Linode)"
+        ></v-expansion-panel>
+        <v-expansion-panel
+          title="Can I share my opinion about Sechat?"
+          text="You will be able to do this soon, I`m working on a contact form for users to report bugs/opinions"
         ></v-expansion-panel>
       </v-expansion-panels>
     </v-col>
