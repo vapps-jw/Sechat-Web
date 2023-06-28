@@ -8,7 +8,7 @@ const cookieOptions = () => {
     maxAge: 600 * 24 * 60 * 60,
     secure: true,
     sameSite: true,
-    //domain: config.public.mainDomain,
+    domain: config.public.mainDomain,
   } as CookieOptions<string>;
 };
 
