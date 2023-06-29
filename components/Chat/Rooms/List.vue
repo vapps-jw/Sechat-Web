@@ -4,13 +4,14 @@
       @click="selectRoomClicked(room.id)"
       :border="true"
       class="my-2 mx-1 pa-1"
+      v-for="room in chatStore.availableRooms"
+      :key="room.id"
       :class="
         chatStore.activeRoomId && chatStore.activeRoomId === room.id
           ? 'active-room'
-          : ''
+          : 'inactive-room'
       "
-      v-for="room in chatStore.availableRooms"
-      :key="room.id"
+      active-color=""
     >
       <template v-slot:title>
         <div class="small-font">
@@ -68,10 +69,17 @@ const selectRoomClicked = (roomId: string) => {
 </script>
 
 <style scoped>
-.active-room {
-  background: linear-gradient(0.6turn, transparent, transparent, #ffc107);
+* {
+  --border-radius: 3%;
 }
-.active-room-icon {
-  width: 10px;
+.active-room {
+  border-left: 3px solid #ffc107;
+  border-top-left-radius: var(--border-radius);
+  border-bottom-left-radius: var(--border-radius);
+}
+.inactive-room {
+  border-left: 3px solid #424242;
+  border-top-left-radius: var(--border-radius);
+  border-bottom-left-radius: var(--border-radius);
 }
 </style>

@@ -59,6 +59,7 @@ interface PropsModel {
   message: IMessage;
 }
 
+const userColor = computed(() => stringToColor(userStore.userProfile.userName));
 const props = defineProps<PropsModel>();
 </script>
 
@@ -67,7 +68,7 @@ const props = defineProps<PropsModel>();
   font-size: x-small;
 }
 .glow {
-  box-shadow: 0 0 4px 2px #000000, 0 0 4px 2px #616161, 0 0 6px 4px #bdbdbd,
-    0 0 4px 2px #616161;
+  box-shadow: 0 0 4px 2px white, 0 0 4px 2px v-bind(userColor),
+    0 0 6px 4px v-bind(userColor), 0 0 4px 2px v-bind(userColor);
 }
 </style>
