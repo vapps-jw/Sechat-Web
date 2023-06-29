@@ -11,13 +11,9 @@
           height="150"
         ></NuxtImg>
         <div class="text-h6">Encrypted chat & video calls</div>
-        <div class="d-flex flex-row mt-3">
-          <div class="text-subtitle-2">Open Source</div>
-          <Icon name="logos:linux-tux" />
-        </div>
       </v-container>
       <v-divider
-        class="border-opacity-40 mx-10 my-5"
+        class="border-opacity-40 mx-10 my-2"
         color="warning"
       ></v-divider>
       <GdprDialog />
