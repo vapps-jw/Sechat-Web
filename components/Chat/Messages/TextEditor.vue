@@ -55,31 +55,23 @@ const editorUpdate = (state: IEditorState) => {
 };
 
 const callMessageApi = async () => {
-  try {
-    const { error: apiError } = await useFetch(
-      `${config.public.apiBase}/chat/send-message`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        credentials: "include",
-        body: {
-          Text: chatStore.newMessage,
-          RoomId: chatStore.activeRoomId,
-        },
-      }
-    );
-
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/chat/send-message`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      credentials: "include",
+      body: {
+        Text: chatStore.newMessage,
+        RoomId: chatStore.activeRoomId,
+      },
     }
-  } catch (error) {
-    sechatApp.showErrorSnackbar(error.statusMessage);
+  );
+
+  if (apiError.value) {
+    sechatApp.showErrorSnackbar(apiError.value.data);
   }
 };
 

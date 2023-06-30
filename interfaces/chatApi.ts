@@ -51,6 +51,11 @@ interface IRoomMessageUserActionMessage {
   messageId?: number;
 }
 
+interface IMessageDeleted {
+  id?: number;
+  roomId?: string;
+}
+
 interface IRoomUserActionMessage {
   roomId?: string;
   userName?: string;

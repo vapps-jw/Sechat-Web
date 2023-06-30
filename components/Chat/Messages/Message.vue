@@ -45,6 +45,10 @@
       >
         {{ getInitials(props.message.nameSentBy) }}</v-avatar
       >
+      <chat-messages-message-options
+        :message="props.message"
+        :disabled="userStore.getUserName !== props.message.nameSentBy"
+      />
     </template>
   </v-list-item>
 </template>
@@ -54,13 +58,14 @@ import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 
 const appStore = useSechatAppStore();
 const userStore = useUserStore();
+const chatapi = useChatApi();
 
 interface PropsModel {
   message: IMessage;
 }
+const props = defineProps<PropsModel>();
 
 const userColor = computed(() => stringToColor(userStore.userProfile.userName));
-const props = defineProps<PropsModel>();
 </script>
 
 <style scoped>

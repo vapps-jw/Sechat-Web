@@ -104,6 +104,7 @@ export const SignalRHubMethods = {
   UserRemovedFromRoom: "UserRemovedFromRoom",
   DisconnectFromRoom: "DisconnectFromRoom",
   RoomUpdated: "RoomUpdated",
+  MessageDeleted: "MessageDeleted",
 
   // Contacts
   ContactStateChanged: "ContactStateChanged",

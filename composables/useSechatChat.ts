@@ -144,6 +144,11 @@ export const useSechatChat = () => {
 
   // Messages
 
+  const onMessageDeleted = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting MessageDeleted event");
+    connection.on(SignalRHubMethods.MessageDeleted, handleMessageDeleted);
+  };
+
   const onMessageWasViewed = (connection: signalR.HubConnection) => {
     console.log("--> Connecting MessageWasViewed event");
     connection.on(SignalRHubMethods.MessageWasViewed, handleMessageWasViewed);
@@ -243,9 +248,18 @@ export const useSechatChat = () => {
     }
   };
 
+  const handleMessageDeleted = (data: IMessageDeleted) => {
+    console.warn("--> Handling MessageDeleted", data);
+    chatStore.deleteMessageFromRoom(data);
+    if (chatStore.activeRoomId && chatStore.activeRoomId === data.roomId) {
+      scrollToBottom("chatView");
+    }
+  };
+
   // SignalR Event handlers
 
   return {
+    onMessageDeleted,
     onUserConnectionDeleteEvent,
     onUserConnectionUpdatedEvent,
     onConnectionRequestReceivedEvent,

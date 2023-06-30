@@ -151,6 +151,15 @@ export const useSechatChatStore = defineStore({
         a.name.localeCompare(b.name)
       );
     },
+    deleteMessageFromRoom(value: IMessageDeleted) {
+      if (!this.availableRooms.some((r) => r.id === value.roomId)) {
+        return;
+      }
+      this.availableRooms.find((r) => r.id === value.roomId).messages =
+        this.availableRooms
+          .find((r) => r.id === value.roomId)
+          .messages.filter((m) => m.id !== value.id);
+    },
     updateRoom(value: IRoom) {
       value.messages = this.availableRooms.find(
         (r) => r.id === this.activeRoomId
