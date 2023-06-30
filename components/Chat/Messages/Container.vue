@@ -48,7 +48,6 @@
 </template>
 
 <script setup lang="ts">
-const userStore = useUserStore();
 const appStore = useSechatAppStore();
 const chatStore = useSechatChatStore();
 
