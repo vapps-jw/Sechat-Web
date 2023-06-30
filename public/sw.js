@@ -30,14 +30,17 @@ self.addEventListener("push", async (event) => {
   );
 
   const notificationsToClose = currentNotifications.filter(
-    (n) => n.title === String(data.title)
+    (n) =>
+      n.title === String(data.title) && n.body === String(data.options.body)
   );
+
+  console.log("--> Notifications to close", notificationsToClose);
   notificationsToClose.forEach((n) => {
     console.log("--> Closing current notification", String(data.title));
     n.close();
   });
 
-  console.warn("--> Push notification received", data);
+  console.log("--> Push notification received", data);
   let options = {};
   if (String(data.title) === PushNotificationTypes.VideoCall) {
     options = {
@@ -53,11 +56,11 @@ self.addEventListener("push", async (event) => {
       icon: "icons/icon_64x64.png",
       badge: "icons/message-badge.png",
       tag: "Sechat",
-      vibrate: [500, 1000, 1500],
+      vibrate: [500, 500, 500],
     };
   }
 
-  console.warn("--> Showing Notification...");
+  console.log("--> Showing Notification...", String(data.title), options);
   self.registration.showNotification(String(data.title), options);
 });
 
