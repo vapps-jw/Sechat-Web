@@ -25,7 +25,7 @@
               E2E
             </v-chip>
             <v-chip v-else color="warning" size="x-small">
-              Standard Encryption
+              Simple Encryption
             </v-chip>
           </div>
         </div>
