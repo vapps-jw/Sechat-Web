@@ -329,7 +329,7 @@ export const useSechatChat = () => {
       chatStore.getActiveChatTab === ChatViews.Messages &&
       message.nameSentBy !== userStore.getUserName
     ) {
-      console.log("--> Marking Direct Messages as viewed");
+      console.warn("--> Marking Incoming Message as viewed");
       message.wasViewed = true;
       chatStore.addNewDirectMessage(message);
       chatApi.markDirectMessageAsViewed(message.contactId, message.id);

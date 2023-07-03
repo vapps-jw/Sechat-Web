@@ -58,13 +58,11 @@ import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 
 const appStore = useSechatAppStore();
 const userStore = useUserStore();
-const chatStore = useSechatChatStore();
 
 interface PropsModel {
   message: IMessage;
 }
 const props = defineProps<PropsModel>();
-
 const userColor = computed(() => stringToColor(userStore.userProfile.userName));
 </script>
 
