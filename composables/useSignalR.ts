@@ -30,6 +30,7 @@ export const useSignalR = () => {
     videoCalls.onVideoCallRejectedEvent(connection);
     videoCalls.onVideoCallRequestedEvent(connection);
     videoCalls.onVideoCallTerminatedEvent(connection);
+
     videoCalls.onICECandidateIncomingEvent(connection);
     videoCalls.onWebRTCOfferIncomingEvent(connection);
     videoCalls.onWebRTCAnswerIncomingEvent(connection);
@@ -43,6 +44,12 @@ export const useSignalR = () => {
     sechatChat.onUserConnectionUpdatedEvent(connection);
     sechatChat.onUserConnectionDeleteEvent(connection);
     sechatChat.onMessageDeleted(connection);
+
+    sechatChat.onIncomingDirectMessage(connection);
+    sechatChat.onDirectMessageWasViewed(connection);
+    sechatChat.onDirectMessagesWereViewed(connection);
+    sechatChat.onDirectMessageDeleted(connection);
+
     _onUserAddedToRoomEvent(connection);
     _onUserRemovedFromRoomEvent(connection);
 
@@ -67,6 +74,10 @@ export const useSignalR = () => {
       connection.off(SignalRHubMethods.ConnectionUpdated);
       connection.off(SignalRHubMethods.ConnectionDeleted);
       connection.off(SignalRHubMethods.MessageDeleted);
+      connection.off(SignalRHubMethods.DirectMessageIncoming);
+      connection.off(SignalRHubMethods.DirectMessageDeleted);
+      connection.off(SignalRHubMethods.DirectMessageWasViewed);
+      connection.off(SignalRHubMethods.DirectMessagesWereViewed);
       console.warn("--> Connection Closed - connection.onclose");
     });
 

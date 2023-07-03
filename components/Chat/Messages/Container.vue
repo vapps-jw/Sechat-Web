@@ -1,12 +1,11 @@
 <template>
   <v-sheet id="chatView" class="ma-0 pr-1 overflow-auto">
-    <div v-for="(m, index) in chatStore.getActiveRoom.messages">
+    <div v-for="(m, index) in props.messages">
       <v-row
         v-if="
           index === 0 ||
-          new Date(
-            chatStore.getActiveRoom.messages[index - 1].created
-          ).setHours(0, 0, 0, 0) !== new Date(m.created).setHours(0, 0, 0, 0)
+          new Date(props.messages[index - 1].created).setHours(0, 0, 0, 0) !==
+            new Date(m.created).setHours(0, 0, 0, 0)
         "
         no-gutters
         class="flex-nowrap align-center my-3"
@@ -38,11 +37,15 @@
           <v-divider color="tertiary"></v-divider>
         </v-col>
       </v-row>
-      <chat-messages-message :message="m" />
+      <chat-messages-message :message="m" v-if="chatStore.activeRoomId" />
+      <chat-messages-direct-message
+        :message="m"
+        v-if="chatStore.activeContactId"
+      />
     </div>
   </v-sheet>
   <div
-    v-if="chatStore.getActiveRoom.messages.length > 10"
+    v-if="props.messages.length > 10"
     class="d-flex justify-end align-center"
   ></div>
 </template>
@@ -51,9 +54,13 @@
 const appStore = useSechatAppStore();
 const chatStore = useSechatChatStore();
 
+interface PropsModel {
+  messages: IMessageBase[];
+}
+const props = defineProps<PropsModel>();
+
 const scrollToBottom = () => {
   const chatSection = document.getElementById("chatView");
-
   if (chatSection) {
     setTimeout(() => {
       chatSection.scrollTop = chatSection.scrollHeight;

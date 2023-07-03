@@ -15,6 +15,7 @@ export const SnackbarMessages = {
 
 export const CustomCookies = {
   E2E: "E2E",
+  E2EDM: "E2E_DM",
   GDPR: "gdpr-consent",
   AUTH: "sechatid",
 };
@@ -66,11 +67,6 @@ export const VideoCodecs = {
 };
 
 export const SignalRHubMethods = {
-  // Chat Messages
-  MessageWasViewed: "MessageWasViewed",
-  MessagesWereViewed: "MessagesWereViewed",
-  MessageIncoming: "MessageIncoming",
-
   // Video Calls
   SendMicStateChange: "SendMicStateChange",
   SendCamStateChange: "SendCamStateChange",
@@ -104,7 +100,6 @@ export const SignalRHubMethods = {
   UserRemovedFromRoom: "UserRemovedFromRoom",
   DisconnectFromRoom: "DisconnectFromRoom",
   RoomUpdated: "RoomUpdated",
-  MessageDeleted: "MessageDeleted",
 
   // Contacts
   ContactStateChanged: "ContactStateChanged",
@@ -112,6 +107,18 @@ export const SignalRHubMethods = {
   ConnectionRequestReceived: "ConnectionRequestReceived",
   ConnectionDeleted: "ConnectionDeleted",
   ConnectionUpdated: "ConnectionUpdated",
+
+  // Room Messages
+  MessageWasViewed: "MessageWasViewed",
+  MessagesWereViewed: "MessagesWereViewed",
+  MessageIncoming: "MessageIncoming",
+  MessageDeleted: "MessageDeleted",
+
+  // Direct Messages
+  DirectMessageIncoming: "DirectMessageIncoming",
+  DirectMessagesWereViewed: "DirectMessagesWereViewed",
+  DirectMessageWasViewed: "DirectMessageWasViewed",
+  DirectMessageDeleted: "DirectMessageDeleted",
 };
 
 export const VideoSettings = {

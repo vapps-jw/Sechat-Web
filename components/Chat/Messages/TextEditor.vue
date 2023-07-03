@@ -54,7 +54,7 @@ const editorUpdate = (state: IEditorState) => {
   editorState.value = state;
 };
 
-const callMessageApi = async () => {
+const callRoomMessageApi = async () => {
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/chat/send-message`,
     {
@@ -66,6 +66,27 @@ const callMessageApi = async () => {
       body: {
         Text: chatStore.newMessage,
         RoomId: chatStore.activeRoomId,
+      },
+    }
+  );
+
+  if (apiError.value) {
+    sechatApp.showErrorSnackbar(apiError.value.data);
+  }
+};
+
+const callDirectMessageApi = async () => {
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/chat/send-direct-message`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      credentials: "include",
+      body: {
+        Text: chatStore.newMessage,
+        Recipient: chatStore.getActiveContact.displayName,
       },
     }
   );
@@ -92,7 +113,13 @@ const pushMessage = async () => {
     return;
   }
 
-  callMessageApi();
+  if (chatStore.activeRoomId && !chatStore.activeContactId) {
+    callRoomMessageApi();
+  }
+  if (!chatStore.activeRoomId && chatStore.activeContactId) {
+    callDirectMessageApi();
+  }
+
   chatStore.clearNewMessage();
 };
 </script>

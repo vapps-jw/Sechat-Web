@@ -174,7 +174,11 @@ export const useSechatChat = () => {
       chatStore.activeRoomId
     );
 
-    if (chatStore.getActiveRoom.encryptedByUser) {
+    if (
+      chatStore.availableRooms.find((r) => r.id === message.roomId) &&
+      chatStore.availableRooms.find((r) => r.id === message.roomId)
+        .encryptedByUser
+    ) {
       const hasKey = e2e.checkE2ECookie(message.roomId);
       if (!hasKey) return;
 
@@ -256,9 +260,136 @@ export const useSechatChat = () => {
     }
   };
 
+  // Direct Messages
+
+  const onIncomingDirectMessage = async (connection: signalR.HubConnection) => {
+    console.log("--> Connecting DirectMessageIncoming event");
+    connection.on(
+      SignalRHubMethods.DirectMessageIncoming,
+      handleIncomingDirectMessage
+    );
+  };
+
+  const onDirectMessageDeleted = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting DirectMessageDeleted event");
+    connection.on(
+      SignalRHubMethods.DirectMessageDeleted,
+      handleDirectMessageDeleted
+    );
+  };
+
+  const onDirectMessageWasViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting DirectMessageWasViewed event");
+    connection.on(
+      SignalRHubMethods.DirectMessageWasViewed,
+      handleDirectMessageWasViewed
+    );
+  };
+
+  const onDirectMessagesWereViewed = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting DirectMessagesWereViewed event");
+    connection.on(
+      SignalRHubMethods.DirectMessagesWereViewed,
+      handleDirectMessagesWereViewed
+    );
+  };
+
+  const handleIncomingDirectMessage = async (message: IDirectMessage) => {
+    console.warn(
+      "--> Incoming Direct Message Event Handle",
+      message,
+      chatStore.activeContactId
+    );
+
+    if (
+      chatStore.availableContacts.find((r) => r.id === message.contactId) &&
+      chatStore.availableContacts.find((r) => r.id === message.contactId)
+        .encryptedByUser
+    ) {
+      const hasKey = e2e.checkE2EDMCookie(message.contactId);
+      if (!hasKey) return;
+
+      try {
+        const decryptedData = await chatApi.decryptDirectMessage(
+          message.id,
+          message.text,
+          message.contactId
+        );
+        message.text = decryptedData.message;
+        message.error = decryptedData.error;
+      } catch (error) {
+        return;
+      }
+    }
+
+    if (
+      document.visibilityState === VisibilityStates.VISIBLE &&
+      chatStore.getActiveContactId &&
+      message.contactId === chatStore.getActiveContactId &&
+      chatStore.getActiveChatTab === ChatViews.Messages &&
+      message.nameSentBy !== userStore.getUserName
+    ) {
+      console.log("--> Marking Direct Messages as viewed");
+      message.wasViewed = true;
+      chatStore.addNewDirectMessage(message);
+      chatApi.markDirectMessageAsViewed(message.contactId, message.id);
+      scrollToBottom("chatView");
+      return;
+    }
+
+    chatStore.addNewDirectMessage(message);
+
+    if (
+      chatStore.getActiveContactId &&
+      message.contactId === chatStore.getActiveContactId
+    ) {
+      scrollToBottom("chatView");
+    }
+  };
+
+  const handleDirectMessagesWereViewed = (message: IDirectMessagesViewed) => {
+    console.warn("--> Incoming DirectMessagesWereViewed", message);
+    chatStore.markDirectMessagesAsViewed(message.contactId);
+    if (
+      chatStore.activeContactId &&
+      message.contactId === chatStore.activeContactId &&
+      chatStore.activeChatTab === ChatViews.Messages
+    ) {
+      scrollToBottom("chatView");
+    }
+  };
+
+  const handleDirectMessageWasViewed = (
+    message: IContactMessageUserActionMessage
+  ) => {
+    console.warn("--> Incoming DirectMessageWasViewed", message);
+    chatStore.markDirectMessageAsViewed(message.contactId, message.messageId);
+    if (
+      chatStore.activeContactId &&
+      chatStore.activeContactId === message.contactId
+    ) {
+      scrollToBottom("chatView");
+    }
+  };
+
+  const handleDirectMessageDeleted = (data: IDirectMessageId) => {
+    console.warn("--> Handling DirectMessageDeleted", data);
+    chatStore.deleteMessageFromContact(data);
+    if (
+      chatStore.activeContactId &&
+      chatStore.activeContactId === data.contactId
+    ) {
+      scrollToBottom("chatView");
+    }
+  };
+
   // SignalR Event handlers
 
   return {
+    onIncomingDirectMessage,
+    onDirectMessageWasViewed,
+    onDirectMessagesWereViewed,
+    onDirectMessageDeleted,
     onMessageDeleted,
     onUserConnectionDeleteEvent,
     onUserConnectionUpdatedEvent,

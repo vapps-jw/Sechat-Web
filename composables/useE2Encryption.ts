@@ -60,7 +60,59 @@ export const useE2Encryption = () => {
     console.log("--> E2E Updated", e2eData);
   };
 
+  // Direct Messages
+
+  const checkE2EDMCookie = (contactId: number) => {
+    const cookie = useCookie(CustomCookies.E2EDM, cookieOptions());
+    if (cookie.value === undefined || !cookie.value) return false;
+
+    const e2eData = JSON.parse(JSON.stringify(cookie.value)) as IContactKey[];
+    return e2eData.some((key) => key.contactId === contactId);
+  };
+
+  const addContactKey = (data: IContactKey) => {
+    let cookie = useCookie(CustomCookies.E2EDM, cookieOptions());
+
+    if (cookie.value === undefined || !cookie.value) {
+      console.log("--> E2EDM Store Empty");
+      const newData = [{ key: data.key, contactId: data.contactId }];
+      cookie.value = JSON.stringify(newData);
+      console.log("--> E2EDM Updated", cookie.value);
+      return;
+    }
+
+    let e2eData = JSON.parse(JSON.stringify(cookie.value)) as IContactKey[];
+    console.log("--> E2EDM Update", e2eData);
+
+    e2eData = e2eData.filter((key) => key.contactId !== data.contactId);
+    e2eData.push({
+      key: data.key,
+      contactId: data.contactId,
+    });
+
+    cookie.value = JSON.stringify(e2eData);
+    console.log("--> E2EDM Store Data", e2eData);
+  };
+
+  const removeContactKey = (contactId: number) => {
+    const cookie = useCookie(CustomCookies.E2EDM, cookieOptions());
+
+    console.log("--> E2EDM Cookie taken", cookie);
+    if (cookie.value === undefined || !cookie.value) return;
+
+    let e2eData = JSON.parse(JSON.stringify(cookie.value)) as IContactKey[];
+
+    console.log("--> E2EDM Remove", e2eData);
+
+    e2eData = e2eData.filter((key) => key.contactId !== contactId);
+    cookie.value = JSON.stringify(e2eData);
+    console.log("--> E2EDM Updated", e2eData);
+  };
+
   return {
+    checkE2EDMCookie,
+    addContactKey,
+    removeContactKey,
     checkE2ECookie,
     addRoomKey,
     removeRoomKey,

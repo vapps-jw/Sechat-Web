@@ -6,6 +6,7 @@ export const useRefreshHandler = () => {
   const chatApi = useChatApi();
   const chatStore = useSechatChatStore();
   const e2e = useE2Encryption();
+  const userStore = useUserStore();
 
   const handleVisibilityChange = async () => {
     console.log("Visibility changed", document.visibilityState);
@@ -110,8 +111,10 @@ export const useRefreshHandler = () => {
     console.log(
       "Viewed messages update",
       chatStore.activeRoomId,
+      chatStore.activeContactId,
       chatStore.activeChatTab
     );
+
     if (
       chatStore.activeRoomId &&
       chatStore.activeChatTab === ChatViews.Messages
@@ -122,14 +125,39 @@ export const useRefreshHandler = () => {
           0;
 
         console.log(
-          "--> Nav Update -> Marking messages as viewed",
+          "--> Nav Update -> Marking Room messages as viewed",
           markMessagesAsVieved
         );
 
         if (markMessagesAsVieved) {
           console.log("--> Nav Update -> Marking messages as viewed");
           await chatApi.markMessagesAsViewed(chatStore.activeRoomId);
-          chatStore.markMessagesAsViewed();
+          chatStore.markActiveRoomMessagesAsViewed();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    if (
+      chatStore.activeContactId &&
+      chatStore.activeChatTab === ChatViews.Messages
+    ) {
+      try {
+        const markMessagesAsVieved =
+          chatStore.getActiveContact.directMessages.filter(
+            (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+          ).length > 0;
+
+        console.log(
+          "--> Nav Update -> Marking Contact messages as viewed",
+          markMessagesAsVieved
+        );
+
+        if (markMessagesAsVieved) {
+          console.log("--> Nav Update -> Marking messages as viewed");
+          await chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
+          chatStore.markDirectMessagesAsViewed(chatStore.activeContactId);
         }
       } catch (error) {
         console.error(error);

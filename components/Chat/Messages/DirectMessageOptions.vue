@@ -24,13 +24,13 @@ const sechatApp = useSechatApp();
 const config = useRuntimeConfig();
 
 interface PropsModel {
-  message: IMessage;
+  message: IDirectMessage;
 }
 const props = defineProps<PropsModel>();
 
 const handleMessageDelete = async () => {
   const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/chat/message/${props.message.roomId}/${props.message.id}`,
+    `${config.public.apiBase}/chat/direct-message/${props.message.contactId}/${props.message.id}`,
     {
       headers: {
         "Content-Type": "application/json",

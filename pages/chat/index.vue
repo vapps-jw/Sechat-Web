@@ -25,6 +25,7 @@ const chatStore = useSechatChatStore();
 const chatApi = useChatApi();
 const e2e = useE2Encryption();
 const app = useSechatApp();
+const userStore = useUserStore();
 
 const selectedNav = ref(ChatViews.Rooms);
 
@@ -37,57 +38,90 @@ watch(activeChatTab, async (newVal, oldVal) => {
     selectedNav.value = newVal;
   }
 
-  if (!chatStore.activeRoomId) {
-    return;
-  }
   if (activeChatTab.value !== ChatViews.Messages) {
     return;
   }
-  try {
-    if (chatStore.getActiveRoom.encryptedByUser) {
-      console.log("Active encrypted room");
 
-      const e2eCheck = e2e.checkE2ECookie(chatStore.getActiveRoom.id);
-      if (!e2eCheck) {
-        console.log("Key missing");
-        chatStore.rejectRoomSelection();
-        app.showErrorSnackbar("Room Key is missing, add it first");
-        return;
+  // Handle messages viewed for Room
+  if (chatStore.activeRoomId) {
+    try {
+      if (chatStore.getActiveRoom.encryptedByUser) {
+        console.log("Active encrypted room");
+
+        const e2eCheck = e2e.checkE2ECookie(chatStore.getActiveRoomId);
+        if (!e2eCheck) {
+          console.log("Key missing");
+          chatStore.rejectRoomSelection();
+          app.showErrorSnackbar("Key is missing, add it first");
+          return;
+        }
+
+        const updateRequest = <IRoomUpdateRequest>{
+          roomId: chatStore.getActiveRoom.id,
+          lastMessage:
+            chatStore.getActiveRoom.messages.length == 0
+              ? 0
+              : chatStore.getActiveRoom.messages.at(-1).id,
+        };
+        const data = await chatApi.getRoomsUpdate([updateRequest]);
+        data.forEach((r) => {
+          if (r.encryptedByUser) {
+            if (e2e.checkE2ECookie(r.id)) {
+              r.hasKey = true;
+              return;
+            }
+            r.hasKey = false;
+          }
+        });
+
+        chatStore.updateRooms(data);
       }
 
-      const updateRequest = <IRoomUpdateRequest>{
-        roomId: chatStore.getActiveRoom.id,
-        lastMessage:
-          chatStore.getActiveRoom.messages.length == 0
-            ? 0
-            : chatStore.getActiveRoom.messages.at(-1).id,
-      };
-      const data = await chatApi.getRoomsUpdate([updateRequest]);
-      data.forEach((r) => {
-        if (r.encryptedByUser) {
-          if (e2e.checkE2ECookie(r.id)) {
-            r.hasKey = true;
-            return;
-          }
-          r.hasKey = false;
-        }
-      });
+      const markMessagesAsVided =
+        chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length > 0;
 
-      chatStore.updateRooms(data);
+      if (markMessagesAsVided) {
+        console.log("--> Nav Update -> Marking messages as viewed");
+        chatApi.markMessagesAsViewed(chatStore.activeRoomId);
+        chatStore.markActiveRoomMessagesAsViewed();
+      }
+    } catch (error) {
+      app.showErrorSnackbar("Room update failed");
+      console.error(error);
     }
-
-    const markMessagesAsVided =
-      chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length > 0;
-
-    if (markMessagesAsVided) {
-      console.log("--> Nav Update -> Marking messages as viewed");
-      chatApi.markMessagesAsViewed(chatStore.activeRoomId);
-      chatStore.markMessagesAsViewed();
-    }
-  } catch (error) {
-    app.showErrorSnackbar("Room update failed");
-    console.error(error);
   }
+
+  // Handle messages viewed for Direct Messages Chat
+  if (chatStore.activeContactId) {
+    try {
+      if (chatStore.getActiveContact.encryptedByUser) {
+        console.log("Active encrypted contact");
+
+        const e2eCheck = e2e.checkE2EDMCookie(chatStore.getActiveContactId);
+        if (!e2eCheck) {
+          console.log("Key missing");
+          chatStore.rejectContactSelection();
+          app.showErrorSnackbar("Key is missing, add it first");
+          return;
+        }
+      }
+
+      const markMessagesAsVided =
+        chatStore.getActiveContact.directMessages.filter(
+          (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+        ).length > 0;
+
+      if (markMessagesAsVided) {
+        console.log("--> Nav Update -> Marking messages as viewed");
+        chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
+        chatStore.markDirectMessagesAsViewed(chatStore.activeContactId);
+      }
+    } catch (error) {
+      app.showErrorSnackbar("Chat update failed");
+      console.error(error);
+    }
+  }
+
   if (newVal === ChatViews.Messages) {
     scrollToBottom("chatView");
   }

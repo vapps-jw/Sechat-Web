@@ -1,6 +1,6 @@
 <template>
   <v-container
-    v-if="!chatStore.getActiveRoom"
+    v-if="!chatStore.getActiveRoom && !chatStore.getActiveContact"
     class="bg-transparent d-flex justify-center align-center flex-column sechat-v-card-full"
   >
     <NuxtImg
@@ -12,7 +12,12 @@
     <div class="text-h6">Select a Room or createa new one</div>
   </v-container>
   <v-container v-else>
-    <v-card class="sechat-v-card-full">
+    <!-- Room Messags -->
+
+    <v-card
+      class="sechat-v-card-full"
+      v-if="chatStore.getActiveRoom && !chatStore.getActiveContact"
+    >
       <v-toolbar>
         <div class="d-flex ml-2 justify-start flex-column">
           <v-toolbar-title>{{ chatStore.getActiveRoom.name }}</v-toolbar-title>
@@ -34,7 +39,41 @@
         <chat-rooms-settings :room-id="chatStore.getActiveRoom.id" />
       </v-toolbar>
       <v-divider />
-      <chat-messages-container />
+      <chat-messages-container :messages="chatStore.getActiveRoom.messages" />
+      <v-spacer />
+      <chat-messages-text-editor />
+    </v-card>
+
+    <!-- Direct Messages -->
+
+    <v-card
+      class="sechat-v-card-full"
+      v-if="!chatStore.getActiveRoom && chatStore.getActiveContact"
+    >
+      <v-toolbar>
+        <div class="d-flex ml-2 justify-start flex-column">
+          <v-toolbar-title>{{
+            chatStore.getActiveContact.displayName
+          }}</v-toolbar-title>
+          <div class="d-flex justify-start flex-row">
+            <v-chip
+              v-if="chatStore.getActiveContact.encryptedByUser"
+              color="warning"
+              size="x-small"
+            >
+              E2E
+            </v-chip>
+            <v-chip v-else color="warning" size="x-small">
+              Simple Encryption
+            </v-chip>
+          </div>
+        </div>
+        <v-spacer></v-spacer>
+      </v-toolbar>
+      <v-divider />
+      <chat-messages-container
+        :messages="chatStore.getActiveContact?.directMessages"
+      />
       <v-spacer />
       <chat-messages-text-editor />
     </v-card>

@@ -13,7 +13,7 @@
       <span>Rooms</span>
     </v-btn>
     <v-btn value="contacts" @click="chatStore.activateContactsView">
-      <v-icon>mdi-contacts</v-icon>
+      <v-icon>mdi-account-group</v-icon>
       <span>Contacts</span>
     </v-btn>
 

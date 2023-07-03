@@ -1,12 +1,11 @@
+// Abstractions
+
+interface IStringUserMessage {
+  userName?: string;
+  message?: string;
+}
 interface IResourceGuid {
   id?: string;
-}
-
-interface IMessageDecryptionRequest {
-  id?: number;
-  message?: string;
-  roomId?: string;
-  error?: boolean;
 }
 
 interface IResourceId {
@@ -17,10 +16,45 @@ interface IStringMessage {
   message?: string;
 }
 
-interface IStringUserMessage {
-  userName?: string;
-  message?: string;
+interface IMessageBase {
+  id?: number;
+  nameSentBy?: string;
+  text?: string;
+  created?: Date;
+  wasViewed?: boolean;
+  error?: boolean;
 }
+
+// Messages
+
+interface IDirectMessageId {
+  id?: number;
+  contactId?: number;
+}
+interface IDirectMessage extends IMessageBase {
+  contactId?: number;
+}
+
+interface IDirectMessagesViewed {
+  contactId?: number;
+}
+
+interface IMessage extends IMessageBase {
+  roomId?: string;
+  messageViewers?: IMessageViewer[];
+}
+
+// Link Previews
+
+interface ILinkPreview {
+  title?: string;
+  description?: string;
+  domain?: string;
+  img?: string;
+  favicon?: string;
+}
+
+// Rooms
 
 interface IRoomCreateRequest {
   roomName?: string;
@@ -51,25 +85,24 @@ interface IRoomMessageUserActionMessage {
   messageId?: number;
 }
 
+interface IContactMessageUserActionMessage {
+  contactId?: number;
+  messageId?: number;
+}
+
 interface IMessageDeleted {
   id?: number;
   roomId?: string;
 }
 
+interface IDirectMessageDeleted {
+  id?: number;
+  contactId?: number;
+}
+
 interface IRoomUserActionMessage {
   roomId?: string;
   userName?: string;
-}
-
-interface IMessage {
-  id?: number;
-  nameSentBy?: string;
-  text?: string;
-  roomId?: string;
-  created?: Date;
-  messageViewers?: IMessageViewer[];
-  wasViewed?: boolean;
-  error?: boolean;
 }
 
 interface IMessageViewer {
@@ -86,18 +119,30 @@ interface IRoomUpdateRequest {
   lastMessage?: number;
 }
 
-interface ISentMessage {
-  text?: string;
-  roomId?: string;
-}
-interface IChatState {
-  rooms?: IRoom[];
-  userContacts?: IContactRequest[];
-}
-
 interface IRoomUpdate {
   text?: string;
   roomId?: string;
+}
+
+interface IMessageDecryptionRequest {
+  id?: number;
+  message?: string;
+  roomId?: string;
+  error?: boolean;
+}
+
+interface IDirectMessageDecryptionRequest {
+  id?: number;
+  message?: string;
+  contactId?: string;
+  error?: boolean;
+}
+
+// Contacts
+
+interface IContactUpdateRequest {
+  contactId?: number;
+  lastMessage?: number;
 }
 
 interface IContactRequest {
@@ -109,12 +154,7 @@ interface IContactRequest {
   displayName?: string;
   blocked?: boolean;
   blockedByName?: string;
-}
-
-interface ILinkPreview {
-  title?: string;
-  description?: string;
-  domain?: string;
-  img?: string;
-  favicon?: string;
+  directMessages?: IDirectMessage[];
+  encryptedByUser?: boolean;
+  hasKey?: boolean;
 }

@@ -15,8 +15,9 @@ export const useSechatChatStore = defineStore({
       availableRooms: <IRoom[]>[],
       availableContacts: <IContactRequest[]>[],
       activeChatTab: <string>ChatViews.Rooms,
-      activeRoomId: <string>"",
-      newMessage: <string>"",
+      activeRoomId: <string>null,
+      activeContactId: <number>null,
+      newMessage: <string>null,
       keyInputDialog: <boolean>false,
     };
   },
@@ -55,15 +56,9 @@ export const useSechatChatStore = defineStore({
         value,
       ].sort((a, b) => a.displayName.localeCompare(b.displayName));
     },
-    markMessagesAsViewedByUser(userName: string) {
-      this.availableRooms.forEach((r) =>
-        r.messages.forEach((m) => {
-          if (m.messageViewers.find((mv) => mv.user === userName)) {
-            m.wasViewed = true;
-          }
-        })
-      );
-    },
+
+    // Handle Room Messages Views
+
     markRoomMessagesAsViewed(userName: string, roomId: string) {
       const room: IRoom = this.availableRooms.find(
         (r: IRoom) => r.id === roomId
@@ -74,6 +69,15 @@ export const useSechatChatStore = defineStore({
           m.messageViewers.push(<IMessageViewer>{ user: userName });
         }
       });
+    },
+    markActiveRoomMessagesAsViewed() {
+      if (!this.activeRoomId) {
+        return;
+      }
+      const room: IRoom = this.availableRooms.find(
+        (r: IRoom) => r.id === this.activeRoomId
+      );
+      room.messages.forEach((m) => (m.wasViewed = true));
     },
     markRoomMessageAsViewed(
       userName: string,
@@ -94,15 +98,31 @@ export const useSechatChatStore = defineStore({
 
       message.messageViewers.push(<IMessageViewer>{ user: userName });
     },
-    markMessagesAsViewed(this: IChatStore) {
-      if (!this.activeRoomId) {
+
+    // Handle Direct Message Views
+
+    markDirectMessagesAsViewed(contactId: number) {
+      const contact: IContactRequest = this.availableContacts.find(
+        (c: IContactRequest) => c.id === contactId
+      );
+      if (!contact) {
         return;
       }
-      const room: IRoom = this.availableRooms.find(
-        (r: IRoom) => r.id === this.activeRoomId
-      );
-      room.messages.forEach((m) => (m.wasViewed = true));
+      contact.directMessages.forEach((m) => (m.wasViewed = true));
     },
+    markDirectMessageAsViewed(contactId: number, messageId: number) {
+      const contact: IContactRequest = this.availableContacts.find(
+        (uc: IContactRequest) => uc.id === contactId
+      );
+
+      const message = contact.directMessages.find((m) => m.id === messageId);
+      if (!message || message.wasViewed) {
+        return;
+      }
+
+      message.wasViewed = true;
+    },
+
     loadContacts(value: IContactRequest[]) {
       this.availableContacts = value.sort((a, b) =>
         a.displayName.localeCompare(b.displayName)
@@ -160,6 +180,16 @@ export const useSechatChatStore = defineStore({
           .find((r) => r.id === value.roomId)
           .messages.filter((m) => m.id !== value.id);
     },
+    deleteMessageFromContact(value: IDirectMessageId) {
+      if (!this.availableContacts.some((c) => c.id === value.contactId)) {
+        return;
+      }
+      this.availableContacts.find(
+        (c) => c.id === value.contactId
+      ).directMessages = this.availableContacts
+        .find((c) => c.id === value.contactId)
+        .directMessages.filter((m) => m.id !== value.id);
+    },
     updateRoom(value: IRoom) {
       value.messages = this.availableRooms.find(
         (r) => r.id === this.activeRoomId
@@ -190,12 +220,22 @@ export const useSechatChatStore = defineStore({
       updatedRoom.members = value.members;
     },
     selectRoom(value: string) {
+      this.activeContactId = null;
       this.activeRoomId = value;
       this.activeChatTab = ChatViews.Messages;
     },
     rejectRoomSelection() {
-      this.activeRoomId = "";
+      this.activeRoomId = null;
       this.activeChatTab = ChatViews.Rooms;
+    },
+    selectContact(value: number) {
+      this.activeRoomId = null;
+      this.activeContactId = value;
+      this.activeChatTab = ChatViews.Messages;
+    },
+    rejectContactSelection() {
+      this.activeContactId = null;
+      this.activeChatTab = ChatViews.Contacts;
     },
     deleteUserFromRoom(value: IUserRoomOptions) {
       const updatedRoom = this.availableRooms.find(
@@ -230,7 +270,18 @@ export const useSechatChatStore = defineStore({
         );
       }
     },
-    addNewMessages(value: string, roomId: string) {},
+    addNewDirectMessage(value: IDirectMessage) {
+      const updatedContact = this.availableContacts.find(
+        (c) => c.id === value.contactId
+      );
+      if (!updatedContact.directMessages.some((m) => m.id === value.id)) {
+        updatedContact.directMessages.push(value);
+
+        updatedContact.directMessages = updatedContact.directMessages.sort(
+          (a, b) => Number(a.created) - Number(b.created)
+        );
+      }
+    },
   },
   getters: {
     getOnlineUsers: (state) =>
@@ -238,12 +289,15 @@ export const useSechatChatStore = defineStore({
         (c) => c.contactState === ContactState.Online
       ),
     getActiveRoomId: (state) => state.activeRoomId,
+    getActiveContactId: (state) => state.activeContactId,
     getActiveChatTab: (state) => state.activeChatTab,
     isSettingsViewActive: (state) => state.activeChatTab === ChatViews.Settings,
     isRoomsViewActive: (state) => state.activeChatTab === ChatViews.Rooms,
     isMessagesViewActive: (state) => state.activeChatTab === ChatViews.Messages,
     getActiveRoom: (state) =>
       state.availableRooms.find((r) => r.id === state.activeRoomId),
+    getActiveContact: (state) =>
+      state.availableContacts.find((r) => r.id === state.activeContactId),
     getActiveRoomCreatorName: (state) => {
       if (state.activeRoomId) {
         return state.availableRooms.find((r) => r.id === state.activeRoomId)

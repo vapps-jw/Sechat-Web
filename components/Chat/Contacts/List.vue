@@ -5,8 +5,12 @@
       class="my-2 mx-1 pa-1"
       v-for="uc in chatStore.getContacts"
       :key="`${uc.invitedName}-${uc.inviterName}`"
-      :title="uc.displayName"
     >
+      <template v-slot:title>
+        <div class="small-font">
+          {{ uc.displayName }}
+        </div>
+      </template>
       <template v-slot:prepend>
         <v-menu>
           <template v-slot:activator="{ props }">
@@ -53,11 +57,12 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <div class="d-flex flex-column mr-2">
+        <div class="d-flex align-center justify-center mr-2 flex-column">
+          <v-avatar size="small" :color="stringToColor(uc.displayName)">
+            {{ getInitials(uc.displayName) }}
+          </v-avatar>
           <div class="d-flex align-center justify-center">
             <chat-status-contact-state-icon :contact="uc" />
-          </div>
-          <div class="d-flex align-center justify-center">
             <v-icon v-if="uc.blocked" size="x-small" color="error"
               >mdi-alert-circle</v-icon
             >
@@ -68,11 +73,7 @@
               >mdi-help-circle-outline</v-icon
             >
           </div>
-        </div>
-        <div class="d-flex align-center justify-center mr-2">
-          <v-avatar :color="stringToColor(uc.displayName)">
-            {{ getInitials(uc.displayName) }}
-          </v-avatar>
+          <div class="d-flex align-center justify-center"></div>
         </div>
       </template>
       <template v-slot:append>
@@ -84,6 +85,31 @@
           color="success"
           variant="outlined"
         ></v-btn>
+
+        <v-badge
+          class="mx-2"
+          :model-value="
+            uc.directMessages.filter(
+              (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+            ).length > 0
+          "
+          :content="
+            uc.directMessages.filter(
+              (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+            ).length
+          "
+          color="error"
+        >
+          <v-btn
+            v-if="uc.approved && !uc.blocked"
+            @click="directMessage(uc)"
+            size="small"
+            icon="mdi-message"
+            color="primary"
+            variant="outlined"
+            class="ml-2"
+          ></v-btn>
+        </v-badge>
       </template>
     </v-list-item>
   </v-list>
@@ -103,6 +129,10 @@ const startVideoCall = (uc: IContactRequest) => {
   console.log("--> Starting new call with", uc.displayName);
   webRTCStore.updateVideoCallContact(uc);
   webRTCStore.updateVideoCallViewVisible(true);
+};
+
+const directMessage = (uc: IContactRequest) => {
+  chatStore.selectContact(uc.id);
 };
 
 const blockContact = async (id: number) => {

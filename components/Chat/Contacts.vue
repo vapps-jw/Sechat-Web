@@ -14,14 +14,12 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarMessages } from "~~/utilities/globalEnums";
-
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
 
 const createInvitation = async (userName: string) => {
   console.log("--> Calling connection request");
-  const { error: apiError } = await useFetch(
+  const { error: apiError, data: res } = await useFetch(
     `${config.public.apiBase}/user/request-connection`,
     {
       headers: {
@@ -40,6 +38,6 @@ const createInvitation = async (userName: string) => {
     return;
   }
 
-  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatApp.showSuccessSnackbar("Invitation sent");
 };
 </script>
