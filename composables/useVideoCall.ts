@@ -1,4 +1,8 @@
-import { SignalRHubMethods, VideoSettings } from "~/utilities/globalEnums";
+import {
+  SignalRCustonMessages,
+  SignalRHubMethods,
+  VideoSettings,
+} from "~/utilities/globalEnums";
 
 export const useVideoCall = () => {
   const signalRStore = useSignalRStore();
@@ -160,6 +164,11 @@ export const useVideoCall = () => {
     webRTCStore.updateTargetPlayerVisible(true);
   };
 
+  const screenShareToggledByOtherUser = (data: IStringMessage) => {
+    console.log("Screen share toggle db other user", data);
+    webRTCStore.ScreenShareState = data.message;
+  };
+
   const ICECandidateIncoming = (data: IStringMessage) => {
     if (webRTCStore.readyToReceiveCandidates) {
       console.warn("--> ICE Candidate being added!", JSON.parse(data.message));
@@ -292,6 +301,71 @@ export const useVideoCall = () => {
     }
   };
 
+  const toggleScreenShare = async () => {
+    console.log("Screen share toggled");
+
+    if (webRTCStore.screenShare) {
+      await switchToCam();
+    } else {
+      await switchToScreenShare();
+    }
+  };
+
+  const switchToCam = async () => {
+    console.log("Switching to CAM", webRTCStore.screenShare);
+    const localStream = await navigator.mediaDevices.getUserMedia(
+      VideoSettings
+    );
+
+    const [videoTrack] = localStream.getVideoTracks();
+    const sender = webRTCStore.peerConnection
+      .getSenders()
+      .find((s) => s.track.kind === videoTrack.kind);
+    sender.replaceTrack(videoTrack);
+
+    signalScreenShare(
+      webRTCStore.getVideoCallContactName,
+      SignalRCustonMessages.ScreenShareFree
+    );
+    webRTCStore.screenShare = false;
+  };
+
+  const switchToScreenShare = async () => {
+    console.log("Switching to SCREEN SHARE", webRTCStore.screenShare);
+    const screenShareStream = await navigator.mediaDevices.getDisplayMedia();
+    const [videoTrack] = screenShareStream.getVideoTracks();
+
+    screenShareStream
+      .getVideoTracks()[0]
+      .addEventListener("ended", async () => {
+        console.error("Terminated by browser Event!");
+        await switchToCam();
+      });
+
+    const sender = webRTCStore.peerConnection
+      .getSenders()
+      .find((s) => s.track.kind === videoTrack.kind);
+    sender.replaceTrack(videoTrack);
+
+    signalScreenShare(
+      webRTCStore.getVideoCallContactName,
+      SignalRCustonMessages.ScreenShareBusy
+    );
+    webRTCStore.screenShare = true;
+  };
+
+  const signalScreenShare = (userName: string, screenShareState: string) => {
+    console.log(
+      "Signalling Screen Share state change",
+      userName,
+      screenShareState
+    );
+    signalRStore.connection.send(SignalRHubMethods.SendScreenShareStateChange, {
+      userName: userName,
+      message: screenShareState,
+    });
+  };
+
   // WebRTC
 
   const sendICECandiadate = (data: IStringUserMessage) => {
@@ -375,6 +449,16 @@ export const useVideoCall = () => {
     connection.on(SignalRHubMethods.WebRTCAnswerIncoming, answerIncoming);
   };
 
+  const onWebRTCScreenShareStateChangeEvent = (
+    connection: signalR.HubConnection
+  ) => {
+    console.log("--> Connecting WebRTCScreenSahreStateChange");
+    connection.on(
+      SignalRHubMethods.ScreenShareStateChanged,
+      screenShareToggledByOtherUser
+    );
+  };
+
   const onWebRTCOfferIncomingEvent = (connection: signalR.HubConnection) => {
     console.log("--> Connecting WebRTCOfferIncoming");
     connection.on(SignalRHubMethods.WebRTCOfferIncoming, offerIncoming);
@@ -409,6 +493,8 @@ export const useVideoCall = () => {
   };
 
   return {
+    onWebRTCScreenShareStateChangeEvent,
+    toggleScreenShare,
     onWebRTCAnswerIncomingEvent,
     onWebRTCOfferIncomingEvent,
     onICECandidateIncomingEvent,

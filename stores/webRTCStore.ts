@@ -1,3 +1,5 @@
+import { SignalRCustonMessages } from "~~/utilities/globalEnums";
+
 export const useWebRTCStore = defineStore({
   id: "webRTC-store",
   state: () => {
@@ -13,8 +15,12 @@ export const useWebRTCStore = defineStore({
       // Media
       remoteVideo: <HTMLVideoElement>null,
       localVideo: <HTMLVideoElement>null,
+      screenShare: <boolean>false,
+      ScreenShareState: <string>SignalRCustonMessages.ScreenShareFree,
       micOn: <boolean>true,
       camOn: <boolean>true,
+      remoteMicOn: <boolean>true,
+      remoteCamOn: <boolean>true,
       // WebRTC
       callNotificationInterval: <NodeJS.Timer>null,
       readyToReceiveCandidates: <boolean>false,

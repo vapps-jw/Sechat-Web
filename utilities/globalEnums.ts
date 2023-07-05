@@ -66,10 +66,16 @@ export const VideoCodecs = {
   webmOpusCodec: "video/webm;audio/webm;codecs=opus",
 };
 
+export const SignalRCustonMessages = {
+  ScreenShareBusy: "ScreenShareBusy",
+  ScreenShareFree: "ScreenShareFree",
+};
+
 export const SignalRHubMethods = {
   // Video Calls
   SendMicStateChange: "SendMicStateChange",
   SendCamStateChange: "SendCamStateChange",
+  SendScreenShareStateChange: "SendScreenShareStateChange",
   SendWebRTCExchangeCompleted: "SendWebRTCExchangeCompleted",
   VideoCallRequest: "VideoCallRequest",
   SendWebRTCAnswer: "SendWebRTCAnswer",
@@ -82,6 +88,7 @@ export const SignalRHubMethods = {
   // Events
   MicStateChanged: "MicStateChanged",
   CamStateChanged: "CamStateChanged",
+  ScreenShareStateChanged: "ScreenShareStateChanged",
   WebRTCExchangeCompleted: "WebRTCExchangeCompleted",
   WebRTCOfferIncoming: "WebRTCOfferIncoming",
   WebRTCAnswerIncoming: "WebRTCAnswerIncoming",
@@ -125,6 +132,7 @@ export const VideoSettings = {
   video: {
     width: { min: 320, ideal: 1920, max: 1920 },
     height: { min: 240, ideal: 1080, max: 1080 },
+    frameRate: { ideal: 30, max: 60 },
   },
   audio: true,
 };
