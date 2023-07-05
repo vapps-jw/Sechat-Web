@@ -23,6 +23,21 @@
   ></v-btn>
   <v-spacer v-if="webRTCStore.videoCallEstablished"></v-spacer>
   <v-btn
+    class="mr-3 hidden-md-and-down"
+    :disabled="
+      webRTCStore.ScreenShareState === SignalRCustonMessages.ScreenShareBusy ||
+      webRTCStore.screenShare
+    "
+    v-if="webRTCStore.videoCallEstablished"
+    @click="videoCall.toggleScreenShare"
+    size="x-large"
+    :icon="
+      webRTCStore.screenShare ? 'mdi-monitor-shimmer' : 'mdi-monitor-share'
+    "
+    :color="webRTCStore.screenShare ? 'warning' : 'accent'"
+    :variant="webRTCStore.videoCallEstablished ? 'elevated' : 'outlined'"
+  ></v-btn>
+  <v-btn
     v-if="webRTCStore.videoCallEstablished"
     @click="videoCall.toggleCamera"
     size="x-large"
@@ -42,6 +57,8 @@
 </template>
 
 <script setup lang="ts">
+import { SignalRCustonMessages } from "~/utilities/globalEnums";
+
 const videoCall = useVideoCall();
 const webRTCStore = useWebRTCStore();
 

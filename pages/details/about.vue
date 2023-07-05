@@ -10,7 +10,7 @@
           text="Yes it is an it will be, but donations are welcome (there will be a button for that using Stripe in the future)"
         ></v-expansion-panel>
         <v-expansion-panel
-          title="Is it secure?"
+          title="Is my messages encrypted?"
           text="Messages are stored encrypted on the server by default, we use TLS 1.3, we do not store any personal data, when you delete a Room all messages are being purged along with the key used to encrypt them. E2E encryption can be chosen during Room creation. It`s open source so you can check the code."
         ></v-expansion-panel>
         <v-expansion-panel

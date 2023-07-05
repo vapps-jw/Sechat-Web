@@ -35,6 +35,9 @@ export default defineNuxtConfig({
       permissionsPolicy: {
         camera: ["self"],
         microphone: ["self"],
+        "display-capture": ["self"],
+        fullscreen: ["self"],
+        geolocation: ["()"],
       },
       crossOriginEmbedderPolicy: false,
       contentSecurityPolicy: {

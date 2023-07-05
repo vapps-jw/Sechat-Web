@@ -34,6 +34,8 @@ export const useSignalR = () => {
     videoCalls.onICECandidateIncomingEvent(connection);
     videoCalls.onWebRTCOfferIncomingEvent(connection);
     videoCalls.onWebRTCAnswerIncomingEvent(connection);
+    videoCalls.onWebRTCScreenShareStateChangeEvent(connection);
+
     sechatChat.onContactStateChangedEvent(connection);
     sechatChat.onMessageWasViewed(connection);
     sechatChat.onMessagesWereViewed(connection);
@@ -55,6 +57,7 @@ export const useSignalR = () => {
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
+      connection.off(SignalRHubMethods.SendScreenShareStateChange);
       connection.off(SignalRHubMethods.VideoCallApproved);
       connection.off(SignalRHubMethods.VideoCallRejected);
       connection.off(SignalRHubMethods.VideoCallRequested);

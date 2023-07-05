@@ -12,6 +12,7 @@
           webRTCStore.videoCallEstablished ? 'smallFrame' : 'video-player'
         "
       ></video>
+
       <video
         id="video-stream-remote"
         autoplay
