@@ -136,3 +136,19 @@ export const VideoSettings = {
   },
   audio: true,
 };
+
+export const DisplayMediaSettings = {
+  surfaceSwitching: "exclude",
+  video: {
+    frameRate: 30,
+    width: 1920,
+    height: 1080,
+    cursor: "always",
+  },
+  audio: {
+    autoGainControl: false,
+    echoCancellation: false,
+    googAutoGainControl: false,
+    noiseSuppresion: false,
+  },
+};

@@ -88,6 +88,7 @@ const endCall = async () => {
   } else {
     videoCall.terminateVideoCall(webRTCStore.getVideoCallContact.displayName);
   }
+  webRTCStore.terminateShare();
   webRTCStore.cleanup();
   webRTCStore.$reset();
 };

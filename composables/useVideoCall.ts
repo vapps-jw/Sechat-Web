@@ -1,4 +1,5 @@
 import {
+  DisplayMediaSettings,
   SignalRCustonMessages,
   SignalRHubMethods,
   VideoSettings,
@@ -332,7 +333,9 @@ export const useVideoCall = () => {
 
   const switchToScreenShare = async () => {
     console.log("Switching to SCREEN SHARE", webRTCStore.screenShare);
-    const screenShareStream = await navigator.mediaDevices.getDisplayMedia();
+    const screenShareStream = await navigator.mediaDevices.getDisplayMedia(
+      DisplayMediaSettings
+    );
     const [videoTrack] = screenShareStream.getVideoTracks();
 
     screenShareStream

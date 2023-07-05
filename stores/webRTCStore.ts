@@ -97,6 +97,12 @@ export const useWebRTCStore = defineStore({
       clearInterval(this.callNotificationInterval);
       this.callNotificationInterval = null;
     },
+    terminateShare() {
+      if (this.screenShare) {
+        const senders = this.peerConnection.getSenders();
+        senders.forEach((s) => s.track.stop());
+      }
+    },
   },
   getters: {
     // Sechat
