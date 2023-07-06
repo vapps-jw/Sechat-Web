@@ -32,6 +32,7 @@ interface ICallLog {
   created?: Date;
   calleeName?: string;
   phonerName?: string;
+  wasViewed?: boolean;
   videoCallType?: string;
   videoCallResult?: string;
 }

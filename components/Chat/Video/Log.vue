@@ -2,12 +2,7 @@
   <!-- TODO: virtual scroll -->
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ props }">
-      <v-btn
-        class="mr-2"
-        v-bind="props"
-        icon="mdi-phone-log"
-        variant="outlined"
-      ></v-btn>
+      <v-btn v-bind="props" icon="mdi-phone-log" variant="outlined"></v-btn>
     </template>
 
     <v-card class="sechat-v-card-full-h">
@@ -20,7 +15,7 @@
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text class="pa-2">
-        <v-virtual-scroll class="log-list" :items="chatstore.callLogs">
+        <v-virtual-scroll class="log-list" :items="chatStore.callLogs">
           <template v-slot:default="{ item }">
             <div class="d-flex justify-right align-center my-3">
               <v-icon
@@ -57,8 +52,14 @@
                   )
                 }}
               </v-avatar>
-              <div class="d-flex justify-right align-center flex-column">
-                <div class="tiny-font">DATA</div>
+              <div class="d-flex justify-start align-start flex-column">
+                <div class="tiny-font">
+                  {{
+                    new Date(item.created).toLocaleString(
+                      appStore.localLanguage
+                    )
+                  }}
+                </div>
 
                 <div class="small-font">
                   {{
@@ -81,8 +82,18 @@ import { VideoCallLogResult } from "~/utilities/globalEnums";
 import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 
 const dialog = ref<boolean>(false);
-const chatstore = useSechatChatStore();
+const chatStore = useSechatChatStore();
 const userStore = useUserStore();
+const appStore = useSechatAppStore();
+const videoCall = useVideoCall();
+
+watch(dialog, async (newVal, oldVal) => {
+  if (!newVal) {
+    chatStore.loadCallLogs(await videoCall.getCallLogs());
+    return;
+  }
+  await videoCall.callLogsViewed();
+});
 </script>
 
 <style scoped>

@@ -78,6 +78,7 @@
       </template>
       <template v-slot:append>
         <v-btn
+          class="mr-3"
           v-if="uc.approved && !uc.blocked"
           @click="startVideoCall(uc)"
           size="small"
@@ -85,9 +86,7 @@
           color="success"
           variant="outlined"
         ></v-btn>
-
         <v-badge
-          class="mx-2"
           :model-value="
             uc.directMessages.filter(
               (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
@@ -107,7 +106,6 @@
             icon="mdi-message"
             color="primary"
             variant="outlined"
-            class="ml-2"
           ></v-btn>
         </v-badge>
       </template>

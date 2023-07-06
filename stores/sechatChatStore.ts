@@ -24,10 +24,10 @@ export const useSechatChatStore = defineStore({
     updateCallLog(callLog: ICallLog) {
       this.callLogs = [
         ...this.callLogs.filter((cl) => cl.id !== callLog.id, callLog),
-      ].sort((a, b) => Number(a.id) - Number(b.id));
+      ].sort((a, b) => Number(b.id) - Number(a.id));
     },
     loadCallLogs(newCallLogs: ICallLog[]) {
-      this.callLogs = newCallLogs.sort((a, b) => Number(a.id) - Number(b.id));
+      this.callLogs = newCallLogs.sort((a, b) => Number(b.id) - Number(a.id));
     },
     clearNewMessage() {
       this.newMessage = "";

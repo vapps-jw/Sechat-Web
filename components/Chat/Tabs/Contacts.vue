@@ -4,7 +4,28 @@
       <v-toolbar>
         <v-toolbar-title>Contacts</v-toolbar-title>
         <v-spacer></v-spacer>
-        <ChatVideoLog />
+        <v-badge
+          :model-value="
+            chatStore.callLogs.filter(
+              (cl) =>
+                !cl.wasViewed &&
+                cl.phonerName !== userStore.getUserName &&
+                cl.calleeName === userStore.getUserName
+            ).length > 0
+          "
+          :content="
+            chatStore.callLogs.filter(
+              (cl) =>
+                !cl.wasViewed &&
+                cl.phonerName !== userStore.getUserName &&
+                cl.calleeName === userStore.getUserName
+            ).length
+          "
+          color="error"
+        >
+          <ChatVideoLog
+        /></v-badge>
+
         <ChatContactsAddContact @invite-user="createInvitation" />
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
@@ -17,6 +38,9 @@
 <script setup lang="ts">
 const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
+const chatStore = useSechatChatStore();
+const userStore = useUserStore();
+const webRTCStore = useWebRTCStore();
 
 const createInvitation = async (userName: string) => {
   console.log("--> Calling connection request");

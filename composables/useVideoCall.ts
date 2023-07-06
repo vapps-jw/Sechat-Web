@@ -41,7 +41,7 @@ export const useVideoCall = () => {
   };
 
   const getCallLogs = async (lastLog?: number) => {
-    console.log("Registering Call");
+    console.log("Getting Call");
     const route = `${config.public.apiBase}/call/logs${
       lastLog ? "/" + lastLog : ""
     }`;
@@ -77,6 +77,28 @@ export const useVideoCall = () => {
         body: {
           CaleeName: calleeName,
         },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+  };
+
+  const callLogsViewed = async () => {
+    console.log("Call Logs Viewed Api");
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/call/logs-viewed`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PATCH",
+        credentials: "include",
       }
     );
 
@@ -533,7 +555,6 @@ export const useVideoCall = () => {
     stopCalling();
 
     chatStore.loadCallLogs(await getCallLogs());
-
     webRTCStore.cleanup();
     webRTCStore.$reset();
     appStore.showErrorSnackbar(`Call rejected by ${data.message}`);
@@ -548,13 +569,14 @@ export const useVideoCall = () => {
     });
   };
 
-  const videoCallTerminated = (data: IStringMessage) => {
+  const videoCallTerminated = async (data: IStringMessage) => {
     console.warn(`--> Call terminated by: ${data.message}`);
 
     if (webRTCStore.videoCallWaitingForApproval) {
       appStore.showWarningSnackbar(`Call ended by ${data.message}`);
     }
 
+    chatStore.loadCallLogs(await getCallLogs());
     webRTCStore.cleanup();
     webRTCStore.$reset();
   };
@@ -610,6 +632,7 @@ export const useVideoCall = () => {
   };
 
   return {
+    callLogsViewed,
     getCallLogs,
     registerCall,
     callAnswered,
