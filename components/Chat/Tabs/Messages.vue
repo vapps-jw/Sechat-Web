@@ -49,6 +49,8 @@
     <!-- Direct Messages -->
 
     <v-card
+      min-width="350"
+      width="700"
       class="sechat-v-card-full"
       v-if="!chatStore.getActiveRoom && chatStore.getActiveContact"
     >
