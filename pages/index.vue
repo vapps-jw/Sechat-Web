@@ -38,14 +38,17 @@
         >Sign Up</NuxtLink
       >
     </v-btn>
+    <v-btn class="my-2" size="large">
+      <NuxtLink class="sechat-link-clear" :to="`/details/about`"
+        >About</NuxtLink
+      >
+    </v-btn>
     <v-btn v-if="!userStore.isSignedIn" class="my-2" size="large">
       <NuxtLink class="sechat-link-clear" :to="`/user/forgotPassword`"
         >Forgot Password</NuxtLink
       >
     </v-btn>
-    <v-btn class="my-2" size="large">
-      <NuxtLink class="sechat-link-clear" :to="`/details/about`">FAQ</NuxtLink>
-    </v-btn>
+
     <v-btn class="my-2" size="large">
       <NuxtLink class="sechat-link-clear" :to="`policies`">Policies</NuxtLink>
     </v-btn>

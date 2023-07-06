@@ -14,8 +14,8 @@
           text="Messages are stored encrypted on the server by default, we use TLS 1.3, we do not store any personal data, when you delete a Room all messages are being purged along with the key used to encrypt them. E2E encryption can be chosen during Room creation. It`s open source so you can check the code."
         ></v-expansion-panel>
         <v-expansion-panel
-          title="Video Calls"
-          text="We have our own TURN server, communication is encrtpted"
+          title="What about video calls?"
+          text="We have our own TURN server, communication is encrtpted. There is a screen share feature."
         ></v-expansion-panel>
         <v-expansion-panel
           title="Is it open source?"
