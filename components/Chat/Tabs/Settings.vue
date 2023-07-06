@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <v-card class="sechat-v-card-full">
+  <v-container class="d-flex justify-center align-center">
+    <v-card min-width="350" width="700" class="sechat-v-card-full">
       <v-toolbar>
         <v-avatar :color="stringToColor(userStore.getUserName)" class="mx-2">
           {{ getInitials(userStore.getUserName) }}</v-avatar

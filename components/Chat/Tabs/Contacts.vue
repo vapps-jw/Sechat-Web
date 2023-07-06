@@ -1,9 +1,10 @@
 <template>
-  <v-container>
-    <v-card class="sechat-v-card-full">
+  <v-container class="d-flex justify-center align-center">
+    <v-card class="sechat-v-card-full" min-width="350" width="700">
       <v-toolbar>
         <v-toolbar-title>Contacts</v-toolbar-title>
         <v-spacer></v-spacer>
+        <ChatVideoLog />
         <ChatContactsAddContact @invite-user="createInvitation" />
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">

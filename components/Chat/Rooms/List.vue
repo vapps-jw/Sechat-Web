@@ -76,10 +76,16 @@ const selectRoomClicked = (roomId: string) => {
   border-left: 3px solid #ffc107;
   border-top-left-radius: var(--border-radius);
   border-bottom-left-radius: var(--border-radius);
+  border-right: 3px solid #ffc107;
+  border-top-right-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
 }
 .inactive-room {
   border-left: 3px solid #424242;
   border-top-left-radius: var(--border-radius);
   border-bottom-left-radius: var(--border-radius);
+  border-right: 3px solid #424242;
+  border-top-right-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
 }
 </style>

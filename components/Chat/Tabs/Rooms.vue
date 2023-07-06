@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <v-card class="sechat-v-card-full">
+  <v-container class="d-flex justify-center align-center">
+    <v-card min-width="350" width="700" class="sechat-v-card-full">
       <v-toolbar>
         <v-toolbar-title>Rooms</v-toolbar-title>
         <v-spacer></v-spacer>

@@ -7,6 +7,29 @@ export const useRefreshHandler = () => {
   const chatStore = useSechatChatStore();
   const e2e = useE2Encryption();
   const userStore = useUserStore();
+  const videoCall = useVideoCall();
+
+  const handleOnMountedLoad = async () => {
+    await Promise.all([
+      chatApi.getConstacts().then((res) => chatStore.loadContacts(res)),
+      videoCall.getCallLogs().then((res) => chatStore.loadCallLogs(res)),
+      chatApi.getRooms().then((res) => {
+        res.forEach((r) => {
+          if (r.encryptedByUser) {
+            if (e2e.checkE2ECookie(r.id)) {
+              r.hasKey = true;
+              return;
+            }
+            r.hasKey = false;
+          }
+        });
+
+        chatStore.loadRooms(res);
+      }),
+    ]);
+
+    await signalR.connect();
+  };
 
   const handleVisibilityChange = async () => {
     console.log("Visibility changed", document.visibilityState);
@@ -36,6 +59,18 @@ export const useRefreshHandler = () => {
     const promises = [
       chatApi.getConstacts().then((res) => chatStore.loadContacts(res)),
     ];
+
+    if (chatStore.callLogs.length > 0) {
+      promises.push(
+        videoCall
+          .getCallLogs(Math.max(...chatStore.callLogs.map((o) => o.id)))
+          .then((res) => console.log("Call logs", res))
+      );
+    } else {
+      promises.push(
+        videoCall.getCallLogs().then((res) => chatStore.loadCallLogs(res))
+      );
+    }
 
     if (chatStore.availableRooms.length > 0) {
       console.warn("Available Rooms", chatStore.availableRooms);
@@ -165,5 +200,10 @@ export const useRefreshHandler = () => {
     }
   };
 
-  return { handleVisibilityChange, handleOnlineChange, handleOfflineChange };
+  return {
+    handleOnMountedLoad,
+    handleVisibilityChange,
+    handleOnlineChange,
+    handleOfflineChange,
+  };
 };

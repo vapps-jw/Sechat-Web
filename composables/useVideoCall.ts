@@ -7,10 +7,112 @@ import {
 
 export const useVideoCall = () => {
   const signalRStore = useSignalRStore();
-  const sechatChatStore = useSechatChatStore();
+  const chatStore = useSechatChatStore();
   const appStore = useSechatAppStore();
   const webRTCStore = useWebRTCStore();
   const sechatApp = useSechatApp();
+  const config = useRuntimeConfig();
+
+  const registerCall = async (calleeName: string) => {
+    console.log("Registering Call");
+    const { error: apiError, data: newCallLog } = await useFetch<ICallLog>(
+      `${config.public.apiBase}/call/register`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: {
+          CaleeName: calleeName,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    return newCallLog.value;
+  };
+
+  const getCallLogs = async (lastLog?: number) => {
+    console.log("Registering Call");
+    const route = `${config.public.apiBase}/call/logs${
+      lastLog ? "/" + lastLog : ""
+    }`;
+    const { error: apiError, data: callLogs } = await useFetch<ICallLog[]>(
+      route,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    return callLogs.value;
+  };
+
+  const callAnswered = async (calleeName: string) => {
+    console.log("Answering Call");
+    const { error: apiError } = await useFetch<IMessageDecryptionRequest>(
+      `${config.public.apiBase}/call/answer`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PATCH",
+        credentials: "include",
+        body: {
+          CaleeName: calleeName,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+  };
+
+  const callRejected = async (calleeName: string) => {
+    console.log("Rejecting Call");
+    const { error: apiError } = await useFetch<IMessageDecryptionRequest>(
+      `${config.public.apiBase}/call/reject`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PATCH",
+        credentials: "include",
+        body: {
+          CaleeName: calleeName,
+        },
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+  };
 
   const getICECandidates = async () => {
     const { data: servers, error: apiError } = await (<any>(
@@ -49,6 +151,7 @@ export const useVideoCall = () => {
     console.warn("--> Local Player", webRTCStore.localVideo);
     console.warn("--> Remote Player", webRTCStore.remoteVideo);
 
+    await registerCall(webRTCStore.getVideoCallContactName);
     startCalling();
   };
 
@@ -77,7 +180,7 @@ export const useVideoCall = () => {
   };
 
   const videoCallRequestReceived = (data: IStringMessage) => {
-    let contact = sechatChatStore.getContacts.find(
+    let contact = chatStore.getContacts.find(
       (c) => c.displayName === data.message
     );
     console.warn(`--> Video call requested received: ${contact?.displayName}`);
@@ -389,14 +492,18 @@ export const useVideoCall = () => {
   const approveVideoCall = async (data: IStringUserMessage) => {
     console.log("--> Sending video call approved", data);
     signalRStore.connection.send(SignalRHubMethods.ApproveVideoCall, data);
+    // Update call log
+    await callAnswered(webRTCStore.getVideoCallContactName);
+    chatStore.loadCallLogs(await getCallLogs());
     await sechatApp.clearVideoCallNotifications();
   };
 
   // Call Approved Sending Offer
-  const videoCallApproved = (data: IStringMessage) => {
+
+  const videoCallApproved = async (data: IStringMessage) => {
     console.warn(`--> Call approved by: ${data.message}`);
     stopCalling();
-    let connection = sechatChatStore.getContacts.find(
+    let connection = chatStore.getContacts.find(
       (c) => c.inviterName === data.message || c.invitedName === data.message
     );
     if (!connection) {
@@ -404,6 +511,7 @@ export const useVideoCall = () => {
     }
 
     createAndSendOffer(connection.displayName);
+    chatStore.loadCallLogs(await getCallLogs());
     appStore.showSuccessSnackbar(`Call Answered by ${data.message}`);
   };
 
@@ -414,12 +522,18 @@ export const useVideoCall = () => {
     signalRStore.connection.send(SignalRHubMethods.RejectVideoCall, {
       message: data,
     });
+    // Update call log
+    await callRejected(webRTCStore.getVideoCallContactName);
+    chatStore.loadCallLogs(await getCallLogs());
     await sechatApp.clearVideoCallNotifications();
   };
 
-  const videoCallRejected = (data: IStringMessage) => {
+  const videoCallRejected = async (data: IStringMessage) => {
     console.warn(`--> Call rejected by: ${data.message}`);
     stopCalling();
+
+    chatStore.loadCallLogs(await getCallLogs());
+
     webRTCStore.cleanup();
     webRTCStore.$reset();
     appStore.showErrorSnackbar(`Call rejected by ${data.message}`);
@@ -496,6 +610,10 @@ export const useVideoCall = () => {
   };
 
   return {
+    getCallLogs,
+    registerCall,
+    callAnswered,
+    callRejected,
     onWebRTCScreenShareStateChangeEvent,
     toggleScreenShare,
     onWebRTCAnswerIncomingEvent,

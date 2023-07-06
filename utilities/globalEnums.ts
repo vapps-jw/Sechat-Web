@@ -71,6 +71,17 @@ export const SignalRCustonMessages = {
   ScreenShareFree: "ScreenShareFree",
 };
 
+export const VideoCallLogType = {
+  Incoming: "Incoming",
+  Outgoing: "Outgoing",
+};
+
+export const VideoCallLogResult = {
+  Answered: "Answered",
+  Rejected: "Rejected",
+  Unanswered: "Unanswered",
+};
+
 export const SignalRHubMethods = {
   // Video Calls
   SendMicStateChange: "SendMicStateChange",

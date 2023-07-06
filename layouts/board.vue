@@ -28,24 +28,7 @@ onMounted(async () => {
   console.warn("--> Chat Layout onMounted");
   sechatAppStore.updateLoadingOverlay(true);
 
-  await Promise.all([
-    chatApi.getConstacts().then((res) => chatStore.loadContacts(res)),
-    chatApi.getRooms().then((res) => {
-      res.forEach((r) => {
-        if (r.encryptedByUser) {
-          if (e2e.checkE2ECookie(r.id)) {
-            r.hasKey = true;
-            return;
-          }
-          r.hasKey = false;
-        }
-      });
-
-      chatStore.loadRooms(res);
-    }),
-  ]);
-
-  await signalR.connect();
+  await refreshHandler.handleOnMountedLoad();
 
   console.info("--> Hooking to visibility change");
   window.addEventListener(

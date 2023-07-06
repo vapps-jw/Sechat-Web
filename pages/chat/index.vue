@@ -2,10 +2,10 @@
   <ChatVideoCall v-if="webRTC.videoCallViewVisible" />
   <div v-else>
     <v-window v-model="chatStore.activeChatTab">
-      <v-window-item value="messages"> <ChatMessages /> </v-window-item>
-      <v-window-item value="rooms"> <ChatRooms /> </v-window-item>
-      <v-window-item value="contacts"> <ChatContacts /> </v-window-item>
-      <v-window-item value="settings"> <ChatSettings /> </v-window-item>
+      <v-window-item value="messages"> <ChatTabsMessages /> </v-window-item>
+      <v-window-item value="rooms"> <ChatTabsRooms /> </v-window-item>
+      <v-window-item value="contacts"> <ChatTabsContacts /> </v-window-item>
+      <v-window-item value="settings"> <ChatTabsSettings /> </v-window-item>
     </v-window>
     <ChatBottomNav v-if="!webRTC.videoCallViewVisible" />
   </div>

@@ -1,18 +1,11 @@
 import { ChatViews, ContactState } from "~~/utilities/globalEnums";
 
-interface IChatStore {
-  availableRooms: IRoom[];
-  availableContacts: IContactRequest[];
-  activeChatTab: string;
-  activeRoomId: string;
-  newMessage: string;
-}
-
 export const useSechatChatStore = defineStore({
   id: "sechat-chat-store",
   state: () => {
     return {
       availableRooms: <IRoom[]>[],
+      callLogs: <ICallLog[]>[],
       availableContacts: <IContactRequest[]>[],
       activeChatTab: <string>ChatViews.Rooms,
       activeRoomId: <string>null,
@@ -22,6 +15,20 @@ export const useSechatChatStore = defineStore({
     };
   },
   actions: {
+    addNewCallLog(callLog: ICallLog) {
+      this.callLogs.push(callLog);
+      if (this.callLogs.length == 1) {
+        return;
+      }
+    },
+    updateCallLog(callLog: ICallLog) {
+      this.callLogs = [
+        ...this.callLogs.filter((cl) => cl.id !== callLog.id, callLog),
+      ].sort((a, b) => Number(a.id) - Number(b.id));
+    },
+    loadCallLogs(newCallLogs: ICallLog[]) {
+      this.callLogs = newCallLogs.sort((a, b) => Number(a.id) - Number(b.id));
+    },
     clearNewMessage() {
       this.newMessage = "";
     },
@@ -122,7 +129,6 @@ export const useSechatChatStore = defineStore({
 
       message.wasViewed = true;
     },
-
     loadContacts(value: IContactRequest[]) {
       this.availableContacts = value.sort((a, b) =>
         a.displayName.localeCompare(b.displayName)
@@ -139,7 +145,7 @@ export const useSechatChatStore = defineStore({
         this.activeRoom = this.availableRooms.find((r) => r.id === value);
       }
     },
-    updateRooms(this: IChatStore, updates: IRoom[]) {
+    updateRooms(updates: IRoom[]) {
       const newRooms = updates.filter(
         (nr) => !this.availableRooms.some((ar) => ar.id === nr.id)
       );

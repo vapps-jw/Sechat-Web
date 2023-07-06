@@ -3,7 +3,6 @@
     <template v-slot:activator="{ props }">
       <v-btn v-bind="props" icon="mdi-account-plus" variant="outlined"></v-btn>
     </template>
-
     <v-card>
       <v-toolbar>
         <v-toolbar-title>Add Contact</v-toolbar-title>

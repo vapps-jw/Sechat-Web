@@ -25,6 +25,17 @@ interface IMessageBase {
   error?: boolean;
 }
 
+// Video Calls
+
+interface ICallLog {
+  id?: number;
+  created?: Date;
+  calleeName?: string;
+  phonerName?: string;
+  videoCallType?: string;
+  videoCallResult?: string;
+}
+
 // Messages
 
 interface IDirectMessageId {

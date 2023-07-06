@@ -11,10 +11,12 @@
     ></NuxtImg>
     <div class="text-h6">Select a Room or createa new one</div>
   </v-container>
-  <v-container v-else>
+  <v-container class="d-flex justify-center align-center" v-else>
     <!-- Room Messags -->
 
     <v-card
+      min-width="350"
+      width="700"
       class="sechat-v-card-full"
       v-if="chatStore.getActiveRoom && !chatStore.getActiveContact"
     >
