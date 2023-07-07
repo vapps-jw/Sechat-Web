@@ -73,7 +73,6 @@
               >mdi-help-circle-outline</v-icon
             >
           </div>
-          <div class="d-flex align-center justify-center"></div>
         </div>
       </template>
       <template v-slot:append>

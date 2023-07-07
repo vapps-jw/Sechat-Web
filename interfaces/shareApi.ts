@@ -1,5 +1,5 @@
 interface IShareDetails {
-  roomId?: string;
+  shareId?: string | number;
   title?: string;
   text?: string;
 }

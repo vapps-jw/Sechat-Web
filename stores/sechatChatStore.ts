@@ -319,7 +319,7 @@ export const useSechatChatStore = defineStore({
         .members;
     },
     getContacts: (state) => state.availableContacts,
-    getApprovedConnections: (state) => {
+    getApprovedContacts: (state) => {
       const result = state.availableContacts.filter(
         (uc) => !uc.blocked && uc.approved
       );

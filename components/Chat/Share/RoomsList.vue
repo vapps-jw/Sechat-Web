@@ -3,27 +3,12 @@
     <v-list-item
       color="warning"
       :border="true"
-      class="my-1"
+      class="ma-1"
       v-for="room in chatStore.availableRooms"
       :key="room.id"
       :title="room.name"
       @click="selection = room.id"
     >
-      <!-- <template v-slot:append>
-        <div
-          v-for="rm in room.members"
-          class="d-flex flex-column justify-center align-center ma-1"
-        >
-          <v-avatar
-            class="tiny-font"
-            size="20"
-            :color="stringToColor(rm.userName)"
-          >
-            {{ getInitials(rm.userName) }}
-          </v-avatar>
-          <div class="tiny-font">{{ rm.userName }}</div>
-        </div>
-      </template> -->
     </v-list-item>
   </v-list>
 </template>
@@ -34,10 +19,10 @@ import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 const chatStore = useSechatChatStore();
 const selection = ref<string>("");
 
-const emit = defineEmits(["shareTargetSelected"]);
+const emit = defineEmits(["shareTargetSelectedRoom"]);
 
 watch(selection, (newVal, oldVal) => {
-  emit("shareTargetSelected", selection.value);
+  emit("shareTargetSelectedRoom", selection.value);
 });
 </script>
 
