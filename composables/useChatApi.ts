@@ -6,15 +6,25 @@ export const useChatApi = () => {
   const sechatApp = useSechatApp();
 
   const getLinkPreview = async (link: string) => {
-    const { data: res, error: apiError } = await (<any>(
-      useFetch(`/api/link-preview?link=${link}`)
-    ));
+    console.log("--> Getting Link Preview from API");
+    const { error: apiError, data: preview } = await useFetch<ILinkPreview>(
+      `${config.public.apiBase}/linkPreview`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: { url: link },
+      }
+    );
+
     if (apiError.value) {
-      console.error("--> Link Preview Error", apiError.value.data);
-      return;
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
     }
 
-    return JSON.parse(JSON.stringify(res.value));
+    return preview.value;
   };
 
   const getConstacts = async (): Promise<IContactRequest[]> => {

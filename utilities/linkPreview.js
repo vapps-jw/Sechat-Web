@@ -224,7 +224,12 @@ export const linkPreview = async (
 
   const params = {
     headless: "new",
-    args: [...puppeteerArgs, "--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      ...puppeteerArgs,
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+    ],
   };
   if (executablePath) {
     params["executablePath"] = executablePath;
