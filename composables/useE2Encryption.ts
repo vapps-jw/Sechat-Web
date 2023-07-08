@@ -109,7 +109,63 @@ export const useE2Encryption = () => {
     console.log("--> E2EDM Updated", e2eData);
   };
 
+  // Notebooks list
+
+  const checkE2ENotebookCookie = (notebookId: string) => {
+    const cookie = useCookie(CustomCookies.E2ENOTEBOOK, cookieOptions());
+    if (cookie.value === undefined || !cookie.value) return false;
+
+    const e2eData = JSON.parse(JSON.stringify(cookie.value)) as INotebookKey[];
+    return e2eData.some((key) => key.notebookId === notebookId);
+  };
+
+  const addNotebookKey = (notebookKey: INotebookKey) => {
+    let cookie = useCookie(CustomCookies.E2ENOTEBOOK, cookieOptions());
+
+    if (cookie.value === undefined || !cookie.value) {
+      console.log("--> E2ENOTEBOOK Store Empty");
+      const newData = [
+        { key: notebookKey.key, contactId: notebookKey.notebookId },
+      ];
+      cookie.value = JSON.stringify(newData);
+      console.log("--> E2ENOTEBOOK Updated", cookie.value);
+      return;
+    }
+
+    let e2eData = JSON.parse(JSON.stringify(cookie.value)) as INotebookKey[];
+    console.log("--> E2ENOTEBOOK Update", e2eData);
+
+    e2eData = e2eData.filter(
+      (key) => key.notebookId !== notebookKey.notebookId
+    );
+    e2eData.push({
+      key: notebookKey.key,
+      notebookId: notebookKey.notebookId,
+    });
+
+    cookie.value = JSON.stringify(e2eData);
+    console.log("--> E2ENOTEBOOK Store Data", e2eData);
+  };
+
+  const removeNotebookKey = (notebookId: string) => {
+    const cookie = useCookie(CustomCookies.E2ENOTEBOOK, cookieOptions());
+
+    console.log("--> E2ENOTEBOOK Cookie taken", cookie);
+    if (cookie.value === undefined || !cookie.value) return;
+
+    let e2eData = JSON.parse(JSON.stringify(cookie.value)) as INotebookKey[];
+
+    console.log("--> E2ENOTEBOOK Remove", e2eData);
+
+    e2eData = e2eData.filter((key) => key.notebookId !== notebookId);
+    cookie.value = JSON.stringify(e2eData);
+    console.log("--> E2ENOTEBOOK Updated", e2eData);
+  };
+
   return {
+    checkE2ENotebookCookie,
+    addNotebookKey,
+    removeNotebookKey,
     checkE2EDMCookie,
     addContactKey,
     removeContactKey,
