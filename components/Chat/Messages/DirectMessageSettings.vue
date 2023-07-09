@@ -29,10 +29,9 @@
             type="warning"
             variant="tonal"
             title="E2E"
-            text="All previous messages will be deleted on change"
+            text="All previous messages will be deleted if you change encryption method"
           ></v-alert>
           <v-checkbox
-            class="mt-5"
             v-model="chatData.userEncrypted"
             label="Use end-to-end encryption"
           ></v-checkbox>
@@ -49,7 +48,7 @@
           ></v-text-field>
         </v-form>
         <v-alert
-          class="mt-2 alert-font"
+          class="alert-font"
           density="compact"
           type="warning"
           variant="tonal"
@@ -61,7 +60,7 @@
         >
       </v-card-text>
       <v-card-actions class="justify-center">
-        <v-btn variant="tonal" @click="applyChanges"> Apply </v-btn>
+        <v-btn variant="tonal" @click="applyChanges">Apply Changes </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
