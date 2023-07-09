@@ -26,12 +26,13 @@
           <v-alert
             class="mt-2 alert-font"
             density="compact"
-            type="info"
+            type="warning"
             variant="tonal"
             title="E2E"
             text="All previous messages will be deleted on change"
           ></v-alert>
           <v-checkbox
+            class="mt-5"
             v-model="chatData.userEncrypted"
             label="Use end-to-end encryption"
           ></v-checkbox>
@@ -47,6 +48,17 @@
             label="Chat Secret Key"
           ></v-text-field>
         </v-form>
+        <v-alert
+          class="mt-2 alert-font"
+          density="compact"
+          type="warning"
+          variant="tonal"
+          title="Clear Chat"
+          text="Delete all messages from this chat"
+        ></v-alert>
+        <v-btn class="mt-4 ml-1" color="error" size="small" @click="clearChat"
+          >Clear Chat</v-btn
+        >
       </v-card-text>
       <v-card-actions class="justify-center">
         <v-btn variant="tonal" @click="applyChanges"> Apply </v-btn>
@@ -59,6 +71,11 @@
 const dialog = ref<boolean>(false);
 const keyBox = ref<boolean>(false);
 const chatStore = useSechatChatStore();
+const e2e = useE2Encryption();
+const config = useRuntimeConfig();
+const userStore = useUserStore();
+const chatApi = useChatApi();
+const sechatApp = useSechatApp();
 
 const chatSettingsForm = ref<HTMLFormElement>();
 const chatData = ref({
@@ -71,11 +88,53 @@ const chatData = ref({
   ],
 });
 
-onMounted(async () => {
+const { getActiveContact } = storeToRefs(chatStore);
+watch(getActiveContact, async (newVal, oldVal) => {
   if (chatStore.getActiveContact.encryptedByUser) {
     chatData.value.userEncrypted = true;
+    chatData.value.chatKey = e2e.getE2EDMCookie(
+      chatStore.getActiveContact.id
+    )?.key;
+  } else {
+    chatData.value.userEncrypted = false;
+    chatData.value.chatKey = "";
   }
 });
+
+onMounted(async () => {
+  console.log("Chat settings mounted");
+  if (chatStore.getActiveContact.encryptedByUser) {
+    chatData.value.userEncrypted = true;
+    chatData.value.chatKey = e2e.getE2EDMCookie(
+      chatStore.getActiveContact.id
+    )?.key;
+  } else {
+    chatData.value.userEncrypted = false;
+    chatData.value.chatKey = "";
+  }
+});
+
+const clearChat = async () => {
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/chat/direct-messages/${chatStore.getActiveContact.id}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (apiError.value) {
+    sechatApp.showErrorSnackbar(apiError.value.data);
+    dialog.value = false;
+    return;
+  }
+
+  sechatApp.showSuccessSnackbar("Chat cleared");
+  dialog.value = false;
+};
 
 const applyChanges = async () => {
   const { valid } = await chatSettingsForm.value?.validate();
@@ -84,19 +143,48 @@ const applyChanges = async () => {
     return;
   }
 
-  //   try {
-  //     signalR.createRoom(
-  //       {
-  //         roomName: roomData.value.name,
-  //         userEncrypted: roomData.value.userEncrypted,
-  //       },
-  //       roomData.value.roomKey
-  //     );
-  //   } catch (error) {
-  //     console.error("--> Room creation error", error);
-  //   }
+  if (chatData.value.userEncrypted) {
+    e2e.addContactKey({
+      key: chatData.value.chatKey,
+      contactId: chatStore.getActiveContact.id,
+    });
+  }
 
-  chatData.value.chatKey = "";
+  if (
+    chatData.value.userEncrypted === chatStore.getActiveContact.encryptedByUser
+  ) {
+    const updatedContact = await chatApi.getContact(chatStore.activeContactId);
+    chatStore.updateContact(updatedContact);
+    dialog.value = false;
+    return;
+  }
+
+  const { error: apiError, data: updatedContact } =
+    await useFetch<IContactRequest>(
+      `${config.public.apiBase}/user/contact-e2e/?contactId=${chatStore.getActiveContact.id}&e2e=${chatData.value.userEncrypted}`,
+      {
+        method: "PATCH",
+        credentials: "include",
+      }
+    );
+
+  if (apiError.value) {
+    throw createError({
+      ...apiError.value,
+      statusCode: apiError.value.statusCode,
+      statusMessage: apiError.value.data,
+    });
+  }
+
+  console.log("Updated contact", updatedContact.value);
+
+  if (updatedContact.value.invitedName === userStore.userProfile.userName) {
+    updatedContact.value.displayName = updatedContact.value.inviterName;
+  } else {
+    updatedContact.value.displayName = updatedContact.value.invitedName;
+  }
+
+  chatStore.updateContact(updatedContact.value);
   dialog.value = false;
 };
 </script>

@@ -86,6 +86,7 @@
           variant="outlined"
         ></v-btn>
         <v-badge
+          class="mr-4"
           :model-value="
             uc.directMessages.filter(
               (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
@@ -133,10 +134,10 @@ const directMessage = (uc: IContactRequest) => {
 };
 
 const blockContact = async (id: number) => {
-  console.log("--> Calling connection block");
+  console.log("--> Calling contact block");
 
   const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/user/block-connection/?connectionId=${id}`,
+    `${config.public.apiBase}/user/block-contact/?contactId=${id}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -154,9 +155,9 @@ const blockContact = async (id: number) => {
 };
 
 const allowContact = async (id: number) => {
-  console.log("--> Calling connection block");
+  console.log("--> Calling contact block");
   const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/user/allow-connection/?connectionId=${id}`,
+    `${config.public.apiBase}/user/allow-contact/?contactId=${id}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -174,9 +175,9 @@ const allowContact = async (id: number) => {
 };
 
 const approveContact = async (id: number) => {
-  console.log("--> Calling connection approve");
+  console.log("--> Calling contact approve");
   const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/user/approve-connection/?connectionId=${id}`,
+    `${config.public.apiBase}/user/approve-contact/?contactId=${id}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -195,9 +196,9 @@ const approveContact = async (id: number) => {
 };
 
 const deleteContact = async (id: number) => {
-  console.log("--> Deleting connection", id);
+  console.log("--> Deleting contact", id);
   const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/user/delete-connection/?connectionId=${id}`,
+    `${config.public.apiBase}/user/delete-contact/?contactId=${id}`,
     {
       method: "DELETE",
       credentials: "include",

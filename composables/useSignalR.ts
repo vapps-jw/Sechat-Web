@@ -51,6 +51,7 @@ export const useSignalR = () => {
     sechatChat.onDirectMessageWasViewed(connection);
     sechatChat.onDirectMessagesWereViewed(connection);
     sechatChat.onDirectMessageDeleted(connection);
+    sechatChat.onContactUpdateRequired(connection);
 
     _onUserAddedToRoomEvent(connection);
     _onUserRemovedFromRoomEvent(connection);
@@ -77,10 +78,12 @@ export const useSignalR = () => {
       connection.off(SignalRHubMethods.ConnectionUpdated);
       connection.off(SignalRHubMethods.ConnectionDeleted);
       connection.off(SignalRHubMethods.MessageDeleted);
+
       connection.off(SignalRHubMethods.DirectMessageIncoming);
       connection.off(SignalRHubMethods.DirectMessageDeleted);
       connection.off(SignalRHubMethods.DirectMessageWasViewed);
       connection.off(SignalRHubMethods.DirectMessagesWereViewed);
+      connection.off(SignalRHubMethods.ContactUpdateRequired);
       console.warn("--> Connection Closed - connection.onclose");
     });
 

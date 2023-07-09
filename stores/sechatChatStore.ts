@@ -243,6 +243,11 @@ export const useSechatChatStore = defineStore({
       this.activeContactId = null;
       this.activeChatTab = ChatViews.Contacts;
     },
+    resetSelections() {
+      this.activeContactId = null;
+      this.activeRoomId = null;
+      this.activeChatTab = ChatViews.Messages;
+    },
     deleteUserFromRoom(value: IUserRoomOptions) {
       const updatedRoom = this.availableRooms.find(
         (r) => r.id === value.roomId

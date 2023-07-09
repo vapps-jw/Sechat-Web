@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: virtual scroll -->
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ props }">
       <v-btn v-bind="props" icon="mdi-phone-log" variant="outlined"></v-btn>

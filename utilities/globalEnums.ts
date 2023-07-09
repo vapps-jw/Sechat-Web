@@ -138,6 +138,7 @@ export const SignalRHubMethods = {
   DirectMessagesWereViewed: "DirectMessagesWereViewed",
   DirectMessageWasViewed: "DirectMessageWasViewed",
   DirectMessageDeleted: "DirectMessageDeleted",
+  ContactUpdateRequired: "ContactUpdateRequired",
 };
 
 export const VideoSettings = {

@@ -4,6 +4,7 @@ export const useChatApi = () => {
   const config = useRuntimeConfig();
   const userStore = useUserStore();
   const sechatApp = useSechatApp();
+  const e2e = useE2Encryption();
 
   const getLinkPreview = async (link: string) => {
     console.log("--> Getting Link Preview from API");
@@ -100,6 +101,38 @@ export const useChatApi = () => {
 
     console.log("--> Room Fetched", room.value);
     return room.value;
+  };
+
+  const getContact = async (contactId: number) => {
+    console.log("--> Getting Cotnact from API");
+    const { error: apiError, data: uc } = await useFetch<IContactRequest>(
+      `${config.public.apiBase}/chat/contact/${contactId}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    if (uc.value.invitedName === userStore.userProfile.userName) {
+      uc.value.displayName = uc.value.inviterName;
+    } else {
+      uc.value.displayName = uc.value.invitedName;
+    }
+
+    if (!uc.value.encryptedByUser) {
+      e2e.removeContactKey(uc.value.id);
+    }
+
+    console.log("--> Contact Fetched", uc.value);
+    return uc.value;
   };
 
   const getRoomsUpdate = async (
@@ -390,6 +423,7 @@ export const useChatApi = () => {
   };
 
   return {
+    getContact,
     getContactsUpdate,
     markDirectMessageAsViewed,
     markDirectMessagesAsViewed,

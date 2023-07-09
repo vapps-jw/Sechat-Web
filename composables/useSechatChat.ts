@@ -294,6 +294,22 @@ export const useSechatChat = () => {
     );
   };
 
+  const onContactUpdateRequired = (connection: signalR.HubConnection) => {
+    console.log("--> Connecting ContactUpdateRequired event");
+    connection.on(
+      SignalRHubMethods.ContactUpdateRequired,
+      handleContactUpdateRequired
+    );
+  };
+
+  const handleContactUpdateRequired = async (
+    message: IContactUpdateRequired
+  ) => {
+    console.warn("--> Incoming ContactUpdateRequired", message);
+    const updatedContact = await chatApi.getContact(message.contactId);
+    chatStore.updateContact(updatedContact);
+  };
+
   const handleIncomingDirectMessage = async (message: IDirectMessage) => {
     console.warn(
       "--> Incoming Direct Message Event Handle",
@@ -331,12 +347,14 @@ export const useSechatChat = () => {
     ) {
       console.warn("--> Marking Incoming Message as viewed");
       message.wasViewed = true;
+      console.log("Adding new direct message", message);
       chatStore.addNewDirectMessage(message);
       chatApi.markDirectMessageAsViewed(message.contactId, message.id);
       scrollToBottom("chatView");
       return;
     }
 
+    console.log("Adding new direct message", message);
     chatStore.addNewDirectMessage(message);
 
     if (
@@ -386,6 +404,7 @@ export const useSechatChat = () => {
   // SignalR Event handlers
 
   return {
+    onContactUpdateRequired,
     onIncomingDirectMessage,
     onDirectMessageWasViewed,
     onDirectMessagesWereViewed,

@@ -40,12 +40,11 @@ const config = useRuntimeConfig();
 const sechatApp = useSechatApp();
 const chatStore = useSechatChatStore();
 const userStore = useUserStore();
-const webRTCStore = useWebRTCStore();
 
 const createInvitation = async (userName: string) => {
-  console.log("--> Calling connection request");
+  console.log("--> Calling contact request");
   const { error: apiError, data: res } = await useFetch(
-    `${config.public.apiBase}/user/request-connection`,
+    `${config.public.apiBase}/user/request-contact`,
     {
       headers: {
         "Content-Type": "application/json",

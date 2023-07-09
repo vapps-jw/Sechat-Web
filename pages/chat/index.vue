@@ -99,9 +99,10 @@ watch(activeChatTab, async (newVal, oldVal) => {
 
         const e2eCheck = e2e.checkE2EDMCookie(chatStore.getActiveContactId);
         if (!e2eCheck) {
-          console.log("Key missing");
-          chatStore.rejectContactSelection();
-          app.showErrorSnackbar("Key is missing, add it first");
+          // TODO: remove this if unnecessary
+          // console.log("Key missing");
+          // chatStore.rejectContactSelection();
+          // app.showErrorSnackbar("Key is missing, add it first");
           return;
         }
       }

@@ -157,6 +157,10 @@ interface IContactUpdateRequest {
   lastMessage?: number;
 }
 
+interface IContactUpdateRequired {
+  contactId?: number;
+}
+
 interface IContactRequest {
   id?: number;
   inviterName?: string;

@@ -70,6 +70,14 @@ export const useE2Encryption = () => {
     return e2eData.some((key) => key.contactId === contactId);
   };
 
+  const getE2EDMCookie = (contactId: number) => {
+    const cookie = useCookie(CustomCookies.E2EDM, cookieOptions());
+    if (cookie.value === undefined || !cookie.value) return null;
+
+    const e2eData = JSON.parse(JSON.stringify(cookie.value)) as IContactKey[];
+    return e2eData.find((key) => key.contactId === contactId);
+  };
+
   const addContactKey = (data: IContactKey) => {
     let cookie = useCookie(CustomCookies.E2EDM, cookieOptions());
 
@@ -163,6 +171,7 @@ export const useE2Encryption = () => {
   };
 
   return {
+    getE2EDMCookie,
     checkE2ENotebookCookie,
     addNotebookKey,
     removeNotebookKey,
