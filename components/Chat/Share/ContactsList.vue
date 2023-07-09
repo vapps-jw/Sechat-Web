@@ -10,15 +10,15 @@
       @click="selection = uc.id"
     >
       <template v-slot:title>
-        <div class="small-font">
-          {{ uc.displayName }}
-        </div>
+        <div class="small-font">{{ uc.displayName }}</div>
       </template>
       <template v-slot:prepend>
         <div class="d-flex align-center justify-center mr-2 flex-column">
-          <v-avatar size="small" :color="stringToColor(uc.displayName)">
-            {{ getInitials(uc.displayName) }}
-          </v-avatar>
+          <global-avatar
+            :active="false"
+            :user-name="uc.displayName"
+            size="default"
+          />
         </div>
       </template>
     </v-list-item>

@@ -13,9 +13,11 @@
         "
       >
         <template v-slot:prepend>
-          <v-avatar :color="stringToColor(u.userName)">
-            {{ getInitials(u.userName) }}
-          </v-avatar>
+          <global-avatar
+            :active="false"
+            :user-name="u.userName"
+            size="default"
+          />
         </template>
         <v-list-item-title v-text="u.userName"></v-list-item-title>
         <template v-slot:append>

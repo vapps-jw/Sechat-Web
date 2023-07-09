@@ -32,25 +32,17 @@
                 v-if="item.videoCallResult === VideoCallLogResult.Unanswered"
                 >mdi-phone-missed</v-icon
               >
-              <v-avatar
-                class="mx-3"
-                size="small"
-                :color="
-                  stringToColor(
+              <div class="mx-2">
+                <global-avatar
+                  :active="false"
+                  :user-name="
                     item.calleeName == userStore.getUserName
                       ? item.phonerName
                       : item.calleeName
-                  )
-                "
-              >
-                {{
-                  getInitials(
-                    item.calleeName == userStore.getUserName
-                      ? item.phonerName
-                      : item.calleeName
-                  )
-                }}
-              </v-avatar>
+                  "
+                  size="small"
+                />
+              </div>
               <div class="d-flex justify-start align-start flex-column">
                 <div class="tiny-font">
                   {{

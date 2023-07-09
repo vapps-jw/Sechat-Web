@@ -2,9 +2,13 @@
   <v-container class="d-flex justify-center align-center">
     <v-card min-width="350" width="700" class="sechat-v-card-full">
       <v-toolbar>
-        <v-avatar :color="stringToColor(userStore.getUserName)" class="mx-2">
-          {{ getInitials(userStore.getUserName) }}</v-avatar
-        >
+        <div class="ml-2">
+          <global-avatar
+            :active="false"
+            :user-name="userStore.getUserName"
+            size="default"
+          />
+        </div>
         <v-toolbar-title>Settings</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn

@@ -32,15 +32,13 @@
       </v-card-text>
     </template>
     <template v-slot:prepend>
-      <v-avatar
-        :color="stringToColor(props.message.nameSentBy)"
-        class="mx-2"
-        :class="
-          userStore.getUserName === props.message.nameSentBy ? 'glow' : ''
-        "
-      >
-        {{ getInitials(props.message.nameSentBy) }}</v-avatar
-      >
+      <div class="ml-2">
+        <global-avatar
+          :active="userStore.getUserName === props.message.nameSentBy"
+          :user-name="props.message.nameSentBy"
+          size="default"
+        />
+      </div>
       <chat-messages-direct-message-options
         :message="props.message"
         :disabled="userStore.getUserName !== props.message.nameSentBy"

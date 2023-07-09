@@ -58,9 +58,11 @@
           </v-list>
         </v-menu>
         <div class="d-flex align-center justify-center mr-2 flex-column">
-          <v-avatar size="small" :color="stringToColor(uc.displayName)">
-            {{ getInitials(uc.displayName) }}
-          </v-avatar>
+          <global-avatar
+            :active="false"
+            :user-name="uc.displayName"
+            size="small"
+          />
           <div class="d-flex align-center justify-center">
             <chat-status-contact-state-icon :contact="uc" />
             <v-icon v-if="uc.blocked" size="x-small" color="error"

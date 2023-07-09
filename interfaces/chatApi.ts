@@ -168,6 +168,7 @@ interface IContactRequest {
   contactState?: string;
   approved?: boolean;
   displayName?: string;
+  verified?: boolean;
   blocked?: boolean;
   blockedByName?: string;
   directMessages?: IDirectMessage[];
