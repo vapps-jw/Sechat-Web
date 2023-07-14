@@ -37,7 +37,7 @@
     </template>
     <template v-slot:prepend>
       <div class="ml-2">
-        <global-avatar
+        <ChatUserAvatar
           :active="userStore.getUserName === props.message.nameSentBy"
           :user-name="props.message.nameSentBy"
           size="default"

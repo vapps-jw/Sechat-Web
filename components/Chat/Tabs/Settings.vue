@@ -3,7 +3,7 @@
     <v-card min-width="350" width="700" class="sechat-v-card-full">
       <v-toolbar>
         <div class="ml-2">
-          <global-avatar
+          <ChatUserAvatar
             :active="false"
             :user-name="userStore.getUserName"
             size="default"

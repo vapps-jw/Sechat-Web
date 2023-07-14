@@ -42,6 +42,17 @@ export const ChatViews = {
   Rooms: "rooms",
   Contacts: "contacts",
   Settings: "settings",
+  Events: "events",
+  Calendar: "calendar",
+};
+
+export const GeneralViews = {
+  Placeholder: "placeholder",
+};
+
+export const BottomNavBarSet = {
+  ChatNavBar: "chatNavBar",
+  CalendarNavBar: "calendarNavBar",
 };
 
 export const PushNotificationTypes = {

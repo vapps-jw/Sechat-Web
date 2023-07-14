@@ -1,4 +1,8 @@
-import { ChatViews, ContactState } from "~~/utilities/globalEnums";
+import {
+  BottomNavBarSet,
+  ChatViews,
+  ContactState,
+} from "~~/utilities/globalEnums";
 
 export const useSechatChatStore = defineStore({
   id: "sechat-chat-store",
@@ -7,11 +11,12 @@ export const useSechatChatStore = defineStore({
       availableRooms: <IRoom[]>[],
       callLogs: <ICallLog[]>[],
       availableContacts: <IContactRequest[]>[],
-      activeChatTab: <string>ChatViews.Rooms,
       activeRoomId: <string>null,
       activeContactId: <number>null,
       newMessage: <string>null,
       keyInputDialog: <boolean>false,
+      activeBottomNav: <string>BottomNavBarSet.ChatNavBar,
+      activeChatTab: <string>ChatViews.Rooms,
     };
   },
   actions: {
@@ -31,6 +36,12 @@ export const useSechatChatStore = defineStore({
     },
     clearNewMessage() {
       this.newMessage = "";
+    },
+    activateCalendarNavBar() {
+      this.activeBottomNav = BottomNavBarSet.CalendarNavBar;
+    },
+    activateChatNavBar() {
+      this.activeBottomNav = BottomNavBarSet.ChatNavBar;
     },
     activateMessagesView() {
       this.activeChatTab = ChatViews.Messages;

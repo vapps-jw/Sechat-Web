@@ -33,7 +33,7 @@
                 >mdi-phone-missed</v-icon
               >
               <div class="mx-2">
-                <global-avatar
+                <ChatUserAvatar
                   :active="false"
                   :user-name="
                     item.calleeName == userStore.getUserName

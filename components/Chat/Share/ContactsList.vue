@@ -14,7 +14,7 @@
       </template>
       <template v-slot:prepend>
         <div class="d-flex align-center justify-center mr-2 flex-column">
-          <global-avatar
+          <ChatUserAvatar
             :active="false"
             :user-name="uc.displayName"
             size="default"

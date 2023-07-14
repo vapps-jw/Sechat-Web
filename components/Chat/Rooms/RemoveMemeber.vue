@@ -13,7 +13,7 @@
         "
       >
         <template v-slot:prepend>
-          <global-avatar
+          <ChatUserAvatar
             :active="false"
             :user-name="u.userName"
             size="default"
