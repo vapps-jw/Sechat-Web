@@ -55,9 +55,11 @@
           title="Clear Chat"
           text="Delete all messages from this chat"
         ></v-alert>
-        <v-btn class="mt-4 ml-1" color="error" size="small" @click="clearChat"
-          >Clear Chat</v-btn
-        >
+        <div class="d-flex justify-center">
+          <v-btn class="mt-4" color="error" size="small" @click="clearChat"
+            >Clear Chat</v-btn
+          >
+        </div>
       </v-card-text>
       <v-card-actions class="justify-center">
         <v-btn variant="tonal" @click="applyChanges">Apply Changes </v-btn>

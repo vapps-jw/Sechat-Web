@@ -15,7 +15,7 @@
           class="glow-line"
         ></rect>
       </svg>
-      <NuxtLink class="sechat-link-clear" :to="`/chat`">Chat</NuxtLink>
+      <NuxtLink class="sechat-link-clear" :to="`/chat`">SECHAT</NuxtLink>
     </v-btn>
 
     <v-btn v-if="userStore.isSignedIn" class="my-2" size="large">
