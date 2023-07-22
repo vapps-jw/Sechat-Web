@@ -11,5 +11,9 @@ export default defineNuxtPlugin(async (context) => {
 
   const userData = useUserApi();
 
-  await userData.getUserData();
+  try {
+    await userData.getUserData();
+  } catch (error) {
+    console.error(error);
+  }
 });
