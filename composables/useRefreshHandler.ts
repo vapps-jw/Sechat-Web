@@ -185,7 +185,8 @@ export const useRefreshHandler = () => {
       try {
         const markMessagesAsVieved =
           chatStore.getActiveContact.directMessages.filter(
-            (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+            (m) =>
+              !m.wasViewed && m.nameSentBy !== userStore.getUserName && !m.error
           ).length > 0;
 
         console.log(

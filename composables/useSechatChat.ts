@@ -350,7 +350,10 @@ export const useSechatChat = () => {
       message.wasViewed = true;
       console.log("Adding new direct message", message);
       chatStore.addNewDirectMessage(message);
-      chatApi.markDirectMessageAsViewed(message.contactId, message.id);
+      if (!message.error) {
+        chatApi.markDirectMessageAsViewed(message.contactId, message.id);
+      }
+
       scrollToBottom("chatView");
       return;
     }

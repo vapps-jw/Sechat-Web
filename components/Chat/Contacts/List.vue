@@ -89,26 +89,19 @@
         ></v-btn>
         <v-badge
           class="mr-4"
-          :model-value="
-            uc.directMessages.filter(
-              (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
-            ).length > 0
-          "
-          :content="
-            uc.directMessages.filter(
-              (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
-            ).length
-          "
+          :model-value="pendingMessagesPresent(uc)"
+          :content="pendingMessagesCount(uc)"
           color="error"
         >
           <v-btn
             v-if="uc.approved && !uc.blocked"
             @click="directMessage(uc)"
             size="small"
-            icon="mdi-message"
-            color="primary"
+            :icon="dmIconType(uc)"
+            :color="dmIconColor(uc)"
             variant="outlined"
-          ></v-btn>
+          >
+          </v-btn>
         </v-badge>
       </template>
     </v-list-item>
@@ -116,7 +109,6 @@
 </template>
 
 <script setup lang="ts">
-import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
@@ -129,6 +121,41 @@ const startVideoCall = (uc: IContactRequest) => {
   console.log("--> Starting new call with", uc.displayName);
   webRTCStore.updateVideoCallContact(uc);
   webRTCStore.updateVideoCallViewVisible(true);
+};
+
+const dmIconType = (uc: IContactRequest): string => {
+  if (uc.directMessages.some((m) => m.error)) {
+    return "mdi-message-alert";
+  }
+  return "mdi-message";
+};
+
+const dmIconColor = (uc: IContactRequest): string => {
+  if (uc.directMessages.some((m) => m.error)) {
+    return "error";
+  }
+  if (
+    uc.directMessages.filter(
+      (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+    ).length > 0
+  ) {
+    return "warning";
+  }
+  return "primary";
+};
+
+const pendingMessagesPresent = (uc: IContactRequest): boolean => {
+  return (
+    uc.directMessages.filter(
+      (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+    ).length > 0
+  );
+};
+
+const pendingMessagesCount = (uc: IContactRequest): number => {
+  return uc.directMessages.filter(
+    (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+  ).length;
 };
 
 const directMessage = (uc: IContactRequest) => {

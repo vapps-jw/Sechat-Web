@@ -334,7 +334,7 @@ export const useSechatChatStore = defineStore({
       return state.availableRooms.find((r) => r.id === state.activeRoomId)
         .members;
     },
-    getContacts: (state) => state.availableContacts,
+    getContacts: (state): IContactRequest[] => state.availableContacts,
     getApprovedContacts: (state) => {
       const result = state.availableContacts.filter(
         (uc) => !uc.blocked && uc.approved

@@ -115,7 +115,8 @@ watch(activeChatTab, async (newVal, oldVal) => {
 
       const markMessagesAsVided =
         chatStore.getActiveContact.directMessages.filter(
-          (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+          (m) =>
+            !m.wasViewed && m.nameSentBy !== userStore.getUserName && !m.error
         ).length > 0;
 
       if (markMessagesAsVided) {

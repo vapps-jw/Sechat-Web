@@ -162,7 +162,16 @@ const applyChanges = async () => {
     chatData.value.userEncrypted === chatStore.getActiveContact.encryptedByUser
   ) {
     const updatedContact = await chatApi.getContact(chatStore.activeContactId);
-    chatStore.updateContact(updatedContact);
+    if (
+      updatedContact.directMessages.length > 0 &&
+      !updatedContact.directMessages
+        .sort((a, b) => Number(b.id) - Number(a.id))
+        .at(-1).error
+    ) {
+      chatStore.updateContact(updatedContact);
+      chatStore.markDirectMessagesAsViewed(chatStore.activeContactId);
+      await chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
+    }
     dialog.value = false;
     return;
   }
