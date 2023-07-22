@@ -2,16 +2,28 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="auto">
       <v-card>
-        <v-card-title class="text-h5"> Cookies Consent </v-card-title>
-        <v-card-text
-          >Chat use cookies for storing user preferences, login and monitor site
-          activity, we do not use any third-party services. Accept it or leave
+        <v-card-title primary-title class="justify-center d-flex align-center">
+          <Icon name="noto:cookie" />
+          <div class="mx-2">
+            <h3 class="headline pink--text text--accent-2">Cookie Time</h3>
+          </div>
+          <Icon name="noto:cookie" />
+        </v-card-title>
+        <v-card-text class="py-1"
+          >This App uses cookies to store user preferences, user e2e keys, login
+          state and monitor site activity.
+        </v-card-text>
+        <v-card-text class="py-1"
+          >We do not use any third-party services. We do not want to have
+          anything in common with any big tech company.
+        </v-card-text>
+        <v-card-text class="py-1"
+          >At any time you can remove all of the cookies. Accept it or leave
           this page</v-card-text
         >
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="green-darken-1" variant="text" @click="approved">
-            Agree
+        <v-card-actions class="justify-center">
+          <v-btn variant="tonal" size="large" color="success" @click="approved">
+            I Accept Cookies
           </v-btn>
         </v-card-actions>
       </v-card>
