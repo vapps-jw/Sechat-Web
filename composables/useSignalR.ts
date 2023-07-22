@@ -1,5 +1,5 @@
 import * as signalR from "@microsoft/signalr";
-import { SignalRHubMethods } from "~~/utilities/globalEnums";
+import { CustomCookies, SignalRHubMethods } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
   const sechatStore = useSechatAppStore();
@@ -100,7 +100,7 @@ export const useSignalR = () => {
           chatApi.getRooms().then((res) => {
             res.forEach((r) => {
               if (r.encryptedByUser) {
-                if (e2e.checkE2ECookie(r.id)) {
+                if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
                   r.hasKey = true;
                   return;
                 }
@@ -261,10 +261,13 @@ export const useSignalR = () => {
       .then((newRoom: IRoom) => {
         console.log("--> New room created", newRoom);
         if (newRoom.encryptedByUser) {
-          e2e.addRoomKey({
-            key: key,
-            roomId: newRoom.id,
-          });
+          e2e.addKey(
+            {
+              key: key,
+              id: newRoom.id,
+            },
+            CustomCookies.E2E
+          );
           newRoom.hasKey = true;
         }
         sechatChatStore.addRoom(newRoom);

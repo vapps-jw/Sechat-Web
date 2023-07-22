@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { scrollToBottom } from "~/utilities/documentFunctions";
-import { ChatViews } from "~~/utilities/globalEnums";
+import { ChatViews, CustomCookies } from "~~/utilities/globalEnums";
 
 definePageMeta({
   layout: "board",
@@ -48,7 +48,10 @@ watch(activeChatTab, async (newVal, oldVal) => {
       if (chatStore.getActiveRoom.encryptedByUser) {
         console.log("Active encrypted room");
 
-        const e2eCheck = e2e.checkE2ECookie(chatStore.getActiveRoomId);
+        const e2eCheck = e2e.checkCookie(
+          chatStore.getActiveRoomId,
+          CustomCookies.E2E
+        );
         if (!e2eCheck) {
           console.log("Key missing");
           chatStore.rejectRoomSelection();
@@ -66,7 +69,7 @@ watch(activeChatTab, async (newVal, oldVal) => {
         const data = await chatApi.getRoomsUpdate([updateRequest]);
         data.forEach((r) => {
           if (r.encryptedByUser) {
-            if (e2e.checkE2ECookie(r.id)) {
+            if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
               r.hasKey = true;
               return;
             }
@@ -97,7 +100,10 @@ watch(activeChatTab, async (newVal, oldVal) => {
       if (chatStore.getActiveContact.encryptedByUser) {
         console.log("Active encrypted contact");
 
-        const e2eCheck = e2e.checkE2EDMCookie(chatStore.getActiveContactId);
+        const e2eCheck = e2e.checkCookie(
+          chatStore.getActiveContactId,
+          CustomCookies.E2EDM
+        );
         if (!e2eCheck) {
           // TODO: remove this if unnecessary
           // console.log("Key missing");

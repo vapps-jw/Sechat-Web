@@ -1,4 +1,4 @@
-import { SnackbarIcons } from "~/utilities/globalEnums";
+import { CustomCookies, SnackbarIcons } from "~/utilities/globalEnums";
 
 export const useChatApi = () => {
   const config = useRuntimeConfig();
@@ -128,7 +128,7 @@ export const useChatApi = () => {
     }
 
     if (!uc.value.encryptedByUser) {
-      e2e.removeContactKey(uc.value.id);
+      e2e.removeKey(uc.value.id, CustomCookies.E2EDM);
     }
 
     console.log("--> Contact Fetched", uc.value);

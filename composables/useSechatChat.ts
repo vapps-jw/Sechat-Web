@@ -1,6 +1,7 @@
 import { scrollToBottom } from "~/utilities/documentFunctions";
 import {
   ChatViews,
+  CustomCookies,
   SignalRHubMethods,
   VisibilityStates,
 } from "~~/utilities/globalEnums";
@@ -94,7 +95,7 @@ export const useSechatChat = () => {
   const handleUpdateRoom = (room: IRoom) => {
     console.warn("--> Handling Room Updated Event", room);
 
-    const keyCheck = e2e.checkE2ECookie(room.id);
+    const keyCheck = e2e.checkCookie(room.id, CustomCookies.E2E);
     if (keyCheck) {
       room.hasKey = true;
     }
@@ -104,7 +105,7 @@ export const useSechatChat = () => {
   const handleUserAddedToRoom = (room: IRoom) => {
     console.warn("--> Handling UserAddedToRoom Event", room);
     if (room.encryptedByUser) {
-      if (e2e.checkE2ECookie(room.id)) {
+      if (e2e.checkCookie(room.id, CustomCookies.E2E)) {
         room.hasKey = true;
         return;
       }
@@ -122,7 +123,7 @@ export const useSechatChat = () => {
         chatStore.availableRooms.find((r) => r.id === options.roomId)
           ?.encryptedByUser
       ) {
-        e2e.removeRoomKey(options.roomId);
+        e2e.removeKey(options.roomId, CustomCookies.E2E);
       }
       chatStore.deleteCurrentUserFromRoom(options);
       return;
@@ -179,7 +180,7 @@ export const useSechatChat = () => {
       chatStore.availableRooms.find((r) => r.id === message.roomId)
         .encryptedByUser
     ) {
-      const hasKey = e2e.checkE2ECookie(message.roomId);
+      const hasKey = e2e.checkCookie(message.roomId, CustomCookies.E2E);
       if (!hasKey) return;
 
       try {
@@ -322,7 +323,7 @@ export const useSechatChat = () => {
       chatStore.availableContacts.find((r) => r.id === message.contactId)
         .encryptedByUser
     ) {
-      const hasKey = e2e.checkE2EDMCookie(message.contactId);
+      const hasKey = e2e.checkCookie(message.contactId, CustomCookies.E2EDM);
       if (!hasKey) return;
 
       try {

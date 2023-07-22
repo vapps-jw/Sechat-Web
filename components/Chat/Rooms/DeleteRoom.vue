@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarMessages } from "~~/utilities/globalEnums";
+import { CustomCookies, SnackbarMessages } from "~~/utilities/globalEnums";
 
 const dialog = ref<boolean>(false);
 
@@ -58,7 +58,7 @@ const deleteRoom = async (roomId: string) => {
 
     if (props.room.encryptedByUser) {
       console.log("Removing room E2E key", roomId);
-      e2e.removeRoomKey(roomId);
+      e2e.removeKey(roomId, CustomCookies.E2E);
     }
     dialog.value = false;
     appStore.showSuccessSnackbar(SnackbarMessages.Success);

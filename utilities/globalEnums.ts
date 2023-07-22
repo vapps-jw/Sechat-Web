@@ -16,7 +16,6 @@ export const SnackbarMessages = {
 export const CustomCookies = {
   E2E: "E2E",
   E2EDM: "E2E_DM",
-  E2ENOTEBOOK: "E2E_NOTEBOOK",
   GDPR: "gdpr-consent",
   AUTH: "sechatid",
 };

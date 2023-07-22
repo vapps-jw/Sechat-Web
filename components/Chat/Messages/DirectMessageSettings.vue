@@ -69,6 +69,8 @@
 </template>
 
 <script setup lang="ts">
+import { CustomCookies } from "~/utilities/globalEnums";
+
 const dialog = ref<boolean>(false);
 const keyBox = ref<boolean>(false);
 const chatStore = useSechatChatStore();
@@ -93,8 +95,9 @@ const { getActiveContact } = storeToRefs(chatStore);
 watch(getActiveContact, async (newVal, oldVal) => {
   if (chatStore.getActiveContact.encryptedByUser) {
     chatData.value.userEncrypted = true;
-    chatData.value.chatKey = e2e.getE2EDMCookie(
-      chatStore.getActiveContact.id
+    chatData.value.chatKey = e2e.getCookie(
+      chatStore.getActiveContact.id,
+      CustomCookies.E2EDM
     )?.key;
   } else {
     chatData.value.userEncrypted = false;
@@ -106,8 +109,9 @@ onMounted(async () => {
   console.log("Chat settings mounted");
   if (chatStore.getActiveContact.encryptedByUser) {
     chatData.value.userEncrypted = true;
-    chatData.value.chatKey = e2e.getE2EDMCookie(
-      chatStore.getActiveContact.id
+    chatData.value.chatKey = e2e.getCookie(
+      chatStore.getActiveContact.id,
+      CustomCookies.E2EDM
     )?.key;
   } else {
     chatData.value.userEncrypted = false;
@@ -145,10 +149,13 @@ const applyChanges = async () => {
   }
 
   if (chatData.value.userEncrypted) {
-    e2e.addContactKey({
-      key: chatData.value.chatKey,
-      contactId: chatStore.getActiveContact.id,
-    });
+    e2e.addKey(
+      {
+        key: chatData.value.chatKey,
+        id: chatStore.getActiveContact.id,
+      },
+      CustomCookies.E2EDM
+    );
   }
 
   if (

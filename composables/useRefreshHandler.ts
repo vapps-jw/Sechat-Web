@@ -1,4 +1,8 @@
-import { ChatViews, VisibilityStates } from "~/utilities/globalEnums";
+import {
+  ChatViews,
+  CustomCookies,
+  VisibilityStates,
+} from "~/utilities/globalEnums";
 
 export const useRefreshHandler = () => {
   const appStore = useSechatAppStore();
@@ -16,7 +20,7 @@ export const useRefreshHandler = () => {
       chatApi.getRooms().then((res) => {
         res.forEach((r) => {
           if (r.encryptedByUser) {
-            if (e2e.checkE2ECookie(r.id)) {
+            if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
               r.hasKey = true;
               return;
             }
@@ -87,7 +91,7 @@ export const useRefreshHandler = () => {
           chatApi.getRoomsUpdate(updates).then((res) => {
             res.forEach((r) => {
               if (r.encryptedByUser) {
-                if (e2e.checkE2ECookie(r.id)) {
+                if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
                   r.hasKey = true;
                   return;
                 }
@@ -104,7 +108,7 @@ export const useRefreshHandler = () => {
           chatApi.getRooms().then((res) => {
             res.forEach((r) => {
               if (r.encryptedByUser) {
-                if (e2e.checkE2ECookie(r.id)) {
+                if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
                   r.hasKey = true;
                   return;
                 }
@@ -122,7 +126,7 @@ export const useRefreshHandler = () => {
         chatApi.getRooms().then((res) => {
           res.forEach((r) => {
             if (r.encryptedByUser) {
-              if (e2e.checkE2ECookie(r.id)) {
+              if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
                 r.hasKey = true;
                 return;
               }

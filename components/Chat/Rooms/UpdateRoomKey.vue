@@ -32,6 +32,8 @@
 </template>
 
 <script setup lang="ts">
+import { CustomCookies } from "~/utilities/globalEnums";
+
 const dialog = ref<boolean>(false);
 
 interface PropsModel {
@@ -61,10 +63,13 @@ const updateKey = async () => {
     return;
   }
   appStore.updateLoadingOverlay(true);
-  e2e.addRoomKey({
-    roomId: props.room.id,
-    key: formData.value.roomKey,
-  });
+  e2e.addKey(
+    {
+      id: props.room.id,
+      key: formData.value.roomKey,
+    },
+    CustomCookies.E2E
+  );
   const updatedRoom = await chatApi.getRoom(props.room.id);
   updatedRoom.hasKey = true;
   chatStore.addRoom(updatedRoom);
