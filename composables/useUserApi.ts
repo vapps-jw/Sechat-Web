@@ -1,7 +1,6 @@
 export const useUserApi = () => {
   const userStore = useUserStore();
   const config = useRuntimeConfig();
-  const sechatApp = useSechatApp();
 
   const signOut = async () => {
     console.log("--> Signing Out");
@@ -40,17 +39,22 @@ export const useUserApi = () => {
     );
 
     if (apiError.value && apiError.value.statusCode === 405) {
-      sechatApp.showErrorSnackbar("You are not logged in, unauthorized");
-      return;
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: "You are not logged in",
+      });
     }
 
     if (apiError.value) {
-      sechatApp.showErrorSnackbar("Error when loading User Profile");
-      return;
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: "Error when loading User Profile",
+      });
     }
 
     userStore.updateUserProfile(newProfile.value);
-    sechatApp.showSuccessSnackbar("User Profile loaded");
     console.warn("--> User profile", userStore.userProfile);
   };
 
