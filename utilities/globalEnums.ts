@@ -39,10 +39,14 @@ export const SignalRState = {
 export const ChatViews = {
   Messages: "messages",
   Rooms: "rooms",
+  AppsSelection: "appsSelection",
   Contacts: "contacts",
   Settings: "settings",
+  Security: "security",
   Events: "events",
   Calendar: "calendar",
+  Notes: "notes",
+  WorkInProgress: "workInProgress",
 };
 
 export const GeneralViews = {
@@ -52,6 +56,7 @@ export const GeneralViews = {
 export const BottomNavBarSet = {
   ChatNavBar: "chatNavBar",
   CalendarNavBar: "calendarNavBar",
+  ProfileNavBar: "profileNavBar",
 };
 
 export const PushNotificationTypes = {

@@ -70,7 +70,6 @@
 </template>
 
 <script setup lang="ts">
-import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const config = useRuntimeConfig();

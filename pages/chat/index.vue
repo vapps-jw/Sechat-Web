@@ -1,19 +1,20 @@
 <template>
-  <ChatVideoCall v-if="webRTC.videoCallViewVisible" />
-  <div v-else>
-    <v-window v-model="chatStore.activeChatTab">
-      <v-window-item value="messages"> <ChatTabsMessages /> </v-window-item>
-      <v-window-item value="rooms"> <ChatTabsRooms /> </v-window-item>
-      <v-window-item value="contacts"> <ChatTabsContacts /> </v-window-item>
-      <v-window-item value="settings"> <ChatTabsSettings /> </v-window-item>
-    </v-window>
-    <ChatNavigationChatNav v-if="!webRTC.videoCallViewVisible" />
+  <div>
+    <ChatVideoCall v-if="webRTC.videoCallViewVisible" />
+    <div v-else>
+      <ChatNavigationViewControl />
+      <ChatNavigationChatNav />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { scrollToBottom } from "~/utilities/documentFunctions";
-import { ChatViews, CustomCookies } from "~~/utilities/globalEnums";
+import {
+  ChatViews,
+  CustomCookies,
+  BottomNavBarSet,
+} from "~~/utilities/globalEnums";
 
 definePageMeta({
   layout: "board",

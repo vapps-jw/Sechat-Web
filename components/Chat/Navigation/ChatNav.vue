@@ -4,11 +4,21 @@
     color="primary"
     v-model="chatStore.activeChatTab"
   >
-    <v-btn :value="ChatViews.Messages" @click="chatStore.activateMessagesView">
+    <v-btn
+      color="tertiary"
+      v-if="chatStore.activeBottomNav === BottomNavBarSet.ChatNavBar"
+      :value="ChatViews.Messages"
+      @click="chatStore.activateMessagesView"
+    >
       <v-icon>mdi-chat-processing</v-icon>
       <span>Messages</span>
     </v-btn>
-    <v-btn :value="ChatViews.Rooms" @click="chatStore.activateRoomsView">
+    <v-btn
+      color="tertiary"
+      v-if="chatStore.activeBottomNav === BottomNavBarSet.ChatNavBar"
+      :value="ChatViews.Rooms"
+      @click="chatStore.activateRoomsView"
+    >
       <v-badge
         :model-value="pendingRoomMessagesPresent"
         :content="pendingRoomMessagesCount"
@@ -20,7 +30,12 @@
 
       <span>Rooms</span>
     </v-btn>
-    <v-btn :value="ChatViews.Contacts" @click="chatStore.activateContactsView">
+    <v-btn
+      color="tertiary"
+      v-if="chatStore.activeBottomNav === BottomNavBarSet.ChatNavBar"
+      :value="ChatViews.Contacts"
+      @click="chatStore.activateContactsView"
+    >
       <v-badge
         :model-value="pendingContactMessagesPresent"
         :content="pendingContactMessagesCount"
@@ -33,15 +48,67 @@
       <span>Contacts</span>
     </v-btn>
 
-    <v-btn :value="ChatViews.Settings" @click="chatStore.activateSettingsView">
+    <v-btn
+      color="tertiary"
+      v-if="chatStore.activeBottomNav === BottomNavBarSet.CalendarNavBar"
+      :value="ChatViews.Events"
+      @click="chatStore.activateView(ChatViews.WorkInProgress)"
+    >
+      <v-icon>mdi-calendar-star</v-icon>
+      <span>Events</span>
+    </v-btn>
+    <v-btn
+      color="tertiary"
+      v-if="chatStore.activeBottomNav === BottomNavBarSet.CalendarNavBar"
+      :value="ChatViews.Calendar"
+      @click="chatStore.activateView(ChatViews.WorkInProgress)"
+    >
+      <v-icon>mdi-calendar-month</v-icon>
+      <span>Calendar</span>
+    </v-btn>
+    <!-- <v-btn
+      color="tertiary"
+      v-if="chatStore.activeBottomNav === BottomNavBarSet.CalendarNavBar"
+      :value="ChatViews.Notes"
+      @click="chatStore.activateView(ChatViews.Notes)"
+    >
+      <v-icon>mdi-notebook-edit-outline</v-icon>
+      <span>Notes</span>
+    </v-btn> -->
+
+    <v-btn
+      color="tertiary"
+      v-if="chatStore.activeBottomNav === BottomNavBarSet.ProfileNavBar"
+      :value="ChatViews.Security"
+      @click="chatStore.activateView(ChatViews.Security)"
+    >
+      <v-icon>mdi-shield-lock</v-icon>
+      <span>Security</span>
+    </v-btn>
+
+    <v-btn
+      color="tertiary"
+      v-if="chatStore.activeBottomNav === BottomNavBarSet.ProfileNavBar"
+      :value="ChatViews.Settings"
+      @click="chatStore.activateSettingsView"
+    >
       <ChatStatusConnectionIcon />
       <span>Settings</span>
+    </v-btn>
+
+    <v-btn
+      color="warning"
+      :value="ChatViews.AppsSelection"
+      @click="chatStore.activateView(ChatViews.AppsSelection)"
+    >
+      <v-icon>mdi-apps</v-icon>
+      <span>Sechat</span>
     </v-btn>
   </v-bottom-navigation>
 </template>
 
 <script setup lang="ts">
-import { ChatViews } from "~~/utilities/globalEnums";
+import { ChatViews, BottomNavBarSet } from "~~/utilities/globalEnums";
 const chatStore = useSechatChatStore();
 const userStore = useUserStore();
 

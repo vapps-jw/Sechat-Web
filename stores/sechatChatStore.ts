@@ -16,7 +16,7 @@ export const useSechatChatStore = defineStore({
       newMessage: <string>null,
       keyInputDialog: <boolean>false,
       activeBottomNav: <string>BottomNavBarSet.ChatNavBar,
-      activeChatTab: <string>ChatViews.Rooms,
+      activeChatTab: <string>ChatViews.Messages,
     };
   },
   actions: {
@@ -33,6 +33,12 @@ export const useSechatChatStore = defineStore({
     },
     loadCallLogs(newCallLogs: ICallLog[]) {
       this.callLogs = newCallLogs.sort((a, b) => Number(b.id) - Number(a.id));
+    },
+    activateNavBar(navName: string) {
+      this.activeBottomNav = navName;
+    },
+    activateView(viewName: string) {
+      this.activeChatTab = viewName;
     },
     clearNewMessage() {
       this.newMessage = "";
@@ -54,6 +60,9 @@ export const useSechatChatStore = defineStore({
     },
     activateSettingsView() {
       this.activeChatTab = ChatViews.Settings;
+    },
+    activateAppSelectionView() {
+      this.activeChatTab = ChatViews.AppsSelection;
     },
     addContact(value: IContactRequest) {
       this.availableContacts = [...this.availableContacts, value].sort((a, b) =>
@@ -306,6 +315,12 @@ export const useSechatChatStore = defineStore({
     },
   },
   getters: {
+    getNavColor: (state): string => {
+      if (state.activeChatTab === ChatViews.AppsSelection) {
+        return "warning";
+      }
+      return "grey-lighten-1";
+    },
     getOnlineUsers: (state) =>
       state.availableContacts.filter(
         (c) => c.contactState === ContactState.Online
