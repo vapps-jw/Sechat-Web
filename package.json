@@ -13,6 +13,7 @@
     "@nuxtjs/i18n": "8.0.0-beta.12",
     "@vite-pwa/nuxt": "^0.1.0",
     "cross-env": "^7.0.3",
+    "cypress": "^12.17.2",
     "nuxt": "^3.6.2",
     "nuxt-icon": "^0.4.1",
     "nuxt-security": "^0.13.1",

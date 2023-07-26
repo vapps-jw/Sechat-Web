@@ -6,7 +6,8 @@
       width="700"
     >
       <ChatTabsVariantsChatCard />
-      <ChatTabsVariantsCalendarCard />
+      <!-- TODO:uncomment when calendar ready -->
+      <!-- <ChatTabsVariantsCalendarCard /> -->
       <ChatTabsVariantsProfileCard />
     </v-card>
   </v-container>

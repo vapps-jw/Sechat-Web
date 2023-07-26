@@ -1,5 +1,6 @@
 <template>
   <v-card
+    @click="chatStore.activateNavBar(BottomNavBarSet.ChatNavBar)"
     min-height="150"
     class="ma-2"
     :color="
@@ -10,16 +11,6 @@
       <div>
         <v-card-title class="text-h5"> Sechat Chat </v-card-title>
         <v-card-subtitle>Chat Web App</v-card-subtitle>
-        <v-card-actions>
-          <v-btn
-            @click="chatStore.activateNavBar(BottomNavBarSet.ChatNavBar)"
-            class="ms-2"
-            variant="tonal"
-            color="secondary"
-          >
-            ACTIVATE
-          </v-btn>
-        </v-card-actions>
       </div>
 
       <v-avatar class="ma-3" size="125" rounded="0">

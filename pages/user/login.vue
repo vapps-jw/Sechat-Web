@@ -3,6 +3,7 @@
     <v-card class="mx-auto px-6 py-8" max-width="344">
       <v-form v-model="form" @submit.prevent="onSubmit">
         <v-text-field
+          :id="LoginPage.UserNameBox"
           v-model="credentials.username"
           :readonly="loading"
           :rules="credentials.nameRules"
@@ -12,6 +13,7 @@
         ></v-text-field>
 
         <v-text-field
+          :id="LoginPage.PasswordBox"
           @click:append="showPassword = !showPassword"
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPassword ? 'text' : 'password'"
@@ -24,6 +26,7 @@
 
         <br />
         <v-btn
+          :id="LoginPage.SignInButton"
           :disabled="!form"
           :loading="loading"
           block
@@ -51,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+import { LoginPage } from "~/utilities/elementsIds";
 const form = ref(false);
 const loading = ref(false);
 
