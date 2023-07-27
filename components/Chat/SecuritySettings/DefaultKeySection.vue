@@ -5,9 +5,10 @@
       density="compact"
       type="info"
       variant="tonal"
-      title="Email"
-      text="Add email if you want to reset your password if you forget it"
+      title="Notifications"
+      text="Subscribe to receive push notifications on this device"
     ></v-alert>
+
     <v-form v-model="form" @submit.prevent="onSubmit">
       <v-text-field
         class="mt-2"

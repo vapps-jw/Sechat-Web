@@ -18,6 +18,7 @@ export const CustomCookies = {
   E2EDM: "E2E_DM",
   GDPR: "gdpr-consent",
   AUTH: "sechatid",
+  E2EMASTER: "E2E_MASTER",
 };
 
 export const LocalStorage = {

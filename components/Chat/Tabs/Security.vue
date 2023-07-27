@@ -13,8 +13,9 @@
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list flex align-center>
-          <v-list-subheader>User name</v-list-subheader>
-          <v-list-item> {{ userStore.getUserName }} </v-list-item>
+          <v-list-item>
+            <ChatSecuritySettingsDefaultKeySection />
+          </v-list-item>
           <v-divider class="mt-5" />
         </v-list>
       </v-card-text>
