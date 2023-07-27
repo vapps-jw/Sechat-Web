@@ -3,37 +3,16 @@
     <v-alert
       class="alert-font"
       density="compact"
-      type="info"
+      type="warning"
       variant="tonal"
-      title="Notifications"
-      text="Subscribe to receive push notifications on this device"
+      title="Default Encryption Key"
+      text="Reset the unique server encryption key, all data encrypted with the previous key will be removed"
     ></v-alert>
-
-    <v-form v-model="form" @submit.prevent="onSubmit">
-      <v-text-field
-        class="mt-2"
-        v-model="emailForm.email"
-        :rules="emailForm.emailRules"
-        variant="outlined"
-      >
-        <template v-slot:append-inner>
-          <v-icon
-            v-if="userStore.getUserEmail && userStore.isEmailConfirmed"
-            color="success"
-            >mdi-check-bold</v-icon
-          >
-          <v-icon
-            v-else-if="userStore.getUserEmail && !userStore.isEmailConfirmed"
-            color="warning"
-            >mdi-check-bold</v-icon
-          >
-          <v-icon v-else color="tertiary">mdi-email-off-outline</v-icon>
-        </template>
-        <template v-slot:append>
-          <v-icon @click="onSubmit" color="warning">mdi-send</v-icon>
-        </template>
-      </v-text-field>
-    </v-form>
+    <v-card>
+      <v-card-actions>
+        <v-btn color="success" variant="outlined"> Reset Key </v-btn>
+      </v-card-actions>
+    </v-card>
   </div>
 </template>
 

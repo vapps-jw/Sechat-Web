@@ -1,7 +1,6 @@
 <template>
   <v-btn
     color="success"
-    size="small"
     variant="outlined"
     @click="sechatNotifications.subscribeToPush"
     >Subscribe</v-btn

@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ props }">
-      <v-btn v-bind="props" color="error" size="small" variant="outlined"
+      <v-btn v-bind="props" color="error" variant="outlined"
         >Delete Account</v-btn
       >
     </template>

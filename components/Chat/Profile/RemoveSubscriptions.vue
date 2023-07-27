@@ -1,7 +1,6 @@
 <template>
   <v-btn
     color="error"
-    size="small"
     variant="outlined"
     @click="sechatNotifications.unsubscribeFromPush"
     >Unsubscribe</v-btn
