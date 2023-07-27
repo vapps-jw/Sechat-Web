@@ -1,2 +1,2 @@
-import "./pages/pagesVisitAbout.cy.js";
-import "./pages/pagesVisitHome.cy.js";
+import "./pagesVisit.cy.js";
+import "./accessTests.cy.js";

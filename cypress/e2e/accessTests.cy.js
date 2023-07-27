@@ -1,5 +1,5 @@
-describe("sign in", () => {
-  it("passes", () => {
+describe("access actions", () => {
+  it("sign in", () => {
     cy.visit("https://localhost:3000");
     cy.contains("I Accept Cookies").click();
     cy.contains("Sign In").click();
@@ -7,5 +7,6 @@ describe("sign in", () => {
     cy.get("#sign-in-username").type("u1");
     cy.get("#sign-in-password").type("u1");
     cy.get("#sign-in-button").click();
+    cy.url().should("include", "/chat");
   });
 });
