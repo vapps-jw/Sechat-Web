@@ -78,7 +78,7 @@ const e2e = useE2Encryption();
 const config = useRuntimeConfig();
 const userStore = useUserStore();
 const chatApi = useChatApi();
-const sechatApp = useSechatApp();
+const sechatStore = useSechatAppStore();
 
 const chatSettingsForm = ref<HTMLFormElement>();
 const chatData = ref({
@@ -93,6 +93,10 @@ const chatData = ref({
 
 const { getActiveContact } = storeToRefs(chatStore);
 watch(getActiveContact, async (newVal, oldVal) => {
+  console.log("Active contact changed", newVal, oldVal);
+  if (newVal === undefined) {
+    return;
+  }
   if (chatStore.getActiveContact.encryptedByUser) {
     chatData.value.userEncrypted = true;
     chatData.value.chatKey = e2e.getCookie(
@@ -132,12 +136,12 @@ const clearChat = async () => {
   );
 
   if (apiError.value) {
-    sechatApp.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar(apiError.value.data);
     dialog.value = false;
     return;
   }
 
-  sechatApp.showSuccessSnackbar(resData.value as string);
+  sechatStore.showSuccessSnackbar(resData.value as string);
   dialog.value = false;
 };
 

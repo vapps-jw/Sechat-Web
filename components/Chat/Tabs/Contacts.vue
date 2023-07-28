@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig();
-const sechatApp = useSechatApp();
+const sechatStore = useSechatAppStore();
 const chatStore = useSechatChatStore();
 const userStore = useUserStore();
 
@@ -58,10 +58,10 @@ const createInvitation = async (userName: string) => {
   );
 
   if (apiError.value) {
-    sechatApp.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar(apiError.value.data);
     return;
   }
 
-  sechatApp.showSuccessSnackbar("Invitation sent");
+  sechatStore.showSuccessSnackbar("Invitation sent");
 };
 </script>

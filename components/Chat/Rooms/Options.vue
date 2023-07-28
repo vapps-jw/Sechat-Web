@@ -34,7 +34,7 @@ interface PropsModel {
 const props = defineProps<PropsModel>();
 
 const config = useRuntimeConfig();
-const sechatApp = useSechatApp();
+const sechatStore = useSechatAppStore();
 const userStore = useUserStore();
 const chatStore = useSechatChatStore();
 
@@ -63,9 +63,9 @@ const leaveRoom = async (room: IRoom) => {
     }
 
     chatStore.deleteRoom(room.id);
-    sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
+    sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {
-    sechatApp.showErrorSnackbar(error.statusMessage);
+    sechatStore.showErrorSnackbar(error.statusMessage);
   }
 };
 </script>

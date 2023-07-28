@@ -40,7 +40,7 @@
 const userStore = useUserStore();
 const form = ref(false);
 const config = useRuntimeConfig();
-const appStore = useSechatAppStore();
+const sechatStore = useSechatAppStore();
 
 interface IEmail {
   valid: boolean;
@@ -72,10 +72,10 @@ const onSubmit = async () => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar(apiError.value.data);
     return;
   }
-  appStore.showSuccessSnackbar(
+  sechatStore.showSuccessSnackbar(
     `Confirmation request sent to ${emailForm.value.email}`
   );
 };

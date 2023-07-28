@@ -42,7 +42,7 @@ import { SnackbarMessages, ContactState } from "~~/utilities/globalEnums";
 import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 
 const chatStore = useSechatChatStore();
-const sechatApp = useSechatApp();
+const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
 const userStore = useUserStore();
 
@@ -52,7 +52,7 @@ const isContact = (userName: string) => {
 
 const removeUserFromRoom = async (data: IRoomMemeber) => {
   if (chatStore.getActiveRoom.members.length == 1) {
-    sechatApp.showWarningSnackbar("Last member has to delete Room");
+    sechatStore.showWarningSnackbar("Last member has to delete Room");
     return;
   }
 
@@ -63,7 +63,7 @@ const removeUserFromRoom = async (data: IRoomMemeber) => {
     chatStore.getActiveRoom.creatorName
   );
   if (data.userName === chatStore.getActiveRoom.creatorName) {
-    sechatApp.showWarningSnackbar("Cant remove room creator");
+    sechatStore.showWarningSnackbar("Cant remove room creator");
     return;
   }
 
@@ -89,7 +89,7 @@ const removeUserFromRoom = async (data: IRoomMemeber) => {
       }
     );
 
-    sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
+    sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
     if (apiError.value) {
       throw createError({
         ...apiError.value,
@@ -98,7 +98,7 @@ const removeUserFromRoom = async (data: IRoomMemeber) => {
       });
     }
   } catch (error) {
-    sechatApp.showErrorSnackbar(error.statusMessage);
+    sechatStore.showErrorSnackbar(error.statusMessage);
   }
 };
 </script>

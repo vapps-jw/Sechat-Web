@@ -62,9 +62,9 @@
 import { CustomCookies } from "~/utilities/globalEnums";
 
 const userStore = useUserStore();
-const sechatStore = useSechatChatStore();
+const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();
-const sechatApp = useSechatApp();
+const appStore = useSechatAppStore();
 
 const rejectCookies = () => {
   const gdprCookie = useCookie(CustomCookies.GDPR);
@@ -94,12 +94,12 @@ const signOut = async () => {
       });
     }
 
-    sechatStore.$reset();
+    chatStore.$reset();
     userStore.$reset();
     navigateTo("/");
-    sechatApp.showSuccessSnackbar("Logged out");
+    appStore.showSuccessSnackbar("Logged out");
   } catch (error) {
-    sechatApp.showErrorSnackbar(error.statusMessage);
+    appStore.showErrorSnackbar(error.statusMessage);
   }
 };
 </script>

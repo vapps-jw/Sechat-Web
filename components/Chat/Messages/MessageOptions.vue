@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-const sechatApp = useSechatApp();
+const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
 
 interface PropsModel {
@@ -41,11 +41,11 @@ const handleMessageDelete = async () => {
   );
 
   if (apiError.value) {
-    sechatApp.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar(apiError.value.data);
     return;
   }
 
-  sechatApp.showSuccessSnackbar("Message deleted");
+  sechatStore.showSuccessSnackbar("Message deleted");
 };
 </script>
 

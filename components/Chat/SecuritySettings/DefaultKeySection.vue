@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig();
-const appStore = useSechatAppStore();
+const sechatStore = useSechatAppStore();
 
 const resetServerKey = async () => {
   const { error: apiError, data: resData } = await useFetch(
@@ -35,10 +35,10 @@ const resetServerKey = async () => {
   );
 
   if (apiError.value) {
-    appStore.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar(apiError.value.data);
     return;
   }
-  appStore.showSuccessSnackbar(resData.value as string);
+  sechatStore.showSuccessSnackbar(resData.value as string);
 };
 </script>
 

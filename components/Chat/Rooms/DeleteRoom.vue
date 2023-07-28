@@ -31,9 +31,8 @@ interface PropsModel {
 
 const props = defineProps<PropsModel>();
 
-const appStore = useSechatApp();
+const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
-const sechatApp = useSechatApp();
 const e2e = useE2Encryption();
 
 const deleteRoom = async (roomId: string) => {
@@ -61,9 +60,9 @@ const deleteRoom = async (roomId: string) => {
       e2e.removeKey(roomId, CustomCookies.E2E);
     }
     dialog.value = false;
-    appStore.showSuccessSnackbar(SnackbarMessages.Success);
+    sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {
-    sechatApp.showErrorSnackbar(error.statusMessage);
+    sechatStore.showErrorSnackbar(error.statusMessage);
   }
 };
 </script>

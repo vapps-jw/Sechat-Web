@@ -48,8 +48,7 @@ const email = ref(route.query.email ? route.query.email : "");
 
 const form = ref(false);
 const loading = ref(false);
-const appStore = useSechatApp();
-const sechatApp = useSechatApp();
+const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
 
 interface ICredentials {
@@ -103,12 +102,12 @@ const onSubmit = async () => {
       });
     }
 
-    appStore.showSuccessSnackbar(response.value.toString());
+    sechatStore.showSuccessSnackbar(response.value.toString());
     navigateTo("/user/login");
   } catch (error) {
     buttonText.value = "Try Again";
     buttonColor.value = "error";
-    sechatApp.showErrorSnackbar(error.statusMessage);
+    sechatStore.showErrorSnackbar(error.statusMessage);
     error.value = null;
   }
 };

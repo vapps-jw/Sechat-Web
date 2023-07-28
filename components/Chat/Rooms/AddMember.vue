@@ -25,7 +25,7 @@ const chatStore = useSechatChatStore();
 const dialog = ref<boolean>(false);
 const chosenConnection = ref<IContactRequest>();
 
-const appStore = useSechatApp();
+const sechatStore = useSechatAppStore();
 const userStore = useUserStore();
 const config = useRuntimeConfig();
 
@@ -60,9 +60,9 @@ const invite = async () => {
         statusMessage: apiError.value.data,
       });
     }
-    appStore.showSuccessSnackbar(SnackbarMessages.Success);
+    sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {
-    appStore.showErrorSnackbar(error.statusMessage);
+    sechatStore.showErrorSnackbar(error.statusMessage);
   } finally {
     chosenConnection.value = null;
     dialog.value = false;

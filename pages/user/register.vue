@@ -66,8 +66,7 @@
 <script setup lang="ts">
 const form = ref(false);
 const loading = ref(false);
-const appStore = useSechatApp();
-const sechatApp = useSechatApp();
+const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
 
 interface ICredentials {
@@ -133,13 +132,13 @@ const onSubmit = async () => {
       });
     }
 
-    appStore.showSuccessSnackbar("User created");
+    sechatStore.showSuccessSnackbar("User created");
     navigateTo("/user/login");
   } catch (error) {
     console.log("--> Sign in error", error);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
-    sechatApp.showErrorSnackbar(error.statusMessage);
+    sechatStore.showErrorSnackbar(error.statusMessage);
     error.value = null;
   }
 };

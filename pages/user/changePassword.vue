@@ -50,9 +50,8 @@
 <script setup lang="ts">
 const form = ref(false);
 const loading = ref(false);
-const appStore = useSechatApp();
+const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
-const sechatApp = useSechatApp();
 
 interface ICredentials {
   valid: boolean;
@@ -104,13 +103,13 @@ const onSubmit = async () => {
       });
     }
 
-    appStore.showSuccessSnackbar("Password Changed");
+    sechatStore.showSuccessSnackbar("Password Changed");
     navigateTo("/user/login");
   } catch (error) {
     console.log("--> Change Password error", error);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
-    sechatApp.showErrorSnackbar(error.statusMessage);
+    sechatStore.showErrorSnackbar(error.statusMessage);
     error.value = null;
   }
 };

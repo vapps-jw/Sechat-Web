@@ -25,7 +25,7 @@ const webRTC = useWebRTCStore();
 const chatStore = useSechatChatStore();
 const chatApi = useChatApi();
 const e2e = useE2Encryption();
-const app = useSechatApp();
+const sechatStore = useSechatAppStore();
 const userStore = useUserStore();
 
 const selectedNav = ref(ChatViews.Rooms);
@@ -45,6 +45,7 @@ watch(activeChatTab, async (newVal, oldVal) => {
 
   // Handle messages viewed for Room
   if (chatStore.activeRoomId) {
+    console.log("--> Nav Update For Room", chatStore.getActiveRoom);
     try {
       if (chatStore.getActiveRoom.encryptedByUser) {
         console.log("Active encrypted room");
@@ -56,7 +57,7 @@ watch(activeChatTab, async (newVal, oldVal) => {
         if (!e2eCheck) {
           console.log("Key missing");
           chatStore.rejectRoomSelection();
-          app.showErrorSnackbar("Key is missing, add it first");
+          sechatStore.showErrorSnackbar("Key is missing, add it first");
           return;
         }
 
@@ -81,6 +82,8 @@ watch(activeChatTab, async (newVal, oldVal) => {
         chatStore.updateRooms(data);
       }
 
+      console.log("Nav Update standard actions");
+
       const markMessagesAsVided =
         chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length > 0;
 
@@ -89,8 +92,10 @@ watch(activeChatTab, async (newVal, oldVal) => {
         chatApi.markMessagesAsViewed(chatStore.activeRoomId);
         chatStore.markActiveRoomMessagesAsViewed();
       }
+
+      console.log("Nav Update watcher done");
     } catch (error) {
-      app.showErrorSnackbar("Room update failed");
+      sechatStore.showErrorSnackbar("Room update failed");
       console.error(error);
     }
   }
@@ -126,7 +131,7 @@ watch(activeChatTab, async (newVal, oldVal) => {
         chatStore.markDirectMessagesAsViewed(chatStore.activeContactId);
       }
     } catch (error) {
-      app.showErrorSnackbar("Chat update failed");
+      sechatStore.showErrorSnackbar("Chat update failed");
       console.error(error);
     }
   }

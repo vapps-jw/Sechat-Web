@@ -72,7 +72,7 @@ const buttonColor = ref<string>("warning");
 const config = useRuntimeConfig();
 const userStore = useUserStore();
 const userApi = useUserApi();
-const sechatApp = useSechatApp();
+const sechatStore = useSechatAppStore();
 
 const onSubmit = async () => {
   try {
@@ -92,7 +92,7 @@ const onSubmit = async () => {
     );
 
     if (apiError.value) {
-      sechatApp.showErrorSnackbar(apiError.value.data);
+      sechatStore.showErrorSnackbar(apiError.value.data);
     }
 
     if (!apiError.value) {

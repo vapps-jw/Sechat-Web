@@ -113,7 +113,7 @@ import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();
-const sechatApp = useSechatApp();
+const sechatStore = useSechatAppStore();
 const userStore = useUserStore();
 const webRTCStore = useWebRTCStore();
 
@@ -177,10 +177,10 @@ const blockContact = async (id: number) => {
   );
 
   if (apiError.value) {
-    sechatApp.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar(apiError.value.data);
     return;
   }
-  sechatApp.showSuccessSnackbar("Contact blocked");
+  sechatStore.showSuccessSnackbar("Contact blocked");
 };
 
 const allowContact = async (id: number) => {
@@ -197,10 +197,10 @@ const allowContact = async (id: number) => {
   );
 
   if (apiError.value) {
-    sechatApp.showErrorSnackbar(SnackbarMessages.Error);
+    sechatStore.showErrorSnackbar(SnackbarMessages.Error);
     return;
   }
-  sechatApp.showSuccessSnackbar(SnackbarMessages.Success);
+  sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
 };
 
 const approveContact = async (id: number) => {
@@ -217,11 +217,11 @@ const approveContact = async (id: number) => {
   );
 
   if (apiError.value) {
-    sechatApp.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar(apiError.value.data);
     return;
   }
 
-  sechatApp.showSuccessSnackbar("Contact approved");
+  sechatStore.showSuccessSnackbar("Contact approved");
 };
 
 const deleteContact = async (id: number) => {
@@ -235,11 +235,11 @@ const deleteContact = async (id: number) => {
   );
 
   if (apiError.value) {
-    sechatApp.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar(apiError.value.data);
     return;
   }
 
-  sechatApp.showSuccessSnackbar("Contact deleted");
+  sechatStore.showSuccessSnackbar("Contact deleted");
 };
 </script>
 

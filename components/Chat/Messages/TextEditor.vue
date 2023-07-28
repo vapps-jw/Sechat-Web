@@ -39,9 +39,8 @@ import { SnackbarIcons } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
 const signalRstore = useSignalRStore();
-const appStore = useSechatApp();
+const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
-const sechatApp = useSechatApp();
 
 const editorState = ref<IEditorState>({
   busy: false,
@@ -71,7 +70,7 @@ const callRoomMessageApi = async () => {
   );
 
   if (apiError.value) {
-    sechatApp.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar(apiError.value.data);
   }
 };
 
@@ -92,7 +91,7 @@ const callDirectMessageApi = async () => {
   );
 
   if (apiError.value) {
-    sechatApp.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar(apiError.value.data);
   }
 };
 
@@ -102,7 +101,7 @@ const pushMessage = async () => {
   }
 
   if (!signalRstore.isConnected) {
-    appStore.showSnackbar({
+    sechatStore.showSnackbar({
       snackbar: true,
       text: "You are not connected",
       timeout: 2000,

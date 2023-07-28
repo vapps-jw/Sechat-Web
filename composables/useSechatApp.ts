@@ -56,87 +56,9 @@ export const useSechatApp = () => {
     });
   };
 
-  const showSnackbar = (data: ISanckbar) => {
-    console.log("--> Snackbar data", data);
-    useAppStore.updateSnackbar(data);
-  };
-
-  const showSuccessSnackbar = (message: string) => {
-    showSnackbar({
-      snackbar: true,
-      text: message,
-      timeout: 1500,
-      color: "success",
-      icon: SnackbarIcons.Success,
-      iconColor: "black",
-    });
-  };
-
-  const showInfoSnackbar = (message: string) => {
-    showSnackbar({
-      snackbar: true,
-      text: message,
-      timeout: 1500,
-      color: "primary",
-      icon: SnackbarIcons.Info,
-      iconColor: "white",
-    });
-  };
-
-  const showWarningSnackbar = (message: string) => {
-    showSnackbar({
-      snackbar: true,
-      text: message,
-      timeout: 1500,
-      color: "warning",
-      icon: SnackbarIcons.Warning,
-      iconColor: "black",
-    });
-  };
-
-  const showOfflineSnackbar = (message: string) => {
-    showSnackbar({
-      snackbar: true,
-      text: message,
-      timeout: 1500,
-      color: "error",
-      icon: SnackbarIcons.Offline,
-      iconColor: "black",
-    });
-  };
-
-  const showDisconnectedSnackbar = (message: string) => {
-    showSnackbar({
-      snackbar: true,
-      text: message,
-      timeout: 1500,
-      color: "error",
-      icon: SnackbarIcons.Disconnected,
-      iconColor: "black",
-    });
-  };
-
-  const showErrorSnackbar = (message: string) => {
-    showSnackbar({
-      snackbar: true,
-      text: message,
-      timeout: 1500,
-      color: "error",
-      icon: SnackbarIcons.Error,
-      iconColor: "black",
-    });
-  };
-
   return {
     clearVideoCallNotifications,
     clearNotifications,
-    showSnackbar,
-    showSuccessSnackbar,
-    showWarningSnackbar,
-    showErrorSnackbar,
-    showInfoSnackbar,
-    showOfflineSnackbar,
-    showDisconnectedSnackbar,
     pingServer,
     startPing,
     stopPing,
