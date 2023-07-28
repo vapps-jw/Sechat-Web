@@ -24,6 +24,9 @@
       </v-window-item>
 
       <!-- Profile -->
+      <v-window-item :value="ChatViews.Exit">
+        <ChatTabsExit />
+      </v-window-item>
       <v-window-item :value="ChatViews.Security">
         <ChatTabsSecurity />
       </v-window-item>

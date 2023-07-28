@@ -79,13 +79,21 @@
     <v-btn
       color="tertiary"
       v-if="chatStore.activeBottomNav === BottomNavBarSet.ProfileNavBar"
+      :value="ChatViews.Exit"
+      @click="chatStore.activateView(ChatViews.Exit)"
+    >
+      <v-icon>mdi-exit-to-app</v-icon>
+      <span>Exit</span>
+    </v-btn>
+    <v-btn
+      color="tertiary"
+      v-if="chatStore.activeBottomNav === BottomNavBarSet.ProfileNavBar"
       :value="ChatViews.Security"
       @click="chatStore.activateView(ChatViews.Security)"
     >
       <v-icon>mdi-shield-lock</v-icon>
       <span>Security</span>
     </v-btn>
-
     <v-btn
       color="tertiary"
       v-if="chatStore.activeBottomNav === BottomNavBarSet.ProfileNavBar"

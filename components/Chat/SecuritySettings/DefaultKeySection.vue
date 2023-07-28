@@ -10,44 +10,27 @@
     ></v-alert>
     <v-card>
       <v-card-actions>
-        <v-btn color="success" variant="outlined"> Reset Key </v-btn>
+        <v-btn @click="resetServerKey" color="success" variant="outlined">
+          Reset Key
+        </v-btn>
       </v-card-actions>
     </v-card>
   </div>
 </template>
 
 <script setup lang="ts">
-const userStore = useUserStore();
-const form = ref(false);
 const config = useRuntimeConfig();
 const appStore = useSechatAppStore();
 
-interface IEmail {
-  valid: boolean;
-  email: string;
-  emailRules: any;
-}
-
-const emailForm = ref<IEmail>({
-  valid: true,
-  email: userStore.getUserEmail,
-  emailRules: [(v) => /.+@.+/.test(v) || "Invalid Email address"],
-});
-
-const onSubmit = async () => {
-  console.warn("--> Updating email...", emailForm.value);
-
-  const { error: apiError, data: response } = await useFetch(
-    `${config.public.apiBase}/account/update-email`,
+const resetServerKey = async () => {
+  const { error: apiError, data: resData } = await useFetch(
+    `${config.public.apiBase}/crypto/reset-default-key`,
     {
       headers: {
         "Content-Type": "application/json",
       },
-      method: "POST",
+      method: "PATCH",
       credentials: "include",
-      body: {
-        email: emailForm.value.email,
-      },
     }
   );
 
@@ -55,9 +38,7 @@ const onSubmit = async () => {
     appStore.showErrorSnackbar(apiError.value.data);
     return;
   }
-  appStore.showSuccessSnackbar(
-    `Confirmation request sent to ${emailForm.value.email}`
-  );
+  appStore.showSuccessSnackbar(resData.value as string);
 };
 </script>
 

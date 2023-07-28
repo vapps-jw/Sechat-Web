@@ -120,7 +120,7 @@ onMounted(async () => {
 });
 
 const clearChat = async () => {
-  const { error: apiError } = await useFetch(
+  const { error: apiError, data: resData } = await useFetch(
     `${config.public.apiBase}/chat/direct-messages/${chatStore.getActiveContact.id}`,
     {
       headers: {
@@ -137,7 +137,7 @@ const clearChat = async () => {
     return;
   }
 
-  sechatApp.showSuccessSnackbar("Chat cleared");
+  sechatApp.showSuccessSnackbar(resData.value as string);
   dialog.value = false;
 };
 

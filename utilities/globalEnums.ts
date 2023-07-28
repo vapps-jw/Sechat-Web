@@ -48,6 +48,7 @@ export const ChatViews = {
   Calendar: "calendar",
   Notes: "notes",
   WorkInProgress: "workInProgress",
+  Exit: "exit",
 };
 
 export const GeneralViews = {
