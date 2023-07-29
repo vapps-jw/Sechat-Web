@@ -24,7 +24,7 @@ self.addEventListener("push", async (event) => {
 
   const currentNotifications = await self.registration.getNotifications();
   console.log(
-    "--> Current Notifications",
+    "Current Notifications",
     currentNotifications,
     currentNotifications.length
   );
@@ -34,13 +34,13 @@ self.addEventListener("push", async (event) => {
       n.title === String(data.title) && n.body === String(data.options.body)
   );
 
-  console.log("--> Notifications to close", notificationsToClose);
+  console.log("Notifications to close", notificationsToClose);
   notificationsToClose.forEach((n) => {
-    console.log("--> Closing current notification", String(data.title));
+    console.log("Closing current notification", String(data.title));
     n.close();
   });
 
-  console.log("--> Push notification received", data);
+  console.log("Push notification received", data);
   let options = {};
   if (String(data.title) === PushNotificationTypes.VideoCall) {
     options = {
@@ -60,7 +60,7 @@ self.addEventListener("push", async (event) => {
     };
   }
 
-  console.log("--> Showing Notification...", String(data.title), options);
+  console.log("Showing Notification...", String(data.title), options);
   self.registration.showNotification(String(data.title), options);
 });
 
@@ -91,7 +91,7 @@ function isClientFocused() {
       includeUncontrolled: true,
     })
     .then((windowClients) => {
-      console.warn("--> Window Clients", windowClients);
+      console.warn("Window Clients", windowClients);
       let clientIsFocused = false;
 
       for (let i = 0; i < windowClients.length; i++) {

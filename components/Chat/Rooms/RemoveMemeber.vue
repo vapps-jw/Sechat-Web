@@ -57,7 +57,7 @@ const removeUserFromRoom = async (data: IRoomMemeber) => {
   }
 
   console.warn(
-    "--> Room creator check",
+    "Room creator check",
     data.userName,
     userStore.getUserName,
     chatStore.getActiveRoom.creatorName
@@ -67,7 +67,7 @@ const removeUserFromRoom = async (data: IRoomMemeber) => {
     return;
   }
 
-  console.warn("--> Removing User from Room", data);
+  console.warn("Removing User from Room", data);
 
   try {
     const { error: apiError } = await useFetch(

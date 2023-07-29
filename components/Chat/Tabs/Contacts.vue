@@ -42,7 +42,7 @@ const chatStore = useSechatChatStore();
 const userStore = useUserStore();
 
 const createInvitation = async (userName: string) => {
-  console.log("--> Calling contact request");
+  console.log("Calling contact request");
   const { error: apiError, data: res } = await useFetch(
     `${config.public.apiBase}/user/request-contact`,
     {

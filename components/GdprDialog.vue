@@ -40,8 +40,8 @@ const gdprCookie = useCookie(CustomCookies.GDPR, {
 });
 
 onMounted(async () => {
-  console.warn("--> GDPR onMounted");
-  console.warn("--> GDPR Cookie value:", gdprCookie.value);
+  console.warn("GDPR onMounted");
+  console.warn("GDPR Cookie value:", gdprCookie.value);
   if (gdprCookie.value) {
     dialog.value = false;
     return;
@@ -50,7 +50,7 @@ onMounted(async () => {
 });
 
 const approved = () => {
-  console.warn("--> Cookies Approved");
+  console.warn("Cookies Approved");
   gdprCookie.value = "approved";
   dialog.value = false;
 };

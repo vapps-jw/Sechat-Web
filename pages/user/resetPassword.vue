@@ -92,7 +92,7 @@ const onSubmit = async () => {
       }
     );
 
-    console.log("--> Response", response);
+    console.log("Response", response);
 
     if (apiError.value) {
       throw createError({

@@ -95,7 +95,7 @@ const onSubmit = async () => {
       await userApi.getUserData();
 
       if (userStore.isSignedIn) {
-        console.log("--> Navigating to Chat");
+        console.log("Navigating to Chat");
         navigateTo("/chat");
       }
     }

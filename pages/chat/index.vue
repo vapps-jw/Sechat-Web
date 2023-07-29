@@ -33,7 +33,7 @@ const selectedNav = ref(ChatViews.Rooms);
 const { activeChatTab } = storeToRefs(chatStore);
 
 watch(activeChatTab, async (newVal, oldVal) => {
-  console.log("--> Nav Update", newVal, oldVal);
+  console.log("Nav Update", newVal, oldVal);
 
   if (selectedNav.value !== newVal) {
     selectedNav.value = newVal;
@@ -45,7 +45,7 @@ watch(activeChatTab, async (newVal, oldVal) => {
 
   // Handle messages viewed for Room
   if (chatStore.activeRoomId) {
-    console.log("--> Nav Update For Room", chatStore.getActiveRoom);
+    console.log("Nav Update For Room", chatStore.getActiveRoom);
     try {
       if (chatStore.getActiveRoom.encryptedByUser) {
         console.log("Active encrypted room");
@@ -88,7 +88,7 @@ watch(activeChatTab, async (newVal, oldVal) => {
         chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length > 0;
 
       if (markMessagesAsVided) {
-        console.log("--> Nav Update -> Marking messages as viewed");
+        console.log("Nav Update -> Marking messages as viewed");
         chatApi.markMessagesAsViewed(chatStore.activeRoomId);
         chatStore.markActiveRoomMessagesAsViewed();
       }
@@ -126,7 +126,7 @@ watch(activeChatTab, async (newVal, oldVal) => {
         ).length > 0;
 
       if (markMessagesAsVided) {
-        console.log("--> Nav Update -> Marking messages as viewed");
+        console.log("Nav Update -> Marking messages as viewed");
         chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
         chatStore.markDirectMessagesAsViewed(chatStore.activeContactId);
       }

@@ -53,10 +53,10 @@ const invitaitonData = ref({
 });
 
 const createInvitation = async () => {
-  console.log("--> Sending invitation", invitaitonData.value.name);
+  console.log("Sending invitation", invitaitonData.value.name);
   const { valid } = await invitationCreateForm.value?.validate();
   if (!valid) {
-    console.warn("--> Form not valid");
+    console.warn("Form not valid");
     return;
   }
 

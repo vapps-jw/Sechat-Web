@@ -3,7 +3,7 @@ export const useUserApi = () => {
   const config = useRuntimeConfig();
 
   const signOut = async () => {
-    console.log("--> Signing Out");
+    console.log("Signing Out");
 
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/account/logout`,
@@ -30,7 +30,7 @@ export const useUserApi = () => {
 
   const getUserData = async () => {
     const config = useRuntimeConfig();
-    console.warn("--> API Base", config.public.apiBase);
+    console.warn("API Base", config.public.apiBase);
     const { data: newProfile, error: apiError } = await useFetch<IUserProfile>(
       `${config.public.apiBase}/user/get-profile`,
       {
@@ -55,7 +55,7 @@ export const useUserApi = () => {
     }
 
     userStore.updateUserProfile(newProfile.value);
-    console.warn("--> User profile", userStore.userProfile);
+    console.warn("User profile", userStore.userProfile);
   };
 
   return {

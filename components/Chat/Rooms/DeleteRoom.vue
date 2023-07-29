@@ -37,7 +37,7 @@ const e2e = useE2Encryption();
 
 const deleteRoom = async (roomId: string) => {
   try {
-    console.log("--> API Deleting room", roomId);
+    console.log("API Deleting room", roomId);
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/chat/delete-room/?roomId=${roomId}`,
       {
@@ -55,10 +55,10 @@ const deleteRoom = async (roomId: string) => {
       });
     }
 
-    if (props.room.encryptedByUser) {
-      console.log("Removing room E2E key", roomId);
-      e2e.removeKey(roomId, CustomCookies.E2E);
-    }
+    // if (props.room.encryptedByUser) {
+    //   console.log("Removing room E2E key", roomId);
+    //   e2e.removeKey(roomId, CustomCookies.E2E);
+    // }
     dialog.value = false;
     sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {

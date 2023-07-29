@@ -105,7 +105,7 @@ const credentials = ref<ICredentials>({
 
 const onSubmit = async () => {
   try {
-    console.log("--> Signing Up");
+    console.log("Signing Up");
 
     const { error: apiError, data: response } = await useFetch(
       `${config.public.apiBase}/account/register`,
@@ -122,7 +122,7 @@ const onSubmit = async () => {
       }
     );
 
-    console.log("--> Response", response);
+    console.log("Response", response);
 
     if (apiError.value) {
       throw createError({
@@ -135,7 +135,7 @@ const onSubmit = async () => {
     sechatStore.showSuccessSnackbar("User created");
     navigateTo("/user/login");
   } catch (error) {
-    console.log("--> Sign in error", error);
+    console.log("Sign in error", error);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
     sechatStore.showErrorSnackbar(error.statusMessage);

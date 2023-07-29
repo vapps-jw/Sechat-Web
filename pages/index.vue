@@ -73,7 +73,7 @@ const rejectCookies = () => {
 };
 
 const signOut = async () => {
-  console.log("--> Signing Out");
+  console.log("Signing Out");
   try {
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/account/logout`,

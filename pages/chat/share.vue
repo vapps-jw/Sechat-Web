@@ -78,7 +78,7 @@ const exitPage = () => {
 
 const shareData = ref<IShareDetails>(null);
 const shareTargetUpdate = (shareId: string | number) => {
-  console.log("--> ShareTarget", shareId);
+  console.log("ShareTarget", shareId);
   shareData.value = {
     shareId: shareId,
     title: title.value,
@@ -87,7 +87,7 @@ const shareTargetUpdate = (shareId: string | number) => {
 };
 
 const share = () => {
-  console.log("--> Share Tab", tab.value);
+  console.log("Share Tab", tab.value);
   if (tab.value === "contacts-share") {
     executeContactShare();
     return;

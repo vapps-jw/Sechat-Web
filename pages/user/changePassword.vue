@@ -79,7 +79,7 @@ const credentials = ref<ICredentials>({
 
 const onSubmit = async () => {
   try {
-    console.log("--> Changing password");
+    console.log("Changing password");
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/account/change-password`,
       {
@@ -106,7 +106,7 @@ const onSubmit = async () => {
     sechatStore.showSuccessSnackbar("Password Changed");
     navigateTo("/user/login");
   } catch (error) {
-    console.log("--> Change Password error", error);
+    console.log("Change Password error", error);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
     sechatStore.showErrorSnackbar(error.statusMessage);

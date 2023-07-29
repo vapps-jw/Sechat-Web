@@ -141,7 +141,7 @@ export const useVideoCall = () => {
       useFetch("/api/webRTC/turn")
     ));
     if (apiError.value) {
-      console.error("--> TURN Error", apiError.value.data);
+      console.error("TURN Error", apiError.value.data);
       return;
     }
 
@@ -155,13 +155,10 @@ export const useVideoCall = () => {
       VideoSettings
     );
     webRTCStore.updateLocalStream(localStream);
-    console.warn("--> Local Stream check", webRTCStore.localStream);
+    console.warn("Local Stream check", webRTCStore.localStream);
     webRTCStore.addLocalStreamToPlayer();
 
-    console.warn(
-      "--> Sending call request",
-      webRTCStore.getVideoCallContactName
-    );
+    console.warn("Sending call request", webRTCStore.getVideoCallContactName);
     signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
       message: webRTCStore.getVideoCallContactName,
     });
@@ -170,8 +167,8 @@ export const useVideoCall = () => {
 
     await createPeerConnection(webRTCStore.getVideoCallContactName);
 
-    console.warn("--> Local Player", webRTCStore.localVideo);
-    console.warn("--> Remote Player", webRTCStore.remoteVideo);
+    console.warn("Local Player", webRTCStore.localVideo);
+    console.warn("Remote Player", webRTCStore.remoteVideo);
 
     await registerCall(webRTCStore.getVideoCallContactName);
     startCalling();
@@ -186,7 +183,7 @@ export const useVideoCall = () => {
   };
 
   const stopCalling = async () => {
-    console.warn("--> Stopped Calling...");
+    console.warn("Stopped Calling...");
     webRTCStore.stopCalling();
   };
 
@@ -205,7 +202,7 @@ export const useVideoCall = () => {
     let contact = chatStore.getContacts.find(
       (c) => c.displayName === data.message
     );
-    console.warn(`--> Video call requested received: ${contact?.displayName}`);
+    console.warn(`Video call requested received: ${contact?.displayName}`);
 
     if (
       webRTCStore.videoCallEstablished ||
@@ -222,7 +219,7 @@ export const useVideoCall = () => {
   // Handle Incoming Offer
   const offerIncoming = async (data: IStringUserMessage) => {
     console.warn(
-      "--> Offer Incoming, creating answer",
+      "Offer Incoming, creating answer",
       data.userName,
       JSON.parse(data.message)
     );
@@ -231,7 +228,7 @@ export const useVideoCall = () => {
       .setRemoteDescription(JSON.parse(data.message))
       .then(() => {
         webRTCStore.readyToReceiveCandidates = true;
-        console.log("--> Remote description set");
+        console.log("Remote description set");
         return Promise.all(
           webRTCStore.remoteIceCandidatesBuffer.map((c) =>
             webRTCStore.peerConnection.addIceCandidate(c)
@@ -239,12 +236,10 @@ export const useVideoCall = () => {
         );
       })
       .then(() => {
-        console.log("--> All stored candidates added");
+        console.log("All stored candidates added");
         webRTCStore.remoteIceCandidatesBuffer.length = 0;
       })
-      .catch((err) =>
-        console.error("--> Error when adding ICE candidates", err)
-      );
+      .catch((err) => console.error("Error when adding ICE candidates", err));
 
     let answer = await webRTCStore.peerConnection.createAnswer();
     await webRTCStore.peerConnection.setLocalDescription(answer);
@@ -254,21 +249,21 @@ export const useVideoCall = () => {
       message: JSON.stringify(answer),
     };
 
-    console.warn("--> Sending answer", answerToSend);
+    console.warn("Sending answer", answerToSend);
     sendWebRTCAnswer(answerToSend);
   };
 
   // Handle Incoming Answer
   const answerIncoming = (data: IStringUserMessage) => {
-    console.warn("--> Answer Incoming", JSON.parse(data.message));
+    console.warn("Answer Incoming", JSON.parse(data.message));
 
-    console.warn("--> Setting remote description...");
+    console.warn("Setting remote description...");
     webRTCStore.peerConnection
       .setRemoteDescription(JSON.parse(data.message))
       .then(() => {
         webRTCStore.readyToReceiveCandidates = true;
         console.log(
-          "--> Remote description set, candidates in buffer:",
+          "Remote description set, candidates in buffer:",
           webRTCStore.remoteIceCandidatesBuffer.length
         );
         return Promise.all(
@@ -278,14 +273,12 @@ export const useVideoCall = () => {
         );
       })
       .then(() => {
-        console.log("--> All stored candidates added");
+        console.log("All stored candidates added");
         webRTCStore.remoteIceCandidatesBuffer.length = 0;
       })
-      .catch((err) =>
-        console.error("--> Error when adding ICE candidates", err)
-      );
+      .catch((err) => console.error("Error when adding ICE candidates", err));
 
-    console.warn("--> Answer added...");
+    console.warn("Answer added...");
     webRTCStore.updateVideoCallEstablished(true);
     webRTCStore.updateTargetPlayerVisible(true);
   };
@@ -297,11 +290,11 @@ export const useVideoCall = () => {
 
   const ICECandidateIncoming = (data: IStringMessage) => {
     if (webRTCStore.readyToReceiveCandidates) {
-      console.warn("--> ICE Candidate being added!", JSON.parse(data.message));
+      console.warn("ICE Candidate being added!", JSON.parse(data.message));
       webRTCStore.peerConnection.addIceCandidate(JSON.parse(data.message));
     } else {
       console.warn(
-        "--> ICE Candidate being added to buffer!",
+        "ICE Candidate being added to buffer!",
         JSON.parse(data.message)
       );
       webRTCStore.remoteIceCandidatesBuffer.push(JSON.parse(data.message));
@@ -309,10 +302,10 @@ export const useVideoCall = () => {
   };
 
   const createPeerConnection = async (userName: string) => {
-    console.log("--> Creating peer connection");
+    console.log("Creating peer connection");
 
     const servers = await getICECandidates();
-    console.warn("--> ICE SERVERS", servers);
+    console.warn("ICE SERVERS", servers);
     const peerConnection = new RTCPeerConnection({
       iceServers: servers,
       iceTransportPolicy: "all",
@@ -331,10 +324,10 @@ export const useVideoCall = () => {
       webRTCStore.addLocalStreamToPlayer();
     }
 
-    console.log("--> Checking local stream", webRTCStore.localStream);
-    console.log("--> Checking remote stream", webRTCStore.remoteStream);
+    console.log("Checking local stream", webRTCStore.localStream);
+    console.log("Checking remote stream", webRTCStore.remoteStream);
 
-    console.log("--> Getting tracks", webRTCStore.localStream);
+    console.log("Getting tracks", webRTCStore.localStream);
     webRTCStore.localStream.getTracks().forEach((track) => {
       webRTCStore.peerConnection.addTrack(track, webRTCStore.localStream);
     });
@@ -347,7 +340,7 @@ export const useVideoCall = () => {
 
     webRTCStore.peerConnection.onconnectionstatechange = (e) => {
       console.warn(
-        "--> Connection state change",
+        "Connection state change",
         webRTCStore.peerConnection?.connectionState
       );
 
@@ -373,7 +366,7 @@ export const useVideoCall = () => {
 
     webRTCStore.peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
-        console.log("--> Sending ICE Candidate");
+        console.log("Sending ICE Candidate");
         sendICECandiadate({
           userName: userName,
           message: JSON.stringify(event.candidate),
@@ -383,7 +376,7 @@ export const useVideoCall = () => {
   };
 
   const createAndSendOffer = async (userName: string) => {
-    console.log("--> Creating and senting offer", userName);
+    console.log("Creating and senting offer", userName);
 
     let offer = await webRTCStore.peerConnection.createOffer();
     await webRTCStore.peerConnection.setLocalDescription(offer);
@@ -501,7 +494,7 @@ export const useVideoCall = () => {
   };
 
   const sendWebRTCOffer = (data: IStringUserMessage) => {
-    console.warn("--> Sending WebRTC Offer", data);
+    console.warn("Sending WebRTC Offer", data);
     signalRStore.connection.send(SignalRHubMethods.SendWebRTCOffer, data);
   };
 
@@ -512,7 +505,7 @@ export const useVideoCall = () => {
   // Call approved
 
   const approveVideoCall = async (data: IStringUserMessage) => {
-    console.log("--> Sending video call approved", data);
+    console.log("Sending video call approved", data);
     signalRStore.connection.send(SignalRHubMethods.ApproveVideoCall, data);
     // Update call log
     await callAnswered(webRTCStore.getVideoCallContactName);
@@ -523,7 +516,7 @@ export const useVideoCall = () => {
   // Call Approved Sending Offer
 
   const videoCallApproved = async (data: IStringMessage) => {
-    console.warn(`--> Call approved by: ${data.message}`);
+    console.warn(`Call approved by: ${data.message}`);
     stopCalling();
     let connection = chatStore.getContacts.find(
       (c) => c.inviterName === data.message || c.invitedName === data.message
@@ -540,7 +533,7 @@ export const useVideoCall = () => {
   // Call rejected
 
   const rejectVideoCall = async (data: string) => {
-    console.log("--> Sending video call rejection", data);
+    console.log("Sending video call rejection", data);
     signalRStore.connection.send(SignalRHubMethods.RejectVideoCall, {
       message: data,
     });
@@ -551,7 +544,7 @@ export const useVideoCall = () => {
   };
 
   const videoCallRejected = async (data: IStringMessage) => {
-    console.warn(`--> Call rejected by: ${data.message}`);
+    console.warn(`Call rejected by: ${data.message}`);
     stopCalling();
 
     chatStore.loadCallLogs(await getCallLogs());
@@ -563,14 +556,14 @@ export const useVideoCall = () => {
   // Call terminated
 
   const terminateVideoCall = (data: string) => {
-    console.log("--> Sending video call termination", data);
+    console.log("Sending video call termination", data);
     signalRStore.connection.send(SignalRHubMethods.TerminateVideoCall, {
       message: data,
     });
   };
 
   const videoCallTerminated = async (data: IStringMessage) => {
-    console.warn(`--> Call terminated by: ${data.message}`);
+    console.warn(`Call terminated by: ${data.message}`);
 
     if (webRTCStore.videoCallWaitingForApproval) {
       appStore.showWarningSnackbar(`Call ended by ${data.message}`);
@@ -584,14 +577,14 @@ export const useVideoCall = () => {
   // Video Call Events
 
   const onWebRTCAnswerIncomingEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting WebRTCAnswerIncoming");
+    console.log("Connecting WebRTCAnswerIncoming");
     connection.on(SignalRHubMethods.WebRTCAnswerIncoming, answerIncoming);
   };
 
   const onWebRTCScreenShareStateChangeEvent = (
     connection: signalR.HubConnection
   ) => {
-    console.log("--> Connecting WebRTCScreenSahreStateChange");
+    console.log("Connecting WebRTCScreenSahreStateChange");
     connection.on(
       SignalRHubMethods.ScreenShareStateChanged,
       screenShareToggledByOtherUser
@@ -599,27 +592,27 @@ export const useVideoCall = () => {
   };
 
   const onWebRTCOfferIncomingEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting WebRTCOfferIncoming");
+    console.log("Connecting WebRTCOfferIncoming");
     connection.on(SignalRHubMethods.WebRTCOfferIncoming, offerIncoming);
   };
 
   const onVideoCallTerminatedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting VideoCallTerminatedEvent");
+    console.log("Connecting VideoCallTerminatedEvent");
     connection.on(SignalRHubMethods.VideoCallTerminated, videoCallTerminated);
   };
 
   const onVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting VideoCallApprovedEvent");
+    console.log("Connecting VideoCallApprovedEvent");
     connection.on(SignalRHubMethods.VideoCallApproved, videoCallApproved);
   };
 
   const onVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting VideoCallRejectedEvent");
+    console.log("Connecting VideoCallRejectedEvent");
     connection.on(SignalRHubMethods.VideoCallRejected, videoCallRejected);
   };
 
   const onVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting VideoCallRequestedEvent");
+    console.log("Connecting VideoCallRequestedEvent");
     connection.on(
       SignalRHubMethods.VideoCallRequested,
       videoCallRequestReceived
@@ -627,7 +620,7 @@ export const useVideoCall = () => {
   };
 
   const onICECandidateIncomingEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting ICECandidateIncoming");
+    console.log("Connecting ICECandidateIncoming");
     connection.on(SignalRHubMethods.ICECandidateIncoming, ICECandidateIncoming);
   };
 

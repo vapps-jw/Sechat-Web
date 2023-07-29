@@ -63,21 +63,21 @@ const videoCall = useVideoCall();
 const webRTCStore = useWebRTCStore();
 
 const newVideoCall = async () => {
-  console.log("--> Initializing call...");
+  console.log("Initializing call...");
   if (
     !webRTCStore.videoCallWaitingForApproval &&
     !webRTCStore.videoCallRequestSent
   ) {
-    console.log("--> Initializing new call...");
+    console.log("Initializing new call...");
     await videoCall.initializeCall();
     return;
   }
   if (webRTCStore.videoCallWaitingForApproval) {
-    console.log("--> Approving call...");
+    console.log("Approving call...");
     await videoCall.approveCall();
     return;
   }
-  console.error("--> Call is being processed...");
+  console.error("Call is being processed...");
 };
 
 const endCall = async () => {

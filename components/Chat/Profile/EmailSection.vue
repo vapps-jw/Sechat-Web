@@ -55,7 +55,7 @@ const emailForm = ref<IEmail>({
 });
 
 const onSubmit = async () => {
-  console.warn("--> Updating email...", emailForm.value);
+  console.warn("Updating email...", emailForm.value);
 
   const { error: apiError, data: response } = await useFetch(
     `${config.public.apiBase}/account/update-email`,

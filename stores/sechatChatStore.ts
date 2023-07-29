@@ -3,6 +3,7 @@ import {
   ChatViews,
   ContactState,
 } from "~~/utilities/globalEnums";
+import CryptoES from "crypto-es";
 
 export const useSechatChatStore = defineStore({
   id: "sechat-chat-store",
@@ -20,6 +21,8 @@ export const useSechatChatStore = defineStore({
     };
   },
   actions: {
+    decryptDMs(key: string, id: number) {},
+    decryptRoomMessages(key: string, id: string) {},
     addNewCallLog(callLog: ICallLog) {
       this.callLogs.push(callLog);
       if (this.callLogs.length == 1) {
@@ -42,27 +45,6 @@ export const useSechatChatStore = defineStore({
     },
     clearNewMessage() {
       this.newMessage = "";
-    },
-    activateCalendarNavBar() {
-      this.activeBottomNav = BottomNavBarSet.CalendarNavBar;
-    },
-    activateChatNavBar() {
-      this.activeBottomNav = BottomNavBarSet.ChatNavBar;
-    },
-    activateMessagesView() {
-      this.activeChatTab = ChatViews.Messages;
-    },
-    activateRoomsView() {
-      this.activeChatTab = ChatViews.Rooms;
-    },
-    activateContactsView() {
-      this.activeChatTab = ChatViews.Contacts;
-    },
-    activateSettingsView() {
-      this.activeChatTab = ChatViews.Settings;
-    },
-    activateAppSelectionView() {
-      this.activeChatTab = ChatViews.AppsSelection;
     },
     addContact(value: IContactRequest) {
       this.availableContacts = [...this.availableContacts, value].sort((a, b) =>

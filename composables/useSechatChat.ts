@@ -1,57 +1,65 @@
 import { scrollToBottom } from "~/utilities/documentFunctions";
 import {
   ChatViews,
-  CustomCookies,
   SignalRHubMethods,
+  LocalStoreTypes,
   VisibilityStates,
 } from "~~/utilities/globalEnums";
 
 export const useSechatChat = () => {
   const userStore = useUserStore();
   const chatStore = useSechatChatStore();
+  const signalRStore = useSignalRStore();
   const chatApi = useChatApi();
   const e2e = useE2Encryption();
 
   // Users
 
   const onUserConnectionDeleteEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting UserConnectionRemoved event");
+    console.log("Connecting UserConnectionRemoved event");
     connection.on(SignalRHubMethods.ConnectionDeleted, handleConnectionDelete);
   };
 
   const onUserConnectionUpdatedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting UserConnectionUpdated event");
+    console.log("Connecting UserConnectionUpdated event");
     connection.on(SignalRHubMethods.ConnectionUpdated, handleConnectionUpdated);
   };
 
   const onContactStateChangedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting ContactStateChanged");
+    console.log("Connecting ContactStateChanged");
     connection.on(SignalRHubMethods.ContactStateChanged, contactStateChanged);
   };
 
   const contactStateChanged = (data: IStringUserMessage) => {
-    console.warn("--> Contact state changed", data);
+    console.warn("Contact state changed", data);
     chatStore.updateContactState(data.userName, data.message);
   };
 
-  const handleConnectionRequestReceived = (data: IContactRequest) => {
-    console.warn("--> Connection Request Received", data);
+  const handleConnectionRequestReceived = async (data: IContactRequest) => {
+    console.warn("Connection Request Received", data);
     if (data.invitedName === userStore.getUserName) {
       data.displayName = data.inviterName;
     } else {
       data.displayName = data.invitedName;
+      console.log("Calling for new key");
+      const key = await e2e.getNewKey();
+      const newKeyData: e2eKey = {
+        id: data.id,
+        key: key,
+      };
+      e2e.addKey(newKeyData, LocalStoreTypes.E2EDM);
     }
 
     chatStore.addContact(data);
   };
 
   const handleConnectionDelete = (resourceId: IResourceId) => {
-    console.warn("--> Connection Delete Event Handled", resourceId);
+    console.warn("Connection Delete Event Handled", resourceId);
     chatStore.deleteContact(resourceId);
   };
 
   const handleConnectionUpdated = (data: IContactRequest) => {
-    console.log("--> User Connection Updated Event Handled", data);
+    console.log("User Connection Updated Event Handled", data);
     if (data.invitedName === userStore.getUserName) {
       data.displayName = data.inviterName;
     } else {
@@ -65,7 +73,7 @@ export const useSechatChat = () => {
   const onConnectionRequestReceivedEvent = (
     connection: signalR.HubConnection
   ) => {
-    console.log("--> Connecting ConnectionRequestReceived event");
+    console.log("Connecting ConnectionRequestReceived event");
     connection.on(
       SignalRHubMethods.ConnectionRequestReceived,
       handleConnectionRequestReceived
@@ -73,90 +81,75 @@ export const useSechatChat = () => {
   };
 
   const onRoomUpdatedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting RoomUpdated event");
+    console.log("Connecting RoomUpdated event");
     connection.on(SignalRHubMethods.RoomUpdated, handleUpdateRoom);
   };
 
   const onRoomDeletedEvent = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting RoomDeleted event");
+    console.log("Connecting RoomDeleted event");
     connection.on(SignalRHubMethods.RoomDeleted, handleDeleteRoom);
   };
 
   const addRoom = (room: IRoom) => {
-    console.log("--> Adding room to the Store", room.name);
+    console.log("Adding room to the Store", room.name);
     chatStore.addRoom(room);
   };
 
   const removeRoom = (room: IRoom) => {
-    console.log("--> Removing Room", room.name);
+    console.log("Removing Room", room.name);
     chatStore.deleteRoom(room.id);
   };
 
   const handleUpdateRoom = (room: IRoom) => {
-    console.warn("--> Handling Room Updated Event", room);
+    console.warn("Handling Room Updated Event", room);
 
-    const keyCheck = e2e.checkCookie(room.id, CustomCookies.E2E);
-    if (keyCheck) {
-      room.hasKey = true;
-    }
     chatStore.updateRoom(room);
   };
 
   const handleUserAddedToRoom = (room: IRoom) => {
-    console.warn("--> Handling UserAddedToRoom Event", room);
-    if (room.encryptedByUser) {
-      if (e2e.checkCookie(room.id, CustomCookies.E2E)) {
-        room.hasKey = true;
-        return;
-      }
-      room.hasKey = false;
-    }
+    console.warn("Handling UserAddedToRoom Event", room);
+
     chatStore.addUserToRoom(room);
   };
 
   const handleUserRemovedFromRoom = (options: IUserRoomOptions) => {
-    console.warn("--> Handling UserRemovedFromRoom Event", options);
+    console.warn("Handling UserRemovedFromRoom Event", options);
 
     if (userStore.getUserName === options.userName) {
-      console.warn("--> Current User is removed from room", options);
-      if (
-        chatStore.availableRooms.find((r) => r.id === options.roomId)
-          ?.encryptedByUser
-      ) {
-        e2e.removeKey(options.roomId, CustomCookies.E2E);
-      }
+      console.warn("Current User is removed from room", options);
+
       chatStore.deleteCurrentUserFromRoom(options);
       return;
     }
 
-    console.warn("--> User is removed from room", options);
+    console.warn("User is removed from room", options);
     chatStore.deleteUserFromRoom(options);
   };
 
   const handleDeleteRoom = (message: IResourceGuid) => {
-    console.warn("--> Handling Room Delete Event Handled", message);
+    console.warn("Handling Room Delete Event Handled", message);
     chatStore.deleteRoom(message.id);
   };
 
   const selectRoom = (room: IRoom) => {
-    console.log("--> Room selected", room);
+    console.log("Room selected", room);
     chatStore.selectRoom(room.id);
   };
 
   // Messages
 
   const onMessageDeleted = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting MessageDeleted event");
+    console.log("Connecting MessageDeleted event");
     connection.on(SignalRHubMethods.MessageDeleted, handleMessageDeleted);
   };
 
   const onMessageWasViewed = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting MessageWasViewed event");
+    console.log("Connecting MessageWasViewed event");
     connection.on(SignalRHubMethods.MessageWasViewed, handleMessageWasViewed);
   };
 
   const onMessagesWereViewed = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting MessagesWereViewed event");
+    console.log("Connecting MessagesWereViewed event");
     connection.on(
       SignalRHubMethods.MessagesWereViewed,
       handleMessagesWereViewed
@@ -164,37 +157,37 @@ export const useSechatChat = () => {
   };
 
   const onIncomingMessage = async (connection: signalR.HubConnection) => {
-    console.log("--> Connecting IncomingMessage event");
+    console.log("Connecting IncomingMessage event");
     connection.on(SignalRHubMethods.MessageIncoming, handleIncomingMessage);
   };
 
   const handleIncomingMessage = async (message: IMessage) => {
     console.warn(
-      "--> Incoming Message Event Handle",
+      "Incoming Message Event Handle",
       message,
       chatStore.activeRoomId
     );
 
-    if (
-      chatStore.availableRooms.find((r) => r.id === message.roomId) &&
-      chatStore.availableRooms.find((r) => r.id === message.roomId)
-        .encryptedByUser
-    ) {
-      const hasKey = e2e.checkCookie(message.roomId, CustomCookies.E2E);
-      if (!hasKey) return;
+    // if (
+    //   chatStore.availableRooms.find((r) => r.id === message.roomId) &&
+    //   chatStore.availableRooms.find((r) => r.id === message.roomId)
+    //     .encryptedByUser
+    // ) {
+    //   const hasKey = e2e.checkCookie(message.roomId, CustomCookies.E2E);
+    //   if (!hasKey) return;
 
-      try {
-        const decryptedData = await chatApi.decryptMessage(
-          message.id,
-          message.text,
-          message.roomId
-        );
-        message.text = decryptedData.message;
-        message.error = decryptedData.error;
-      } catch (error) {
-        return;
-      }
-    }
+    //   try {
+    //     const decryptedData = await chatApi.decryptMessage(
+    //       message.id,
+    //       message.text,
+    //       message.roomId
+    //     );
+    //     message.text = decryptedData.message;
+    //     message.error = decryptedData.error;
+    //   } catch (error) {
+    //     return;
+    //   }
+    // }
 
     message.wasViewed = false;
 
@@ -230,7 +223,7 @@ export const useSechatChat = () => {
   };
 
   const handleMessagesWereViewed = (message: IRoomUserActionMessage) => {
-    console.warn("--> Incoming MessagesWereViewed", message);
+    console.warn("Incoming MessagesWereViewed", message);
     chatStore.markRoomMessagesAsViewed(message.userName, message.roomId);
     if (
       chatStore.activeRoomId &&
@@ -242,7 +235,7 @@ export const useSechatChat = () => {
   };
 
   const handleMessageWasViewed = (message: IRoomMessageUserActionMessage) => {
-    console.warn("--> Incoming MessageWasViewed", message);
+    console.warn("Incoming MessageWasViewed", message);
     chatStore.markRoomMessageAsViewed(
       message.userName,
       message.roomId,
@@ -254,17 +247,72 @@ export const useSechatChat = () => {
   };
 
   const handleMessageDeleted = (data: IMessageDeleted) => {
-    console.warn("--> Handling MessageDeleted", data);
+    console.warn("Handling MessageDeleted", data);
     chatStore.deleteMessageFromRoom(data);
     if (chatStore.activeRoomId && chatStore.activeRoomId === data.roomId) {
       scrollToBottom("chatView");
     }
   };
 
+  // E2E
+
+  const onDMKeyRequested = async (connection: signalR.HubConnection) => {
+    console.log("Connecting DMKeyRequested event");
+    connection.on(SignalRHubMethods.DMKeyRequested, handleDMKeyRequested);
+  };
+
+  const handleDMKeyRequested = async (message: DMKeyRequest) => {
+    console.warn("Incoming DMKeyRequested ", message);
+
+    const key = e2e.getKey(message.id, LocalStoreTypes.E2EDM);
+    console.log("Key", key);
+    if (!key) {
+      return;
+    }
+
+    const keyToShare: DMSharedKey = {
+      key: key.key,
+      receipient: message.receipient,
+      id: message.id,
+    };
+
+    signalRStore.connection.send(SignalRHubMethods.ShareDMKey, keyToShare);
+  };
+
+  const onDMKeyIncoming = async (connection: signalR.HubConnection) => {
+    console.log("Connecting DMKeyIncoming event");
+    connection.on(SignalRHubMethods.DMKeyIncoming, handleDMKeyIncoming);
+  };
+
+  const handleDMKeyIncoming = async (message: DMSharedKey) => {
+    console.warn("Incoming DMKeyIncoming ", message);
+
+    const key = e2e.getKey(message.id, LocalStoreTypes.E2EDM);
+    if (key) {
+      return;
+    }
+  };
+
+  // const onRoomKeyRequested = async (connection: signalR.HubConnection) => {
+  //   console.log("Connecting RoomKeyRequested event");
+  //   connection.on(
+  //     SignalRHubMethods.RoomKeyRequested,
+  //     handleIncomingDirectMessage
+  //   );
+  // };
+
+  // const onRoomKeyIncoming = async (connection: signalR.HubConnection) => {
+  //   console.log("Connecting RoomKeyIncoming event");
+  //   connection.on(
+  //     SignalRHubMethods.RoomKeyIncoming,
+  //     handleIncomingDirectMessage
+  //   );
+  // };
+
   // Direct Messages
 
   const onIncomingDirectMessage = async (connection: signalR.HubConnection) => {
-    console.log("--> Connecting DirectMessageIncoming event");
+    console.log("Connecting DirectMessageIncoming event");
     connection.on(
       SignalRHubMethods.DirectMessageIncoming,
       handleIncomingDirectMessage
@@ -272,7 +320,7 @@ export const useSechatChat = () => {
   };
 
   const onDirectMessageDeleted = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting DirectMessageDeleted event");
+    console.log("Connecting DirectMessageDeleted event");
     connection.on(
       SignalRHubMethods.DirectMessageDeleted,
       handleDirectMessageDeleted
@@ -280,7 +328,7 @@ export const useSechatChat = () => {
   };
 
   const onDirectMessageWasViewed = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting DirectMessageWasViewed event");
+    console.log("Connecting DirectMessageWasViewed event");
     connection.on(
       SignalRHubMethods.DirectMessageWasViewed,
       handleDirectMessageWasViewed
@@ -288,7 +336,7 @@ export const useSechatChat = () => {
   };
 
   const onDirectMessagesWereViewed = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting DirectMessagesWereViewed event");
+    console.log("Connecting DirectMessagesWereViewed event");
     connection.on(
       SignalRHubMethods.DirectMessagesWereViewed,
       handleDirectMessagesWereViewed
@@ -296,7 +344,7 @@ export const useSechatChat = () => {
   };
 
   const onContactUpdateRequired = (connection: signalR.HubConnection) => {
-    console.log("--> Connecting ContactUpdateRequired event");
+    console.log("Connecting ContactUpdateRequired event");
     connection.on(
       SignalRHubMethods.ContactUpdateRequired,
       handleContactUpdateRequired
@@ -306,38 +354,17 @@ export const useSechatChat = () => {
   const handleContactUpdateRequired = async (
     message: IContactUpdateRequired
   ) => {
-    console.warn("--> Incoming ContactUpdateRequired", message);
+    console.warn("Incoming ContactUpdateRequired", message);
     const updatedContact = await chatApi.getContact(message.contactId);
     chatStore.updateContact(updatedContact);
   };
 
   const handleIncomingDirectMessage = async (message: IDirectMessage) => {
     console.warn(
-      "--> Incoming Direct Message Event Handle",
+      "Incoming Direct Message Event Handle",
       message,
       chatStore.activeContactId
     );
-
-    if (
-      chatStore.availableContacts.find((r) => r.id === message.contactId) &&
-      chatStore.availableContacts.find((r) => r.id === message.contactId)
-        .encryptedByUser
-    ) {
-      const hasKey = e2e.checkCookie(message.contactId, CustomCookies.E2EDM);
-      if (!hasKey) return;
-
-      try {
-        const decryptedData = await chatApi.decryptDirectMessage(
-          message.id,
-          message.text,
-          message.contactId
-        );
-        message.text = decryptedData.message;
-        message.error = decryptedData.error;
-      } catch (error) {
-        return;
-      }
-    }
 
     if (
       document.visibilityState === VisibilityStates.VISIBLE &&
@@ -346,7 +373,7 @@ export const useSechatChat = () => {
       chatStore.getActiveChatTab === ChatViews.Messages &&
       message.nameSentBy !== userStore.getUserName
     ) {
-      console.warn("--> Marking Incoming Message as viewed");
+      console.warn("Marking Incoming Message as viewed");
       message.wasViewed = true;
       console.log("Adding new direct message", message);
       chatStore.addNewDirectMessage(message);
@@ -370,7 +397,7 @@ export const useSechatChat = () => {
   };
 
   const handleDirectMessagesWereViewed = (message: IDirectMessagesViewed) => {
-    console.warn("--> Incoming DirectMessagesWereViewed", message);
+    console.warn("Incoming DirectMessagesWereViewed", message);
     chatStore.markDirectMessagesAsViewed(message.contactId);
     if (
       chatStore.activeContactId &&
@@ -384,7 +411,7 @@ export const useSechatChat = () => {
   const handleDirectMessageWasViewed = (
     message: IContactMessageUserActionMessage
   ) => {
-    console.warn("--> Incoming DirectMessageWasViewed", message);
+    console.warn("Incoming DirectMessageWasViewed", message);
     chatStore.markDirectMessageAsViewed(message.contactId, message.messageId);
     if (
       chatStore.activeContactId &&
@@ -395,7 +422,7 @@ export const useSechatChat = () => {
   };
 
   const handleDirectMessageDeleted = (data: IDirectMessageId) => {
-    console.warn("--> Handling DirectMessageDeleted", data);
+    console.warn("Handling DirectMessageDeleted", data);
     chatStore.deleteMessageFromContact(data);
     if (
       chatStore.activeContactId &&
@@ -405,9 +432,10 @@ export const useSechatChat = () => {
     }
   };
 
-  // SignalR Event handlers
+  // E2E
 
   return {
+    onDMKeyRequested,
     onContactUpdateRequired,
     onIncomingDirectMessage,
     onDirectMessageWasViewed,

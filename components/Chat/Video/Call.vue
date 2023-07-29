@@ -32,7 +32,7 @@
 const webRTCStore = useWebRTCStore();
 
 onMounted(() => {
-  console.warn("--> Video call view Mounted");
+  console.warn("Video call view Mounted");
   if (!webRTCStore.videoCallEstablished) {
     webRTCStore.updateRemoteVideoPlayer(
       <HTMLVideoElement>document.getElementById("video-stream-remote")
@@ -44,7 +44,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  console.warn("--> Video call onBeforeUnmount");
+  console.warn("Video call onBeforeUnmount");
   webRTCStore.cleanup();
   webRTCStore.$reset();
 });

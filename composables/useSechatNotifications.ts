@@ -40,22 +40,22 @@ export const useSechatNotifications = () => {
   };
 
   const subscribeToPush = async () => {
-    console.warn("--> Requesting Permission");
+    console.warn("Requesting Permission");
 
     Notification.requestPermission().then((result) => {
       if (result !== "granted") {
-        console.error("--> Permission Denied!");
+        console.error("Permission Denied!");
         return;
       }
     });
 
-    console.warn("--> Subscribing to Push");
+    console.warn("Subscribing to Push");
     let subscription;
     try {
       const register = await navigator.serviceWorker.ready;
 
       console.log(
-        "--> Registering Push...",
+        "Registering Push...",
         config.public.vapidKey,
         config.public.apiBase
       );
@@ -63,14 +63,14 @@ export const useSechatNotifications = () => {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(config.public.vapidKey),
       });
-      console.log("--> Push Registered...");
+      console.log("Push Registered...");
     } catch (error) {
-      console.log("--> Error when registering Push:", error);
+      console.log("Error when registering Push:", error);
       return;
     }
 
     const subscriptionPayload = JSON.stringify(subscription);
-    console.log("--> Sending Push Subscription:", subscriptionPayload);
+    console.log("Sending Push Subscription:", subscriptionPayload);
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/notifications/push-subscribe`,
       {
@@ -105,7 +105,7 @@ export const useSechatNotifications = () => {
     );
 
     if (apiError.value) {
-      console.error("--> API Error - Subscription");
+      console.error("API Error - Subscription");
       return;
     }
 

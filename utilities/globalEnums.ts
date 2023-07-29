@@ -14,10 +14,13 @@ export const SnackbarMessages = {
 };
 
 export const CustomCookies = {
-  E2E: "E2E",
-  E2EDM: "E2E_DM",
   GDPR: "gdpr-consent",
   AUTH: "sechatid",
+};
+
+export const LocalStoreTypes = {
+  E2EROOMS: "E2E_ROOMS",
+  E2EDM: "E2E_DM",
   E2EMASTER: "E2E_MASTER",
 };
 
@@ -101,6 +104,17 @@ export const VideoCallLogResult = {
 };
 
 export const SignalRHubMethods = {
+  // E2E
+  RequestDMKey: "RequestDMKey",
+  DMKeyRequested: "DMKeyRequested",
+  DMKeyIncoming: "DMKeyIncoming",
+  ShareDMKey: "ShareDMKey",
+
+  RequestRoomKey: "RequestRoomKey",
+  RoomKeyRequested: "RoomKeyRequested",
+  RoomKeyIncoming: "RoomKeyIncoming",
+  ShareRoomKey: "ShareRoomKey",
+
   // Video Calls
   SendMicStateChange: "SendMicStateChange",
   SendCamStateChange: "SendCamStateChange",

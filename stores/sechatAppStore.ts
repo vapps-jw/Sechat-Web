@@ -29,7 +29,7 @@ export const useSechatAppStore = defineStore({
       this.isOnline = value;
     },
     showSnackbar(data: ISanckbar) {
-      console.log("--> Snackbar data", data);
+      console.log("Snackbar data", data);
       this.updateSnackbar(data);
     },
     showSuccessSnackbar(message: string) {

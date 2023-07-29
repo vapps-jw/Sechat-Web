@@ -13,10 +13,8 @@ const sechatAppStore = useSechatAppStore();
 const appStore = useSechatAppStore();
 const signalR = useSignalR();
 const signalRStore = useSignalRStore();
-const chatApi = useChatApi();
 const refreshHandler = useRefreshHandler();
 const chatStore = useSechatChatStore();
-const e2e = useE2Encryption();
 
 onMounted(async () => {
   window.addEventListener("beforeunload", () => {
@@ -25,18 +23,18 @@ onMounted(async () => {
     chatStore.$reset();
   });
 
-  console.warn("--> Chat Layout onMounted");
+  console.warn("Chat Layout onMounted");
   sechatAppStore.updateLoadingOverlay(true);
 
   await refreshHandler.handleOnMountedLoad();
 
-  console.info("--> Hooking to visibility change");
+  console.info("Hooking to visibility change");
   window.addEventListener(
     "visibilitychange",
     refreshHandler.handleVisibilityChange
   );
 
-  console.info("--> Hooking to online change");
+  console.info("Hooking to online change");
   window.addEventListener("online", refreshHandler.handleOnlineChange);
   window.addEventListener("offline", refreshHandler.handleOfflineChange);
 
@@ -44,22 +42,22 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-  console.warn("--> Chat Layout onBeforeUnmount");
+  console.warn("Chat Layout onBeforeUnmount");
   appStore.updateLoadingOverlay(true);
 
   signalR.closeConnection();
   signalRStore.$reset();
   chatStore.$reset();
 
-  console.warn("--> Connection", signalRStore.getConnection);
+  console.warn("Connection", signalRStore.getConnection);
 
-  console.info("--> Removing Hook to visibility change");
+  console.info("Removing Hook to visibility change");
   window.removeEventListener(
     "visibilitychange",
     refreshHandler.handleVisibilityChange
   );
 
-  console.info("--> Removing Hook to online change");
+  console.info("Removing Hook to online change");
   window.removeEventListener("online", refreshHandler.handleOnlineChange);
   window.removeEventListener("offline", refreshHandler.handleOfflineChange);
   window.location.reload();

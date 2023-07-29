@@ -4,10 +4,9 @@ export const useChatApi = () => {
   const config = useRuntimeConfig();
   const userStore = useUserStore();
   const sechatStore = useSechatAppStore();
-  const e2e = useE2Encryption();
 
   const getLinkPreview = async (link: string) => {
-    console.log("--> Getting Link Preview from API");
+    console.log("Getting Link Preview from API");
     const { error: apiError, data: preview } = await useFetch<ILinkPreview>(
       `${config.public.apiBase}/linkPreview`,
       {
@@ -29,7 +28,7 @@ export const useChatApi = () => {
   };
 
   const getConstacts = async (): Promise<IContactRequest[]> => {
-    console.log("--> Getting Contacts from API");
+    console.log("Getting Contacts from API");
     const { error: apiError, data: contacts } = await useFetch<
       IContactRequest[]
     >(`${config.public.apiBase}/chat/contacts`, {
@@ -45,7 +44,7 @@ export const useChatApi = () => {
       });
     }
 
-    console.log("--> Contacts Fetched", contacts.value);
+    console.log("Contacts Fetched", contacts.value);
 
     contacts.value.forEach((uc) => {
       if (uc.invitedName === userStore.userProfile.userName) {
@@ -59,7 +58,7 @@ export const useChatApi = () => {
   };
 
   const getRooms = async (): Promise<IRoom[]> => {
-    console.log("--> Getting Rooms from API");
+    console.log("Getting Rooms from API");
     const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
       `${config.public.apiBase}/chat/rooms`,
       {
@@ -76,13 +75,12 @@ export const useChatApi = () => {
       });
     }
 
-    console.log("--> Rooms Fetched", rooms.value);
-    rooms.value.forEach((r) => (r.hasKey = false));
+    console.log("Rooms Fetched", rooms.value);
     return rooms.value;
   };
 
   const getRoom = async (roomId: string) => {
-    console.log("--> Getting Rooms from API");
+    console.log("Getting Rooms from API");
     const { error: apiError, data: room } = await useFetch<IRoom>(
       `${config.public.apiBase}/chat/room/${roomId}`,
       {
@@ -99,12 +97,12 @@ export const useChatApi = () => {
       });
     }
 
-    console.log("--> Room Fetched", room.value);
+    console.log("Room Fetched", room.value);
     return room.value;
   };
 
   const getContact = async (contactId: number) => {
-    console.log("--> Getting Cotnact from API");
+    console.log("Getting Cotnact from API");
     const { error: apiError, data: uc } = await useFetch<IContactRequest>(
       `${config.public.apiBase}/chat/contact/${contactId}`,
       {
@@ -127,69 +125,12 @@ export const useChatApi = () => {
       uc.value.displayName = uc.value.invitedName;
     }
 
-    if (!uc.value.encryptedByUser) {
-      e2e.removeKey(uc.value.id, CustomCookies.E2EDM);
-    }
-
-    console.log("--> Contact Fetched", uc.value);
+    console.log("Contact Fetched", uc.value);
     return uc.value;
   };
 
-  const getRoomsUpdate = async (
-    updateRequests: IRoomUpdateRequest[]
-  ): Promise<IRoom[]> => {
-    console.log("--> Getting Rooms Updates from API", updateRequests);
-    const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
-      `${config.public.apiBase}/chat/rooms-update`,
-      {
-        method: "POST",
-        credentials: "include",
-        body: updateRequests,
-      }
-    );
-
-    if (apiError.value) {
-      console.error(apiError.value);
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
-
-    console.log("--> Rooms Updates Fetched", rooms.value);
-    rooms.value.forEach((r) => (r.hasKey = false));
-    return rooms.value;
-  };
-
-  const getContactsUpdate = async (
-    updateRequests: IContactUpdateRequest[]
-  ): Promise<IContactRequest[]> => {
-    console.log("--> Getting Contact Updates from API", updateRequests);
-    const { error: apiError, data: constacts } = await useFetch<
-      IContactRequest[]
-    >(`${config.public.apiBase}/chat/contacts-update`, {
-      method: "POST",
-      credentials: "include",
-      body: updateRequests,
-    });
-
-    if (apiError.value) {
-      console.error(apiError.value);
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
-
-    console.log("--> Contacts Updates Fetched", constacts.value);
-    constacts.value.forEach((c) => (c.hasKey = false));
-    return constacts.value;
-  };
-
   const markMessagesAsViewed = async (roomId: string) => {
-    console.log("--> Marking Messages as viewed");
+    console.log("Marking Messages as viewed");
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/chat/messages-viewed`,
       {
@@ -230,7 +171,7 @@ export const useChatApi = () => {
   };
 
   const markMessageAsViewed = async (roomId: string, messageId: number) => {
-    console.log("--> Marking Single Message as viewed");
+    console.log("Marking Single Message as viewed");
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/chat/message-viewed/${roomId}/${messageId}`,
       {
@@ -273,7 +214,7 @@ export const useChatApi = () => {
     contactId: number,
     messageId: number
   ) => {
-    console.log("--> Marking Single Direct Message as viewed");
+    console.log("Marking Single Direct Message as viewed");
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/chat/direct-message-viewed/${contactId}/${messageId}`,
       {
@@ -313,7 +254,7 @@ export const useChatApi = () => {
   };
 
   const markDirectMessagesAsViewed = async (contactId: number) => {
-    console.log("--> Marking Direct Messages as viewed");
+    console.log("Marking Direct Messages as viewed");
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/chat/direct-messages-viewed`,
       {
@@ -353,86 +294,14 @@ export const useChatApi = () => {
     );
   };
 
-  const decryptMessage = async (
-    id: number,
-    message: string,
-    roomId: string
-  ) => {
-    console.log("--> Decrypting message");
-    const { error: apiError, data: messageData } =
-      await useFetch<IMessageDecryptionRequest>(
-        `${config.public.apiBase}/crypto/decrypt-message`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          credentials: "include",
-          body: {
-            id: id,
-            message: message,
-            roomId: roomId,
-          },
-        }
-      );
-
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
-
-    return messageData.value;
-  };
-
-  const decryptDirectMessage = async (
-    id: number,
-    message: string,
-    contactId: number
-  ) => {
-    console.log("--> Decrypting message");
-    const { error: apiError, data: messageData } =
-      await useFetch<IDirectMessageDecryptionRequest>(
-        `${config.public.apiBase}/crypto/decrypt-direct-message`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          credentials: "include",
-          body: {
-            id: id,
-            message: message,
-            contactId: contactId,
-          },
-        }
-      );
-
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
-
-    return messageData.value;
-  };
-
   return {
     getContact,
-    getContactsUpdate,
     markDirectMessageAsViewed,
     markDirectMessagesAsViewed,
-    decryptDirectMessage,
     getRoom,
-    decryptMessage,
     getLinkPreview,
     getConstacts,
     getRooms,
-    getRoomsUpdate,
     markMessageAsViewed,
     markMessagesAsViewed,
   };

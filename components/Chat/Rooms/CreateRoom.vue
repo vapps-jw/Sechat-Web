@@ -84,7 +84,7 @@ const roomData = ref({
 const createRoom = async () => {
   const { valid } = await roomCreateForm.value?.validate();
   if (!valid) {
-    console.warn("--> Form not valid");
+    console.warn("Form not valid");
     return;
   }
 
@@ -97,7 +97,7 @@ const createRoom = async () => {
       roomData.value.roomKey
     );
   } catch (error) {
-    console.error("--> Room creation error", error);
+    console.error("Room creation error", error);
   }
 
   roomData.value.name = "";

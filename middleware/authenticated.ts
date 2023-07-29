@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware((to, from) => {
   const userStore = useUserStore();
-  console.warn("--> Auth middleware triggered", userStore.isSignedIn);
+  console.warn("Auth middleware triggered", userStore.isSignedIn);
   if (userStore.isSignedIn) {
     return;
   }

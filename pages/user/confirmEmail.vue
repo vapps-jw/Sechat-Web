@@ -16,12 +16,12 @@ const config = useRuntimeConfig();
 const message = ref("");
 
 onMounted(async () => {
-  console.warn("--> Confirmation request", userName.value, token.value);
+  console.warn("Confirmation request", userName.value, token.value);
   if (!userName.value || !token.value) {
     return;
   }
 
-  console.log("--> Sending confirmation");
+  console.log("Sending confirmation");
   const { error: apiError, data: apiData } = await useFetch(
     `${config.public.apiBase}/account/confirm-email`,
     {
@@ -39,7 +39,7 @@ onMounted(async () => {
   );
 
   if (apiError.value) {
-    console.error("--> API Error", apiError.value.data);
+    console.error("API Error", apiError.value.data);
     message.value = apiError.value.data;
     return;
   }

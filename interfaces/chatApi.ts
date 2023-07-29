@@ -45,6 +45,7 @@ interface IDirectMessageId {
 }
 interface IDirectMessage extends IMessageBase {
   contactId?: number;
+  decrypted?: boolean;
 }
 
 interface IDirectMessagesViewed {
@@ -53,6 +54,7 @@ interface IDirectMessagesViewed {
 
 interface IMessage extends IMessageBase {
   roomId?: string;
+  decrypted?: boolean;
   messageViewers?: IMessageViewer[];
 }
 
@@ -87,8 +89,6 @@ interface IRoom {
   creatorName?: string;
   lastActivity?: Date;
   created?: Date;
-  encryptedByUser?: boolean;
-  hasKey?: boolean;
 }
 
 interface IRoomMessageUserActionMessage {
@@ -172,6 +172,4 @@ interface IContactRequest {
   blocked?: boolean;
   blockedByName?: string;
   directMessages?: IDirectMessage[];
-  encryptedByUser?: boolean;
-  hasKey?: boolean;
 }

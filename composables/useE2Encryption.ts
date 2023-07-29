@@ -1,81 +1,68 @@
-import { CookieOptions } from "nuxt/app";
-import { CustomCookies } from "~/utilities/globalEnums";
-
-const cookieOptions = () => {
-  const config = useRuntimeConfig();
-
-  return {
-    maxAge: 600 * 24 * 60 * 60,
-    secure: true,
-    sameSite: true,
-    domain: config.public.mainDomain,
-  } as CookieOptions<string>;
-};
-
-type e2eKey = {
-  id: number | string;
-  key: string;
-};
+import { LocalStoreTypes } from "~/utilities/globalEnums";
 
 export const useE2Encryption = () => {
-  const addKey = (data: e2eKey, cookieType: string) => {
-    let cookie = useCookie(cookieType, cookieOptions());
+  const config = useRuntimeConfig();
 
-    if (cookie.value === undefined || !cookie.value) {
-      console.log("--> E2E Store Empty");
-      const newData = [{ key: data.key, id: data.id }];
-      cookie.value = JSON.stringify(newData);
-      console.log("--> E2E Updated", cookie.value);
+  const encryptMessage = (data: string, key: e2eKey) => {};
+  const decryptMessage = (data: string, key: e2eKey) => {};
+
+  const addKey = (data: e2eKey, type: string) => {
+    if (!process.client) {
       return;
     }
-
-    let e2eData = JSON.parse(JSON.stringify(cookie.value)) as e2eKey[];
-    console.log("--> E2E Update", e2eData);
-
-    e2eData = e2eData.filter((key) => key.id !== data.id);
-    e2eData.push({
-      key: data.key,
-      id: data.id,
-    });
-
-    cookie.value = JSON.stringify(e2eData);
-    console.log("--> E2E Store Data", e2eData);
+    const newData = JSON.stringify([{ key: data.key, id: data.id }]);
+    localStorage.setItem(type, newData);
   };
 
-  const checkCookie = (id: string | number, cookieType: string) => {
-    const cookie = useCookie(cookieType, cookieOptions());
-    if (cookie.value === undefined || !cookie.value) return false;
-
-    const e2eData = JSON.parse(JSON.stringify(cookie.value)) as e2eKey[];
-    return e2eData.some((key) => key.id === id);
+  const getKey = (id: string | number, type: string): e2eKey => {
+    if (!process.client) {
+      return;
+    }
+    const storedData = localStorage.getItem(type);
+    let e2eData = JSON.parse(JSON.stringify(storedData)) as e2eKey[];
+    return e2eData.find((item) => item.id === id);
   };
 
-  const removeKey = (id: string | number, cookieType: string) => {
-    const cookie = useCookie(cookieType, cookieOptions());
-
-    console.log("--> E2E Cookie taken", cookie);
-    if (cookie.value === undefined || !cookie.value) return;
-
-    let e2eData = JSON.parse(JSON.stringify(cookie.value)) as e2eKey[];
-
-    console.log("--> E2E Remove", e2eData);
+  const removeKey = (id: string | number, type: string) => {
+    if (!process.client) {
+      return;
+    }
+    const storedData = localStorage.getItem(type);
+    let e2eData = JSON.parse(JSON.stringify(storedData)) as e2eKey[];
 
     e2eData = e2eData.filter((key) => key.id !== id);
-    cookie.value = JSON.stringify(e2eData);
-    console.log("--> E2E Updated", e2eData);
+    const newData = JSON.stringify(e2eData);
+
+    localStorage.setItem(type, newData);
   };
 
-  const getCookie = (id: string | number, cookieType: string) => {
-    const cookie = useCookie(cookieType, cookieOptions());
-    if (cookie.value === undefined || !cookie.value) return null;
+  const getNewKey = async (): Promise<string> => {
+    console.log("Getting Rooms from API");
+    const { error: apiError, data: key } = await useFetch<IRoom>(
+      `${config.public.apiBase}/crypto/new-key`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
 
-    const e2eData = JSON.parse(JSON.stringify(cookie.value)) as e2eKey[];
-    return e2eData.find((key) => key.id === id);
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    console.log("New key fetched", key.value);
+    return key.value as string;
   };
 
   return {
-    getCookie,
-    checkCookie,
+    getNewKey,
+    encryptMessage,
+    decryptMessage,
+    getKey,
     removeKey,
     addKey,
   };

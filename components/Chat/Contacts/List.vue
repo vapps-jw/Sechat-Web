@@ -118,7 +118,7 @@ const userStore = useUserStore();
 const webRTCStore = useWebRTCStore();
 
 const startVideoCall = (uc: IContactRequest) => {
-  console.log("--> Starting new call with", uc.displayName);
+  console.log("Starting new call with", uc.displayName);
   webRTCStore.updateVideoCallContact(uc);
   webRTCStore.updateVideoCallViewVisible(true);
 };
@@ -163,7 +163,7 @@ const directMessage = (uc: IContactRequest) => {
 };
 
 const blockContact = async (id: number) => {
-  console.log("--> Calling contact block");
+  console.log("Calling contact block");
 
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/user/block-contact/?contactId=${id}`,
@@ -184,7 +184,7 @@ const blockContact = async (id: number) => {
 };
 
 const allowContact = async (id: number) => {
-  console.log("--> Calling contact block");
+  console.log("Calling contact block");
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/user/allow-contact/?contactId=${id}`,
     {
@@ -204,7 +204,7 @@ const allowContact = async (id: number) => {
 };
 
 const approveContact = async (id: number) => {
-  console.log("--> Calling contact approve");
+  console.log("Calling contact approve");
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/user/approve-contact/?contactId=${id}`,
     {
@@ -225,7 +225,7 @@ const approveContact = async (id: number) => {
 };
 
 const deleteContact = async (id: number) => {
-  console.log("--> Deleting contact", id);
+  console.log("Deleting contact", id);
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/user/delete-contact/?contactId=${id}`,
     {

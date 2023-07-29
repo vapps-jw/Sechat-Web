@@ -23,7 +23,7 @@ const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 
 const deleteAccount = async () => {
-  console.warn("--> Deleting account");
+  console.warn("Deleting account");
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/account/delete-account`,
     {

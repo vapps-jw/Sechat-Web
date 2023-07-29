@@ -1,15 +1,10 @@
-import {
-  ChatViews,
-  CustomCookies,
-  VisibilityStates,
-} from "~/utilities/globalEnums";
+import { ChatViews, VisibilityStates } from "~/utilities/globalEnums";
 
 export const useRefreshHandler = () => {
   const appStore = useSechatAppStore();
   const signalR = useSignalR();
   const chatApi = useChatApi();
   const chatStore = useSechatChatStore();
-  const e2e = useE2Encryption();
   const userStore = useUserStore();
   const videoCall = useVideoCall();
 
@@ -17,19 +12,7 @@ export const useRefreshHandler = () => {
     await Promise.all([
       chatApi.getConstacts().then((res) => chatStore.loadContacts(res)),
       videoCall.getCallLogs().then((res) => chatStore.loadCallLogs(res)),
-      chatApi.getRooms().then((res) => {
-        res.forEach((r) => {
-          if (r.encryptedByUser) {
-            if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
-              r.hasKey = true;
-              return;
-            }
-            r.hasKey = false;
-          }
-        });
-
-        chatStore.loadRooms(res);
-      }),
+      chatApi.getRooms().then((res) => chatStore.loadRooms(res)),
     ]);
 
     await signalR.connect();
@@ -76,68 +59,8 @@ export const useRefreshHandler = () => {
       );
     }
 
-    // if (chatStore.availableRooms.length > 0) {
-    //   console.warn("Available Rooms", chatStore.availableRooms);
-    //   const updates = chatStore.availableRooms.map(
-    //     (r) =>
-    //       <IRoomUpdateRequest>{
-    //         roomId: r.id,
-    //         lastMessage: r.messages.length == 0 ? 0 : r.messages.at(-1).id,
-    //       }
-    //   );
-    //   if (updates.length > 0) {
-    //     console.log("Calling Room Updates", updates);
-    //     promises.push(
-    //       chatApi.getRoomsUpdate(updates).then((res) => {
-    //         res.forEach((r) => {
-    //           if (r.encryptedByUser) {
-    //             if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
-    //               r.hasKey = true;
-    //               return;
-    //             }
-    //             r.hasKey = false;
-    //           }
-    //         });
-
-    //         chatStore.updateRooms(res);
-    //       })
-    //     );
-    //   } else {
-    //     console.warn("Getting All Rooms");
-    //     promises.push(
-    //       chatApi.getRooms().then((res) => {
-    //         res.forEach((r) => {
-    //           if (r.encryptedByUser) {
-    //             if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
-    //               r.hasKey = true;
-    //               return;
-    //             }
-    //             r.hasKey = false;
-    //           }
-    //         });
-
-    //         chatStore.loadRooms(res);
-    //       })
-    //     );
-    //   }
-    // } else {
     console.warn("Getting All Rooms");
-    promises.push(
-      chatApi.getRooms().then((res) => {
-        res.forEach((r) => {
-          if (r.encryptedByUser) {
-            if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
-              r.hasKey = true;
-              return;
-            }
-            r.hasKey = false;
-          }
-        });
-
-        chatStore.loadRooms(res);
-      })
-    );
-    // }
+    promises.push(chatApi.getRooms().then((res) => chatStore.loadRooms(res)));
 
     try {
       await Promise.all(promises);
@@ -164,12 +87,12 @@ export const useRefreshHandler = () => {
           0;
 
         console.log(
-          "--> Nav Update -> Marking Room messages as viewed",
+          "Nav Update -> Marking Room messages as viewed",
           markMessagesAsVieved
         );
 
         if (markMessagesAsVieved) {
-          console.log("--> Nav Update -> Marking messages as viewed");
+          console.log("Nav Update -> Marking messages as viewed");
           await chatApi.markMessagesAsViewed(chatStore.activeRoomId);
           chatStore.markActiveRoomMessagesAsViewed();
         }
@@ -190,12 +113,12 @@ export const useRefreshHandler = () => {
           ).length > 0;
 
         console.log(
-          "--> Nav Update -> Marking Contact messages as viewed",
+          "Nav Update -> Marking Contact messages as viewed",
           markMessagesAsVieved
         );
 
         if (markMessagesAsVieved) {
-          console.log("--> Nav Update -> Marking messages as viewed");
+          console.log("Nav Update -> Marking messages as viewed");
           await chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
           chatStore.markDirectMessagesAsViewed(chatStore.activeContactId);
         }
