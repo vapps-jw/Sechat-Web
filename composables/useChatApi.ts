@@ -166,14 +166,13 @@ export const useChatApi = () => {
     updateRequests: IContactUpdateRequest[]
   ): Promise<IContactRequest[]> => {
     console.log("--> Getting Contact Updates from API", updateRequests);
-    const { error: apiError, data: rooms } = await useFetch<IContactRequest[]>(
-      `${config.public.apiBase}/chat/contacts-update`,
-      {
-        method: "POST",
-        credentials: "include",
-        body: updateRequests,
-      }
-    );
+    const { error: apiError, data: constacts } = await useFetch<
+      IContactRequest[]
+    >(`${config.public.apiBase}/chat/contacts-update`, {
+      method: "POST",
+      credentials: "include",
+      body: updateRequests,
+    });
 
     if (apiError.value) {
       console.error(apiError.value);
@@ -184,9 +183,9 @@ export const useChatApi = () => {
       });
     }
 
-    console.log("--> Contacts Updates Fetched", rooms.value);
-    rooms.value.forEach((c) => (c.hasKey = false));
-    return rooms.value;
+    console.log("--> Contacts Updates Fetched", constacts.value);
+    constacts.value.forEach((c) => (c.hasKey = false));
+    return constacts.value;
   };
 
   const markMessagesAsViewed = async (roomId: string) => {

@@ -61,7 +61,19 @@ export const useRefreshHandler = () => {
 
   const refreshActions = async () => {
     const promises = [
-      chatApi.getConstacts().then((res) => chatStore.loadContacts(res)),
+      chatApi.getConstacts().then((res) => {
+        res.forEach((cr) => {
+          if (cr.encryptedByUser) {
+            if (e2e.checkCookie(cr.id, CustomCookies.E2EDM)) {
+              cr.hasKey = true;
+              return;
+            }
+            cr.hasKey = false;
+          }
+        });
+
+        chatStore.loadContacts(res);
+      }),
     ];
 
     if (chatStore.callLogs.length > 0) {
