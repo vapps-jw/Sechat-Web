@@ -42,7 +42,7 @@ export const useUserApi = () => {
       throw createError({
         ...apiError.value,
         statusCode: apiError.value.statusCode,
-        statusMessage: "You are not logged in",
+        statusMessage: apiError.value.data,
       });
     }
 
@@ -50,7 +50,7 @@ export const useUserApi = () => {
       throw createError({
         ...apiError.value,
         statusCode: apiError.value.statusCode,
-        statusMessage: "Error when loading User Profile",
+        statusMessage: apiError.value.data,
       });
     }
 
