@@ -3,7 +3,7 @@ import { CustomCookies, SnackbarIcons } from "~/utilities/globalEnums";
 export const useChatApi = () => {
   const config = useRuntimeConfig();
   const userStore = useUserStore();
-  const sechatApp = useSechatApp();
+  const sechatStore = useSechatAppStore();
   const e2e = useE2Encryption();
 
   const getLinkPreview = async (link: string) => {
@@ -202,7 +202,7 @@ export const useChatApi = () => {
         body: { Id: roomId },
         onResponseError({ response }) {
           if (response.status === 400) {
-            sechatApp.showSnackbar({
+            sechatStore.showSnackbar({
               snackbar: true,
               text: response._data,
               timeout: 2000,
@@ -211,7 +211,7 @@ export const useChatApi = () => {
               iconColor: "black",
             });
           } else {
-            sechatApp.showSnackbar({
+            sechatStore.showSnackbar({
               snackbar: true,
               text: "Connection Error",
               timeout: 2000,
@@ -242,7 +242,7 @@ export const useChatApi = () => {
         credentials: "include",
         onResponseError({ response }) {
           if (response.status === 400) {
-            sechatApp.showSnackbar({
+            sechatStore.showSnackbar({
               snackbar: true,
               text: response._data,
               timeout: 2000,
@@ -251,7 +251,7 @@ export const useChatApi = () => {
               iconColor: "black",
             });
           } else {
-            sechatApp.showSnackbar({
+            sechatStore.showSnackbar({
               snackbar: true,
               text: "Connection Error",
               timeout: 2000,
@@ -285,7 +285,7 @@ export const useChatApi = () => {
         credentials: "include",
         onResponseError({ response }) {
           if (response.status === 400) {
-            sechatApp.showSnackbar({
+            sechatStore.showSnackbar({
               snackbar: true,
               text: response._data,
               timeout: 2000,
@@ -294,7 +294,7 @@ export const useChatApi = () => {
               iconColor: "black",
             });
           } else {
-            sechatApp.showSnackbar({
+            sechatStore.showSnackbar({
               snackbar: true,
               text: "Connection Error",
               timeout: 2000,
@@ -326,7 +326,7 @@ export const useChatApi = () => {
         body: { Id: contactId },
         onResponseError({ response }) {
           if (response.status === 400) {
-            sechatApp.showSnackbar({
+            sechatStore.showSnackbar({
               snackbar: true,
               text: response._data,
               timeout: 2000,
@@ -335,7 +335,7 @@ export const useChatApi = () => {
               iconColor: "black",
             });
           } else {
-            sechatApp.showSnackbar({
+            sechatStore.showSnackbar({
               snackbar: true,
               text: "Connection Error",
               timeout: 2000,

@@ -3,7 +3,6 @@ import { CustomCookies, SignalRHubMethods } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
   const sechatStore = useSechatAppStore();
-  const sechatApp = useSechatApp();
   const config = useRuntimeConfig();
   const sechatChat = useSechatChat();
   const sechatChatStore = useSechatChatStore();
@@ -272,7 +271,7 @@ export const useSignalR = () => {
         }
         sechatChatStore.addRoom(newRoom);
         _connectToRoom(newRoom.id);
-        sechatApp.showSuccessSnackbar("Room created");
+        sechatStore.showSuccessSnackbar("Room created");
         return newRoom.id;
       })
       .catch((err) => {

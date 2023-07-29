@@ -46,28 +46,6 @@ const userStore = useUserStore();
 const backToHomePage = () => {
   navigateTo("/");
 };
-
-const deleteAccount = async () => {
-  console.warn("--> Deleting account");
-  const { error: apiError } = await useFetch(
-    `${config.public.apiBase}/account/delete-account`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "DELETE",
-      credentials: "include",
-    }
-  );
-
-  if (apiError.value) {
-    sechatStore.showErrorSnackbar(SnackbarMessages.Error);
-    return;
-  }
-
-  sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
-  return navigateTo("/user/register");
-};
 </script>
 
 <style scoped></style>

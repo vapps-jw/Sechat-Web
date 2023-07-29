@@ -2,7 +2,7 @@ import { SnackbarIcons } from "~~/utilities/globalEnums";
 
 export const useSechatNotifications = () => {
   const config = useRuntimeConfig();
-  const sechatApp = useSechatApp();
+  const sechatStore = useSechatAppStore();
 
   const notificationsAllowed = useState<boolean>(
     "notificationsAllowed",
@@ -29,7 +29,7 @@ export const useSechatNotifications = () => {
       });
     }
 
-    sechatApp.showSnackbar({
+    sechatStore.showSnackbar({
       snackbar: true,
       text: "All subscriptions deleted",
       timeout: 2000,
@@ -82,7 +82,7 @@ export const useSechatNotifications = () => {
         body: subscriptionPayload,
         onResponseError({ response }) {
           if (response.status === 400) {
-            sechatApp.showSnackbar({
+            sechatStore.showSnackbar({
               snackbar: true,
               text: response._data,
               timeout: 2000,
@@ -91,7 +91,7 @@ export const useSechatNotifications = () => {
               iconColor: "black",
             });
           } else {
-            sechatApp.showSnackbar({
+            sechatStore.showSnackbar({
               snackbar: true,
               text: "Subscription Failed",
               timeout: 2000,
@@ -109,7 +109,7 @@ export const useSechatNotifications = () => {
       return;
     }
 
-    sechatApp.showSnackbar({
+    sechatStore.showSnackbar({
       snackbar: true,
       text: "Subscribed",
       timeout: 2000,
