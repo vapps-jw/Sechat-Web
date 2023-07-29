@@ -91,10 +91,6 @@ const onSubmit = async () => {
       }
     );
 
-    if (apiError.value) {
-      sechatStore.showErrorSnackbar(apiError.value.data);
-    }
-
     if (!apiError.value) {
       await userApi.getUserData();
 
@@ -104,6 +100,7 @@ const onSubmit = async () => {
       }
     }
   } catch (error) {
+    sechatStore.showErrorSnackbar(error.value.data);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
     error.value = null;
