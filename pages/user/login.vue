@@ -100,7 +100,7 @@ const onSubmit = async () => {
       }
     }
   } catch (error) {
-    sechatStore.showErrorSnackbar(error.value);
+    sechatStore.showErrorSnackbar(error);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
     error.value = null;
