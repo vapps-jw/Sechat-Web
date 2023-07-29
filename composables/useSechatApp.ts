@@ -1,4 +1,3 @@
-import { SnackbarIcons } from "~~/utilities/globalEnums";
 import { PushNotificationTypes } from "~~/utilities/globalEnums";
 
 export const useSechatApp = () => {
