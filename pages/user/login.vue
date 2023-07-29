@@ -112,18 +112,7 @@ const credentials = ref<ICredentials>({
   username: "",
   password: "",
   nameRules: [(v) => !!v || "Name is required"],
-  passwordRules:
-    process.env.NODE_ENV === "production"
-      ? [
-          (v) => !!v || "Password is required",
-          (v) => (v && v.length <= 20) || "Max 20 characters",
-          (v) => (v && v.length > 8) || "Min 8 characters",
-          (v) => (v && /[A-Z]/.test(v)) || "At least one Uppercase character",
-          (v) => (v && /[a-z]/.test(v)) || "At least one Loercase character",
-          (v) => (v && /[0-9]/.test(v)) || "At least one number",
-          (v) => (v && /\W/.test(v)) || "At least one special character",
-        ]
-      : [(v) => !!v || "Password is required"],
+  passwordRules: [(v) => !!v || "Password is required"],
 });
 </script>
 
