@@ -76,68 +76,68 @@ export const useRefreshHandler = () => {
       );
     }
 
-    if (chatStore.availableRooms.length > 0) {
-      console.warn("Available Rooms", chatStore.availableRooms);
-      const updates = chatStore.availableRooms.map(
-        (r) =>
-          <IRoomUpdateRequest>{
-            roomId: r.id,
-            lastMessage: r.messages.length == 0 ? 0 : r.messages.at(-1).id,
-          }
-      );
-      if (updates.length > 0) {
-        console.log("Calling Room Updates", updates);
-        promises.push(
-          chatApi.getRoomsUpdate(updates).then((res) => {
-            res.forEach((r) => {
-              if (r.encryptedByUser) {
-                if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
-                  r.hasKey = true;
-                  return;
-                }
-                r.hasKey = false;
-              }
-            });
+    // if (chatStore.availableRooms.length > 0) {
+    //   console.warn("Available Rooms", chatStore.availableRooms);
+    //   const updates = chatStore.availableRooms.map(
+    //     (r) =>
+    //       <IRoomUpdateRequest>{
+    //         roomId: r.id,
+    //         lastMessage: r.messages.length == 0 ? 0 : r.messages.at(-1).id,
+    //       }
+    //   );
+    //   if (updates.length > 0) {
+    //     console.log("Calling Room Updates", updates);
+    //     promises.push(
+    //       chatApi.getRoomsUpdate(updates).then((res) => {
+    //         res.forEach((r) => {
+    //           if (r.encryptedByUser) {
+    //             if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
+    //               r.hasKey = true;
+    //               return;
+    //             }
+    //             r.hasKey = false;
+    //           }
+    //         });
 
-            chatStore.updateRooms(res);
-          })
-        );
-      } else {
-        console.warn("Getting All Rooms");
-        promises.push(
-          chatApi.getRooms().then((res) => {
-            res.forEach((r) => {
-              if (r.encryptedByUser) {
-                if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
-                  r.hasKey = true;
-                  return;
-                }
-                r.hasKey = false;
-              }
-            });
+    //         chatStore.updateRooms(res);
+    //       })
+    //     );
+    //   } else {
+    //     console.warn("Getting All Rooms");
+    //     promises.push(
+    //       chatApi.getRooms().then((res) => {
+    //         res.forEach((r) => {
+    //           if (r.encryptedByUser) {
+    //             if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
+    //               r.hasKey = true;
+    //               return;
+    //             }
+    //             r.hasKey = false;
+    //           }
+    //         });
 
-            chatStore.loadRooms(res);
-          })
-        );
-      }
-    } else {
-      console.warn("Getting All Rooms");
-      promises.push(
-        chatApi.getRooms().then((res) => {
-          res.forEach((r) => {
-            if (r.encryptedByUser) {
-              if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
-                r.hasKey = true;
-                return;
-              }
-              r.hasKey = false;
+    //         chatStore.loadRooms(res);
+    //       })
+    //     );
+    //   }
+    // } else {
+    console.warn("Getting All Rooms");
+    promises.push(
+      chatApi.getRooms().then((res) => {
+        res.forEach((r) => {
+          if (r.encryptedByUser) {
+            if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
+              r.hasKey = true;
+              return;
             }
-          });
+            r.hasKey = false;
+          }
+        });
 
-          chatStore.loadRooms(res);
-        })
-      );
-    }
+        chatStore.loadRooms(res);
+      })
+    );
+    // }
 
     try {
       await Promise.all(promises);
