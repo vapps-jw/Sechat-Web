@@ -55,6 +55,12 @@ const editorUpdate = (state: IEditorState) => {
 };
 
 const callRoomMessageApi = async () => {
+  const key = e2e.getKey(chatStore.activeRoomId, LocalStoreTypes.E2EROOMS);
+  if (!key) {
+    sechatStore.showErrorSnackbar("Key not found");
+    return;
+  }
+  const encryptedMessage = e2e.encryptMessage(chatStore.newMessage, key);
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/chat/send-message`,
     {
@@ -64,7 +70,7 @@ const callRoomMessageApi = async () => {
       method: "POST",
       credentials: "include",
       body: {
-        Text: chatStore.newMessage,
+        Text: encryptedMessage,
         RoomId: chatStore.activeRoomId,
       },
     }

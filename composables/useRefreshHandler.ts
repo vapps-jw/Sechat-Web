@@ -13,31 +13,21 @@ export const useRefreshHandler = () => {
   const videoCall = useVideoCall();
   const e2e = useE2Encryption();
 
-  const decryptDMs = (crs: IContactRequest[]) => {
-    const keys = e2e.getKeys(LocalStoreTypes.E2EDM);
-    crs.forEach((cr) => {
-      const key = keys?.find((k) => k.id === cr.id);
-      if (!key) {
-        cr.hasKey = false;
-        cr.directMessages.forEach((dm) => (dm.decrypted = false));
-        return;
-      }
-      cr.hasKey = true;
-      cr.directMessages.forEach((dm) => {
-        dm.text = e2e.decryptMessage(dm.text, key);
-        dm.decrypted = true;
-      });
-    });
-  };
-
   const handleOnMountedLoad = async () => {
     await Promise.all([
       chatApi.getConstacts().then((res) => {
-        decryptDMs(res);
+        res.forEach((cr) => {
+          e2e.tryDecryptContact(cr);
+        });
         chatStore.loadContacts(res);
       }),
       videoCall.getCallLogs().then((res) => chatStore.loadCallLogs(res)),
-      chatApi.getRooms().then((res) => chatStore.loadRooms(res)),
+      chatApi.getRooms().then((res) => {
+        res.forEach((room) => {
+          e2e.tryDecryptRoom(room);
+        });
+        return chatStore.loadRooms(res);
+      }),
     ]);
 
     await signalR.connect();
@@ -51,8 +41,13 @@ export const useRefreshHandler = () => {
 
     appStore.updateLoadingOverlay(true);
     await refreshActions();
+
+    // TODO: ask for missing keys - add separate action for this
+
     appStore.updateLoadingOverlay(false);
   };
+
+  const askForMissingKeys = () => {};
 
   const handleOnlineChange = async () => {
     console.log("Online status changed");
@@ -70,7 +65,9 @@ export const useRefreshHandler = () => {
   const refreshActions = async () => {
     const promises = [
       chatApi.getConstacts().then((res) => {
-        decryptDMs(res);
+        res.forEach((cr) => {
+          e2e.tryDecryptContact(cr);
+        });
         chatStore.loadContacts(res);
       }),
     ];
@@ -88,7 +85,14 @@ export const useRefreshHandler = () => {
     }
 
     console.warn("Getting All Rooms");
-    promises.push(chatApi.getRooms().then((res) => chatStore.loadRooms(res)));
+    promises.push(
+      chatApi.getRooms().then((res) => {
+        res.forEach((room) => {
+          e2e.tryDecryptRoom(room);
+        });
+        return chatStore.loadRooms(res);
+      })
+    );
 
     try {
       await Promise.all(promises);

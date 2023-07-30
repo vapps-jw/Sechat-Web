@@ -1,5 +1,9 @@
 import * as signalR from "@microsoft/signalr";
-import { CustomCookies, SignalRHubMethods } from "~~/utilities/globalEnums";
+import {
+  CustomCookies,
+  LocalStoreTypes,
+  SignalRHubMethods,
+} from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
   const sechatStore = useSechatAppStore();
@@ -58,8 +62,12 @@ export const useSignalR = () => {
     _onUserRemovedFromRoomEvent(connection);
 
     // E2E
+
     sechatChat.onDMKeyRequested(connection);
     sechatChat.onDMKeyIncoming(connection);
+
+    sechatChat.onRoomKeyRequested(connection);
+    sechatChat.onRoomKeyIncoming(connection);
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
@@ -177,6 +185,11 @@ export const useSignalR = () => {
     );
   };
 
+  const _handleUserAddedToRoomActions = (data: IRoom) => {
+    _connectToRoom(data.id);
+    sechatChat.handleUserAddedToRoom(data);
+  };
+
   const _onUserRemovedFromRoomEvent = (connection: signalR.HubConnection) => {
     console.log("Connecting UserRemovedFromRoom event");
     connection.on(
@@ -244,6 +257,8 @@ export const useSignalR = () => {
       return;
     }
 
+    // TODO: remove room key
+
     console.log("Disconnecting from Room", roomId);
     signalRStore.connection
       .invoke(SignalRHubMethods.DisconnectFromRoom, {
@@ -262,11 +277,23 @@ export const useSignalR = () => {
         RoomName: data.roomName,
         UserEncrypted: data.userEncrypted,
       })
-      .then((newRoom: IRoom) => {
+      .then(async (newRoom: IRoom) => {
         console.log("New room created", newRoom);
 
+        newRoom.hasKey = true;
         sechatChatStore.addRoom(newRoom);
         _connectToRoom(newRoom.id);
+
+        console.log("Calling for new key");
+        const key = await e2e.getNewKey();
+        const newKeyData: E2EKey = {
+          id: newRoom.id,
+          key: key,
+        };
+        console.log("Saving new key", key);
+        const result = e2e.addKey(newKeyData, LocalStoreTypes.E2EROOMS);
+        console.log("Updated keys", result);
+
         sechatStore.showSuccessSnackbar("Room created");
         return newRoom.id;
       })
@@ -282,11 +309,6 @@ export const useSignalR = () => {
 
   // Room Handlers
 
-  const _handleUserAddedToRoomActions = (data: IRoom) => {
-    _connectToRoom(data.id);
-    sechatChat.handleUserAddedToRoom(data);
-  };
-
   const _handleUserRemovedFromRoomActions = (options: IUserRoomOptions) => {
     console.warn("Handling UserRemovedFromRoom in SignalR", options);
     if (userStore.getUserName === options.userName) {
@@ -295,6 +317,8 @@ export const useSignalR = () => {
       sechatChat.handleUserRemovedFromRoom(options);
       return;
     }
+
+    // TODO: handle key removeal
 
     console.warn("Other user is being removed - signalR");
     sechatChat.handleUserRemovedFromRoom(options);

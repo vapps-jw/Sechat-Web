@@ -52,6 +52,40 @@ export const useSechatChat = () => {
 
   const contactStateChanged = (data: IStringUserMessage) => {
     console.warn("Contact state changed", data);
+
+    // Check if there are any missing keys that other user can provide
+    const missingKeys = e2e.getMissingKeys();
+    if (missingKeys.length > 0) {
+      missingKeys.forEach((missingKey) => {
+        if (missingKey.keyHandlers.some((kh) => kh === data.userName)) {
+          if (missingKey.type === LocalStoreTypes.E2EDM) {
+            const request: DMKeyRequest = {
+              id: missingKey.id as number,
+              receipient: userStore.getUserName,
+              keyHolder: data.userName,
+            };
+
+            signalRStore.connection.send(
+              SignalRHubMethods.RequestDMKey,
+              request
+            );
+          }
+
+          if (missingKey.type === LocalStoreTypes.E2EROOMS) {
+            const request: RoomKeyRequest = {
+              id: missingKey.id as string,
+              receipient: userStore.getUserName,
+            };
+
+            signalRStore.connection.send(
+              SignalRHubMethods.RequestRoomKey,
+              request
+            );
+          }
+        }
+      });
+    }
+
     chatStore.updateContactState(data.userName, data.message);
   };
 
@@ -73,7 +107,7 @@ export const useSechatChat = () => {
       data.displayName = data.invitedName;
       console.log("Calling for new key");
       const key = await e2e.getNewKey();
-      const newKeyData: e2eKey = {
+      const newKeyData: E2EKey = {
         id: data.id,
         key: key,
       };
@@ -111,12 +145,22 @@ export const useSechatChat = () => {
   const handleUpdateRoom = (room: IRoom) => {
     console.warn("Handling Room Updated Event", room);
 
+    const key = e2e.getKey(room.id, LocalStoreTypes.E2EROOMS);
+    if (key) {
+      room.hasKey = true;
+    }
     chatStore.updateRoom(room);
   };
 
-  const handleUserAddedToRoom = (room: IRoom) => {
+  const handleUserAddedToRoom = async (room: IRoom) => {
     console.warn("Handling UserAddedToRoom Event", room);
 
+    const request: RoomKeyRequest = {
+      id: room.id as string,
+      receipient: userStore.getUserName,
+    };
+
+    signalRStore.connection.send(SignalRHubMethods.RequestRoomKey, request);
     chatStore.addUserToRoom(room);
   };
 
@@ -135,8 +179,9 @@ export const useSechatChat = () => {
   };
 
   const handleDeleteRoom = (message: IResourceGuid) => {
-    console.warn("Handling Room Delete Event Handled", message);
+    console.warn("Handling Room Delete Event", message);
     chatStore.deleteRoom(message.id);
+    e2e.removeKey(message.id, LocalStoreTypes.E2EROOMS);
   };
 
   const selectRoom = (room: IRoom) => {
@@ -176,27 +221,15 @@ export const useSechatChat = () => {
       chatStore.activeRoomId
     );
 
-    // if (
-    //   chatStore.availableRooms.find((r) => r.id === message.roomId) &&
-    //   chatStore.availableRooms.find((r) => r.id === message.roomId)
-    //     .encryptedByUser
-    // ) {
-    //   const hasKey = e2e.checkCookie(message.roomId, CustomCookies.E2E);
-    //   if (!hasKey) return;
+    const key = e2e.getKey(message.roomId, LocalStoreTypes.E2EROOMS);
+    if (!key) {
+      console.error("Key is missing for", message.roomId);
+      return;
+    }
 
-    //   try {
-    //     const decryptedData = await chatApi.decryptMessage(
-    //       message.id,
-    //       message.text,
-    //       message.roomId
-    //     );
-    //     message.text = decryptedData.message;
-    //     message.error = decryptedData.error;
-    //   } catch (error) {
-    //     return;
-    //   }
-    // }
-
+    console.log("Decrypting message");
+    message.text = e2e.decryptMessage(message.text, key);
+    message.decrypted = true;
     message.wasViewed = false;
 
     if (message.nameSentBy === userStore.getUserName) {
@@ -296,30 +329,37 @@ export const useSechatChat = () => {
   const handleDMKeyIncoming = async (message: DMSharedKey) => {
     console.warn("Incoming DMKeyIncoming ", message);
 
-    const newKey: e2eKey = {
+    const newKey: E2EKey = {
       key: message.key,
       id: message.id,
     };
 
     const result = e2e.addKey(newKey, LocalStoreTypes.E2EDM);
     console.log("Key Updated", result);
+
+    const contact = chatStore.availableContacts.find(
+      (c) => c.id === message.id
+    );
+    e2e.tryDecryptContact(contact);
   };
 
-  // const onRoomKeyRequested = async (connection: signalR.HubConnection) => {
-  //   console.log("Connecting RoomKeyRequested event");
-  //   connection.on(
-  //     SignalRHubMethods.RoomKeyRequested,
-  //     handleIncomingDirectMessage
-  //   );
-  // };
+  const onRoomKeyRequested = async (connection: signalR.HubConnection) => {
+    console.log("Connecting RoomKeyRequested event");
+    connection.on(SignalRHubMethods.RoomKeyRequested, handleOnRoomKeyRequested);
+  };
 
-  // const onRoomKeyIncoming = async (connection: signalR.HubConnection) => {
-  //   console.log("Connecting RoomKeyIncoming event");
-  //   connection.on(
-  //     SignalRHubMethods.RoomKeyIncoming,
-  //     handleIncomingDirectMessage
-  //   );
-  // };
+  const handleOnRoomKeyRequested = () => {
+    console.warn("Room Key requested");
+  };
+
+  const onRoomKeyIncoming = async (connection: signalR.HubConnection) => {
+    console.log("Connecting RoomKeyIncoming event");
+    connection.on(SignalRHubMethods.RoomKeyIncoming, handleRoomKeyIncoming);
+  };
+
+  const handleRoomKeyIncoming = () => {
+    console.warn("Room Key received");
+  };
 
   // Direct Messages
 
@@ -340,7 +380,7 @@ export const useSechatChat = () => {
 
     const key = e2e.getKey(message.contactId, LocalStoreTypes.E2EDM);
     if (!key) {
-      console.error("Key is missing");
+      console.error("Key is missing for", message.contactId);
       return;
     }
 
@@ -386,6 +426,17 @@ export const useSechatChat = () => {
     );
   };
 
+  const handleDirectMessageDeleted = (data: IDirectMessageId) => {
+    console.warn("Handling DirectMessageDeleted", data);
+    chatStore.deleteMessageFromContact(data);
+    if (
+      chatStore.activeContactId &&
+      chatStore.activeContactId === data.contactId
+    ) {
+      scrollToBottom("chatView");
+    }
+  };
+
   const onDirectMessageWasViewed = (connection: signalR.HubConnection) => {
     console.log("Connecting DirectMessageWasViewed event");
     connection.on(
@@ -400,6 +451,18 @@ export const useSechatChat = () => {
       SignalRHubMethods.DirectMessagesWereViewed,
       handleDirectMessagesWereViewed
     );
+  };
+
+  const handleDirectMessagesWereViewed = (message: IDirectMessagesViewed) => {
+    console.warn("Incoming DirectMessagesWereViewed", message);
+    chatStore.markDirectMessagesAsViewed(message.contactId);
+    if (
+      chatStore.activeContactId &&
+      message.contactId === chatStore.activeContactId &&
+      chatStore.activeChatTab === ChatViews.Messages
+    ) {
+      scrollToBottom("chatView");
+    }
   };
 
   const onContactUpdateRequired = (connection: signalR.HubConnection) => {
@@ -418,18 +481,6 @@ export const useSechatChat = () => {
     chatStore.updateContact(updatedContact);
   };
 
-  const handleDirectMessagesWereViewed = (message: IDirectMessagesViewed) => {
-    console.warn("Incoming DirectMessagesWereViewed", message);
-    chatStore.markDirectMessagesAsViewed(message.contactId);
-    if (
-      chatStore.activeContactId &&
-      message.contactId === chatStore.activeContactId &&
-      chatStore.activeChatTab === ChatViews.Messages
-    ) {
-      scrollToBottom("chatView");
-    }
-  };
-
   const handleDirectMessageWasViewed = (
     message: IContactMessageUserActionMessage
   ) => {
@@ -443,20 +494,9 @@ export const useSechatChat = () => {
     }
   };
 
-  const handleDirectMessageDeleted = (data: IDirectMessageId) => {
-    console.warn("Handling DirectMessageDeleted", data);
-    chatStore.deleteMessageFromContact(data);
-    if (
-      chatStore.activeContactId &&
-      chatStore.activeContactId === data.contactId
-    ) {
-      scrollToBottom("chatView");
-    }
-  };
-
-  // E2E
-
   return {
+    onRoomKeyRequested,
+    onRoomKeyIncoming,
     onDMKeyIncoming,
     onDMKeyRequested,
     onContactUpdateRequired,

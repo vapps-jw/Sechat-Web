@@ -38,8 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarMessages, ContactState } from "~~/utilities/globalEnums";
-import { getInitials, stringToColor } from "~/utilities/stringFunctions";
+import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
 const sechatStore = useSechatAppStore();

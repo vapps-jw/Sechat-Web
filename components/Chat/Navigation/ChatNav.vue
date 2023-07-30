@@ -8,7 +8,7 @@
       color="tertiary"
       v-if="chatStore.activeBottomNav === BottomNavBarSet.ChatNavBar"
       :value="ChatViews.Messages"
-      @click="chatStore.activateMessagesView"
+      @click="chatStore.activateView(ChatViews.Messages)"
     >
       <v-icon>mdi-chat-processing</v-icon>
       <span>Messages</span>
@@ -17,7 +17,7 @@
       color="tertiary"
       v-if="chatStore.activeBottomNav === BottomNavBarSet.ChatNavBar"
       :value="ChatViews.Rooms"
-      @click="chatStore.activateRoomsView"
+      @click="chatStore.activateView(ChatViews.Rooms)"
     >
       <v-badge
         :model-value="pendingRoomMessagesPresent"
@@ -34,7 +34,7 @@
       color="tertiary"
       v-if="chatStore.activeBottomNav === BottomNavBarSet.ChatNavBar"
       :value="ChatViews.Contacts"
-      @click="chatStore.activateContactsView"
+      @click="chatStore.activateView(ChatViews.Contacts)"
     >
       <v-badge
         :model-value="pendingContactMessagesPresent"
@@ -98,7 +98,7 @@
       color="tertiary"
       v-if="chatStore.activeBottomNav === BottomNavBarSet.ProfileNavBar"
       :value="ChatViews.Settings"
-      @click="chatStore.activateSettingsView"
+      @click="chatStore.activateView(ChatViews.Settings)"
     >
       <ChatStatusConnectionIcon />
       <span>Settings</span>
@@ -133,7 +133,6 @@ const pendingContactMessagesPresent = computed<boolean>(() => {
 });
 
 const pendingContactMessagesCount = computed<number>(() => {
-  console.log("Computed changed");
   const count = availableContacts.value
     .filter((c) =>
       c.directMessages.some(
@@ -153,8 +152,9 @@ const pendingContactMessagesCount = computed<number>(() => {
 });
 
 const pendingRoomMessagesPresent = computed<boolean>(() => {
+  console.log("Checking for unseen messages");
   return (
-    availableRooms.value.filter((c) =>
+    availableRooms.value.filter((c: IRoom) =>
       c.messages.some(
         (cm) => !cm.wasViewed && userStore.getUserName !== cm.nameSentBy
       )
@@ -163,8 +163,9 @@ const pendingRoomMessagesPresent = computed<boolean>(() => {
 });
 
 const pendingRoomMessagesCount = computed<number>(() => {
+  console.log("Counting for unseen messages");
   const count = availableRooms.value
-    .filter((c) =>
+    .filter((c: IRoom) =>
       c.messages.some(
         (cm) => !cm.wasViewed && userStore.getUserName !== cm.nameSentBy
       )

@@ -3,7 +3,6 @@ import {
   ChatViews,
   ContactState,
 } from "~~/utilities/globalEnums";
-import CryptoES from "crypto-es";
 
 export const useSechatChatStore = defineStore({
   id: "sechat-chat-store",
@@ -21,8 +20,6 @@ export const useSechatChatStore = defineStore({
     };
   },
   actions: {
-    decryptDMs(key: string, id: number) {},
-    decryptRoomMessages(key: string, id: string) {},
     addNewCallLog(callLog: ICallLog) {
       this.callLogs.push(callLog);
       if (this.callLogs.length == 1) {
@@ -203,6 +200,12 @@ export const useSechatChatStore = defineStore({
         (r) => r.id === this.activeRoomId
       ).messages;
 
+      this.availableRooms = [
+        ...this.availableRooms.filter((uc) => uc.id !== value.id),
+        value,
+      ].sort((a, b) => a.name.localeCompare(b.name));
+    },
+    replaceRoom(value: IRoom) {
       this.availableRooms = [
         ...this.availableRooms.filter((uc) => uc.id !== value.id),
         value,

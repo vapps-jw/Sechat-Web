@@ -1,9 +1,87 @@
 import CryptoES from "crypto-es";
+import { LocalStoreTypes } from "~~/utilities/globalEnums";
 
 export const useE2Encryption = () => {
   const config = useRuntimeConfig();
+  const sechatStore = useSechatChatStore();
+  const userStore = useUserStore();
 
-  const encryptMessage = (data: string, key: e2eKey): string => {
+  const getMissingKeys = (): MissingKey[] => {
+    const missingContactKeys = sechatStore.availableContacts.filter(
+      (c) => !c.hasKey
+    );
+    const missingRoomKeys = sechatStore.availableRooms.filter((c) => !c.hasKey);
+
+    const results: MissingKey[] = [];
+    missingContactKeys.forEach((cr) => {
+      results.push({
+        type: LocalStoreTypes.E2EDM,
+        id: cr.id,
+        keyHandlers: [cr.displayName],
+      });
+    });
+
+    missingRoomKeys.forEach((room) => {
+      const members = room.members.filter(
+        (rm) => rm.userName !== userStore.getUserName
+      );
+      results.push({
+        type: LocalStoreTypes.E2EMASTER,
+        id: room.id,
+        keyHandlers: members.map((v) => v.userName),
+      });
+    });
+
+    return results;
+  };
+
+  const tryDecryptContact = (cr: IContactRequest) => {
+    const key = getKey(cr.id, LocalStoreTypes.E2EDM);
+
+    if (!key) {
+      console.warn("Contact Key not found", cr);
+      cr.hasKey = false;
+      cr.directMessages?.forEach((dm) => {
+        if (!dm.decrypted) {
+          return;
+        }
+        dm.decrypted = false;
+      });
+      sechatStore.updateContact(cr);
+      return;
+    }
+    console.warn("Decrypting Contact", cr, key);
+    cr.hasKey = true;
+    cr.directMessages?.forEach((dm) => {
+      if (dm.decrypted) {
+        return;
+      }
+      dm.text = decryptMessage(dm.text, key);
+      dm.decrypted = true;
+    });
+    sechatStore.updateContact(cr);
+  };
+
+  const tryDecryptRoom = (room: IRoom) => {
+    const key = getKey(room.id, LocalStoreTypes.E2EROOMS);
+
+    if (!key) {
+      console.warn("Room Key not found", room);
+      room.hasKey = false;
+      room.messages?.forEach((dm) => (dm.decrypted = false));
+      sechatStore.replaceRoom(room);
+      return;
+    }
+    console.warn("Decrypting Room", room, key);
+    room.hasKey = true;
+    room.messages?.forEach((dm) => {
+      dm.text = decryptMessage(dm.text, key);
+      dm.decrypted = true;
+    });
+    sechatStore.replaceRoom(room);
+  };
+
+  const encryptMessage = (data: string, key: E2EKey): string => {
     try {
       var result = CryptoES.AES.encrypt(data, key.key).toString();
       console.log("Encryption result", result);
@@ -13,12 +91,11 @@ export const useE2Encryption = () => {
       return "Encryption Failed";
     }
   };
-  const decryptMessage = (data: string, key: e2eKey): string => {
+  const decryptMessage = (data: string, key: E2EKey): string => {
     try {
       var result = CryptoES.enc.Utf8.stringify(
         CryptoES.AES.decrypt(data, key.key)
       );
-      console.log("Decryption result", result);
       return result;
     } catch (error) {
       console.error(error);
@@ -26,7 +103,7 @@ export const useE2Encryption = () => {
     }
   };
 
-  const addKey = (data: e2eKey, type: string): e2eKey[] => {
+  const addKey = (data: E2EKey, type: string): E2EKey[] => {
     if (!process.client) {
       console.error(process);
       return;
@@ -41,7 +118,7 @@ export const useE2Encryption = () => {
       return;
     }
 
-    let e2eData = JSON.parse(storedData) as e2eKey[];
+    let e2eData = JSON.parse(storedData) as E2EKey[];
     console.log("Casted data", e2eData);
 
     e2eData = e2eData.filter((key) => key.id !== data.id);
@@ -49,14 +126,12 @@ export const useE2Encryption = () => {
       key: data.key,
       id: data.id,
     });
-    console.log("Updated data", e2eData);
-
     const newData = JSON.stringify(e2eData);
     localStorage.setItem(type, newData);
     return e2eData;
   };
 
-  const getKeys = (type: string): null | e2eKey[] => {
+  const getKeys = (type: string): null | E2EKey[] => {
     if (!process.client) {
       console.error(process);
       return;
@@ -67,10 +142,10 @@ export const useE2Encryption = () => {
       return null;
     }
 
-    return JSON.parse(storedData) as e2eKey[];
+    return JSON.parse(storedData) as E2EKey[];
   };
 
-  const getKey = (id: string | number, type: string): e2eKey => {
+  const getKey = (id: string | number, type: string): E2EKey => {
     if (!process.client) {
       console.error(process);
       return;
@@ -79,7 +154,7 @@ export const useE2Encryption = () => {
     if (!storedData) {
       return null;
     }
-    let e2eData = JSON.parse(storedData) as e2eKey[];
+    let e2eData = JSON.parse(storedData) as E2EKey[];
     return e2eData.find((item) => item.id === id);
   };
 
@@ -94,7 +169,7 @@ export const useE2Encryption = () => {
       return;
     }
 
-    let e2eData = JSON.parse(storedData) as e2eKey[];
+    let e2eData = JSON.parse(storedData) as E2EKey[];
 
     e2eData = e2eData.filter((key) => key.id !== id);
     const newData = JSON.stringify(e2eData);
@@ -125,6 +200,9 @@ export const useE2Encryption = () => {
   };
 
   return {
+    tryDecryptContact,
+    tryDecryptRoom,
+    getMissingKeys,
     getKeys,
     getNewKey,
     encryptMessage,

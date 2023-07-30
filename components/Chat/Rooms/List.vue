@@ -1,7 +1,7 @@
 <template>
   <v-list>
     <v-list-item
-      @click="selectRoomClicked(room.id)"
+      @click="selectRoomClicked(room)"
       :border="true"
       class="my-2 mx-1 pa-1"
       v-for="room in chatStore.availableRooms"
@@ -30,28 +30,35 @@
         >
           <v-icon>mdi-email</v-icon>
         </v-badge>
-        <v-icon v-if="!room.hasKey && room.encryptedByUser" color="error"
-          >mdi-lock</v-icon
-        >
+        <v-icon v-if="!room.hasKey" color="error">mdi-lock</v-icon>
         <v-icon
-          v-if="
-            room.hasKey &&
-            room.encryptedByUser &&
-            room.messages?.some((m) => m.error)
-          "
+          v-if="room.hasKey && room.messages?.some((m) => m.error)"
           color="warning"
           >mdi-lock-alert</v-icon
         >
         <v-icon
-          v-if="
-            room.hasKey &&
-            room.encryptedByUser &&
-            !room.messages?.some((m) => m.error)
-          "
+          v-if="room.hasKey && !room.messages?.some((m) => m.error)"
           color="success"
           >mdi-lock-open</v-icon
         >
-        <v-icon v-if="!room.encryptedByUser">mdi-lock</v-icon>
+
+        <v-tooltip
+          v-if="!room.hasKey"
+          v-model="keySyncTooltip"
+          location="bottom"
+        >
+          <template v-slot:activator="{ props }">
+            <v-btn
+              v-bind="props"
+              icon="mdi-key-wireless"
+              color="warning"
+              size="small"
+              variant="outlined"
+            >
+            </v-btn>
+          </template>
+          <span>Waiting for other user to sync the key</span>
+        </v-tooltip>
       </template>
     </v-list-item>
   </v-list>
@@ -61,9 +68,14 @@
 const chatStore = useSechatChatStore();
 const appStore = useSechatAppStore();
 
-const selectRoomClicked = (roomId: string) => {
+const keySyncTooltip = ref<boolean>(false);
+
+const selectRoomClicked = (room: IRoom) => {
+  if (!room.hasKey) {
+    return;
+  }
   appStore.updateLoadingOverlay(true);
-  chatStore.selectRoom(roomId);
+  chatStore.selectRoom(room.id);
   appStore.updateLoadingOverlay(false);
 };
 </script>

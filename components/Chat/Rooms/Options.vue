@@ -9,9 +9,6 @@
       ></v-btn>
     </template>
     <v-list>
-      <v-list-item v-if="props.room.encryptedByUser">
-        <ChatRoomsUpdateRoomKey :room="props.room" />
-      </v-list-item>
       <v-list-item v-if="props.room.creatorName === userStore.getUserName">
         <chat-rooms-delete-room :room="room" />
       </v-list-item>
@@ -25,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarMessages } from "~~/utilities/globalEnums";
+import { LocalStoreTypes, SnackbarMessages } from "~~/utilities/globalEnums";
 
 interface PropsModel {
   room: IRoom;
@@ -37,6 +34,7 @@ const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 const userStore = useUserStore();
 const chatStore = useSechatChatStore();
+const e2e = useE2Encryption();
 
 const leaveRoom = async (room: IRoom) => {
   try {
@@ -63,6 +61,8 @@ const leaveRoom = async (room: IRoom) => {
     }
 
     chatStore.deleteRoom(room.id);
+    e2e.removeKey(room.id, LocalStoreTypes.E2EROOMS);
+
     sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {
     sechatStore.showErrorSnackbar(error.statusMessage);

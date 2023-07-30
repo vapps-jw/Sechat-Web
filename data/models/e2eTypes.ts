@@ -1,4 +1,4 @@
-type e2eKey = {
+type E2EKey = {
   id: number | string;
   key: string;
 };
@@ -16,10 +16,18 @@ type DMSharedKey = {
 };
 
 type RoomKeyRequest = {
+  receipient: string;
   id: string;
 };
 
 type RoomSharedKey = {
+  receipient: string;
   key: string;
   id: string;
+};
+
+type MissingKey = {
+  type: string;
+  id: string | number;
+  keyHandlers: string[];
 };
