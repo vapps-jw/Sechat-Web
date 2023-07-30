@@ -1,4 +1,8 @@
-import { ChatViews, VisibilityStates } from "~/utilities/globalEnums";
+import {
+  ChatViews,
+  VisibilityStates,
+  LocalStoreTypes,
+} from "~/utilities/globalEnums";
 
 export const useRefreshHandler = () => {
   const appStore = useSechatAppStore();
@@ -7,10 +11,31 @@ export const useRefreshHandler = () => {
   const chatStore = useSechatChatStore();
   const userStore = useUserStore();
   const videoCall = useVideoCall();
+  const e2e = useE2Encryption();
+
+  const decryptDMs = (crs: IContactRequest[]) => {
+    const keys = e2e.getKeys(LocalStoreTypes.E2EDM);
+    crs.forEach((cr) => {
+      const key = keys?.find((k) => k.id === cr.id);
+      if (!key) {
+        cr.hasKey = false;
+        cr.directMessages.forEach((dm) => (dm.decrypted = false));
+        return;
+      }
+      cr.hasKey = true;
+      cr.directMessages.forEach((dm) => {
+        dm.text = e2e.decryptMessage(dm.text, key);
+        dm.decrypted = true;
+      });
+    });
+  };
 
   const handleOnMountedLoad = async () => {
     await Promise.all([
-      chatApi.getConstacts().then((res) => chatStore.loadContacts(res)),
+      chatApi.getConstacts().then((res) => {
+        decryptDMs(res);
+        chatStore.loadContacts(res);
+      }),
       videoCall.getCallLogs().then((res) => chatStore.loadCallLogs(res)),
       chatApi.getRooms().then((res) => chatStore.loadRooms(res)),
     ]);
@@ -44,7 +69,10 @@ export const useRefreshHandler = () => {
 
   const refreshActions = async () => {
     const promises = [
-      chatApi.getConstacts().then((res) => chatStore.loadContacts(res)),
+      chatApi.getConstacts().then((res) => {
+        decryptDMs(res);
+        chatStore.loadContacts(res);
+      }),
     ];
 
     if (chatStore.callLogs.length > 0) {

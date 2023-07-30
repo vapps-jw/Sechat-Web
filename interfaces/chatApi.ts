@@ -89,6 +89,7 @@ interface IRoom {
   creatorName?: string;
   lastActivity?: Date;
   created?: Date;
+  hasKey?: boolean;
 }
 
 interface IRoomMessageUserActionMessage {
@@ -172,4 +173,5 @@ interface IContactRequest {
   blocked?: boolean;
   blockedByName?: string;
   directMessages?: IDirectMessage[];
+  hasKey?: boolean;
 }

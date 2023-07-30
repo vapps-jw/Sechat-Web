@@ -35,12 +35,13 @@
 
 <script setup lang="ts">
 import { scrollToBottom } from "~/utilities/documentFunctions";
-import { SnackbarIcons } from "~~/utilities/globalEnums";
+import { SnackbarIcons, LocalStoreTypes } from "~~/utilities/globalEnums";
 
 const chatStore = useSechatChatStore();
 const signalRstore = useSignalRStore();
 const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
+const e2e = useE2Encryption();
 
 const editorState = ref<IEditorState>({
   busy: false,
@@ -75,6 +76,12 @@ const callRoomMessageApi = async () => {
 };
 
 const callDirectMessageApi = async () => {
+  const key = e2e.getKey(chatStore.activeContactId, LocalStoreTypes.E2EDM);
+  if (!key) {
+    sechatStore.showErrorSnackbar("Key not found");
+    return;
+  }
+  const encryptedMessage = e2e.encryptMessage(chatStore.newMessage, key);
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/chat/send-direct-message`,
     {
@@ -84,7 +91,7 @@ const callDirectMessageApi = async () => {
       method: "POST",
       credentials: "include",
       body: {
-        Text: chatStore.newMessage,
+        Text: encryptedMessage,
         Recipient: chatStore.getActiveContact.displayName,
       },
     }

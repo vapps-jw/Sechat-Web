@@ -59,6 +59,7 @@ export const useSignalR = () => {
 
     // E2E
     sechatChat.onDMKeyRequested(connection);
+    sechatChat.onDMKeyIncoming(connection);
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
@@ -93,6 +94,7 @@ export const useSignalR = () => {
 
       connection.off(SignalRHubMethods.DMKeyRequested);
       connection.off(SignalRHubMethods.DMKeyIncoming);
+
       connection.off(SignalRHubMethods.RoomKeyRequested);
       connection.off(SignalRHubMethods.RoomKeyIncoming);
 

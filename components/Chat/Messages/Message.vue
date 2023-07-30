@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { getInitials, stringToColor } from "~/utilities/stringFunctions";
+import { stringToColor } from "~/utilities/stringFunctions";
 
 const appStore = useSechatAppStore();
 const userStore = useUserStore();
