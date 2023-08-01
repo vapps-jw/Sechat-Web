@@ -57,7 +57,7 @@ export const useSechatChat = () => {
     const missingKeys = e2e.getMissingKeys();
     if (missingKeys.length > 0) {
       missingKeys.forEach((missingKey) => {
-        if (missingKey.keyHandlers.some((kh) => kh === data.userName)) {
+        if (missingKey.keyHolders.some((kh) => kh === data.userName)) {
           if (missingKey.type === LocalStoreTypes.E2EDM) {
             const request: DMKeyRequest = {
               id: missingKey.id as number,
@@ -70,7 +70,6 @@ export const useSechatChat = () => {
               request
             );
           }
-
           if (missingKey.type === LocalStoreTypes.E2EROOMS) {
             const request: RoomKeyRequest = {
               id: missingKey.id as string,

@@ -29,5 +29,5 @@ type RoomSharedKey = {
 type MissingKey = {
   type: string;
   id: string | number;
-  keyHandlers: string[];
+  keyHolders: string[];
 };

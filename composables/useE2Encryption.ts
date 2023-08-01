@@ -17,7 +17,7 @@ export const useE2Encryption = () => {
       results.push({
         type: LocalStoreTypes.E2EDM,
         id: cr.id,
-        keyHandlers: [cr.displayName],
+        keyHolders: [cr.displayName],
       });
     });
 
@@ -28,7 +28,7 @@ export const useE2Encryption = () => {
       results.push({
         type: LocalStoreTypes.E2EMASTER,
         id: room.id,
-        keyHandlers: members.map((v) => v.userName),
+        keyHolders: members.map((v) => v.userName),
       });
     });
 

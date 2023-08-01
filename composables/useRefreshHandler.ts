@@ -2,6 +2,7 @@ import {
   ChatViews,
   VisibilityStates,
   LocalStoreTypes,
+  SignalRHubMethods,
 } from "~/utilities/globalEnums";
 
 export const useRefreshHandler = () => {
@@ -12,6 +13,7 @@ export const useRefreshHandler = () => {
   const userStore = useUserStore();
   const videoCall = useVideoCall();
   const e2e = useE2Encryption();
+  const signalRStore = useSignalRStore();
 
   const handleOnMountedLoad = async () => {
     await Promise.all([
@@ -31,6 +33,7 @@ export const useRefreshHandler = () => {
     ]);
 
     await signalR.connect();
+    askForMissingKeys();
   };
 
   const handleVisibilityChange = async () => {
@@ -41,13 +44,62 @@ export const useRefreshHandler = () => {
 
     appStore.updateLoadingOverlay(true);
     await refreshActions();
-
-    // TODO: ask for missing keys - add separate action for this
-
     appStore.updateLoadingOverlay(false);
   };
 
-  const askForMissingKeys = () => {};
+  const askForMissingKeys = () => {
+    console.warn("Asking online users for keys", chatStore.getOnlineUsers);
+
+    const missingKeys = e2e.getMissingKeys();
+    if (missingKeys.length === 0) {
+      return;
+    }
+
+    const keyHolders = missingKeys
+      .map((mk) => mk.keyHolders)
+      .reduce((a, b) => {
+        return a.concat(b);
+      }, []);
+    const uniqueKeyholders = [...new Set(keyHolders)];
+    const availableKeyHolders = chatStore.getOnlineUsers.filter(
+      (ou) => (onlineUser: IContactRequest) =>
+        uniqueKeyholders.find((kh) => kh === onlineUser.displayName)
+    );
+
+    if (availableKeyHolders.length === 0) {
+      return;
+    }
+
+    missingKeys.forEach((missingKey) => {
+      missingKey.keyHolders.forEach((keyHolder) => {
+        if (!availableKeyHolders.some((akh) => akh.displayName === keyHolder))
+          return;
+
+        if (missingKey.type === LocalStoreTypes.E2EDM) {
+          const request: DMKeyRequest = {
+            id: missingKey.id as number,
+            receipient: userStore.getUserName,
+            keyHolder: keyHolder,
+          };
+
+          signalRStore.connection.send(SignalRHubMethods.RequestDMKey, request);
+          return;
+        }
+        if (missingKey.type === LocalStoreTypes.E2EROOMS) {
+          const request: RoomKeyRequest = {
+            id: missingKey.id as string,
+            receipient: userStore.getUserName,
+          };
+
+          signalRStore.connection.send(
+            SignalRHubMethods.RequestRoomKey,
+            request
+          );
+          return;
+        }
+      });
+    });
+  };
 
   const handleOnlineChange = async () => {
     console.log("Online status changed");
@@ -101,6 +153,7 @@ export const useRefreshHandler = () => {
     }
 
     await signalR.connect();
+    askForMissingKeys();
 
     console.log(
       "Viewed messages update",

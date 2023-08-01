@@ -306,10 +306,10 @@ export const useSechatChatStore = defineStore({
       }
       return "grey-lighten-1";
     },
-    getOnlineUsers: (state) =>
+    getOnlineUsers: (state): IContactRequest[] =>
       state.availableContacts.filter(
         (c) => c.contactState === ContactState.Online
-      ),
+      ) as IContactRequest[],
     getActiveRoomId: (state) => state.activeRoomId,
     getActiveContactId: (state) => state.activeContactId,
     getActiveChatTab: (state) => state.activeChatTab,
