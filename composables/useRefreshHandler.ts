@@ -33,7 +33,6 @@ export const useRefreshHandler = () => {
     ]);
 
     await signalR.connect();
-    askForMissingKeys();
   };
 
   const handleVisibilityChange = async () => {
@@ -48,12 +47,16 @@ export const useRefreshHandler = () => {
   };
 
   const askForMissingKeys = () => {
+    if (chatStore.getOnlineUsers.length === 0) {
+      return;
+    }
     console.warn("Asking online users for keys", chatStore.getOnlineUsers);
 
     const missingKeys = e2e.getMissingKeys();
     if (missingKeys.length === 0) {
       return;
     }
+    console.warn("Missing keys", missingKeys);
 
     const keyHolders = missingKeys
       .map((mk) => mk.keyHolders)
@@ -70,11 +73,12 @@ export const useRefreshHandler = () => {
       return;
     }
 
+    console.warn("Available keyholders", availableKeyHolders);
+
     missingKeys.forEach((missingKey) => {
       missingKey.keyHolders.forEach((keyHolder) => {
         if (!availableKeyHolders.some((akh) => akh.displayName === keyHolder))
           return;
-
         if (missingKey.type === LocalStoreTypes.E2EDM) {
           const request: DMKeyRequest = {
             id: missingKey.id as number,
@@ -82,6 +86,7 @@ export const useRefreshHandler = () => {
             keyHolder: keyHolder,
           };
 
+          console.log("Asking DM key", keyHolder);
           signalRStore.connection.send(SignalRHubMethods.RequestDMKey, request);
           return;
         }
@@ -91,6 +96,7 @@ export const useRefreshHandler = () => {
             receipient: userStore.getUserName,
           };
 
+          console.log("Asking Room key", keyHolder);
           signalRStore.connection.send(
             SignalRHubMethods.RequestRoomKey,
             request
@@ -105,8 +111,8 @@ export const useRefreshHandler = () => {
     console.log("Online status changed");
     appStore.updateLoadingOverlay(false);
     appStore.updateOnlineState(true);
-
     await refreshActions();
+    appStore.updateLoadingOverlay(false);
   };
 
   const handleOfflineChange = async () => {
@@ -164,6 +170,7 @@ export const useRefreshHandler = () => {
 
     if (
       chatStore.activeRoomId &&
+      chatStore.getActiveRoom.hasKey &&
       chatStore.activeChatTab === ChatViews.Messages
     ) {
       try {
@@ -188,6 +195,7 @@ export const useRefreshHandler = () => {
 
     if (
       chatStore.activeContactId &&
+      chatStore.getActiveContact.hasKey &&
       chatStore.activeChatTab === ChatViews.Messages
     ) {
       try {
@@ -214,6 +222,7 @@ export const useRefreshHandler = () => {
   };
 
   return {
+    askForMissingKeys,
     handleOnMountedLoad,
     handleVisibilityChange,
     handleOnlineChange,

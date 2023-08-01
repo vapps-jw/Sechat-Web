@@ -38,6 +38,7 @@ onMounted(async () => {
   window.addEventListener("online", refreshHandler.handleOnlineChange);
   window.addEventListener("offline", refreshHandler.handleOfflineChange);
 
+  refreshHandler.askForMissingKeys();
   sechatAppStore.updateLoadingOverlay(false);
 });
 

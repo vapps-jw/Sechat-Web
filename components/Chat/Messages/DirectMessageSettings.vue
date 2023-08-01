@@ -27,9 +27,6 @@
           >
         </div>
       </v-card-text>
-      <v-card-actions class="justify-center">
-        <v-btn variant="tonal" @click="applyChanges">Apply Changes </v-btn>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>

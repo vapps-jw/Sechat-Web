@@ -269,13 +269,12 @@ export const useSignalR = () => {
       });
   };
 
-  const createRoom = (data: IRoomCreateRequest, key: string) => {
+  const createRoom = (roomName: string) => {
     console.log("Connection state:", signalRStore.connection.state);
-    console.log("SignalR Creating Room:", data);
+    console.log("SignalR Creating Room:", roomName);
     signalRStore.connection
       .invoke(SignalRHubMethods.CreateRoom, {
-        RoomName: data.roomName,
-        UserEncrypted: data.userEncrypted,
+        RoomName: roomName,
       })
       .then(async (newRoom: IRoom) => {
         console.log("New room created", newRoom);

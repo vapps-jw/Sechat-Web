@@ -109,6 +109,7 @@
           >
             <template v-slot:activator="{ props }">
               <v-btn
+                @click="keySyncInfo(uc.displayName)"
                 v-bind="props"
                 icon="mdi-key-wireless"
                 color="warning"
@@ -126,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarMessages } from "~~/utilities/globalEnums";
+import { LocalStoreTypes, SnackbarMessages } from "~~/utilities/globalEnums";
 
 const keySyncTooltip = ref<boolean>(false);
 
@@ -135,6 +136,7 @@ const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 const userStore = useUserStore();
 const webRTCStore = useWebRTCStore();
+const e2e = useE2Encryption();
 
 const startVideoCall = (uc: IContactRequest) => {
   console.log("Starting new call with", uc.displayName);
@@ -142,7 +144,16 @@ const startVideoCall = (uc: IContactRequest) => {
   webRTCStore.updateVideoCallViewVisible(true);
 };
 
-const keySyncInfo = () => {};
+const keySyncInfo = (userName: string) => {
+  sechatStore.showSnackbar(<ISanckbar>{
+    snackbar: true,
+    text: `${userName} has to be online to synchronize keys`,
+    timeout: 1500,
+    color: "warning",
+    icon: "mdi-key-wireless",
+    iconColor: "black",
+  });
+};
 
 const dmIconType = (uc: IContactRequest): string => {
   if (uc.directMessages.some((m) => m.error)) {
@@ -260,6 +271,7 @@ const deleteContact = async (id: number) => {
     return;
   }
 
+  e2e.removeKey(id, LocalStoreTypes.E2EDM);
   sechatStore.showSuccessSnackbar("Contact deleted");
 };
 </script>

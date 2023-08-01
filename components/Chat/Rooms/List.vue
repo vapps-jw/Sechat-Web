@@ -30,7 +30,6 @@
         >
           <v-icon>mdi-email</v-icon>
         </v-badge>
-        <v-icon v-if="!room.hasKey" color="error">mdi-lock</v-icon>
         <v-icon
           v-if="room.hasKey && room.messages?.some((m) => m.error)"
           color="warning"
@@ -67,11 +66,20 @@
 <script setup lang="ts">
 const chatStore = useSechatChatStore();
 const appStore = useSechatAppStore();
+const sechatStore = useSechatAppStore();
 
 const keySyncTooltip = ref<boolean>(false);
 
 const selectRoomClicked = (room: IRoom) => {
   if (!room.hasKey) {
+    sechatStore.showSnackbar(<ISanckbar>{
+      snackbar: true,
+      text: "At least one Room member has to be online to synchronize keys",
+      timeout: 1500,
+      color: "warning",
+      icon: "mdi-key-wireless",
+      iconColor: "black",
+    });
     return;
   }
   appStore.updateLoadingOverlay(true);

@@ -1,4 +1,5 @@
 import CryptoES from "crypto-es";
+import { E2EStatusMessages } from "~~/utilities/e2eEnums";
 import { LocalStoreTypes } from "~~/utilities/globalEnums";
 
 export const useE2Encryption = () => {
@@ -26,7 +27,7 @@ export const useE2Encryption = () => {
         (rm) => rm.userName !== userStore.getUserName
       );
       results.push({
-        type: LocalStoreTypes.E2EMASTER,
+        type: LocalStoreTypes.E2EROOMS,
         id: room.id,
         keyHolders: members.map((v) => v.userName),
       });
@@ -56,7 +57,11 @@ export const useE2Encryption = () => {
       if (dm.decrypted) {
         return;
       }
-      dm.text = decryptMessage(dm.text, key);
+      const decrypted = decryptMessage(dm.text, key);
+      if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+        dm.error = true;
+      }
+      dm.text = decrypted;
       dm.decrypted = true;
     });
     sechatStore.updateContact(cr);
@@ -74,9 +79,13 @@ export const useE2Encryption = () => {
     }
     console.warn("Decrypting Room", room, key);
     room.hasKey = true;
-    room.messages?.forEach((dm) => {
-      dm.text = decryptMessage(dm.text, key);
-      dm.decrypted = true;
+    room.messages?.forEach((message) => {
+      const decrypted = decryptMessage(message.text, key);
+      if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+        message.error = true;
+      }
+      message.text = decrypted;
+      message.decrypted = true;
     });
     sechatStore.replaceRoom(room);
   };
@@ -84,11 +93,11 @@ export const useE2Encryption = () => {
   const encryptMessage = (data: string, key: E2EKey): string => {
     try {
       var result = CryptoES.AES.encrypt(data, key.key).toString();
-      console.log("Encryption result", result);
+      console.log(E2EStatusMessages.ENCRYPTION_ERROR, result);
       return result;
     } catch (error) {
       console.error(error);
-      return "Encryption Failed";
+      return E2EStatusMessages.ENCRYPTION_ERROR;
     }
   };
   const decryptMessage = (data: string, key: E2EKey): string => {
@@ -96,10 +105,13 @@ export const useE2Encryption = () => {
       var result = CryptoES.enc.Utf8.stringify(
         CryptoES.AES.decrypt(data, key.key)
       );
+      if (!result) {
+        return E2EStatusMessages.DECRYPTION_ERROR;
+      }
       return result;
     } catch (error) {
       console.error(error);
-      return "Decryption Failed";
+      return E2EStatusMessages.DECRYPTION_ERROR;
     }
   };
 

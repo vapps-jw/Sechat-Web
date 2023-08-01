@@ -1,3 +1,4 @@
+import { E2EStatusMessages } from "~/utilities/e2eEnums";
 import { scrollToBottom } from "~/utilities/documentFunctions";
 import {
   ChatViews,
@@ -52,6 +53,13 @@ export const useSechatChat = () => {
 
   const contactStateChanged = (data: IStringUserMessage) => {
     console.warn("Contact state changed", data);
+
+    const contact = chatStore.availableContacts.find(
+      (c) => c.displayName === data.userName
+    );
+    if (!contact.approved || contact.blocked) {
+      return;
+    }
 
     // Check if there are any missing keys that other user can provide
     const missingKeys = e2e.getMissingKeys();
@@ -227,7 +235,13 @@ export const useSechatChat = () => {
     }
 
     console.log("Decrypting message");
-    message.text = e2e.decryptMessage(message.text, key);
+
+    const decrypted = e2e.decryptMessage(message.text, key);
+    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+      message.error = true;
+    }
+
+    message.text = decrypted;
     message.decrypted = true;
     message.wasViewed = false;
 
@@ -316,7 +330,7 @@ export const useSechatChat = () => {
       id: message.id,
     };
 
-    console.log("Sending key", keyToShare);
+    console.log("Sending DM key", keyToShare);
     signalRStore.connection.send(SignalRHubMethods.ShareDMKey, keyToShare);
   };
 
@@ -333,6 +347,7 @@ export const useSechatChat = () => {
       id: message.id,
     };
 
+    console.log("Updating key", newKey);
     const result = e2e.addKey(newKey, LocalStoreTypes.E2EDM);
     console.log("Key Updated", result);
 
@@ -347,8 +362,23 @@ export const useSechatChat = () => {
     connection.on(SignalRHubMethods.RoomKeyRequested, handleOnRoomKeyRequested);
   };
 
-  const handleOnRoomKeyRequested = () => {
+  const handleOnRoomKeyRequested = (message: RoomKeyRequest) => {
     console.warn("Room Key requested");
+
+    const key = e2e.getKey(message.id, LocalStoreTypes.E2EROOMS);
+    if (!key) {
+      console.log("Key not found");
+      return;
+    }
+
+    const keyToShare: RoomSharedKey = {
+      key: key.key,
+      receipient: message.receipient,
+      id: message.id,
+    };
+
+    console.log("Sending Room key", keyToShare);
+    signalRStore.connection.send(SignalRHubMethods.ShareRoomKey, keyToShare);
   };
 
   const onRoomKeyIncoming = async (connection: signalR.HubConnection) => {
@@ -356,8 +386,19 @@ export const useSechatChat = () => {
     connection.on(SignalRHubMethods.RoomKeyIncoming, handleRoomKeyIncoming);
   };
 
-  const handleRoomKeyIncoming = () => {
-    console.warn("Room Key received");
+  const handleRoomKeyIncoming = (message: RoomSharedKey) => {
+    console.warn("Room Key received", message);
+
+    const newKey: E2EKey = {
+      key: message.key,
+      id: message.id,
+    };
+
+    const result = e2e.addKey(newKey, LocalStoreTypes.E2EROOMS);
+    console.log("Key Updated", result);
+
+    const room = chatStore.availableRooms.find((c) => c.id === message.id);
+    e2e.tryDecryptRoom(room);
   };
 
   // Direct Messages
@@ -384,7 +425,11 @@ export const useSechatChat = () => {
     }
 
     console.log("Decrypting message");
-    message.text = e2e.decryptMessage(message.text, key);
+    const decrypted = e2e.decryptMessage(message.text, key);
+    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+      message.error = true;
+    }
+    message.text = decrypted;
     message.decrypted = true;
 
     if (
