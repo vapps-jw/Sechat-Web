@@ -33,7 +33,7 @@ export const useE2EHandlers = () => {
     connection.on(
       SignalRHubMethods.DMKeyIncoming,
       async (message: DMSharedKey) => {
-        console.warn("Incoming DMKeyIncoming ", message);
+        console.warn("onDMKeyIncoming", message);
 
         const newKey: E2EKey = {
           key: message.key,
@@ -83,7 +83,7 @@ export const useE2EHandlers = () => {
     connection.on(
       SignalRHubMethods.RoomKeyIncoming,
       (message: RoomSharedKey) => {
-        console.warn("Room Key received", message);
+        console.warn("onRoomKeyIncoming", message);
 
         const newKey: E2EKey = {
           key: message.key,

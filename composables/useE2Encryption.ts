@@ -122,7 +122,6 @@ export const useE2Encryption = () => {
     }
 
     const storedData = localStorage.getItem(type);
-    console.log("Stored keys", storedData);
     if (!storedData) {
       const newData = JSON.stringify([{ key: data.key, id: data.id }]);
       console.log("Adding first key");
@@ -131,7 +130,9 @@ export const useE2Encryption = () => {
     }
 
     let e2eData = JSON.parse(storedData) as E2EKey[];
-    console.log("Casted data", e2eData);
+    if (e2eData.some((key) => key.id === data.id && key.key === data.key)) {
+      return;
+    }
 
     e2eData = e2eData.filter((key) => key.id !== data.id);
     e2eData.push({
@@ -140,6 +141,7 @@ export const useE2Encryption = () => {
     });
     const newData = JSON.stringify(e2eData);
     localStorage.setItem(type, newData);
+    console.log("Updated keys", e2eData);
     return e2eData;
   };
 

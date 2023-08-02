@@ -17,7 +17,6 @@ export const useRoomHandlers = () => {
   // Rooms
 
   const onRoomUpdatedEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting RoomUpdated event");
     connection.on(SignalRHubMethods.RoomUpdated, (room: IRoom) => {
       console.warn("Handling Room Updated Event", room);
 
@@ -30,7 +29,6 @@ export const useRoomHandlers = () => {
   };
 
   const onRoomDeletedEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting RoomDeleted event");
     connection.on(SignalRHubMethods.RoomDeleted, (message: IResourceGuid) => {
       console.warn("Handling Room Delete Event", message);
       chatStore.deleteRoom(message.id);
@@ -67,7 +65,6 @@ export const useRoomHandlers = () => {
   // Messages
 
   const onMessageDeleted = (connection: signalR.HubConnection) => {
-    console.log("Connecting MessageDeleted event");
     connection.on(SignalRHubMethods.MessageDeleted, (data: IMessageDeleted) => {
       console.warn("Handling MessageDeleted", data);
       chatStore.deleteMessageFromRoom(data);
@@ -78,7 +75,6 @@ export const useRoomHandlers = () => {
   };
 
   const onMessageWasViewed = (connection: signalR.HubConnection) => {
-    console.log("Connecting MessageWasViewed event");
     connection.on(
       SignalRHubMethods.MessageWasViewed,
       (message: IRoomMessageUserActionMessage) => {
@@ -99,7 +95,6 @@ export const useRoomHandlers = () => {
   };
 
   const onMessagesWereViewed = (connection: signalR.HubConnection) => {
-    console.log("Connecting MessagesWereViewed event");
     connection.on(
       SignalRHubMethods.MessagesWereViewed,
       (message: IRoomUserActionMessage) => {
@@ -117,7 +112,6 @@ export const useRoomHandlers = () => {
   };
 
   const onIncomingMessage = async (connection: signalR.HubConnection) => {
-    console.log("Connecting IncomingMessage event");
     connection.on(
       SignalRHubMethods.MessageIncoming,
       async (message: IMessage) => {

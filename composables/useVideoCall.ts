@@ -41,7 +41,7 @@ export const useVideoCall = () => {
   };
 
   const getCallLogs = async (lastLog?: number) => {
-    console.log("Getting Call");
+    console.log("Getting Call Logs");
     const route = `${config.public.apiBase}/call/logs${
       lastLog ? "/" + lastLog : ""
     }`;
@@ -577,14 +577,12 @@ export const useVideoCall = () => {
   // Video Call Events
 
   const onWebRTCAnswerIncomingEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting WebRTCAnswerIncoming");
     connection.on(SignalRHubMethods.WebRTCAnswerIncoming, answerIncoming);
   };
 
   const onWebRTCScreenShareStateChangeEvent = (
     connection: signalR.HubConnection
   ) => {
-    console.log("Connecting WebRTCScreenSahreStateChange");
     connection.on(
       SignalRHubMethods.ScreenShareStateChanged,
       screenShareToggledByOtherUser
@@ -592,27 +590,22 @@ export const useVideoCall = () => {
   };
 
   const onWebRTCOfferIncomingEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting WebRTCOfferIncoming");
     connection.on(SignalRHubMethods.WebRTCOfferIncoming, offerIncoming);
   };
 
   const onVideoCallTerminatedEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting VideoCallTerminatedEvent");
     connection.on(SignalRHubMethods.VideoCallTerminated, videoCallTerminated);
   };
 
   const onVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting VideoCallApprovedEvent");
     connection.on(SignalRHubMethods.VideoCallApproved, videoCallApproved);
   };
 
   const onVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting VideoCallRejectedEvent");
     connection.on(SignalRHubMethods.VideoCallRejected, videoCallRejected);
   };
 
   const onVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting VideoCallRequestedEvent");
     connection.on(
       SignalRHubMethods.VideoCallRequested,
       videoCallRequestReceived
@@ -620,7 +613,6 @@ export const useVideoCall = () => {
   };
 
   const onICECandidateIncomingEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting ICECandidateIncoming");
     connection.on(SignalRHubMethods.ICECandidateIncoming, ICECandidateIncoming);
   };
 

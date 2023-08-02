@@ -33,6 +33,8 @@ export const useRefreshHandler = () => {
     ]);
 
     await signalR.connect();
+    askForMissingKeys();
+    syncWithOtherDevice();
   };
 
   const handleVisibilityChange = async () => {
@@ -44,6 +46,38 @@ export const useRefreshHandler = () => {
     appStore.updateLoadingOverlay(true);
     await refreshActions();
     appStore.updateLoadingOverlay(false);
+  };
+
+  const syncWithOtherDevice = () => {
+    console.warn("Synchronizing missing keys with other devices");
+    const missingDmKeys = chatStore.availableContacts.filter(
+      (item) => item.approved && !item.hasKey
+    );
+    console.log("Missing DM keys to synchronize", missingDmKeys);
+    missingDmKeys.forEach((missingKey) => {
+      const request: DMKeyRequest = {
+        id: missingKey.id as number,
+        receipient: userStore.getUserName,
+        keyHolder: userStore.getUserName,
+      };
+
+      console.log("Synchronizing DM key", missingKey.id);
+      signalRStore.connection.send(SignalRHubMethods.RequestDMKey, request);
+    });
+
+    const missingRoomKeys = chatStore.availableRooms.filter(
+      (item) => !item.hasKey
+    );
+    console.log("Missing Room keys to synchronize", missingRoomKeys);
+    missingRoomKeys.forEach((missingKey) => {
+      const request: RoomKeyRequest = {
+        id: missingKey.id as string,
+        receipient: userStore.getUserName,
+      };
+
+      console.log("Synchronizing Room key", missingKey.id);
+      signalRStore.connection.send(SignalRHubMethods.RequestRoomKey, request);
+    });
   };
 
   const askForMissingKeys = () => {
@@ -160,6 +194,7 @@ export const useRefreshHandler = () => {
 
     await signalR.connect();
     askForMissingKeys();
+    syncWithOtherDevice();
 
     console.log(
       "Viewed messages update",
@@ -222,6 +257,7 @@ export const useRefreshHandler = () => {
   };
 
   return {
+    syncWithOtherDevice,
     askForMissingKeys,
     handleOnMountedLoad,
     handleVisibilityChange,

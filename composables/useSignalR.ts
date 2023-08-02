@@ -64,8 +64,8 @@ export const useSignalR = () => {
     dmHandlers.onDirectMessagesWereViewed(connection);
     dmHandlers.onDirectMessageDeleted(connection);
 
-    _onUserAddedToRoomEvent(connection);
-    _onUserRemovedFromRoomEvent(connection);
+    onUserAddedToRoomEvent(connection);
+    onUserRemovedFromRoomEvent(connection);
 
     // E2E
 
@@ -130,7 +130,7 @@ export const useSignalR = () => {
         ]);
 
         console.log("Reconnected, connectiong to Rooms ...");
-        _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
+        connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
       } catch (error) {
         console.error("Fetch State Failed", error);
       } finally {
@@ -146,7 +146,7 @@ export const useSignalR = () => {
       signalRStore.connection.state === signalR.HubConnectionState.Connected
     ) {
       console.log("Connection Established, connectiong to Rooms ...");
-      _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
+      connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
       return;
     }
   };
@@ -164,7 +164,7 @@ export const useSignalR = () => {
     ) {
       console.log("Starting Current Connection, connecting to Rooms");
       await signalRStore.connection.start();
-      _connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
+      connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
     }
     if (!signalRStore.connection) {
       await createNewConnection();
@@ -182,28 +182,26 @@ export const useSignalR = () => {
 
   // Rooms
 
-  const _onUserAddedToRoomEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting UserAddedToRoom event");
+  const onUserAddedToRoomEvent = (connection: signalR.HubConnection) => {
     connection.on(
       SignalRHubMethods.UserAddedToRoom,
-      _handleUserAddedToRoomActions
+      handleUserAddedToRoomActions
     );
   };
 
-  const _handleUserAddedToRoomActions = (data: IRoom) => {
-    _connectToRoom(data.id);
+  const handleUserAddedToRoomActions = (data: IRoom) => {
+    connectToRoom(data.id);
     roomHandlers.handleUserAddedToRoom(data);
   };
 
-  const _onUserRemovedFromRoomEvent = (connection: signalR.HubConnection) => {
-    console.log("Connecting UserRemovedFromRoom event");
+  const onUserRemovedFromRoomEvent = (connection: signalR.HubConnection) => {
     connection.on(
       SignalRHubMethods.UserRemovedFromRoom,
-      _handleUserRemovedFromRoomActions
+      handleUserRemovedFromRoomActions
     );
   };
 
-  const _connectToRooms = (roomIds: string[]) => {
+  const connectToRooms = (roomIds: string[]) => {
     if (
       signalRStore.connection.state !== signalR.HubConnectionState.Connected
     ) {
@@ -226,7 +224,7 @@ export const useSignalR = () => {
       });
   };
 
-  const _connectToRoom = (roomId: string) => {
+  const connectToRoom = (roomId: string) => {
     if (
       signalRStore.connection.state !== signalR.HubConnectionState.Connected
     ) {
@@ -249,7 +247,7 @@ export const useSignalR = () => {
       });
   };
 
-  const _disconnectFromRoom = (roomId: string) => {
+  const disconnectFromRoom = (roomId: string) => {
     if (
       signalRStore.connection.state !== signalR.HubConnectionState.Connected
     ) {
@@ -262,8 +260,6 @@ export const useSignalR = () => {
       return;
     }
 
-    // TODO: remove room key
-
     console.log("Disconnecting from Room", roomId);
     signalRStore.connection
       .invoke(SignalRHubMethods.DisconnectFromRoom, {
@@ -271,6 +267,7 @@ export const useSignalR = () => {
       })
       .then((result) => {
         console.log("Disconnected from room", result);
+        e2e.removeKey(roomId, LocalStoreTypes.E2EROOMS);
       });
   };
 
@@ -286,7 +283,7 @@ export const useSignalR = () => {
 
         newRoom.hasKey = true;
         sechatChatStore.addRoom(newRoom);
-        _connectToRoom(newRoom.id);
+        connectToRoom(newRoom.id);
 
         console.log("Calling for new key");
         const key = await e2e.getNewKey();
@@ -313,16 +310,14 @@ export const useSignalR = () => {
 
   // Room Handlers
 
-  const _handleUserRemovedFromRoomActions = (options: IUserRoomOptions) => {
+  const handleUserRemovedFromRoomActions = (options: IUserRoomOptions) => {
     console.warn("Handling UserRemovedFromRoom in SignalR", options);
     if (userStore.getUserName === options.userName) {
       console.warn("Active user is being removed - signalR");
-      _disconnectFromRoom(options.roomId);
+      disconnectFromRoom(options.roomId);
       roomHandlers.handleUserRemovedFromRoom(options);
       return;
     }
-
-    // TODO: handle key removeal
 
     console.warn("Other user is being removed - signalR");
     roomHandlers.handleUserRemovedFromRoom(options);

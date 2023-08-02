@@ -14,7 +14,6 @@ export const useDMHandlers = () => {
   const e2e = useE2Encryption();
 
   const onIncomingDirectMessage = async (connection: signalR.HubConnection) => {
-    console.log("Connecting DirectMessageIncoming event");
     connection.on(
       SignalRHubMethods.DirectMessageIncoming,
       async (message: IDirectMessage) => {
@@ -71,7 +70,6 @@ export const useDMHandlers = () => {
   };
 
   const onDirectMessageDeleted = (connection: signalR.HubConnection) => {
-    console.log("Connecting DirectMessageDeleted event");
     connection.on(
       SignalRHubMethods.DirectMessageDeleted,
       (data: IDirectMessageId) => {
@@ -88,7 +86,6 @@ export const useDMHandlers = () => {
   };
 
   const onDirectMessageWasViewed = (connection: signalR.HubConnection) => {
-    console.log("Connecting DirectMessageWasViewed event");
     connection.on(
       SignalRHubMethods.DirectMessageWasViewed,
       (message: IContactMessageUserActionMessage) => {
@@ -108,7 +105,6 @@ export const useDMHandlers = () => {
   };
 
   const onDirectMessagesWereViewed = (connection: signalR.HubConnection) => {
-    console.log("Connecting DirectMessagesWereViewed event");
     connection.on(
       SignalRHubMethods.DirectMessagesWereViewed,
       (message: IDirectMessagesViewed) => {
