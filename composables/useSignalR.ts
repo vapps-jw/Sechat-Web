@@ -8,13 +8,16 @@ import {
 export const useSignalR = () => {
   const sechatStore = useSechatAppStore();
   const config = useRuntimeConfig();
-  const sechatChat = useSechatChat();
   const sechatChatStore = useSechatChatStore();
   const userStore = useUserStore();
   const signalRStore = useSignalRStore();
   const videoCalls = useVideoCall();
   const chatApi = useChatApi();
   const e2e = useE2Encryption();
+  const e2eHandlers = useE2EHandlers();
+  const contactHandlers = useContactHandlers();
+  const dmHandlers = useDMHandlers();
+  const roomHandlers = useRoomHandlers();
 
   const createNewConnection = async () => {
     const connection = new signalR.HubConnectionBuilder()
@@ -39,35 +42,37 @@ export const useSignalR = () => {
     videoCalls.onWebRTCAnswerIncomingEvent(connection);
     videoCalls.onWebRTCScreenShareStateChangeEvent(connection);
 
-    sechatChat.onContactStateChangedEvent(connection);
-    sechatChat.onMessageWasViewed(connection);
-    sechatChat.onMessagesWereViewed(connection);
-    sechatChat.onIncomingMessage(connection);
-    sechatChat.onRoomDeletedEvent(connection);
-    sechatChat.onRoomUpdatedEvent(connection);
-    sechatChat.onConnectionRequestReceivedEvent(connection);
-    sechatChat.onUserConnectionUpdatedEvent(connection);
-    sechatChat.onUserConnectionDeleteEvent(connection);
-    sechatChat.onMessageDeleted(connection);
+    roomHandlers.onMessageWasViewed(connection);
+    roomHandlers.onMessagesWereViewed(connection);
+    roomHandlers.onIncomingMessage(connection);
+    roomHandlers.onRoomDeletedEvent(connection);
+    roomHandlers.onRoomUpdatedEvent(connection);
+    roomHandlers.onMessageDeleted(connection);
+
+    // Contacts
+
+    contactHandlers.onContactStateChangedEvent(connection);
+    contactHandlers.onContactRequestReceivedEvent(connection);
+    contactHandlers.onContactUpdateRequired(connection);
+    contactHandlers.onContactDeleteEvent(connection);
+    contactHandlers.onContactUpdatedEvent(connection);
 
     // DM
 
-    sechatChat.onIncomingDirectMessage(connection);
-    sechatChat.onDirectMessageWasViewed(connection);
-    sechatChat.onDirectMessagesWereViewed(connection);
-    sechatChat.onDirectMessageDeleted(connection);
-    sechatChat.onContactUpdateRequired(connection);
+    dmHandlers.onIncomingDirectMessage(connection);
+    dmHandlers.onDirectMessageWasViewed(connection);
+    dmHandlers.onDirectMessagesWereViewed(connection);
+    dmHandlers.onDirectMessageDeleted(connection);
 
     _onUserAddedToRoomEvent(connection);
     _onUserRemovedFromRoomEvent(connection);
 
     // E2E
 
-    sechatChat.onDMKeyRequested(connection);
-    sechatChat.onDMKeyIncoming(connection);
-
-    sechatChat.onRoomKeyRequested(connection);
-    sechatChat.onRoomKeyIncoming(connection);
+    e2eHandlers.onDMKeyRequested(connection);
+    e2eHandlers.onDMKeyIncoming(connection);
+    e2eHandlers.onRoomKeyRequested(connection);
+    e2eHandlers.onRoomKeyIncoming(connection);
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
@@ -187,7 +192,7 @@ export const useSignalR = () => {
 
   const _handleUserAddedToRoomActions = (data: IRoom) => {
     _connectToRoom(data.id);
-    sechatChat.handleUserAddedToRoom(data);
+    roomHandlers.handleUserAddedToRoom(data);
   };
 
   const _onUserRemovedFromRoomEvent = (connection: signalR.HubConnection) => {
@@ -313,14 +318,14 @@ export const useSignalR = () => {
     if (userStore.getUserName === options.userName) {
       console.warn("Active user is being removed - signalR");
       _disconnectFromRoom(options.roomId);
-      sechatChat.handleUserRemovedFromRoom(options);
+      roomHandlers.handleUserRemovedFromRoom(options);
       return;
     }
 
     // TODO: handle key removeal
 
     console.warn("Other user is being removed - signalR");
-    sechatChat.handleUserRemovedFromRoom(options);
+    roomHandlers.handleUserRemovedFromRoom(options);
   };
 
   return {
