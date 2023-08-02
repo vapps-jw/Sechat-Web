@@ -22,7 +22,7 @@
           text="Delete all messages from this chat"
         ></v-alert>
         <div class="d-flex justify-center">
-          <v-btn class="mt-4" color="error" size="small" @click="clearChat"
+          <v-btn class="mt-4" color="error" @click="clearChat"
             >Clear Chat</v-btn
           >
         </div>
