@@ -9,7 +9,7 @@
       width="300"
       height="150"
     ></NuxtImg>
-    <div class="text-h6">Select a Room or createa new one</div>
+    <div class="text-h6">Select a Room or create a new one</div>
   </v-container>
   <v-container class="d-flex justify-center align-center" v-else>
     <ChatTabsVariantsRoomMessagesView

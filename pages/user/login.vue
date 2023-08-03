@@ -76,6 +76,7 @@ const sechatStore = useSechatAppStore();
 
 const onSubmit = async () => {
   try {
+    loading.value = true;
     const { error: apiError } = await useFetch(
       `${config.public.apiBase}/account/login`,
       {
@@ -105,6 +106,8 @@ const onSubmit = async () => {
     buttonText.value = "Try Again";
     buttonColor.value = "error";
     error.value = null;
+  } finally {
+    loading.value = false;
   }
 };
 
