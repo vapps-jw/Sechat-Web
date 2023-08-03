@@ -9,7 +9,7 @@ export const useE2EHandlers = () => {
     connection.on(
       SignalRHubMethods.DMKeyRequested,
       async (message: DMKeyRequest) => {
-        console.warn("Incoming DMKeyRequested ", message);
+        console.warn("DMKeyRequested by", message.receipient);
 
         const key = e2e.getKey(message.id, LocalStoreTypes.E2EDM);
         if (!key) {

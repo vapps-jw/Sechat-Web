@@ -61,7 +61,7 @@ export const useRefreshHandler = () => {
         keyHolder: userStore.getUserName,
       };
 
-      console.log("Synchronizing DM key", missingKey.id);
+      console.warn("Synchronizing DM key", missingKey.id);
       signalRStore.connection.send(SignalRHubMethods.RequestDMKey, request);
     });
 
@@ -75,7 +75,7 @@ export const useRefreshHandler = () => {
         receipient: userStore.getUserName,
       };
 
-      console.log("Synchronizing Room key", missingKey.id);
+      console.warn("Synchronizing Room key", missingKey.id);
       signalRStore.connection.send(SignalRHubMethods.RequestRoomKey, request);
     });
   };
@@ -120,7 +120,7 @@ export const useRefreshHandler = () => {
             keyHolder: keyHolder,
           };
 
-          console.log("Asking DM key", keyHolder);
+          console.warn("Asking for DM key", request);
           signalRStore.connection.send(SignalRHubMethods.RequestDMKey, request);
           return;
         }
@@ -130,7 +130,7 @@ export const useRefreshHandler = () => {
             receipient: userStore.getUserName,
           };
 
-          console.log("Asking Room key", keyHolder);
+          console.warn("Asking for Room key", keyHolder);
           signalRStore.connection.send(
             SignalRHubMethods.RequestRoomKey,
             request
