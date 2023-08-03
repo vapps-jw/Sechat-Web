@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
 import { CustomCookies } from "~/utilities/globalEnums";
+import { reloadNuxtApp } from "nuxt/app";
 
 const userStore = useUserStore();
 const chatStore = useSechatChatStore();
@@ -96,7 +97,10 @@ const signOut = async () => {
 
     chatStore.$reset();
     userStore.$reset();
-    navigateTo("/");
+    reloadNuxtApp({
+      path: "/",
+      ttl: 1000, // default 10000
+    });
     console.log("User Profile", userStore.userProfile);
     appStore.showSuccessSnackbar("Logged out");
   } catch (error) {
