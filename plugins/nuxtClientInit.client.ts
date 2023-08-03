@@ -1,8 +1,8 @@
 export default defineNuxtPlugin(async (context) => {
   const disableLogs = () => {
-    // console.log = () => {};
-    // console.warn = () => {};
-    // console.info = () => {};
+    console.log = () => {};
+    console.warn = () => {};
+    console.info = () => {};
   };
 
   console.warn("Client Init Plugin Triggered");
