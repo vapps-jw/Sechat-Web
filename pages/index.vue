@@ -97,6 +97,7 @@ const signOut = async () => {
     chatStore.$reset();
     userStore.$reset();
     navigateTo("/");
+    console.log("User Profile", userStore.userProfile);
     appStore.showSuccessSnackbar("Logged out");
   } catch (error) {
     appStore.showErrorSnackbar(error.statusMessage);

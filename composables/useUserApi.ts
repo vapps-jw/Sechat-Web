@@ -1,32 +1,5 @@
 export const useUserApi = () => {
   const userStore = useUserStore();
-  const config = useRuntimeConfig();
-
-  const signOut = async () => {
-    console.log("Signing Out");
-
-    const { error: apiError } = await useFetch(
-      `${config.public.apiBase}/account/logout`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        credentials: "include",
-      }
-    );
-
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    } else {
-      userStore.$reset();
-    }
-    navigateTo("/");
-  };
 
   const getUserData = async () => {
     const config = useRuntimeConfig();
@@ -59,7 +32,6 @@ export const useUserApi = () => {
   };
 
   return {
-    signOut,
     getUserData,
   };
 };
