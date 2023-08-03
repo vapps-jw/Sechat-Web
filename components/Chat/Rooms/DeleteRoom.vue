@@ -55,10 +55,6 @@ const deleteRoom = async (roomId: string) => {
       });
     }
 
-    // if (props.room.encryptedByUser) {
-    //   console.log("Removing room E2E key", roomId);
-    //   e2e.removeKey(roomId, CustomCookies.E2E);
-    // }
     dialog.value = false;
     sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {

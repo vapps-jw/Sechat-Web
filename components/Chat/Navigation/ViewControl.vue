@@ -50,8 +50,6 @@
 
 <script setup lang="ts">
 import { ChatViews, BottomNavBarSet } from "~~/utilities/globalEnums";
-
-const webRTC = useWebRTCStore();
 const chatStore = useSechatChatStore();
 </script>
 

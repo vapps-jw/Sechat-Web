@@ -11,71 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { ChatViews, BottomNavBarSet } from "~~/utilities/globalEnums";
+import { BottomNavBarSet } from "~~/utilities/globalEnums";
 const chatStore = useSechatChatStore();
-const userStore = useUserStore();
-
-const { availableContacts, availableRooms } = storeToRefs(chatStore);
-
-const pendingContactMessagesPresent = computed<boolean>(() => {
-  return (
-    availableContacts.value.filter((c) =>
-      c.directMessages.some(
-        (cm) => !cm.wasViewed && userStore.getUserName !== cm.nameSentBy
-      )
-    ).length > 0
-  );
-});
-
-const pendingContactMessagesCount = computed<number>(() => {
-  const count = availableContacts.value
-    .filter((c) =>
-      c.directMessages.some(
-        (cm) => !cm.wasViewed && userStore.getUserName !== cm.nameSentBy
-      )
-    )
-    .reduce(
-      (acc, cv) =>
-        acc +
-        cv.directMessages.filter(
-          (cm) => !cm.wasViewed && userStore.getUserName !== cm.nameSentBy
-        ).length,
-      0
-    );
-
-  return count;
-});
-
-const pendingRoomMessagesPresent = computed<boolean>(() => {
-  console.log("Checking for unseen messages");
-  return (
-    availableRooms.value.filter((c: IRoom) =>
-      c.messages.some(
-        (cm) => !cm.wasViewed && userStore.getUserName !== cm.nameSentBy
-      )
-    ).length > 0
-  );
-});
-
-const pendingRoomMessagesCount = computed<number>(() => {
-  console.log("Counting for unseen messages");
-  const count = availableRooms.value
-    .filter((c: IRoom) =>
-      c.messages.some(
-        (cm) => !cm.wasViewed && userStore.getUserName !== cm.nameSentBy
-      )
-    )
-    .reduce(
-      (acc, cv) =>
-        acc +
-        cv.messages.filter(
-          (cm) => !cm.wasViewed && userStore.getUserName !== cm.nameSentBy
-        ).length,
-      0
-    );
-
-  return count;
-});
 </script>
 
 <style scoped></style>

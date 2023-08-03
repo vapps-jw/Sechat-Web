@@ -29,7 +29,6 @@ const sechatStore = useSechatAppStore();
 const userStore = useUserStore();
 
 const selectedNav = ref(ChatViews.Rooms);
-
 const { activeChatTab } = storeToRefs(chatStore);
 
 watch(activeChatTab, async (newVal, oldVal) => {
@@ -47,42 +46,9 @@ watch(activeChatTab, async (newVal, oldVal) => {
   if (chatStore.activeRoomId) {
     console.log("Nav Update For Room", chatStore.getActiveRoom);
     try {
-      if (chatStore.getActiveRoom.encryptedByUser) {
-        console.log("Active encrypted room");
-
-        const e2eCheck = e2e.checkCookie(
-          chatStore.getActiveRoomId,
-          CustomCookies.E2E
-        );
-        if (!e2eCheck) {
-          console.log("Key missing");
-          chatStore.rejectRoomSelection();
-          sechatStore.showErrorSnackbar("Key is missing, add it first");
-          return;
-        }
-
-        const updateRequest = <IRoomUpdateRequest>{
-          roomId: chatStore.getActiveRoom.id,
-          lastMessage:
-            chatStore.getActiveRoom.messages.length == 0
-              ? 0
-              : chatStore.getActiveRoom.messages.at(-1).id,
-        };
-        const data = await chatApi.getRoomsUpdate([updateRequest]);
-        data.forEach((r) => {
-          if (r.encryptedByUser) {
-            if (e2e.checkCookie(r.id, CustomCookies.E2E)) {
-              r.hasKey = true;
-              return;
-            }
-            r.hasKey = false;
-          }
-        });
-
-        chatStore.updateRooms(data);
+      if (!chatStore.getActiveRoom.hasKey) {
+        return;
       }
-
-      console.log("Nav Update standard actions");
 
       const markMessagesAsVided =
         chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length > 0;
@@ -103,20 +69,8 @@ watch(activeChatTab, async (newVal, oldVal) => {
   // Handle messages viewed for Direct Messages Chat
   if (chatStore.activeContactId) {
     try {
-      if (chatStore.getActiveContact.encryptedByUser) {
-        console.log("Active encrypted contact");
-
-        const e2eCheck = e2e.checkCookie(
-          chatStore.getActiveContactId,
-          CustomCookies.E2EDM
-        );
-        if (!e2eCheck) {
-          // TODO: remove this if unnecessary
-          // console.log("Key missing");
-          // chatStore.rejectContactSelection();
-          // app.showErrorSnackbar("Key is missing, add it first");
-          return;
-        }
+      if (!chatStore.getActiveContact.hasKey) {
+        return;
       }
 
       const markMessagesAsVided =

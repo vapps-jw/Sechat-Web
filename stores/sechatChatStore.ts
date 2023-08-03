@@ -316,7 +316,7 @@ export const useSechatChatStore = defineStore({
     isSettingsViewActive: (state) => state.activeChatTab === ChatViews.Settings,
     isRoomsViewActive: (state) => state.activeChatTab === ChatViews.Rooms,
     isMessagesViewActive: (state) => state.activeChatTab === ChatViews.Messages,
-    getActiveRoom: (state) =>
+    getActiveRoom: (state): IRoom =>
       state.availableRooms.find((r) => r.id === state.activeRoomId),
     getActiveContact: (state) =>
       state.availableContacts.find((r) => r.id === state.activeContactId),
