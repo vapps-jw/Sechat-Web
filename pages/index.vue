@@ -86,7 +86,7 @@ const signOut = async () => {
       }
     );
 
-    if (apiError.value) {
+    if (apiError.value && apiError.value.statusCode !== 405) {
       throw createError({
         ...apiError.value,
         statusCode: apiError.value.statusCode,
