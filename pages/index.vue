@@ -60,12 +60,13 @@
 
 <script setup lang="ts">
 import { CustomCookies } from "~/utilities/globalEnums";
-import { reloadNuxtApp } from "nuxt/app";
 
+const config = useRuntimeConfig();
 const userStore = useUserStore();
 const chatStore = useSechatChatStore();
-const config = useRuntimeConfig();
 const appStore = useSechatAppStore();
+const signalRStore = useSignalRStore();
+const webRTCStore = useWebRTCStore();
 
 const rejectCookies = () => {
   const gdprCookie = useCookie(CustomCookies.GDPR);
@@ -95,16 +96,19 @@ const signOut = async () => {
       });
     }
 
+    await signalRStore.closeConnection();
+    console.warn("Resetting chatStore");
     chatStore.$reset();
+    console.warn("Resetting appStore");
+    appStore.$reset();
+    console.warn("Resetting signalRStore");
+    signalRStore.$reset();
+    console.warn("Resetting webRTCStore");
+    webRTCStore.$reset();
+    console.warn("Resetting userStore");
     userStore.$reset();
-    reloadNuxtApp({
-      path: "/",
-      ttl: 1000, // default 10000
-    });
-    console.log("User Profile", userStore.userProfile);
-    appStore.showSuccessSnackbar("Logged out");
   } catch (error) {
-    appStore.showErrorSnackbar(error.statusMessage);
+    appStore.showErrorSnackbar(error);
   }
 };
 </script>

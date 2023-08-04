@@ -13,7 +13,9 @@ export const useSignalRStore = defineStore({
       this.connection = value;
     },
     async closeConnection() {
-      await this.connection.stop();
+      if (this.connection) {
+        await this.connection.stop();
+      }
     },
   },
   getters: {

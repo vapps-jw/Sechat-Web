@@ -171,15 +171,6 @@ export const useSignalR = () => {
     }
   };
 
-  const closeConnection = async () => {
-    if (signalRStore.getConnection) {
-      console.log("Closing connection, calling stop method");
-      await signalRStore.closeConnection();
-    } else {
-      console.log("No connection to close");
-    }
-  };
-
   // Rooms
 
   const onUserAddedToRoomEvent = (connection: signalR.HubConnection) => {
@@ -324,7 +315,6 @@ export const useSignalR = () => {
   };
 
   return {
-    closeConnection,
     createRoom,
     connect,
   };

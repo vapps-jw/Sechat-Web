@@ -5,8 +5,7 @@ export const useSechatAppStore = defineStore({
   state: () => {
     return {
       loadingOverlayVisible: <boolean>false,
-      pingServerInterval: <NodeJS.Timer>null,
-      localLanguage: <string>useI18n().locale.value,
+      localLanguage: <string>null,
       snackbarData: <ISanckbar>{
         snackbar: false,
         text: "",
@@ -19,6 +18,9 @@ export const useSechatAppStore = defineStore({
     };
   },
   actions: {
+    updateLocalLanguage() {
+      this.localLanguage = useI18n().locale.value;
+    },
     updateLoadingOverlay(value: boolean) {
       this.loadingOverlayVisible = value;
     },

@@ -11,55 +11,51 @@
 <script setup lang="ts">
 const sechatAppStore = useSechatAppStore();
 const appStore = useSechatAppStore();
-const signalR = useSignalR();
 const signalRStore = useSignalRStore();
 const refreshHandler = useRefreshHandler();
 const chatStore = useSechatChatStore();
+const webRTCStore = useWebRTCStore();
+
+const resetSechat = async () => {
+  await signalRStore.closeConnection();
+  console.warn("Resetting chatStore");
+  chatStore.$reset();
+  console.warn("Resetting appStore");
+  appStore.$reset();
+  console.warn("Resetting signalRStore");
+  signalRStore.$reset();
+  console.warn("Resetting webRTCStore");
+  webRTCStore.$reset();
+};
 
 onMounted(async () => {
-  window.addEventListener("beforeunload", () => {
-    signalR.closeConnection();
-    signalRStore.$reset();
-    chatStore.$reset();
-  });
-
   console.warn("Chat Layout onMounted");
-  sechatAppStore.updateLoadingOverlay(true);
-
   await refreshHandler.handleOnMountedLoad();
 
-  console.info("Hooking to visibility change");
+  console.info("Hooking to window events");
   window.addEventListener(
     "visibilitychange",
     refreshHandler.handleVisibilityChange
   );
-
-  console.info("Hooking to online change");
+  window.addEventListener("beforeunload", resetSechat);
   window.addEventListener("online", refreshHandler.handleOnlineChange);
   window.addEventListener("offline", refreshHandler.handleOfflineChange);
-
-  sechatAppStore.updateLoadingOverlay(false);
 });
 
-onBeforeUnmount(() => {
+onBeforeUnmount(async () => {
   console.warn("Chat Layout onBeforeUnmount");
   appStore.updateLoadingOverlay(true);
 
-  signalR.closeConnection();
-  signalRStore.$reset();
-  chatStore.$reset();
+  await resetSechat();
 
-  console.warn("Connection", signalRStore.getConnection);
-
-  console.info("Removing Hook to visibility change");
+  console.info("Removing Hook to window events");
   window.removeEventListener(
     "visibilitychange",
     refreshHandler.handleVisibilityChange
   );
-
-  console.info("Removing Hook to online change");
   window.removeEventListener("online", refreshHandler.handleOnlineChange);
   window.removeEventListener("offline", refreshHandler.handleOfflineChange);
+  window.removeEventListener("beforeunload", resetSechat);
   window.location.reload();
   appStore.updateLoadingOverlay(false);
 });

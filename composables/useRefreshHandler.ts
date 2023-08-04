@@ -16,6 +16,7 @@ export const useRefreshHandler = () => {
   const signalRStore = useSignalRStore();
 
   const handleOnMountedLoad = async () => {
+    appStore.updateLoadingOverlay(true);
     await Promise.all([
       chatApi.getConstacts().then((res) => {
         res.forEach((cr) => {
@@ -35,6 +36,7 @@ export const useRefreshHandler = () => {
     await signalR.connect();
     askForMissingKeys();
     syncWithOtherDevice();
+    appStore.updateLoadingOverlay(false);
   };
 
   const handleVisibilityChange = async () => {
@@ -155,15 +157,18 @@ export const useRefreshHandler = () => {
   };
 
   const refreshActions = async () => {
-    const promises = [
-      chatApi.getConstacts().then((res) => {
-        res.forEach((cr) => {
-          e2e.tryDecryptContact(cr);
-        });
-        chatStore.loadContacts(res);
-      }),
-    ];
+    await chatApi.getConstacts().then((res) => {
+      res.forEach((cr) => {
+        e2e.tryDecryptContact(cr);
+      });
+      chatStore.loadContacts(res);
+    });
 
+    await signalR.connect();
+    askForMissingKeys();
+    syncWithOtherDevice();
+
+    const promises = [];
     if (chatStore.callLogs.length > 0) {
       promises.push(
         videoCall
@@ -191,10 +196,6 @@ export const useRefreshHandler = () => {
     } catch (error) {
       console.error("Update Error", error);
     }
-
-    await signalR.connect();
-    askForMissingKeys();
-    syncWithOtherDevice();
 
     console.log(
       "Viewed messages update",

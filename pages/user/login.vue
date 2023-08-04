@@ -77,7 +77,7 @@ const sechatStore = useSechatAppStore();
 const onSubmit = async () => {
   try {
     loading.value = true;
-    const { error: apiError } = await useFetch(
+    const { error: apiError, data: userProfile } = await useFetch(
       `${config.public.apiBase}/account/login`,
       {
         headers: {
@@ -93,12 +93,10 @@ const onSubmit = async () => {
     );
 
     if (!apiError.value) {
-      await userApi.getUserData();
-
-      if (userStore.isSignedIn) {
-        console.log("Navigating to Chat");
-        navigateTo("/chat");
-      }
+      console.log("Profile received", userProfile);
+      userStore.updateUserProfile(userProfile.value);
+      console.log("Navigating to Chat");
+      navigateTo("/chat");
     }
   } catch (error) {
     console.error("Login Error", error);

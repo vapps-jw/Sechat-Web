@@ -49,6 +49,11 @@
 </template>
 <script setup lang="ts">
 const config = useRuntimeConfig();
+const appStore = useSechatAppStore();
+
+onMounted(async () => {
+  appStore.updateLocalLanguage();
+});
 </script>
 <style scoped>
 .glow {
