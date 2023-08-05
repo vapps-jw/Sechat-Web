@@ -15,8 +15,13 @@ export const useRefreshHandler = () => {
   const e2e = useE2Encryption();
   const signalRStore = useSignalRStore();
 
+  const clearUnusedKeys = () => {
+    // TODO: do this
+  };
+
   const handleOnMountedLoad = async () => {
     appStore.updateLoadingOverlay(true);
+    appStore.updateLocalLanguage();
     await Promise.all([
       chatApi.getConstacts().then((res) => {
         res.forEach((cr) => {
@@ -157,6 +162,7 @@ export const useRefreshHandler = () => {
   };
 
   const refreshActions = async () => {
+    appStore.updateLocalLanguage();
     await chatApi.getConstacts().then((res) => {
       res.forEach((cr) => {
         e2e.tryDecryptContact(cr);

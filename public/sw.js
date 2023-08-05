@@ -7,6 +7,15 @@ precacheAndRoute(self.__WB_MANIFEST);
 self.skipWaiting();
 clientsClaim();
 
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    (async function () {
+      const response = await caches.match(event.request);
+      return response || fetch(event.request);
+    })()
+  );
+});
+
 self.addEventListener("push", async (event) => {
   const data = event.data.json();
   console.log("Push Recieved...", data);
