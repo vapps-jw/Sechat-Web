@@ -17,11 +17,11 @@ export const useRefreshHandler = () => {
 
   const clearUnusedKeys = () => {
     // TODO: do this
+    console.log("Clearing keys");
   };
 
   const handleOnMountedLoad = async () => {
     appStore.updateLoadingOverlay(true);
-    appStore.updateLocalLanguage();
     await Promise.all([
       chatApi.getConstacts().then((res) => {
         res.forEach((cr) => {
@@ -41,6 +41,7 @@ export const useRefreshHandler = () => {
     await signalR.connect();
     askForMissingKeys();
     syncWithOtherDevice();
+    clearUnusedKeys();
     appStore.updateLoadingOverlay(false);
   };
 
@@ -162,17 +163,16 @@ export const useRefreshHandler = () => {
   };
 
   const refreshActions = async () => {
-    appStore.updateLocalLanguage();
+    await signalR.connect();
+    askForMissingKeys();
+    syncWithOtherDevice();
+
     await chatApi.getConstacts().then((res) => {
       res.forEach((cr) => {
         e2e.tryDecryptContact(cr);
       });
       chatStore.loadContacts(res);
     });
-
-    await signalR.connect();
-    askForMissingKeys();
-    syncWithOtherDevice();
 
     const promises = [];
     if (chatStore.callLogs.length > 0) {
@@ -199,6 +199,7 @@ export const useRefreshHandler = () => {
 
     try {
       await Promise.all(promises);
+      clearUnusedKeys();
     } catch (error) {
       console.error("Update Error", error);
     }

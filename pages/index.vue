@@ -99,8 +99,6 @@ const signOut = async () => {
     await signalRStore.closeConnection();
     console.warn("Resetting chatStore");
     chatStore.$reset();
-    console.warn("Resetting appStore");
-    appStore.$reset();
     console.warn("Resetting signalRStore");
     signalRStore.$reset();
     console.warn("Resetting webRTCStore");

@@ -20,8 +20,6 @@ const resetSechat = async () => {
   await signalRStore.closeConnection();
   console.warn("Resetting chatStore");
   chatStore.$reset();
-  console.warn("Resetting appStore");
-  appStore.$reset();
   console.warn("Resetting signalRStore");
   signalRStore.$reset();
   console.warn("Resetting webRTCStore");
@@ -30,6 +28,7 @@ const resetSechat = async () => {
 
 onMounted(async () => {
   console.warn("Chat Layout onMounted");
+  appStore.updateLocalLanguage();
   await refreshHandler.handleOnMountedLoad();
 
   console.info("Hooking to window events");
