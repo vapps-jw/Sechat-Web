@@ -30,6 +30,11 @@ export const useContactHandlers = () => {
         if (data.invitedName === userStore.getUserName) {
           data.displayName = data.inviterName;
         } else {
+          const dmKey = e2e.getKey(data.id, LocalStoreTypes.E2EDM);
+          console.log("DM Key", dmKey);
+          if (dmKey) {
+            data.hasKey = true;
+          }
           data.displayName = data.invitedName;
         }
         chatStore.updateContact(data);

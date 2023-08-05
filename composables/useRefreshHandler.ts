@@ -16,12 +16,32 @@ export const useRefreshHandler = () => {
   const signalRStore = useSignalRStore();
 
   const clearUnusedKeys = () => {
-    // TODO: do this
-    console.log("Clearing keys");
+    const dmKeys = e2e.getKeys(LocalStoreTypes.E2EDM);
+    const roomKeys = e2e.getKeys(LocalStoreTypes.E2EROOMS);
+
+    const roomIds = chatStore.availableRooms.map((r) => r.id);
+    const contactIds = chatStore.availableContacts.map((c) => c.id);
+
+    const unusedDMKeys = dmKeys.filter(
+      (dk) => !contactIds.some((cid) => cid === dk.id)
+    );
+    const unusedRoomKeys = roomKeys.filter(
+      (dk) => !roomIds.some((cid) => cid === dk.id)
+    );
+
+    console.log("DM keys to clear", unusedDMKeys);
+    unusedDMKeys.forEach((k) => e2e.removeKey(k.id, LocalStoreTypes.E2EDM));
+
+    console.log("Room keys to clear", unusedRoomKeys);
+    unusedRoomKeys.forEach((k) =>
+      e2e.removeKey(k.id, LocalStoreTypes.E2EROOMS)
+    );
   };
 
   const handleOnMountedLoad = async () => {
     appStore.updateLoadingOverlay(true);
+
+    await signalR.connect();
     await Promise.all([
       chatApi.getConstacts().then((res) => {
         res.forEach((cr) => {
@@ -38,10 +58,14 @@ export const useRefreshHandler = () => {
       }),
     ]);
 
-    await signalR.connect();
-    askForMissingKeys();
-    syncWithOtherDevice();
-    clearUnusedKeys();
+    if (signalRStore.isConnected) {
+      console.log("SignalR Connected, processing Fetch");
+      askForMissingKeys();
+      syncWithOtherDevice();
+      clearUnusedKeys();
+    }
+
+    signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
     appStore.updateLoadingOverlay(false);
   };
 
@@ -150,23 +174,18 @@ export const useRefreshHandler = () => {
   };
 
   const handleOnlineChange = async () => {
-    console.log("Online status changed");
-    appStore.updateLoadingOverlay(false);
+    console.warn("Online status changed");
     appStore.updateOnlineState(true);
     await refreshActions();
     appStore.updateLoadingOverlay(false);
   };
 
   const handleOfflineChange = async () => {
-    appStore.updateOnlineState(false);
     appStore.updateLoadingOverlay(true);
   };
 
   const refreshActions = async () => {
     await signalR.connect();
-    askForMissingKeys();
-    syncWithOtherDevice();
-
     await chatApi.getConstacts().then((res) => {
       res.forEach((cr) => {
         e2e.tryDecryptContact(cr);
@@ -199,7 +218,14 @@ export const useRefreshHandler = () => {
 
     try {
       await Promise.all(promises);
-      clearUnusedKeys();
+      if (signalRStore.isConnected) {
+        console.log("SignalR Connected, processing Refresh");
+        askForMissingKeys();
+        syncWithOtherDevice();
+        clearUnusedKeys();
+      }
+
+      signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
     } catch (error) {
       console.error("Update Error", error);
     }
@@ -264,7 +290,40 @@ export const useRefreshHandler = () => {
     }
   };
 
+  const onSignalRReconnect = async () => {
+    appStore.updateLoadingOverlay(true);
+
+    if (signalRStore.isConnected) {
+      console.log("SignalR Connected, processing Fetch");
+      askForMissingKeys();
+      syncWithOtherDevice();
+    }
+
+    await Promise.all([
+      chatApi.getConstacts().then((res) => {
+        res.forEach((cr) => {
+          e2e.tryDecryptContact(cr);
+        });
+        chatStore.loadContacts(res);
+      }),
+      videoCall.getCallLogs().then((res) => chatStore.loadCallLogs(res)),
+      chatApi.getRooms().then((res) => {
+        res.forEach((room) => {
+          e2e.tryDecryptRoom(room);
+        });
+        return chatStore.loadRooms(res);
+      }),
+    ]);
+
+    clearUnusedKeys();
+    signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
+
+    appStore.updateLoadingOverlay(false);
+  };
+
   return {
+    onSignalRReconnect,
+    clearUnusedKeys,
     syncWithOtherDevice,
     askForMissingKeys,
     handleOnMountedLoad,

@@ -1,9 +1,5 @@
 import * as signalR from "@microsoft/signalr";
-import {
-  CustomCookies,
-  LocalStoreTypes,
-  SignalRHubMethods,
-} from "~~/utilities/globalEnums";
+import { LocalStoreTypes, SignalRHubMethods } from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
   const sechatStore = useSechatAppStore();
@@ -12,7 +8,6 @@ export const useSignalR = () => {
   const userStore = useUserStore();
   const signalRStore = useSignalRStore();
   const videoCalls = useVideoCall();
-  const chatApi = useChatApi();
   const e2e = useE2Encryption();
   const e2eHandlers = useE2EHandlers();
   const contactHandlers = useContactHandlers();
@@ -24,8 +19,7 @@ export const useSignalR = () => {
       .withUrl(`${config.public.apiBase}/chat-hub`)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
-          console.log("Reconnecting ...");
-          sechatStore.updateLoadingOverlay(true);
+          console.warn("Reconnecting SignalR");
           return 1000;
         },
       })
@@ -116,39 +110,16 @@ export const useSignalR = () => {
 
     connection.onreconnected(async (connectionId) => {
       try {
-        sechatStore.updateLoadingOverlay(true);
-
-        // Get the updates
-        console.log("Reconnected, getting state ...", connectionId);
-        await Promise.all([
-          chatApi
-            .getConstacts()
-            .then((res) => sechatChatStore.loadContacts(res)),
-          chatApi.getRooms().then((res) => {
-            sechatChatStore.loadRooms(res);
-          }),
-        ]);
-
-        console.log("Reconnected, connectiong to Rooms ...");
-        connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
+        console.warn("SIGNALR RECONNECTION TRIGGERED", connectionId);
+        //connectionHandlers.onSignalRReconnect();
       } catch (error) {
-        console.error("Fetch State Failed", error);
-      } finally {
-        sechatStore.updateLoadingOverlay(false);
+        console.error("SIGNALR RECONNECTION ERROR", error);
       }
     });
 
     console.log("Starting Connection ...");
     await connection.start();
-
     signalRStore.updateConnectionValue(connection);
-    if (
-      signalRStore.connection.state === signalR.HubConnectionState.Connected
-    ) {
-      console.log("Connection Established, connectiong to Rooms ...");
-      connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
-      return;
-    }
   };
 
   const connect = async () => {
@@ -164,7 +135,6 @@ export const useSignalR = () => {
     ) {
       console.log("Starting Current Connection, connecting to Rooms");
       await signalRStore.connection.start();
-      connectToRooms(sechatChatStore.availableRooms.map((r) => r.id));
     }
     if (!signalRStore.connection) {
       await createNewConnection();
@@ -315,6 +285,8 @@ export const useSignalR = () => {
   };
 
   return {
+    connectToRooms,
+    connectToRoom,
     createRoom,
     connect,
   };

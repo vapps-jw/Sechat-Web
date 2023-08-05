@@ -100,6 +100,7 @@ export const useE2Encryption = () => {
       return E2EStatusMessages.ENCRYPTION_ERROR;
     }
   };
+
   const decryptMessage = (data: string, key: E2EKey): string => {
     try {
       var result = CryptoES.enc.Utf8.stringify(
