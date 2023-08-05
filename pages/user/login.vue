@@ -71,7 +71,6 @@ const buttonText = ref<string>("Sign In");
 const buttonColor = ref<string>("warning");
 const config = useRuntimeConfig();
 const userStore = useUserStore();
-const userApi = useUserApi();
 const sechatStore = useSechatAppStore();
 
 const onSubmit = async () => {
@@ -86,8 +85,8 @@ const onSubmit = async () => {
         method: "POST",
         credentials: "include",
         body: {
-          username: credentials.value.username,
-          password: credentials.value.password,
+          username: credentials.value.username.trim(),
+          password: credentials.value.password.trim(),
         },
       }
     );
