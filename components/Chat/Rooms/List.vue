@@ -82,9 +82,7 @@ const selectRoomClicked = (room: IRoom) => {
     });
     return;
   }
-  appStore.updateLoadingOverlay(true);
   chatStore.selectRoom(room.id);
-  appStore.updateLoadingOverlay(false);
 };
 </script>
 

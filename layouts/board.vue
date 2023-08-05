@@ -43,7 +43,6 @@ onMounted(async () => {
 
 onBeforeUnmount(async () => {
   console.warn("Chat Layout onBeforeUnmount");
-  appStore.updateLoadingOverlay(true);
 
   await resetSechat();
 
@@ -56,6 +55,5 @@ onBeforeUnmount(async () => {
   window.removeEventListener("offline", refreshHandler.handleOfflineChange);
   window.removeEventListener("beforeunload", resetSechat);
   window.location.reload();
-  appStore.updateLoadingOverlay(false);
 });
 </script>
