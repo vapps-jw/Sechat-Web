@@ -97,9 +97,17 @@ const onSubmit = async () => {
       console.log("Navigating to Chat");
       navigateTo("/chat");
     }
+
+    if (apiError.value && apiError.value.statusCode !== 405) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
   } catch (error) {
     console.error("Login Error", error);
-    sechatStore.showErrorSnackbar(error);
+    sechatStore.showErrorSnackbar(error.statusMessage);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
     error.value = null;
