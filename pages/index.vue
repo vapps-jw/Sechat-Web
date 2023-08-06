@@ -15,13 +15,19 @@
       >
     </v-btn>
     <v-btn
+      data-cy="sign-out"
       v-if="userStore.isSignedIn"
       class="my-2"
       size="large"
       @click="signOut"
       >Sign Out</v-btn
     >
-    <v-btn v-if="!userStore.isSignedIn" class="my-2" size="large">
+    <v-btn
+      data-cy="sign-in"
+      v-if="!userStore.isSignedIn"
+      class="my-2"
+      size="large"
+    >
       <NuxtLink class="sechat-link-clear" :to="`/user/login`">Sign In</NuxtLink>
     </v-btn>
     <v-btn v-if="!userStore.isSignedIn" class="my-2" size="large">
