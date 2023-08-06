@@ -11,6 +11,12 @@
           height="150"
         ></NuxtImg>
         <div class="text-h6">Encrypted chat & video calls</div>
+        <ChatUserAvatar
+          v-if="userStore.isSignedIn"
+          :active="false"
+          :user-name="userStore.getUserName"
+          size="small"
+        />
       </v-container>
       <v-divider
         class="border-opacity-40 mx-10 my-2"
@@ -50,6 +56,7 @@
 <script setup lang="ts">
 const config = useRuntimeConfig();
 const appStore = useSechatAppStore();
+const userStore = useUserStore();
 
 onMounted(async () => {
   appStore.updateLocalLanguage();

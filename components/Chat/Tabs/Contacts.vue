@@ -35,7 +35,7 @@
           type="info"
           variant="tonal"
           title="E2E Encryption"
-          text="Add email if you want to reset your password if you forget it"
+          text="Both users have to be online to sync keys. If you are logged in on different devices you have to be online on both to sync keys between them. You can delete a key or create a new one at any time, previous messages will be deleted."
         ></v-alert>
         <ChatContactsList />
       </v-card-text>
