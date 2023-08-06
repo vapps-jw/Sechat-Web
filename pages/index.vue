@@ -96,6 +96,7 @@ const signOut = async () => {
     webRTCStore.$reset();
     console.warn("Resetting userStore");
     userStore.$reset();
+    appStore.showSuccessSnackbar(`${userStore.getUserName} logged out`);
   } catch (error) {
     appStore.showErrorSnackbar(error);
   }
