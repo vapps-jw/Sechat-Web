@@ -4,7 +4,7 @@
       color="warning"
       :border="true"
       class="ma-1"
-      v-for="room in chatStore.availableRooms"
+      v-for="room in chatStore.getAvailableRoomsWithKeys"
       :key="room.id"
       :title="room.name"
       @click="selection = room.id"

@@ -341,5 +341,15 @@ export const useSechatChatStore = defineStore({
       );
       return result;
     },
+    getApprovedContactsWithKeys: (state) => {
+      const result = state.availableContacts.filter(
+        (uc) => !uc.blocked && uc.approved && uc.hasKey
+      );
+      return result;
+    },
+    getAvailableRoomsWithKeys: (state) => {
+      const result = state.availableRooms.filter((room) => room.hasKey);
+      return result;
+    },
   },
 });

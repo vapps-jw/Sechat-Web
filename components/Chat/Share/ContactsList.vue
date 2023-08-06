@@ -4,7 +4,7 @@
       color="warning"
       :border="true"
       class="ma-1"
-      v-for="uc in chatStore.getApprovedContacts"
+      v-for="uc in chatStore.getApprovedContactsWithKeys"
       :key="uc.id"
       :title="uc.displayName"
       @click="selection = uc.id"
