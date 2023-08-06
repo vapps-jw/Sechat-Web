@@ -64,6 +64,8 @@ onMounted(async () => {
   appStore.updateLocalLanguage();
   const authCheck = await chatApi.isAuthorized();
   if (!authCheck) {
+    console.error("Auth Check Failed");
+    console.error("Stored Profile", userStore.userProfile);
     refreshHandler.signOutCleanup();
   }
 });
