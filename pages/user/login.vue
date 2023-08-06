@@ -58,6 +58,10 @@
 const form = ref(false);
 const loading = ref(false);
 
+definePageMeta({
+  middleware: ["login-page-handler"],
+});
+
 interface ICredentials {
   valid: boolean;
   username: string;

@@ -14,6 +14,7 @@ export const useRefreshHandler = () => {
   const videoCall = useVideoCall();
   const e2e = useE2Encryption();
   const signalRStore = useSignalRStore();
+  const webRTCStore = useWebRTCStore();
 
   const clearUnusedKeys = () => {
     const dmKeys = e2e.getKeys(LocalStoreTypes.E2EDM);
@@ -295,7 +296,20 @@ export const useRefreshHandler = () => {
     }
   };
 
+  const signOutCleanup = async () => {
+    await signalRStore.closeConnection();
+    console.warn("Resetting chatStore");
+    chatStore.$reset();
+    console.warn("Resetting signalRStore");
+    signalRStore.$reset();
+    console.warn("Resetting webRTCStore");
+    webRTCStore.$reset();
+    console.warn("Resetting userStore");
+    userStore.$reset();
+  };
+
   return {
+    signOutCleanup,
     clearUnusedKeys,
     syncWithOtherDevice,
     askForMissingKeys,

@@ -60,10 +60,8 @@ import { CustomCookies } from "~/utilities/globalEnums";
 
 const config = useRuntimeConfig();
 const userStore = useUserStore();
-const chatStore = useSechatChatStore();
 const appStore = useSechatAppStore();
-const signalRStore = useSignalRStore();
-const webRTCStore = useWebRTCStore();
+const refreshHandler = useRefreshHandler();
 
 const rejectCookies = () => {
   const gdprCookie = useCookie(CustomCookies.GDPR);
@@ -93,15 +91,7 @@ const signOut = async () => {
       });
     }
 
-    await signalRStore.closeConnection();
-    console.warn("Resetting chatStore");
-    chatStore.$reset();
-    console.warn("Resetting signalRStore");
-    signalRStore.$reset();
-    console.warn("Resetting webRTCStore");
-    webRTCStore.$reset();
-    console.warn("Resetting userStore");
-    userStore.$reset();
+    await refreshHandler.signOutCleanup();
   } catch (error) {
     appStore.showErrorSnackbar(error);
   }

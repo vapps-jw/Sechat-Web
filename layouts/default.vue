@@ -57,9 +57,15 @@
 const config = useRuntimeConfig();
 const appStore = useSechatAppStore();
 const userStore = useUserStore();
+const chatApi = useChatApi();
+const refreshHandler = useRefreshHandler();
 
 onMounted(async () => {
   appStore.updateLocalLanguage();
+  const authCheck = await chatApi.isAuthorized();
+  if (!authCheck) {
+    refreshHandler.signOutCleanup();
+  }
 });
 </script>
 <style scoped>
