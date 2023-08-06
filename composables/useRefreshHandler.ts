@@ -22,20 +22,25 @@ export const useRefreshHandler = () => {
     const roomIds = chatStore.availableRooms.map((r) => r.id);
     const contactIds = chatStore.availableContacts.map((c) => c.id);
 
-    const unusedDMKeys = dmKeys.filter(
-      (dk) => !contactIds.some((cid) => cid === dk.id)
-    );
-    const unusedRoomKeys = roomKeys.filter(
-      (dk) => !roomIds.some((cid) => cid === dk.id)
-    );
+    if (dmKeys) {
+      const unusedDMKeys = dmKeys.filter(
+        (dk) => !contactIds.some((cid) => cid === dk.id)
+      );
 
-    console.log("DM keys to clear", unusedDMKeys);
-    unusedDMKeys.forEach((k) => e2e.removeKey(k.id, LocalStoreTypes.E2EDM));
+      console.log("DM keys to clear", unusedDMKeys);
+      unusedDMKeys.forEach((k) => e2e.removeKey(k.id, LocalStoreTypes.E2EDM));
+    }
 
-    console.log("Room keys to clear", unusedRoomKeys);
-    unusedRoomKeys.forEach((k) =>
-      e2e.removeKey(k.id, LocalStoreTypes.E2EROOMS)
-    );
+    if (roomKeys) {
+      const unusedRoomKeys = roomKeys.filter(
+        (dk) => !roomIds.some((cid) => cid === dk.id)
+      );
+
+      console.log("Room keys to clear", unusedRoomKeys);
+      unusedRoomKeys.forEach((k) =>
+        e2e.removeKey(k.id, LocalStoreTypes.E2EROOMS)
+      );
+    }
   };
 
   const handleOnMountedLoad = async () => {

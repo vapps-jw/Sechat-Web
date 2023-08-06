@@ -31,6 +31,15 @@
                 >Approve</v-btn
               ></v-list-item
             >
+
+            <v-list-item v-if="uc.approved && !uc.blocked && uc.hasKey">
+              <ChatContactsDeleteKey :contact="uc" />
+            </v-list-item>
+
+            <v-list-item v-if="uc.approved && !uc.blocked && !uc.hasKey">
+              <ChatContactsGetNewKey :contact="uc" />
+            </v-list-item>
+
             <v-list-item>
               <v-btn
                 @click="async () => deleteContact(uc.id)"

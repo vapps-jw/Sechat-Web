@@ -1,20 +1,11 @@
 <template>
   <v-container class="d-flex flex-column align-center">
-    <v-btn v-if="userStore.isSignedIn" class="my-2 glow-effect" size="large">
-      <svg class="glow-container">
-        <rect
-          rx="0.25rem"
-          pathLength="100"
-          stroke-linecap="round"
-          class="glow-blur"
-        ></rect>
-        <rect
-          rx="0.25rem"
-          pathLength="100"
-          stroke-linecap="round"
-          class="glow-line"
-        ></rect>
-      </svg>
+    <v-btn
+      v-if="userStore.isSignedIn"
+      class="my-2"
+      size="large"
+      color="warning"
+    >
       <NuxtLink class="sechat-link-clear" :to="`/chat`">SECHAT</NuxtLink>
     </v-btn>
 

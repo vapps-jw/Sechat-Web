@@ -5,6 +5,7 @@
     v-model="chatStore.activeChatTab"
   >
     <v-btn
+      data-cy="messages-bottom-nav"
       color="tertiary"
       :value="ChatViews.Messages"
       @click="chatStore.activateView(ChatViews.Messages)"
@@ -13,6 +14,7 @@
       <span>Messages</span>
     </v-btn>
     <v-btn
+      data-cy="rooms-bottom-nav"
       color="tertiary"
       :value="ChatViews.Rooms"
       @click="chatStore.activateView(ChatViews.Rooms)"
@@ -45,6 +47,7 @@
       <span>Contacts</span>
     </v-btn>
     <v-btn
+      data-cy="apps-bottom-nav"
       color="warning"
       :value="ChatViews.AppsSelection"
       @click="chatStore.activateView(ChatViews.AppsSelection)"

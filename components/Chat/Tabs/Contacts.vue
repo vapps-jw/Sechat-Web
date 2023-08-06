@@ -29,6 +29,14 @@
         <ChatContactsAddContact @invite-user="createInvitation" />
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
+        <v-alert
+          class="alert-font"
+          density="compact"
+          type="info"
+          variant="tonal"
+          title="E2E Encryption"
+          text="Add email if you want to reset your password if you forget it"
+        ></v-alert>
         <ChatContactsList />
       </v-card-text>
     </v-card>

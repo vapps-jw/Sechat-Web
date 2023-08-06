@@ -1,4 +1,4 @@
-import { CustomCookies, SnackbarIcons } from "~/utilities/globalEnums";
+import { SnackbarIcons } from "~/utilities/globalEnums";
 
 export const useChatApi = () => {
   const config = useRuntimeConfig();
@@ -294,7 +294,29 @@ export const useChatApi = () => {
     );
   };
 
+  const clearChat = async (contactId: number) => {
+    const { error: apiError, data: resData } = await useFetch(
+      `${config.public.apiBase}/chat/direct-messages/${contactId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+  };
+
   return {
+    clearChat,
     getContact,
     markDirectMessageAsViewed,
     markDirectMessagesAsViewed,

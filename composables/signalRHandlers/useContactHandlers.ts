@@ -126,6 +126,7 @@ export const useContactHandlers = () => {
       async (message: IContactUpdateRequired) => {
         console.warn("Incoming ContactUpdateRequired", message);
         const updatedContact = await chatApi.getContact(message.contactId);
+        e2e.tryDecryptContact(updatedContact);
         chatStore.updateContact(updatedContact);
       }
     );
