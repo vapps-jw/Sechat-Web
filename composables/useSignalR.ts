@@ -111,7 +111,10 @@ export const useSignalR = () => {
     connection.onreconnected(async (connectionId) => {
       try {
         console.warn("SIGNALR RECONNECTION TRIGGERED", connectionId);
-        //connectionHandlers.onSignalRReconnect();
+        const roomIds = sechatChatStore.availableRooms.map((r) => r.id);
+        if (roomIds.length > 0) {
+          connectToRooms(roomIds);
+        }
       } catch (error) {
         console.error("SIGNALR RECONNECTION ERROR", error);
       }

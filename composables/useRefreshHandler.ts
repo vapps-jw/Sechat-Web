@@ -295,39 +295,7 @@ export const useRefreshHandler = () => {
     }
   };
 
-  const onSignalRReconnect = async () => {
-    appStore.updateLoadingOverlay(true);
-
-    if (signalRStore.isConnected) {
-      console.log("SignalR Connected, processing Fetch");
-      askForMissingKeys();
-      syncWithOtherDevice();
-    }
-
-    await Promise.all([
-      chatApi.getConstacts().then((res) => {
-        res.forEach((cr) => {
-          e2e.tryDecryptContact(cr);
-        });
-        chatStore.loadContacts(res);
-      }),
-      videoCall.getCallLogs().then((res) => chatStore.loadCallLogs(res)),
-      chatApi.getRooms().then((res) => {
-        res.forEach((room) => {
-          e2e.tryDecryptRoom(room);
-        });
-        return chatStore.loadRooms(res);
-      }),
-    ]);
-
-    clearUnusedKeys();
-    signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
-
-    appStore.updateLoadingOverlay(false);
-  };
-
   return {
-    onSignalRReconnect,
     clearUnusedKeys,
     syncWithOtherDevice,
     askForMissingKeys,
