@@ -7,7 +7,7 @@
     <v-btn
       color="tertiary"
       :value="ChatViews.Events"
-      @click="chatStore.activateView(ChatViews.WorkInProgress)"
+      @click="chatStore.activateView(ChatViews.Events)"
     >
       <v-icon>mdi-calendar-star</v-icon>
       <span>Events</span>
@@ -15,7 +15,7 @@
     <v-btn
       color="tertiary"
       :value="ChatViews.Calendar"
-      @click="chatStore.activateView(ChatViews.WorkInProgress)"
+      @click="chatStore.activateView(ChatViews.Calendar)"
     >
       <v-icon>mdi-calendar-month</v-icon>
       <span>Calendar</span>

@@ -44,6 +44,9 @@
       <v-window-item :value="ChatViews.AppsSelection">
         <ChatTabsAppsSelection />
       </v-window-item>
+      <v-window-item :value="ChatViews.WorkInProgress">
+        <ChatTabsWorkInProgress />
+      </v-window-item>
     </v-window>
   </div>
 </template>
