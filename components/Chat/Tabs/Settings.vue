@@ -20,6 +20,10 @@
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list flex align-center>
           <v-list-item>
+            <ChatProfileTooltipsSection />
+          </v-list-item>
+          <v-divider />
+          <v-list-item>
             <ChatProfileEmailSection />
           </v-list-item>
           <v-divider />
@@ -37,10 +41,6 @@
 </template>
 
 <script setup lang="ts">
-import { SnackbarMessages } from "~~/utilities/globalEnums";
-
-const config = useRuntimeConfig();
-const sechatStore = useSechatAppStore();
 const userStore = useUserStore();
 
 const backToHomePage = () => {

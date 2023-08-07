@@ -30,6 +30,7 @@
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-alert
+          v-if="settingStore.settings.tooltipSetting === TooltpSetting.VISIBLE"
           class="alert-font"
           density="compact"
           type="info"
@@ -44,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+const settingStore = useSettingsStore();
 const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 const chatStore = useSechatChatStore();
