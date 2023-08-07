@@ -1,6 +1,6 @@
 <template>
   <v-card
-    @click="chatStore.activateNavBar(BottomNavBarSet.CalendarNavBar)"
+    @click="activate"
     min-height="150"
     class="ma-2"
     :color="
@@ -30,6 +30,11 @@
 <script setup lang="ts">
 import { BottomNavBarSet, ChatViews } from "~~/utilities/globalEnums";
 const chatStore = useSechatChatStore();
+
+const activate = () => {
+  // TODO: check if master key exists
+  chatStore.activateNavBar(BottomNavBarSet.CalendarNavBar);
+};
 </script>
 
 <style scoped></style>
