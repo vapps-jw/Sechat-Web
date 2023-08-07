@@ -105,11 +105,13 @@ export const useE2EHandlers = () => {
 
       const keys = e2e.getKeys(LocalStoreTypes.E2EMASTER);
       if (keys.length === 0) {
-        console.log("Key not found");
+        console.log("Master Key not found");
         return;
       }
 
-      const mostRecentKey = keys.sort((a, b) => Number(b.id) - Number(a.id))[0];
+      const mostRecentKey = keys.reduce((a, b) => {
+        return new Date(a.id) > new Date(b.id) ? a : b;
+      });
 
       const keyToShare: MasterSharedKey = {
         key: mostRecentKey.key,
@@ -144,10 +146,11 @@ export const useE2EHandlers = () => {
           return;
         }
 
+        e2e.removeKeys(LocalStoreTypes.E2EMASTER);
         const result = e2e.addKey(newKey, LocalStoreTypes.E2EMASTER);
         console.log("Master Key Updated", result);
 
-        // Todo: try decrypt everything
+        // Todo: try decrypt calendar
       }
     );
   };

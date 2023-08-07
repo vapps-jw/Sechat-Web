@@ -116,6 +116,9 @@ export const useRefreshHandler = () => {
       console.warn("Synchronizing Room key", missingKey.id);
       signalRStore.connection.send(SignalRHubMethods.RequestRoomKey, request);
     });
+
+    console.warn("Synchronizing Master key");
+    signalRStore.connection.send(SignalRHubMethods.RequestMasterKey);
   };
 
   const askForMissingKeys = () => {

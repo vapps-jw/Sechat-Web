@@ -9,29 +9,26 @@
       text="This key is being stored on your device. It is used to encrypt Calendar data. If you are logged in on different devices you have to be online on both to sync the key between them. You can reset the Master Key at any time, all data encrypted with the old Key will be deleted."
     ></v-alert>
     <v-card>
-      <v-table>
-        <thead>
-          <tr>
-            <th class="text-left">Created</th>
-            <th class="text-left">Key</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="key in masterKeys" :key="key.id">
-            <td>
-              {{ new Date(key.id).toLocaleString(appStore.localLanguage) }}
-            </td>
-            <td>{{ key.key }}</td>
-          </tr>
-        </tbody>
-      </v-table>
+      <div v-if="masterKeys.length !== 0">
+        <v-list lines="one">
+          <v-list-item
+            v-for="item in masterKeys"
+            :title="new Date(item.id).toLocaleString(appStore.localLanguage)"
+            :subtitle="item.key"
+          ></v-list-item>
+        </v-list>
+      </div>
+
       <v-card-actions>
         <v-btn @click="getNewMasterKey" color="success" variant="outlined">
           Reset Key
         </v-btn>
+        <v-btn @click="deleteMasterKey" color="error" variant="outlined">
+          Delete Key
+        </v-btn>
         <v-spacer />
-        <v-btn @click="" color="success" variant="outlined">
-          Try to Sync
+        <v-btn @click="forceSync" color="success" variant="outlined">
+          Force Sync
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -51,14 +48,28 @@ onMounted(async () => {
   updateKeysTable();
 });
 
-const updateKeysTable = (): E2EKey[] => {
+const updateKeysTable = () => {
   const keys = e2e.getKeys(LocalStoreTypes.E2EMASTER);
+  console.log("Updating Table", keys);
   if (keys.length === 0) {
-    return [];
+    console.log("No Keys");
+    masterKeys.value = <E2EKey[]>[];
+    return;
   }
 
-  const mostRecentKey = keys.sort((a, b) => Number(b.id) - Number(a.id))[0];
+  const mostRecentKey = keys.reduce((a, b) => {
+    return new Date(a.id) > new Date(b.id) ? a : b;
+  });
   masterKeys.value = [mostRecentKey];
+};
+
+const deleteMasterKey = () => {
+  e2e.removeKeys(LocalStoreTypes.E2EMASTER);
+  updateKeysTable();
+};
+
+const forceSync = () => {
+  console.log("Forcing sync");
 };
 
 const getNewMasterKey = async () => {
