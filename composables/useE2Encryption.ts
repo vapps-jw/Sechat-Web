@@ -193,6 +193,16 @@ export const useE2Encryption = () => {
     console.log("Key removed", e2eData);
   };
 
+  const removeKeys = (type: string) => {
+    if (!process.client) {
+      console.error(process);
+      return;
+    }
+    console.log("Removing Keys", type);
+    const newData = JSON.stringify([]);
+    localStorage.setItem(type, newData);
+  };
+
   const getNewKey = async (): Promise<string> => {
     const { error: apiError, data: key } = await useFetch<IRoom>(
       `${config.public.apiBase}/crypto/new-key`,
@@ -215,6 +225,7 @@ export const useE2Encryption = () => {
   };
 
   return {
+    removeKeys,
     tryDecryptContact,
     tryDecryptRoom,
     getMissingKeys,

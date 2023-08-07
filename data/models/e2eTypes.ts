@@ -31,3 +31,13 @@ type MissingKey = {
   id: string | number;
   keyHolders: string[];
 };
+
+type MasterKeyRequest = {
+  receipient: string;
+  id: string;
+};
+
+type MasterSharedKey = {
+  key: string;
+  id: string | number;
+};

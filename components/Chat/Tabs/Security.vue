@@ -17,6 +17,10 @@
             <ChatSecuritySettingsDefaultKeySection />
           </v-list-item>
           <v-divider class="mt-5" />
+          <v-list-item>
+            <ChatSecuritySettingsMasterKeySection />
+          </v-list-item>
+          <v-divider class="mt-5" />
         </v-list>
       </v-card-text>
     </v-card>

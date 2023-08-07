@@ -65,8 +65,12 @@ export const useSignalR = () => {
 
     e2eHandlers.onDMKeyRequested(connection);
     e2eHandlers.onDMKeyIncoming(connection);
+
     e2eHandlers.onRoomKeyRequested(connection);
     e2eHandlers.onRoomKeyIncoming(connection);
+
+    e2eHandlers.onMasterKeyRequested(connection);
+    e2eHandlers.onMasterKeyIncoming(connection);
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
@@ -104,6 +108,9 @@ export const useSignalR = () => {
 
       connection.off(SignalRHubMethods.RoomKeyRequested);
       connection.off(SignalRHubMethods.RoomKeyIncoming);
+
+      connection.off(SignalRHubMethods.MasterKeyRequested);
+      connection.off(SignalRHubMethods.MasterKeyIncoming);
 
       console.warn("Connection Closed - connection.onclose");
     });
