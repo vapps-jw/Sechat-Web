@@ -57,3 +57,8 @@ onBeforeUnmount(async () => {
   window.location.reload();
 });
 </script>
+<style scoped>
+html {
+  font-family: "Ubuntu";
+}
+</style>

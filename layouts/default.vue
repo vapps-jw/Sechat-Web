@@ -63,8 +63,7 @@ onMounted(async () => {
 });
 </script>
 <style scoped>
-.glow {
-  box-shadow: 0 0 4px 2px #000000, 0 0 3px 2px #616161, 0 0 3px 4px #bdbdbd,
-    0 0 3px 1px #616161;
+html {
+  font-family: "Ubuntu";
 }
 </style>
