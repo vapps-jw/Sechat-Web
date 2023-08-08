@@ -44,6 +44,7 @@ export default defineNuxtConfig({
       contentSecurityPolicy: {
         "img-src": ["*", "data:"],
       },
+      crossOriginResourcePolicy: "cross-origin",
     },
   },
   modules: [
