@@ -128,7 +128,7 @@ export const useE2EHandlers = () => {
 
   const onMasterKeyIncoming = async (connection: signalR.HubConnection) => {
     connection.on(
-      SignalRHubMethods.RoomKeyIncoming,
+      SignalRHubMethods.MasterKeyIncoming,
       (message: MasterSharedKey) => {
         console.warn("onMasterKeyIncoming", message);
 
@@ -138,15 +138,21 @@ export const useE2EHandlers = () => {
         };
 
         const keys = e2e.getKeys(LocalStoreTypes.E2EMASTER);
-        const mostRecentKey = keys.reduce((a, b) => {
-          return new Date(a.id) > new Date(b.id) ? a : b;
-        });
 
-        if (new Date(newKey.id) < new Date(mostRecentKey.id)) {
-          return;
+        if (keys.length > 0) {
+          const mostRecentKey = keys.reduce((a, b) => {
+            return new Date(a.id) > new Date(b.id) ? a : b;
+          });
+
+          console.log("Most recent Master Key", mostRecentKey);
+          if (new Date(newKey.id) <= new Date(mostRecentKey.id)) {
+            console.log("Master Key is up to date");
+            return;
+          }
         }
 
         e2e.removeKeys(LocalStoreTypes.E2EMASTER);
+        console.log("Saving refcent Master Key", newKey);
         const result = e2e.addKey(newKey, LocalStoreTypes.E2EMASTER);
         console.log("Master Key Updated", result);
 

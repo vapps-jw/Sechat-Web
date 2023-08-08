@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { CustomCookies, SnackbarMessages } from "~~/utilities/globalEnums";
+import { SnackbarMessages } from "~~/utilities/globalEnums";
 
 const dialog = ref<boolean>(false);
 
@@ -30,10 +30,8 @@ interface PropsModel {
 }
 
 const props = defineProps<PropsModel>();
-
 const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
-const e2e = useE2Encryption();
 
 const deleteRoom = async (roomId: string) => {
   try {

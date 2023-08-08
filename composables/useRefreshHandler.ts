@@ -23,7 +23,7 @@ export const useRefreshHandler = () => {
     const roomIds = chatStore.availableRooms.map((r) => r.id);
     const contactIds = chatStore.availableContacts.map((c) => c.id);
 
-    if (dmKeys) {
+    if (dmKeys.length > 0) {
       const unusedDMKeys = dmKeys.filter(
         (dk) => !contactIds.some((cid) => cid === dk.id)
       );
@@ -32,7 +32,7 @@ export const useRefreshHandler = () => {
       unusedDMKeys.forEach((k) => e2e.removeKey(k.id, LocalStoreTypes.E2EDM));
     }
 
-    if (roomKeys) {
+    if (roomKeys.length > 0) {
       const unusedRoomKeys = roomKeys.filter(
         (dk) => !roomIds.some((cid) => cid === dk.id)
       );

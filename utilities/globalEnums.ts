@@ -115,10 +115,10 @@ export const SignalRHubMethods = {
   RoomKeyIncoming: "RoomKeyIncoming",
   ShareRoomKey: "ShareRoomKey",
 
-  RequestMasterKey: "MasterKeyRequested",
+  RequestMasterKey: "RequestMasterKey",
   MasterKeyRequested: "MasterKeyRequested",
-  MasterKeyIncoming: "MasterKeyRequested",
-  ShareMasterKey: "MasterKeyRequested",
+  MasterKeyIncoming: "MasterKeyIncoming",
+  ShareMasterKey: "ShareMasterKey",
 
   // Video Calls
   SendMicStateChange: "SendMicStateChange",

@@ -14,18 +14,78 @@
           <v-list-item
             v-for="item in masterKeys"
             :title="new Date(item.id).toLocaleString(appStore.localLanguage)"
-            :subtitle="item.key"
-          ></v-list-item>
+            >{{ item.key }}</v-list-item
+          >
         </v-list>
       </div>
 
       <v-card-actions>
-        <v-btn @click="getNewMasterKey" color="success" variant="outlined">
-          Reset Key
-        </v-btn>
-        <v-btn @click="deleteMasterKey" color="error" variant="outlined">
-          Delete Key
-        </v-btn>
+        <div class="d-flex flex-column align-center">
+          <v-dialog v-model="resetDialog" persistent width="500">
+            <template v-slot:activator="{ props }">
+              <v-btn v-bind="props" color="error" variant="outlined"
+                >Reset Key</v-btn
+              >
+            </template>
+            <v-card>
+              <v-card-title class="text-h6 text-center">
+                Reset Master Key?
+              </v-card-title>
+              <v-card-text>
+                This cannot be reversed, all data encrypted with the current key
+                will be permanently removed and new Key will be
+                created.</v-card-text
+              >
+              <v-card-actions>
+                <v-btn
+                  color="success"
+                  variant="text"
+                  @click="resetDialog = false"
+                >
+                  Abort
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn @click="getNewMasterKey" color="error">
+                  Get New Key
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <v-dialog v-model="deleteDialog" persistent width="500">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                color="error"
+                variant="outlined"
+                class="mt-2"
+                >Delete Key</v-btn
+              >
+            </template>
+            <v-card>
+              <v-card-title class="text-h6 text-center">
+                Delete Master Key?
+              </v-card-title>
+              <v-card-text>
+                This cannot be reversed, all data encrypted with this key will
+                be permanently removed.</v-card-text
+              >
+              <v-card-actions>
+                <v-btn
+                  color="success"
+                  variant="text"
+                  @click="deleteDialog = false"
+                >
+                  Abort
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn @click="deleteMasterKey" color="error">
+                  Delete Key
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </div>
         <v-spacer />
         <v-btn @click="forceSync" color="success" variant="outlined">
           Force Sync
@@ -38,11 +98,14 @@
 <script setup lang="ts">
 import { LocalStoreTypes } from "~/utilities/globalEnums";
 
+const deleteDialog = ref<boolean>(false);
+const resetDialog = ref<boolean>(false);
 const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 const e2e = useE2Encryption();
 const appStore = useSechatAppStore();
 const masterKeys = ref<E2EKey[]>([]);
+const refreshHandler = useRefreshHandler();
 
 onMounted(async () => {
   updateKeysTable();
@@ -66,10 +129,13 @@ const updateKeysTable = () => {
 const deleteMasterKey = () => {
   e2e.removeKeys(LocalStoreTypes.E2EMASTER);
   updateKeysTable();
+  deleteDialog.value = false;
 };
 
 const forceSync = () => {
   console.log("Forcing sync");
+  refreshHandler.syncWithOtherDevice();
+  updateKeysTable();
 };
 
 const getNewMasterKey = async () => {
@@ -99,6 +165,7 @@ const getNewMasterKey = async () => {
   e2e.addKey(newKeyData, LocalStoreTypes.E2EMASTER);
   updateKeysTable();
   sechatStore.showSuccessSnackbar("Master Key updated");
+  resetDialog.value = false;
 };
 </script>
 

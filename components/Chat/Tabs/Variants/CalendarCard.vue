@@ -28,11 +28,18 @@
 </template>
 
 <script setup lang="ts">
-import { BottomNavBarSet, ChatViews } from "~~/utilities/globalEnums";
+import { BottomNavBarSet, LocalStoreTypes } from "~~/utilities/globalEnums";
 const chatStore = useSechatChatStore();
+const e2e = useE2Encryption();
+const appStore = useSechatAppStore();
 
 const activate = () => {
-  // TODO: check if master key exists
+  const masterKeys = e2e.getKeys(LocalStoreTypes.E2EMASTER);
+  if (masterKeys.length === 0) {
+    appStore.showWarningSnackbar("First you have to create or sync Master Key");
+    return;
+  }
+
   chatStore.activateNavBar(BottomNavBarSet.CalendarNavBar);
 };
 </script>

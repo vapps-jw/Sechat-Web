@@ -146,7 +146,7 @@ export const useE2Encryption = () => {
     return e2eData;
   };
 
-  const getKeys = (type: string): null | E2EKey[] => {
+  const getKeys = (type: string): E2EKey[] => {
     if (!process.client) {
       console.error(process);
       return;
@@ -154,7 +154,7 @@ export const useE2Encryption = () => {
 
     const storedData = localStorage.getItem(type);
     if (!storedData) {
-      return null;
+      return <E2EKey[]>[];
     }
 
     return JSON.parse(storedData) as E2EKey[];
