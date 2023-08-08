@@ -4,9 +4,9 @@ describe("access actions", () => {
     cy.contains("I Accept Cookies").click();
     cy.contains("Sign In").click();
 
-    cy.get("#sign-in-username").type("u1");
-    cy.get("#sign-in-password").type("u1");
-    cy.get("#sign-in-button").click();
+    cy.get("[data-cy='sign-in-username']").type("u1");
+    cy.get("[data-cy='sign-in-password']").type("u1");
+    cy.get("[data-cy='sign-in-request']").click();
   });
 
   it("check messages nav button", () => {

@@ -26,20 +26,12 @@
       <chat-snackbar />
       <slot />
       <v-divider
-        class="border-opacity-40 mx-10 my-5"
+        class="border-opacity-40 mx-10 my-2"
         color="warning"
       ></v-divider>
       <v-container
         class="bg-transparent d-flex justify-center align-center flex-column"
       >
-        <div class="d-flex justify-center flex-column align-center">
-          <div class="text-subtitle-2 mb-2">Tech</div>
-          <div class="d-flex flex-row">
-            <Icon name="logos:nuxt-icon" />
-            <Icon name="logos:vuetifyjs" />
-            <Icon name="devicon:csharp" />
-          </div>
-        </div>
         <v-btn
           class="mt-10 glow"
           icon="mdi-github"
