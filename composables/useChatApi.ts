@@ -326,8 +326,10 @@ export const useChatApi = () => {
     );
 
     if (apiError.value) {
+      console.log("Checking If Authorized", false);
       return false;
     }
+    console.log("Checking If Authorized", true);
     return true;
   };
 

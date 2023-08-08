@@ -312,6 +312,15 @@ export const useRefreshHandler = () => {
     webRTCStore.$reset();
     console.warn("Resetting userStore");
     userStore.$reset();
+
+    if ("serviceWorker" in navigator) {
+      console.warn("Full Cache Cleanup");
+      const cacheNames = await caches.keys();
+      cacheNames.forEach((cacheName) => {
+        console.warn("Deleting Chache", cacheNames);
+        caches.delete(cacheName);
+      });
+    }
   };
 
   return {
