@@ -22,6 +22,7 @@ export const LocalStoreTypes = {
   E2EROOMS: "E2E_ROOMS",
   E2EDM: "E2E_DM",
   E2EMASTER: "E2E_MASTER",
+  GDPR: "GDPR",
 };
 
 export const LocalStorage = {

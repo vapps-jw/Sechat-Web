@@ -1,4 +1,5 @@
 export default defineNuxtConfig({
+  ssr: false,
   sourcemap: {
     server: true,
     client: true,
@@ -193,9 +194,5 @@ export default defineNuxtConfig({
         },
       ],
     },
-  },
-  routeRules: {
-    // Render these routes with SPA
-    "/**": { ssr: false },
   },
 });
