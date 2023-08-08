@@ -194,6 +194,9 @@ export const useRefreshHandler = () => {
   };
 
   const refreshActions = async () => {
+    // TODO: check present contacts and room
+    // TODO: load only new messages for present data
+
     await signalR.connect();
     await chatApi.getConstacts().then((res) => {
       res.forEach((cr) => {
