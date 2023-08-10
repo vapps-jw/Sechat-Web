@@ -15,6 +15,7 @@ const signalRStore = useSignalRStore();
 const refreshHandler = useRefreshHandler();
 const chatStore = useSechatChatStore();
 const webRTCStore = useWebRTCStore();
+const I18n = useI18n();
 
 const resetSechat = async () => {
   await signalRStore.closeConnection();
@@ -30,6 +31,7 @@ onMounted(async () => {
   console.warn("Chat Layout onMounted");
   await refreshHandler.handleOnMountedLoad();
 
+  appStore.updateLocalLanguage(I18n.locale.value);
   console.info("Hooking to window events");
   window.addEventListener(
     "visibilitychange",

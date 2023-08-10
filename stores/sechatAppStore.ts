@@ -19,8 +19,8 @@ export const useSechatAppStore = defineStore({
     };
   },
   actions: {
-    updateLocalLanguage() {
-      this.localLanguage = useI18n().locale.value;
+    updateLocalLanguage(value: string) {
+      this.localLanguage = value;
     },
     updateLoadingOverlay(value: boolean) {
       this.loadingOverlayVisible = value;

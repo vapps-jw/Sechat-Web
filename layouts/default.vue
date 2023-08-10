@@ -49,9 +49,10 @@
 const config = useRuntimeConfig();
 const appStore = useSechatAppStore();
 const userStore = useUserStore();
+const I18n = useI18n();
 
 onMounted(async () => {
-  appStore.updateLocalLanguage();
+  appStore.updateLocalLanguage(I18n.locale.value);
 });
 </script>
 <style scoped>
