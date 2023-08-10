@@ -87,6 +87,15 @@
         </div>
       </template>
       <template v-slot:append>
+        <v-badge
+          v-if="pendingMessagesPresent(uc)"
+          class="mr-3"
+          :model-value="pendingMessagesPresent(uc)"
+          :content="pendingMessagesCount(uc)"
+          color="error"
+        >
+          <v-icon>mdi-email</v-icon>
+        </v-badge>
         <v-btn
           class="mr-3"
           v-if="uc.approved && !uc.blocked && uc.hasKey"
@@ -96,39 +105,34 @@
           color="success"
           variant="outlined"
         ></v-btn>
-        <v-badge
-          :model-value="pendingMessagesPresent(uc)"
-          :content="pendingMessagesCount(uc)"
-          color="error"
+
+        <v-btn
+          v-if="uc.approved && !uc.blocked && uc.hasKey"
+          @click="directMessage(uc)"
+          size="small"
+          :icon="dmIconType(uc)"
+          :color="dmIconColor(uc)"
+          variant="outlined"
         >
-          <v-btn
-            v-if="uc.approved && !uc.blocked && uc.hasKey"
-            @click="directMessage(uc)"
-            size="small"
-            :icon="dmIconType(uc)"
-            :color="dmIconColor(uc)"
-            variant="outlined"
-          >
-          </v-btn>
-          <v-tooltip
-            v-if="uc.approved && !uc.blocked && !uc.hasKey"
-            v-model="keySyncTooltip"
-            location="bottom"
-          >
-            <template v-slot:activator="{ props }">
-              <v-btn
-                @click="keySyncInfo(uc.displayName)"
-                v-bind="props"
-                icon="mdi-key-wireless"
-                color="warning"
-                size="small"
-                variant="outlined"
-              >
-              </v-btn>
-            </template>
-            <span>Waiting for other user to sync the key</span>
-          </v-tooltip>
-        </v-badge>
+        </v-btn>
+        <v-tooltip
+          v-if="uc.approved && !uc.blocked && !uc.hasKey"
+          v-model="keySyncTooltip"
+          location="bottom"
+        >
+          <template v-slot:activator="{ props }">
+            <v-btn
+              @click="keySyncInfo(uc.displayName)"
+              v-bind="props"
+              icon="mdi-key-wireless"
+              color="warning"
+              size="small"
+              variant="outlined"
+            >
+            </v-btn>
+          </template>
+          <span>Waiting for other user to sync the key</span>
+        </v-tooltip>
       </template>
     </v-list-item>
   </v-list>
@@ -173,13 +177,6 @@ const dmIconType = (uc: IContactRequest): string => {
 const dmIconColor = (uc: IContactRequest): string => {
   if (uc.directMessages.some((m) => m.error)) {
     return "error";
-  }
-  if (
-    uc.directMessages.filter(
-      (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
-    ).length > 0
-  ) {
-    return "warning";
   }
   return "primary";
 };
