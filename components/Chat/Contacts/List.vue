@@ -111,6 +111,24 @@
             variant="outlined"
           >
           </v-btn>
+          <v-tooltip
+            v-if="uc.approved && !uc.blocked && !uc.hasKey"
+            v-model="keySyncTooltip"
+            location="bottom"
+          >
+            <template v-slot:activator="{ props }">
+              <v-btn
+                @click="keySyncInfo(uc.displayName)"
+                v-bind="props"
+                icon="mdi-key-wireless"
+                color="warning"
+                size="small"
+                variant="outlined"
+              >
+              </v-btn>
+            </template>
+            <span>Waiting for other user to sync the key</span>
+          </v-tooltip>
         </v-badge>
       </template>
     </v-list-item>
@@ -119,6 +137,8 @@
 
 <script setup lang="ts">
 import { LocalStoreTypes, SnackbarMessages } from "~~/utilities/globalEnums";
+
+const keySyncTooltip = ref<boolean>(false);
 
 const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();
