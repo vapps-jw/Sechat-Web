@@ -89,7 +89,7 @@
       <template v-slot:append>
         <v-btn
           class="mr-3"
-          v-if="uc.approved && !uc.blocked"
+          v-if="uc.approved && !uc.blocked && uc.hasKey"
           @click="startVideoCall(uc)"
           size="small"
           icon="mdi-phone"
@@ -97,7 +97,6 @@
           variant="outlined"
         ></v-btn>
         <v-badge
-          class="mr-4"
           :model-value="pendingMessagesPresent(uc)"
           :content="pendingMessagesCount(uc)"
           color="error"
