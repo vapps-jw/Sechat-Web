@@ -15,6 +15,7 @@ export const useSechatAppStore = defineStore({
         iconColor: "",
       },
       isOnline: <boolean>true,
+      GDPR: <boolean>false,
     };
   },
   actions: {

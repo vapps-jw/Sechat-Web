@@ -49,17 +49,9 @@
 const config = useRuntimeConfig();
 const appStore = useSechatAppStore();
 const userStore = useUserStore();
-const chatApi = useChatApi();
-const refreshHandler = useRefreshHandler();
 
 onMounted(async () => {
   appStore.updateLocalLanguage();
-  const authCheck = await chatApi.isAuthorized();
-  if (!authCheck) {
-    console.error("Auth Check Failed");
-    console.error("Stored Profile", userStore.userProfile);
-    refreshHandler.signOutCleanup();
-  }
 });
 </script>
 <style scoped>

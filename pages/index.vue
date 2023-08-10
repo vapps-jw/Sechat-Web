@@ -56,16 +56,18 @@
 </template>
 
 <script setup lang="ts">
-import { CustomCookies } from "~/utilities/globalEnums";
+import { CustomCookies, LocalStoreTypes } from "~/utilities/globalEnums";
 
 const config = useRuntimeConfig();
 const userStore = useUserStore();
 const appStore = useSechatAppStore();
 const refreshHandler = useRefreshHandler();
+const app = useSechatApp();
 
-const rejectCookies = () => {
-  const gdprCookie = useCookie(CustomCookies.GDPR);
-  gdprCookie.value = null;
+const rejectCookies = async () => {
+  app.removeLocalStoreItem(LocalStoreTypes.GDPR);
+  appStore.GDPR = false;
+  await signOut();
   window.location.reload();
 };
 

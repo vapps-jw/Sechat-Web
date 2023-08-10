@@ -28,7 +28,6 @@ const resetSechat = async () => {
 
 onMounted(async () => {
   console.warn("Chat Layout onMounted");
-  appStore.updateLocalLanguage();
   await refreshHandler.handleOnMountedLoad();
 
   console.info("Hooking to window events");
@@ -54,7 +53,6 @@ onBeforeUnmount(async () => {
   window.removeEventListener("online", refreshHandler.handleOnlineChange);
   window.removeEventListener("offline", refreshHandler.handleOfflineChange);
   window.removeEventListener("beforeunload", resetSechat);
-  window.location.reload();
 });
 </script>
 <style scoped>

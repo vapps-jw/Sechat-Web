@@ -1,0 +1,3 @@
+type LocalStoreItem = {
+  value: string;
+};

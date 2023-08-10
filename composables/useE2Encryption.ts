@@ -199,8 +199,7 @@ export const useE2Encryption = () => {
       return;
     }
     console.log("Removing Keys", type);
-    const newData = JSON.stringify([]);
-    localStorage.setItem(type, newData);
+    localStorage.removeItem(type);
   };
 
   const getNewKey = async (): Promise<string> => {

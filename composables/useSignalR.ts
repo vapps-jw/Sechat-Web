@@ -120,6 +120,7 @@ export const useSignalR = () => {
         console.warn("SIGNALR RECONNECTION TRIGGERED", connectionId);
         const roomIds = sechatChatStore.availableRooms.map((r) => r.id);
         if (roomIds.length > 0) {
+          console.log("Connecting to rooms", connectionId);
           connectToRooms(roomIds);
         }
       } catch (error) {

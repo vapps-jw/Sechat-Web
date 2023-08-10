@@ -32,17 +32,20 @@
 </template>
 
 <script setup lang="ts">
-import { CustomCookies } from "~~/utilities/globalEnums";
+import { LocalStoreTypes } from "~~/utilities/globalEnums";
 
 const dialog = ref<boolean>(false);
-const gdprCookie = useCookie(CustomCookies.GDPR, {
-  maxAge: 30000000,
-});
+const app = useSechatApp();
+const sppStore = useSechatAppStore();
 
 onMounted(async () => {
+  const gdprConsent = app.getLocalStoreItem(
+    LocalStoreTypes.GDPR
+  ) as LocalStoreItem;
   console.warn("GDPR onMounted");
-  console.warn("GDPR Cookie value:", gdprCookie.value);
-  if (gdprCookie.value) {
+  console.warn("GDPR value:", gdprConsent);
+  if (gdprConsent) {
+    sppStore.GDPR = true;
     dialog.value = false;
     return;
   }
@@ -51,7 +54,11 @@ onMounted(async () => {
 
 const approved = () => {
   console.warn("Cookies Approved");
-  gdprCookie.value = "approved";
+  app.addLocalStoreItem(
+    { value: "accepted" },
+    LocalStoreTypes.GDPR
+  ) as LocalStoreItem;
+  sppStore.GDPR = true;
   dialog.value = false;
 };
 </script>
