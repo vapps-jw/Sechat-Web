@@ -574,69 +574,24 @@ export const useVideoCall = () => {
     webRTCStore.$reset();
   };
 
-  // Video Call Events
-
-  const onWebRTCAnswerIncomingEvent = (connection: signalR.HubConnection) => {
-    connection.on(SignalRHubMethods.WebRTCAnswerIncoming, answerIncoming);
-  };
-
-  const onWebRTCScreenShareStateChangeEvent = (
-    connection: signalR.HubConnection
-  ) => {
-    connection.on(
-      SignalRHubMethods.ScreenShareStateChanged,
-      screenShareToggledByOtherUser
-    );
-  };
-
-  const onWebRTCOfferIncomingEvent = (connection: signalR.HubConnection) => {
-    connection.on(SignalRHubMethods.WebRTCOfferIncoming, offerIncoming);
-  };
-
-  const onVideoCallTerminatedEvent = (connection: signalR.HubConnection) => {
-    connection.on(SignalRHubMethods.VideoCallTerminated, videoCallTerminated);
-  };
-
-  const onVideoCallApprovedEvent = (connection: signalR.HubConnection) => {
-    connection.on(SignalRHubMethods.VideoCallApproved, videoCallApproved);
-  };
-
-  const onVideoCallRejectedEvent = (connection: signalR.HubConnection) => {
-    connection.on(SignalRHubMethods.VideoCallRejected, videoCallRejected);
-  };
-
-  const onVideoCallRequestedEvent = (connection: signalR.HubConnection) => {
-    connection.on(
-      SignalRHubMethods.VideoCallRequested,
-      videoCallRequestReceived
-    );
-  };
-
-  const onICECandidateIncomingEvent = (connection: signalR.HubConnection) => {
-    connection.on(SignalRHubMethods.ICECandidateIncoming, ICECandidateIncoming);
-  };
-
   return {
+    screenShareToggledByOtherUser,
+    answerIncoming,
+    offerIncoming,
+    ICECandidateIncoming,
     callLogsViewed,
     getCallLogs,
     registerCall,
     callAnswered,
     callRejected,
-    onWebRTCScreenShareStateChangeEvent,
     toggleScreenShare,
-    onWebRTCAnswerIncomingEvent,
-    onWebRTCOfferIncomingEvent,
-    onICECandidateIncomingEvent,
-    onVideoCallTerminatedEvent,
-    onVideoCallApprovedEvent,
-    onVideoCallRejectedEvent,
-    onVideoCallRequestedEvent,
+    videoCallTerminated,
     sendICECandiadate,
     terminateVideoCall,
     rejectVideoCall,
-    sendVideoCallApproved: approveVideoCall,
     videoCallApproved,
     videoCallRejected,
+    videoCallRequestReceived,
     toggleCamera,
     toggleMicrophone,
     initializeCall,

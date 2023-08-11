@@ -160,9 +160,9 @@ export const SignalRHubMethods = {
   // Contacts
   ContactStateChanged: "ContactStateChanged",
   CheckOnlineState: "CheckOnlineState",
-  ConnectionRequestReceived: "ConnectionRequestReceived",
-  ConnectionDeleted: "ConnectionDeleted",
-  ConnectionUpdated: "ConnectionUpdated",
+  ContactRequestReceived: "ContactRequestReceived",
+  ContactDeleted: "ContactDeleted",
+  ContactUpdated: "ContactUpdated",
 
   // Room Messages
   MessageWasViewed: "MessageWasViewed",

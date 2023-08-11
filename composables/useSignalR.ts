@@ -27,50 +27,142 @@ export const useSignalR = () => {
 
     // Calls
 
-    videoCalls.onVideoCallApprovedEvent(connection);
-    videoCalls.onVideoCallRejectedEvent(connection);
-    videoCalls.onVideoCallRequestedEvent(connection);
-    videoCalls.onVideoCallTerminatedEvent(connection);
-    videoCalls.onICECandidateIncomingEvent(connection);
-    videoCalls.onWebRTCOfferIncomingEvent(connection);
-    videoCalls.onWebRTCAnswerIncomingEvent(connection);
-    videoCalls.onWebRTCScreenShareStateChangeEvent(connection);
+    connection.on(
+      SignalRHubMethods.VideoCallApproved,
+      videoCalls.videoCallApproved
+    );
+    connection.on(
+      SignalRHubMethods.VideoCallRejected,
+      videoCalls.videoCallRejected
+    );
+    connection.on(
+      SignalRHubMethods.VideoCallRequested,
+      videoCalls.videoCallRequestReceived
+    );
+    connection.on(
+      SignalRHubMethods.VideoCallTerminated,
+      videoCalls.videoCallTerminated
+    );
+    connection.on(
+      SignalRHubMethods.ICECandidateIncoming,
+      videoCalls.ICECandidateIncoming
+    );
+    connection.on(
+      SignalRHubMethods.WebRTCOfferIncoming,
+      videoCalls.offerIncoming
+    );
+    connection.on(
+      SignalRHubMethods.WebRTCAnswerIncoming,
+      videoCalls.answerIncoming
+    );
+    connection.on(
+      SignalRHubMethods.ScreenShareStateChanged,
+      videoCalls.screenShareToggledByOtherUser
+    );
 
-    roomHandlers.onMessageWasViewed(connection);
-    roomHandlers.onMessagesWereViewed(connection);
-    roomHandlers.onIncomingMessage(connection);
-    roomHandlers.onRoomDeletedEvent(connection);
-    roomHandlers.onRoomUpdatedEvent(connection);
-    roomHandlers.onMessageDeleted(connection);
+    // Rooms
+
+    connection.on(
+      SignalRHubMethods.MessageWasViewed,
+      roomHandlers.onMessageWasViewed
+    );
+    connection.on(
+      SignalRHubMethods.MessagesWereViewed,
+      roomHandlers.onMessagesWereViewed
+    );
+    connection.on(
+      SignalRHubMethods.MessageIncoming,
+      roomHandlers.onIncomingMessage
+    );
+    connection.on(
+      SignalRHubMethods.RoomDeleted,
+      roomHandlers.onRoomDeletedEvent
+    );
+    connection.on(
+      SignalRHubMethods.RoomUpdated,
+      roomHandlers.onRoomUpdatedEvent
+    );
+    connection.on(
+      SignalRHubMethods.MessageDeleted,
+      roomHandlers.onMessageDeleted
+    );
 
     // Contacts
 
-    contactHandlers.onContactStateChangedEvent(connection);
-    contactHandlers.onContactRequestReceivedEvent(connection);
-    contactHandlers.onContactUpdateRequired(connection);
-    contactHandlers.onContactDeleteEvent(connection);
-    contactHandlers.onContactUpdatedEvent(connection);
+    connection.on(
+      SignalRHubMethods.ContactStateChanged,
+      contactHandlers.onContactStateChangedEvent
+    );
+    connection.on(
+      SignalRHubMethods.ContactRequestReceived,
+      contactHandlers.onContactRequestReceivedEvent
+    );
+    connection.on(
+      SignalRHubMethods.ContactUpdateRequired,
+      contactHandlers.onContactUpdateRequired
+    );
+    connection.on(
+      SignalRHubMethods.ContactDeleted,
+      contactHandlers.onContactDeleteEvent
+    );
+    connection.on(
+      SignalRHubMethods.ContactUpdated,
+      contactHandlers.onContactUpdatedEvent
+    );
+
+    connection.on(
+      SignalRHubMethods.UserAddedToRoom,
+      handleUserAddedToRoomActions
+    );
+    connection.on(
+      SignalRHubMethods.UserRemovedFromRoom,
+      handleUserRemovedFromRoomActions
+    );
 
     // DM
 
-    dmHandlers.onIncomingDirectMessage(connection);
-    dmHandlers.onDirectMessageWasViewed(connection);
-    dmHandlers.onDirectMessagesWereViewed(connection);
-    dmHandlers.onDirectMessageDeleted(connection);
-
-    onUserAddedToRoomEvent(connection);
-    onUserRemovedFromRoomEvent(connection);
+    connection.on(
+      SignalRHubMethods.DirectMessageIncoming,
+      dmHandlers.onIncomingDirectMessage
+    );
+    connection.on(
+      SignalRHubMethods.DirectMessageWasViewed,
+      dmHandlers.onDirectMessageWasViewed
+    );
+    connection.on(
+      SignalRHubMethods.DirectMessagesWereViewed,
+      dmHandlers.onDirectMessagesWereViewed
+    );
+    connection.on(
+      SignalRHubMethods.DirectMessageDeleted,
+      dmHandlers.onDirectMessageDeleted
+    );
 
     // E2E
 
-    e2eHandlers.onDMKeyRequested(connection);
-    e2eHandlers.onDMKeyIncoming(connection);
+    connection.on(
+      SignalRHubMethods.DMKeyRequested,
+      e2eHandlers.onDMKeyRequested
+    );
+    connection.on(SignalRHubMethods.DMKeyIncoming, e2eHandlers.onDMKeyIncoming);
 
-    e2eHandlers.onRoomKeyRequested(connection);
-    e2eHandlers.onRoomKeyIncoming(connection);
+    connection.on(
+      SignalRHubMethods.RoomKeyRequested,
+      e2eHandlers.onRoomKeyRequested
+    );
+    connection.on(
+      SignalRHubMethods.RoomKeyIncoming,
+      e2eHandlers.onRoomKeyIncoming
+    );
 
-    e2eHandlers.onMasterKeyRequested(connection);
-    e2eHandlers.onMasterKeyIncoming(connection);
+    connection.on(
+      SignalRHubMethods.MasterKeyRequested,
+      e2eHandlers.onMasterKeyRequested
+    );
+    connection.on(
+      SignalRHubMethods.MasterKeyIncoming,
+      e2eHandlers.onMasterKeyIncoming
+    );
 
     // Disconnect from events on connection close
     connection.onclose(async () => {
@@ -90,9 +182,9 @@ export const useSignalR = () => {
       connection.off(SignalRHubMethods.UserAddedToRoom);
       connection.off(SignalRHubMethods.RoomUpdated);
       connection.off(SignalRHubMethods.UserRemovedFromRoom);
-      connection.off(SignalRHubMethods.ConnectionRequestReceived);
-      connection.off(SignalRHubMethods.ConnectionUpdated);
-      connection.off(SignalRHubMethods.ConnectionDeleted);
+      connection.off(SignalRHubMethods.ContactRequestReceived);
+      connection.off(SignalRHubMethods.ContactUpdated);
+      connection.off(SignalRHubMethods.ContactDeleted);
       connection.off(SignalRHubMethods.MessageDeleted);
 
       connection.off(SignalRHubMethods.DirectMessageIncoming);
@@ -154,23 +246,9 @@ export const useSignalR = () => {
 
   // Rooms
 
-  const onUserAddedToRoomEvent = (connection: signalR.HubConnection) => {
-    connection.on(
-      SignalRHubMethods.UserAddedToRoom,
-      handleUserAddedToRoomActions
-    );
-  };
-
   const handleUserAddedToRoomActions = (data: IRoom) => {
     connectToRoom(data.id);
     roomHandlers.handleUserAddedToRoom(data);
-  };
-
-  const onUserRemovedFromRoomEvent = (connection: signalR.HubConnection) => {
-    connection.on(
-      SignalRHubMethods.UserRemovedFromRoom,
-      handleUserRemovedFromRoomActions
-    );
   };
 
   const connectToRooms = (roomIds: string[]) => {
