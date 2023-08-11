@@ -217,6 +217,8 @@ export const useSignalR = () => {
         }
       } catch (error) {
         console.error("SIGNALR RECONNECTION ERROR", error);
+      } finally {
+        sechatStore.updateLoadingOverlay(false);
       }
     });
 

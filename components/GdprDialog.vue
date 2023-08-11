@@ -54,10 +54,7 @@ onMounted(async () => {
 
 const approved = () => {
   console.warn("Cookies Approved");
-  app.addLocalStoreItem(
-    { value: "accepted" },
-    LocalStoreTypes.GDPR
-  ) as LocalStoreItem;
+  app.addLocalStoreItem({ value: "accepted" }, LocalStoreTypes.GDPR);
   sppStore.GDPR = true;
   dialog.value = false;
 };

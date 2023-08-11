@@ -4,7 +4,7 @@ import * as labsComponents from "vuetify/labs/components";
 import * as directives from "vuetify/directives";
 import colors from "vuetify/lib/util/colors";
 
-const sechatDefault = {
+const sechatDark = {
   dark: true,
   colors: {
     primary: colors.blue.darken2,
@@ -17,6 +17,10 @@ const sechatDefault = {
   },
 };
 
+const sechatLight = {
+  dark: false,
+};
+
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
     components: {
@@ -25,9 +29,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     directives,
     theme: {
-      defaultTheme: "sechatDefault",
+      defaultTheme: "sechatDark",
       themes: {
-        sechatDefault,
+        sechatDark,
+        sechatLight,
       },
     },
   });

@@ -106,7 +106,9 @@ const onSubmit = async () => {
       throw createError({
         ...apiError.value,
         statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
+        statusMessage: apiError.value.data
+          ? apiError.value.data
+          : "Login Error, check you browser settings or internet connection",
       });
     }
   } catch (error) {

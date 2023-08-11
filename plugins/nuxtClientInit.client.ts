@@ -1,4 +1,5 @@
 import { LocalStoreTypes } from "~/utilities/globalEnums";
+import { useTheme } from "vuetify";
 
 export default defineNuxtPlugin(async (context) => {
   const disableLogs = () => {
@@ -23,6 +24,11 @@ export default defineNuxtPlugin(async (context) => {
     appStore.GDPR = true;
   } else {
     return;
+  }
+
+  const savedTheme = app.getLocalStoreItem(LocalStoreTypes.THEME);
+  if (savedTheme) {
+    const theme = useTheme();
   }
 
   const authCheck = await chatApi.isAuthorized();

@@ -1,7 +1,7 @@
 import { PushNotificationTypes } from "~~/utilities/globalEnums";
 
 export const useSechatApp = () => {
-  const addLocalStoreItem = (data: any, type: string): LocalStoreItem => {
+  const addLocalStoreItem = (data: any, type: string) => {
     if (!process.client) {
       console.error(process);
       return;
