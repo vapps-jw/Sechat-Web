@@ -19,6 +19,10 @@
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list flex align-center>
+          <!-- TODO: enable theme switch, fix light colors -->
+          <!-- <v-list-item>
+            <ChatProfileThemeSection />
+          </v-list-item> -->
           <v-list-item>
             <ChatProfileTooltipsSection />
           </v-list-item>

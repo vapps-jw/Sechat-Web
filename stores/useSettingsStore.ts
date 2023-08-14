@@ -1,5 +1,6 @@
 type UserSettings = {
   tooltipSetting: string;
+  theme: string;
 };
 
 export const Constants = {
@@ -11,13 +12,23 @@ export const TooltpSetting = {
   HIDDEN: "Tooltips hidden",
 };
 
+export const ThemeSetting = {
+  DARK: "sechatDark",
+  LIGHT: "sechatLight",
+};
+
 const getDefaultSettings = (): UserSettings => ({
   tooltipSetting: TooltpSetting.VISIBLE,
+  theme: ThemeSetting.DARK,
 });
 
 const getSettings = (): UserSettings => {
   const settings = localStorage.getItem(Constants.STORE_NAME);
-  return settings ? JSON.parse(settings) : getDefaultSettings();
+  const defaults = getDefaultSettings();
+  if (settings) {
+    return { ...defaults, ...JSON.parse(settings) };
+  }
+  return defaults;
 };
 
 export const useSettingsStore = defineStore({

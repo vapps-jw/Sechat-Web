@@ -79,27 +79,27 @@ export const useChatApi = () => {
     return rooms.value;
   };
 
-  const getRoom = async (roomId: string) => {
-    console.log("Getting Rooms from API");
-    const { error: apiError, data: room } = await useFetch<IRoom>(
-      `${config.public.apiBase}/chat/room/${roomId}`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+  // const getRoom = async (roomId: string) => {
+  //   console.log("Getting Rooms from API");
+  //   const { error: apiError, data: room } = await useFetch<IRoom>(
+  //     `${config.public.apiBase}/chat/room/${roomId}`,
+  //     {
+  //       method: "GET",
+  //       credentials: "include",
+  //     }
+  //   );
 
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
+  //   if (apiError.value) {
+  //     throw createError({
+  //       ...apiError.value,
+  //       statusCode: apiError.value.statusCode,
+  //       statusMessage: apiError.value.data,
+  //     });
+  //   }
 
-    console.log("Room Fetched", room.value);
-    return room.value;
-  };
+  //   console.log("Room Fetched", room.value);
+  //   return room.value;
+  // };
 
   const getContact = async (contactId: number) => {
     console.log("Getting Cotnact from API");
@@ -339,7 +339,6 @@ export const useChatApi = () => {
     getContact,
     markDirectMessageAsViewed,
     markDirectMessagesAsViewed,
-    getRoom,
     getLinkPreview,
     getConstacts,
     getRooms,

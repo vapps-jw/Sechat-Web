@@ -46,12 +46,20 @@
   </v-app>
 </template>
 <script setup lang="ts">
+import { useTheme } from "vuetify";
+
 const config = useRuntimeConfig();
 const appStore = useSechatAppStore();
 const userStore = useUserStore();
 const I18n = useI18n();
+const theme = useTheme();
+const settings = useSettingsStore();
 
 onMounted(async () => {
+  console.warn("Chat Defualt Layout onMounted", settings.settings.theme);
+  if (settings.settings.theme) {
+    theme.global.name.value = settings.settings.theme;
+  }
   appStore.updateLocalLanguage(I18n.locale.value);
 });
 </script>

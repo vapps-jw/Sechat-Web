@@ -9,6 +9,8 @@
 </template>
 
 <script setup lang="ts">
+import { useTheme } from "vuetify";
+
 const sechatAppStore = useSechatAppStore();
 const appStore = useSechatAppStore();
 const signalRStore = useSignalRStore();
@@ -16,6 +18,8 @@ const refreshHandler = useRefreshHandler();
 const chatStore = useSechatChatStore();
 const webRTCStore = useWebRTCStore();
 const I18n = useI18n();
+const theme = useTheme();
+const settings = useSettingsStore();
 
 const resetSechat = async () => {
   await signalRStore.closeConnection();
@@ -28,7 +32,10 @@ const resetSechat = async () => {
 };
 
 onMounted(async () => {
-  console.warn("Chat Layout onMounted");
+  console.warn("Chat Layout onMounted", settings.settings.theme);
+  if (settings.settings.theme) {
+    theme.global.name.value = settings.settings.theme;
+  }
   await refreshHandler.handleOnMountedLoad();
 
   appStore.updateLocalLanguage(I18n.locale.value);

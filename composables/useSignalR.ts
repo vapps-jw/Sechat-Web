@@ -236,7 +236,7 @@ export const useSignalR = () => {
     }
     if (
       signalRStore.connection &&
-      signalRStore.connection.state !== signalR.HubConnectionState.Connected
+      signalRStore.connection.state === signalR.HubConnectionState.Disconnected
     ) {
       console.log("Starting Current Connection, connecting to Rooms");
       await signalRStore.connection.start();
