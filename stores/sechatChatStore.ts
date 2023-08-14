@@ -85,6 +85,25 @@ export const useSechatChatStore = defineStore({
       );
       room.messages.forEach((m) => (m.wasViewed = true));
     },
+    addMessagesToRoom(roomId: string, messages: IMessage[]) {
+      if (!this.activeRoomId || this.activeRoomId !== roomId) {
+        return;
+      }
+
+      const room: IRoom = this.availableRooms.find(
+        (r: IRoom) => r.id === roomId
+      );
+      room.messages.unshift(...messages);
+    },
+    addMessagesToContact(contactId: number, messages: IDirectMessage[]) {
+      if (!this.activeContactId || this.activeContactId !== contactId) {
+        return;
+      }
+      const room: IContactRequest = this.availableContacts.find(
+        (c: IContactRequest) => c.id === contactId
+      );
+      room.directMessages.unshift(...messages);
+    },
     markRoomMessageAsViewed(
       userName: string,
       roomId: string,

@@ -31,7 +31,7 @@ export const useChatApi = () => {
     console.log("Getting Contacts from API");
     const { error: apiError, data: contacts } = await useFetch<
       IContactRequest[]
-    >(`${config.public.apiBase}/chat/contacts`, {
+    >(`${config.public.apiBase}/chat/contacts-initial-load`, {
       method: "GET",
       credentials: "include",
     });
@@ -60,7 +60,7 @@ export const useChatApi = () => {
   const getRooms = async (): Promise<IRoom[]> => {
     console.log("Getting Rooms from API");
     const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
-      `${config.public.apiBase}/chat/rooms`,
+      `${config.public.apiBase}/chat/rooms-initial-load`,
       {
         method: "GET",
         credentials: "include",
@@ -78,28 +78,6 @@ export const useChatApi = () => {
     console.log("Rooms Fetched", rooms.value);
     return rooms.value;
   };
-
-  // const getRoom = async (roomId: string) => {
-  //   console.log("Getting Rooms from API");
-  //   const { error: apiError, data: room } = await useFetch<IRoom>(
-  //     `${config.public.apiBase}/chat/room/${roomId}`,
-  //     {
-  //       method: "GET",
-  //       credentials: "include",
-  //     }
-  //   );
-
-  //   if (apiError.value) {
-  //     throw createError({
-  //       ...apiError.value,
-  //       statusCode: apiError.value.statusCode,
-  //       statusMessage: apiError.value.data,
-  //     });
-  //   }
-
-  //   console.log("Room Fetched", room.value);
-  //   return room.value;
-  // };
 
   const getContact = async (contactId: number) => {
     console.log("Getting Cotnact from API");
