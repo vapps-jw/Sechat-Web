@@ -2,6 +2,7 @@
   <v-menu>
     <template v-slot:activator="{ props }">
       <v-btn
+        data-cy="room-options-btn"
         class="ma-0"
         icon="mdi-dots-vertical"
         variant="plain"
@@ -10,7 +11,10 @@
     </template>
     <v-list>
       <v-list-item v-if="props.room.creatorName === userStore.getUserName">
-        <chat-rooms-delete-room :room="room" />
+        <chat-rooms-delete-room
+          data-cy="room-options-delete-btn"
+          :room="room"
+        />
       </v-list-item>
       <v-list-item v-if="props.room.creatorName !== userStore.getUserName">
         <v-btn class="mx-1" @click="leaveRoom(room)" color="warning"

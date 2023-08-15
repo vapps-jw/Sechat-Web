@@ -2,6 +2,7 @@
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ props }">
       <v-btn
+        data-cy="create-room-dialog-btn"
         v-bind="props"
         icon="mdi-forum-plus-outline"
         variant="outlined"
@@ -28,6 +29,7 @@
             text="Rooms are end-to-end encrypted, when you add someone to a room it`ll ask other members for a Key, only then he can send and receive messages"
           ></v-alert>
           <v-text-field
+            data-cy="new-room-name-field"
             class="my-2"
             v-model="roomData.name"
             :rules="roomData.nameRules"
@@ -38,7 +40,9 @@
         </v-form>
       </v-card-text>
       <v-card-actions class="justify-center">
-        <v-btn variant="tonal" @click="createRoom"> Create </v-btn>
+        <v-btn data-cy="create-room-btn" variant="tonal" @click="createRoom">
+          Create
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

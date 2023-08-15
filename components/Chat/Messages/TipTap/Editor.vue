@@ -1,6 +1,10 @@
 <template>
   <chat-messages-tip-tap-options :editor="editor" />
-  <editor-content v-if="!editorBusy" :editor="editor" />
+  <editor-content
+    data-cy="editor-content"
+    v-if="!editorBusy"
+    :editor="editor"
+  />
   <v-progress-linear
     v-else
     color="warning"

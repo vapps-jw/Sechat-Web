@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-2">
+  <div data-cy="messages-test-editor-container" class="ma-2">
     <chat-messages-tip-tap-editor
       v-model:model-value="chatStore.newMessage"
       @editorStateUpdate="editorUpdate"
@@ -24,6 +24,7 @@
       ></v-btn>
     </div>
     <v-btn
+      data-cy="push-message-btn"
       v-if="!editorState.busy"
       variant="outlined"
       :icon="editorState.readyToShare ? 'mdi-share' : 'mdi-send'"

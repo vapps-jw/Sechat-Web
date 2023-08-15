@@ -1,6 +1,7 @@
 <template>
-  <v-list>
+  <v-list data-cy="room-list">
     <v-list-item
+      data-cy="room-list-item"
       @click="selectRoomClicked(room)"
       :border="true"
       class="my-2 mx-1 pa-1"
@@ -19,7 +20,7 @@
         </div>
       </template>
       <template v-slot:prepend>
-        <chat-rooms-options :room="room" />
+        <chat-rooms-options data-cy="room-options" :room="room" />
       </template>
       <template v-slot:append>
         <v-badge
