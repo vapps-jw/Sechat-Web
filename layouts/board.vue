@@ -51,7 +51,6 @@ onMounted(async () => {
 
 onBeforeUnmount(async () => {
   console.warn("Chat Layout onBeforeUnmount");
-
   await resetSechat();
 
   console.info("Removing Hook to window events");

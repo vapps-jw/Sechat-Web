@@ -46,6 +46,7 @@ export const useRefreshHandler = () => {
 
   const handleOnMountedLoad = async () => {
     appStore.updateLoadingOverlay(true);
+    chatStore.$reset();
 
     await signalR.connect();
     await Promise.all([
@@ -76,6 +77,10 @@ export const useRefreshHandler = () => {
   };
 
   const handleVisibilityChange = async () => {
+    if (signalRStore.isConnected) {
+      console.warn("SignalR connected - refresh not required");
+      return;
+    }
     console.log("Visibility changed", document.visibilityState);
     if (document.visibilityState !== VisibilityStates.VISIBLE) {
       return;
@@ -194,6 +199,7 @@ export const useRefreshHandler = () => {
   };
 
   const refreshActions = async () => {
+    chatStore.$reset();
     await signalR.connect();
     await chatApi.getConstacts().then((res) => {
       res.forEach((cr) => {
