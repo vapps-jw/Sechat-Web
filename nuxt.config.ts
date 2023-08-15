@@ -27,32 +27,32 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? "not set",
     },
   },
-  // security: {
-  //   corsHandler: {
-  //     origin: "*",
-  //     methods: "*",
-  //   },
-  //   headers: {
-  //     permissionsPolicy: {
-  //       camera: ["self"],
-  //       microphone: ["self"],
-  //       "display-capture": ["self"],
-  //       fullscreen: ["self"],
-  //       geolocation: ["()"],
-  //     },
-  //     crossOriginEmbedderPolicy: false,
-  //     contentSecurityPolicy: {
-  //       "img-src": ["*", "data:"],
-  //     },
-  //     crossOriginResourcePolicy: "cross-origin",
-  //   },
-  // },
+  security: {
+    corsHandler: {
+      origin: "*",
+      methods: "*",
+    },
+    headers: {
+      permissionsPolicy: {
+        camera: ["self"],
+        microphone: ["self"],
+        "display-capture": ["self"],
+        fullscreen: ["self"],
+        geolocation: ["()"],
+      },
+      crossOriginEmbedderPolicy: false,
+      contentSecurityPolicy: {
+        "img-src": ["*", "data:"],
+      },
+      crossOriginResourcePolicy: "cross-origin",
+    },
+  },
   modules: [
     "nuxt-icon",
     "@nuxt/image-edge",
     "@nuxtjs/i18n",
     "@vite-pwa/nuxt",
-    // "nuxt-security",
+    "nuxt-security",
     [
       "@pinia/nuxt",
       {
