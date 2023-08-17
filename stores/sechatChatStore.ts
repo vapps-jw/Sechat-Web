@@ -14,7 +14,6 @@ export const useSechatChatStore = defineStore({
       activeRoomId: <string>null,
       activeContactId: <number>null,
       newMessage: <string>null,
-      keyInputDialog: <boolean>false,
       activeBottomNav: <string>BottomNavBarSet.ChatNavBar,
       activeChatTab: <string>ChatViews.Messages,
     };

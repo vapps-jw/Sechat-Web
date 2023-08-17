@@ -196,18 +196,12 @@ export const useRefreshHandler = () => {
 
   const refreshActions = async () => {
     console.warn("REFRESH ACTIONS");
-    chatStore.$reset();
+    await signalRStore.closeConnection();
     signalRStore.$reset();
     await signalR.connect();
     const promises = [];
-    promises.push(
-      chatApi.getConstacts().then((res) => {
-        res.forEach((cr) => {
-          e2e.tryDecryptContact(cr);
-        });
-        chatStore.loadContacts(res);
-      })
-    );
+
+    // Call Logs
 
     if (chatStore.callLogs.length > 0) {
       promises.push(
@@ -221,13 +215,37 @@ export const useRefreshHandler = () => {
       );
     }
 
-    console.warn("Getting All Rooms");
+    // Contacts
+
+    promises.push(
+      chatApi.getConstacts().then((res) => {
+        res.forEach((cr) => {
+          e2e.tryDecryptContact(cr);
+        });
+        if (
+          chatStore.activeContactId &&
+          !res.some((c) => c.id === chatStore.activeContactId)
+        ) {
+          chatStore.activeContactId = null;
+        }
+        chatStore.loadContacts(res);
+      })
+    );
+
+    // Rooms
+
     promises.push(
       chatApi.getRooms().then((res) => {
         res.forEach((room) => {
           e2e.tryDecryptRoom(room);
         });
-        return chatStore.loadRooms(res);
+        if (
+          chatStore.activeRoomId &&
+          !res.some((r) => r.id === chatStore.activeRoomId)
+        ) {
+          chatStore.activeRoomId = null;
+        }
+        chatStore.loadRooms(res);
       })
     );
 
