@@ -1,4 +1,4 @@
-import { CustomCookies, LocalStoreTypes } from "~/utilities/globalEnums";
+import { LocalStoreTypes } from "~/utilities/globalEnums";
 
 export default defineNuxtRouteMiddleware((to, from) => {
   console.warn("Chat middleware triggered");

@@ -27,8 +27,7 @@ export const useUserApi = () => {
       });
     }
 
-    userStore.updateUserProfile(newProfile.value);
-    console.warn("User profile", userStore.userProfile);
+    return newProfile.value;
   };
 
   return {

@@ -22,6 +22,7 @@ export default defineNuxtPlugin(async (context) => {
   if (gdpr) {
     appStore.GDPR = true;
   } else {
+    refreshHandler.signOutCleanup();
     return;
   }
 
@@ -34,8 +35,11 @@ export default defineNuxtPlugin(async (context) => {
   }
 
   try {
-    await userApi.getUserData();
+    const profile = await userApi.getUserData();
+    userStore.updateUserProfile(profile);
   } catch (error) {
     console.error(error);
+    refreshHandler.signOutCleanup();
+    return;
   }
 });
