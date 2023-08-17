@@ -5,6 +5,7 @@ export const useUserApi = () => {
     const { data: newProfile, error: apiError } = await useFetch<IUserProfile>(
       `${config.public.apiBase}/user/get-profile`,
       {
+        method: "GET",
         credentials: "include",
       }
     );
