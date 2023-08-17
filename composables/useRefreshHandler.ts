@@ -77,10 +77,6 @@ export const useRefreshHandler = () => {
   };
 
   const handleVisibilityChange = async () => {
-    if (signalRStore.isConnected) {
-      console.warn("SignalR connected - refresh not required");
-      return;
-    }
     console.log("Visibility changed", document.visibilityState);
     if (document.visibilityState !== VisibilityStates.VISIBLE) {
       return;
@@ -201,6 +197,7 @@ export const useRefreshHandler = () => {
   const refreshActions = async () => {
     console.warn("REFRESH ACTIONS");
     chatStore.$reset();
+    signalRStore.$reset();
     await signalR.connect();
     const promises = [];
     promises.push(
