@@ -22,24 +22,6 @@ self.addEventListener("push", async (event) => {
     return;
   }
 
-  const currentNotifications = await self.registration.getNotifications();
-  console.log(
-    "Current Notifications",
-    currentNotifications,
-    currentNotifications.length
-  );
-
-  const notificationsToClose = currentNotifications.filter(
-    (n) =>
-      n.title === String(data.title) && n.body === String(data.options.body)
-  );
-
-  console.log("Notifications to close", notificationsToClose);
-  notificationsToClose.forEach((n) => {
-    console.log("Closing current notification", String(data.title));
-    n.close();
-  });
-
   console.log("Push notification received", data);
   let options = {};
   if (String(data.title) === PushNotificationTypes.VideoCall) {
@@ -50,6 +32,9 @@ self.addEventListener("push", async (event) => {
       tag: "Sechat",
       vibrate: [1000],
     };
+    await closeNotifications(data);
+  } else if (String(data.title) === PushNotificationTypes.EventReminder) {
+    // TODO: handle calendar event notification
   } else {
     options = {
       body: String(data.options.body),
@@ -58,6 +43,7 @@ self.addEventListener("push", async (event) => {
       tag: "Sechat",
       vibrate: [500, 500, 500],
     };
+    await closeNotifications(data);
   }
 
   console.log("Showing Notification...", String(data.title), options);
@@ -83,6 +69,26 @@ self.addEventListener("notificationclick", (event) => {
   event.waitUntil(promiseChain);
   clickedNotification.close();
 });
+
+const closeNotifications = async (data) => {
+  const currentNotifications = await self.registration.getNotifications();
+  console.log(
+    "Current Notifications",
+    currentNotifications,
+    currentNotifications.length
+  );
+
+  const notificationsToClose = currentNotifications.filter(
+    (n) =>
+      n.title === String(data.title) && n.body === String(data.options.body)
+  );
+
+  console.log("Notifications to close", notificationsToClose);
+  notificationsToClose.forEach((n) => {
+    console.log("Closing current notification", String(data.title));
+    n.close();
+  });
+};
 
 function isClientFocused() {
   return clients
