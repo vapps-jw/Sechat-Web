@@ -19,12 +19,12 @@
         <v-window-item :value="ChatViews.Events">
           <ChatTabsEvents />
         </v-window-item>
-        <v-window-item :value="ChatViews.Calendar">
+        <!-- <v-window-item :value="ChatViews.Calendar">
           <ChatTabsCalendar />
         </v-window-item>
         <v-window-item :value="ChatViews.Notes">
           <ChatTabsNotes />
-        </v-window-item>
+        </v-window-item> -->
       </div>
 
       <!-- Profile -->

@@ -1,6 +1,4 @@
 export const useUserApi = () => {
-  const userStore = useUserStore();
-
   const getUserData = async () => {
     const config = useRuntimeConfig();
     console.warn("API Base", config.public.apiBase);

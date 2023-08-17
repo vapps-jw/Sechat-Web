@@ -26,15 +26,21 @@ export default defineNuxtPlugin(async (context) => {
     return;
   }
 
+  console.error("Stored Profile", userStore.userProfile);
   const authCheck = await chatApi.isAuthorized();
+  console.error("Auth Check", authCheck);
   if (!authCheck) {
-    console.error("Auth Check Failed");
-    console.error("Stored Profile", userStore.userProfile);
     refreshHandler.signOutCleanup();
     return;
   }
 
+  if (authCheck && userStore.isSignedIn) {
+    return;
+  }
+
   try {
+    console.error("Fetching missing profile");
+    userStore.$reset();
     const profile = await userApi.getUserData();
     userStore.updateUserProfile(profile);
   } catch (error) {
