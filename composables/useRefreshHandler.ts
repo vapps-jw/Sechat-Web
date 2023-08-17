@@ -199,16 +199,19 @@ export const useRefreshHandler = () => {
   };
 
   const refreshActions = async () => {
+    console.warn("REFRESH ACTIONS");
     chatStore.$reset();
     await signalR.connect();
-    await chatApi.getConstacts().then((res) => {
-      res.forEach((cr) => {
-        e2e.tryDecryptContact(cr);
-      });
-      chatStore.loadContacts(res);
-    });
-
     const promises = [];
+    promises.push(
+      chatApi.getConstacts().then((res) => {
+        res.forEach((cr) => {
+          e2e.tryDecryptContact(cr);
+        });
+        chatStore.loadContacts(res);
+      })
+    );
+
     if (chatStore.callLogs.length > 0) {
       promises.push(
         videoCall
