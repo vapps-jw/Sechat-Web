@@ -6,7 +6,7 @@
       width="700"
     >
       <ChatTabsVariantsChatCard />
-      <ChatTabsVariantsCalendarCard />
+      <!-- <ChatTabsVariantsCalendarCard /> -->
       <ChatTabsVariantsProfileCard />
     </v-card>
   </v-container>

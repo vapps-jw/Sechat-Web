@@ -293,23 +293,7 @@ export const useChatApi = () => {
     }
   };
 
-  const isAuthorized = async (): Promise<boolean> => {
-    const { error: apiError, data: uc } = await useFetch<IContactRequest>(
-      `${config.public.apiBase}/account/is-authorized`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
-
-    if (apiError.value) {
-      return false;
-    }
-    return true;
-  };
-
   return {
-    isAuthorized,
     clearChat,
     getContact,
     markDirectMessageAsViewed,

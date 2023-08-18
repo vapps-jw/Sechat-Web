@@ -26,16 +26,7 @@ export default defineNuxtPlugin(async (context) => {
     return;
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.warn("Stored Profile", userStore.userProfile);
-  const authCheck = await chatApi.isAuthorized();
-  console.warn("Auth Check", authCheck);
-  if (!authCheck) {
-    refreshHandler.signOutCleanup();
-    return;
-  }
-
-  if (authCheck && userStore.isSignedIn) {
+  if (userStore.isSignedIn) {
     return;
   }
 
