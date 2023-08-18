@@ -19,19 +19,10 @@
         <v-window-item :value="ChatViews.Events">
           <ChatTabsEvents />
         </v-window-item>
-        <!-- <v-window-item :value="ChatViews.Calendar">
-          <ChatTabsCalendar />
-        </v-window-item>
-        <v-window-item :value="ChatViews.Notes">
-          <ChatTabsNotes />
-        </v-window-item> -->
       </div>
 
       <!-- Profile -->
       <div v-if="chatStore.activeBottomNav === BottomNavBarSet.ProfileNavBar">
-        <v-window-item :value="ChatViews.Exit">
-          <ChatTabsExit />
-        </v-window-item>
         <v-window-item :value="ChatViews.Security">
           <ChatTabsSecurity />
         </v-window-item>
@@ -43,9 +34,6 @@
       <!-- Always Present -->
       <v-window-item :value="ChatViews.AppsSelection">
         <ChatTabsAppsSelection />
-      </v-window-item>
-      <v-window-item :value="ChatViews.WorkInProgress">
-        <ChatTabsWorkInProgress />
       </v-window-item>
     </v-window>
   </div>

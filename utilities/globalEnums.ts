@@ -50,10 +50,6 @@ export const ChatViews = {
   Settings: "settings",
   Security: "security",
   Events: "events",
-  Calendar: "calendar",
-  Notes: "notes",
-  WorkInProgress: "workInProgress",
-  Exit: "exit",
 };
 
 export const GeneralViews = {
