@@ -9,20 +9,20 @@ clientsClaim();
 
 self.addEventListener("push", async (event) => {
   const data = event.data.json();
-  console.log("Push Recieved...", data);
+  console.warn("Service Worker >>> Push Recieved...", data);
 
   if (Notification.permission !== "granted") {
-    console.error("Push Denied...");
+    console.error("Service Worker >>> Push Denied...");
     return;
   }
 
   const clientIsFocused = await isClientFocused();
   if (clientIsFocused) {
-    console.error("Window Visible...");
+    console.error("Service Worker >>> Window Visible...");
     return;
   }
 
-  console.log("Push notification received", data);
+  console.warn("Service Worker >>> Push notification received", data);
   let options = {};
   if (String(data.title) === PushNotificationTypes.VideoCall) {
     options = {
@@ -46,7 +46,11 @@ self.addEventListener("push", async (event) => {
     await closeNotifications(data);
   }
 
-  console.log("Showing Notification...", String(data.title), options);
+  console.warn(
+    "Service Worker >>> Showing Notification...",
+    String(data.title),
+    options
+  );
   self.registration.showNotification(String(data.title), options);
 });
 
@@ -70,10 +74,14 @@ self.addEventListener("notificationclick", (event) => {
   clickedNotification.close();
 });
 
+self.addEventListener("message", (event) => {
+  console.warn(`Service Worker >>> Message received: ${event.data}`);
+});
+
 const closeNotifications = async (data) => {
   const currentNotifications = await self.registration.getNotifications();
-  console.log(
-    "Current Notifications",
+  console.warn(
+    "Service Worker >>> Current Notifications",
     currentNotifications,
     currentNotifications.length
   );
@@ -83,9 +91,15 @@ const closeNotifications = async (data) => {
       n.title === String(data.title) && n.body === String(data.options.body)
   );
 
-  console.log("Notifications to close", notificationsToClose);
+  console.warn(
+    "Service Worker >>> Notifications to close",
+    notificationsToClose
+  );
   notificationsToClose.forEach((n) => {
-    console.log("Closing current notification", String(data.title));
+    console.warn(
+      "Service Worker >>> Closing current notification",
+      String(data.title)
+    );
     n.close();
   });
 };
@@ -97,7 +111,7 @@ function isClientFocused() {
       includeUncontrolled: true,
     })
     .then((windowClients) => {
-      console.warn("Window Clients", windowClients);
+      console.warn("Service Worker >>> Window Clients", windowClients);
       let clientIsFocused = false;
 
       for (let i = 0; i < windowClients.length; i++) {
