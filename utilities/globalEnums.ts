@@ -18,6 +18,10 @@ export const CustomCookies = {
   AUTH: "sechatid",
 };
 
+export const ServiceWorkerMessages = {
+  MasterKey: "MasterKey",
+};
+
 export const LocalStoreTypes = {
   E2EROOMS: "E2E_ROOMS",
   E2EDM: "E2E_DM",

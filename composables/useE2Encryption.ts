@@ -124,10 +124,10 @@ export const useE2Encryption = () => {
 
     const storedData = localStorage.getItem(type);
     if (!storedData) {
-      const newData = JSON.stringify([{ key: data.key, id: data.id }]);
+      const newData = [{ key: data.key, id: data.id }];
       console.log("Adding first key");
-      localStorage.setItem(type, newData);
-      return;
+      localStorage.setItem(type, JSON.stringify(newData));
+      return newData;
     }
 
     let e2eData = JSON.parse(storedData) as E2EKey[];
@@ -223,7 +223,25 @@ export const useE2Encryption = () => {
     return key.value as string;
   };
 
+  const clearOldMasterKeys = async (): Promise<E2EKey[]> => {
+    const keys = getKeys(LocalStoreTypes.E2EMASTER);
+
+    if (keys.length < 2) {
+      return;
+    }
+
+    const mostRecentKey = keys.reduce((a, b) => {
+      return new Date(a.id) > new Date(b.id) ? a : b;
+    });
+
+    console.log("Removing old Master Keys", keys);
+    removeKeys(LocalStoreTypes.E2EMASTER);
+    console.log("Saving recent Master Key", mostRecentKey);
+    return addKey(mostRecentKey, LocalStoreTypes.E2EMASTER);
+  };
+
   return {
+    clearOldMasterKeys,
     removeKeys,
     tryDecryptContact,
     tryDecryptRoom,

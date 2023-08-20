@@ -1,4 +1,7 @@
-import { LocalStoreTypes } from "~/utilities/globalEnums";
+import {
+  LocalStoreTypes,
+  ServiceWorkerMessages,
+} from "~/utilities/globalEnums";
 
 export default defineNuxtPlugin(async (context) => {
   const disableLogs = () => {
@@ -13,10 +16,22 @@ export default defineNuxtPlugin(async (context) => {
 
   const app = useSechatApp();
   const appStore = useSechatAppStore();
-  const chatApi = useChatApi();
   const userStore = useUserStore();
   const refreshHandler = useRefreshHandler();
   const userApi = useUserApi();
+  const e2e = useE2Encryption();
+
+  e2e.clearOldMasterKeys();
+  const keys = e2e.getKeys(LocalStoreTypes.E2EMASTER);
+  if (keys.length > 0) {
+    const msg: ServiceWorkerMessage = {
+      title: ServiceWorkerMessages.MasterKey,
+      value: keys[0],
+    };
+    await navigator.serviceWorker.ready.then((registration) => {
+      registration.active.postMessage(msg);
+    });
+  }
 
   const gdpr = app.getLocalStoreItem(LocalStoreTypes.GDPR);
   if (gdpr) {

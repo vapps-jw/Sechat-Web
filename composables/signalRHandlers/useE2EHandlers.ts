@@ -1,4 +1,8 @@
-import { SignalRHubMethods, LocalStoreTypes } from "~~/utilities/globalEnums";
+import {
+  SignalRHubMethods,
+  LocalStoreTypes,
+  ServiceWorkerMessages,
+} from "~~/utilities/globalEnums";
 
 export const useE2EHandlers = () => {
   const chatStore = useSechatChatStore();
@@ -77,7 +81,7 @@ export const useE2EHandlers = () => {
   };
 
   const onMasterKeyRequested = () => {
-    console.warn("Master Key requested");
+    console.warn("onMasterKeyRequested");
 
     const keys = e2e.getKeys(LocalStoreTypes.E2EMASTER);
     if (keys.length === 0) {
@@ -98,7 +102,7 @@ export const useE2EHandlers = () => {
     signalRStore.connection.send(SignalRHubMethods.ShareMasterKey, keyToShare);
   };
 
-  const onMasterKeyIncoming = (message: MasterSharedKey) => {
+  const onMasterKeyIncoming = async (message: MasterSharedKey) => {
     console.warn("onMasterKeyIncoming", message);
 
     const newKey: E2EKey = {
@@ -121,9 +125,17 @@ export const useE2EHandlers = () => {
     }
 
     e2e.removeKeys(LocalStoreTypes.E2EMASTER);
-    console.log("Saving refcent Master Key", newKey);
+    console.log("Saving recent Master Key", newKey);
     const result = e2e.addKey(newKey, LocalStoreTypes.E2EMASTER);
-    console.log("Master Key Updated", result);
+    console.log("Master Key Updated, sending to Service Worker", result);
+
+    const msg: ServiceWorkerMessage = {
+      title: ServiceWorkerMessages.MasterKey,
+      value: newKey,
+    };
+    await navigator.serviceWorker.ready.then((registration) => {
+      registration.active.postMessage(msg);
+    });
 
     // Todo: try decrypt calendar
   };

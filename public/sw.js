@@ -7,6 +7,8 @@ precacheAndRoute(self.__WB_MANIFEST);
 self.skipWaiting();
 clientsClaim();
 
+self.masterKey = null;
+
 self.addEventListener("push", async (event) => {
   const data = event.data.json();
   console.warn("Service Worker >>> Push Recieved...", data);
@@ -75,7 +77,11 @@ self.addEventListener("notificationclick", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  console.warn(`Service Worker >>> Message received: ${event.data}`);
+  const msg = event.data;
+  console.warn(`Service Worker >>> Message received: ${msg.title}`, msg);
+  self.masterKey = msg.value;
+
+  console.warn("Service Worker >>> Master Key variable set", self.masterKey);
 });
 
 const closeNotifications = async (data) => {
