@@ -46,7 +46,7 @@ export default defineNuxtPlugin(async (context) => {
   }
 
   try {
-    console.error("Fetching missing profile");
+    console.warn("Fetching missing profile");
     userStore.$reset();
     const profile = await userApi.getUserData();
     userStore.updateUserProfile(profile);
