@@ -3,7 +3,7 @@ type Calendar = {
 };
 
 type CalendarEvent = {
-  id: string;
+  id?: string;
 
   name: string;
   description: string;
@@ -15,7 +15,7 @@ type CalendarEvent = {
   start: string;
   end: string;
 
-  reminders: EventReminder[];
+  reminders?: EventReminder[];
 };
 
 type EventReminder = {

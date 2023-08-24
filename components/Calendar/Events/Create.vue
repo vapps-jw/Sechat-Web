@@ -142,7 +142,6 @@ const createEvent = async () => {
 
   // TODO: handle dates conversion - store only UTC
   const newEvent = <CalendarEvent>{
-    id: "",
     name: eventData.value.name,
     description: eventData.value.description,
     color: eventData.value.color,
@@ -150,7 +149,6 @@ const createEvent = async () => {
     day: eventData.value.day.toISOString(),
     start: eventData.value.start,
     end: eventData.value.end,
-    reminders: [],
   };
 
   //dialog.value = false;
