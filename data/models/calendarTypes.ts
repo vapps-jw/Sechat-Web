@@ -10,10 +10,10 @@ type CalendarEvent = {
   color: string;
 
   isAllDay: boolean;
-  day: Date;
+  day: string;
 
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
 
   reminders: EventReminder[];
 };

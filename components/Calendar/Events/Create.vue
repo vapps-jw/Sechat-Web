@@ -47,7 +47,7 @@
           ></v-checkbox>
           <v-text-field
             v-if="eventData.isAllDay"
-            v-model="eventData.allDay"
+            v-model="eventData.day"
             type="date"
             :min="getISODate(new Date(Date.now() + 60 * 60 * 24 * 1000))"
             label="Pick a Day"
@@ -101,7 +101,7 @@ const eventData = ref({
   description: "",
   color: "#EEEEEE",
   isAllDay: false,
-  allDay: <Date>null,
+  day: <Date>null,
   start: new Date(new Date().toString().split("GMT")[0] + " UTC")
     .toISOString()
     .split(".")[0],
@@ -132,15 +132,6 @@ watch(
   { deep: true }
 );
 
-const maxStart = computed(() => {
-  console.log("Max Start", eventData.value.end);
-  eventData.value.end;
-});
-const minEnd = computed(() => {
-  console.log("Min End", eventData.value.start);
-  eventData.value.start;
-});
-
 const createEvent = async () => {
   console.log(eventData.value);
   const { valid } = await eventCreateForm.value?.validate();
@@ -148,6 +139,20 @@ const createEvent = async () => {
     console.warn("Form not valid", valid);
     return;
   }
+
+  // TODO: handle dates conversion - store only UTC
+  const newEvent = <CalendarEvent>{
+    id: "",
+    name: eventData.value.name,
+    description: eventData.value.description,
+    color: eventData.value.color,
+    isAllDay: eventData.value.isAllDay,
+    day: eventData.value.day.toISOString(),
+    start: eventData.value.start,
+    end: eventData.value.end,
+    reminders: [],
+  };
+
   //dialog.value = false;
 };
 </script>
