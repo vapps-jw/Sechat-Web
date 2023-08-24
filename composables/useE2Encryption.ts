@@ -160,6 +160,27 @@ export const useE2Encryption = () => {
     return JSON.parse(storedData) as E2EKey[];
   };
 
+  const getMasterKey = (): E2EKey => {
+    const storedData = localStorage.getItem(LocalStoreTypes.E2EMASTER);
+    if (!storedData) {
+      return null;
+    }
+
+    const keys = JSON.parse(storedData) as E2EKey[];
+    if (keys.length > 0) {
+      const mostRecentKey = keys.reduce((a, b) => {
+        return new Date(a.id) > new Date(b.id) ? a : b;
+      });
+      const keysToRemove = keys.filter((k) => k.id !== mostRecentKey.id);
+
+      console.log("Most recent Master Key", mostRecentKey);
+      keysToRemove.forEach((k) => removeKey(k.id, LocalStoreTypes.E2EMASTER));
+      return mostRecentKey;
+    }
+
+    return keys[0];
+  };
+
   const getKey = (id: string | number, type: string): E2EKey => {
     if (!process.client) {
       console.error(process);
@@ -241,6 +262,7 @@ export const useE2Encryption = () => {
   };
 
   return {
+    getMasterKey,
     clearOldMasterKeys,
     removeKeys,
     tryDecryptContact,
