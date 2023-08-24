@@ -20,14 +20,6 @@
       </v-toolbar>
       <v-card-text>
         <v-form ref="eventCreateForm" @submit.prevent>
-          <v-alert
-            class="alert-font"
-            density="compact"
-            type="info"
-            variant="tonal"
-            title="Encryption"
-            text="text"
-          ></v-alert>
           <v-text-field
             data-cy="new-event-name-field"
             class="my-2"
@@ -46,8 +38,42 @@
             label="Description"
             required
           ></v-textarea>
+
+          <!-- All Day -->
+
+          <v-checkbox
+            v-model="eventData.isAllDay"
+            label="All Day Event"
+          ></v-checkbox>
+          <v-text-field
+            v-if="eventData.isAllDay"
+            v-model="eventData.allDay"
+            type="date"
+            :min="getISODate(new Date(Date.now() + 60 * 60 * 24 * 1000))"
+            label="Pick a Day"
+          ></v-text-field>
+
+          <!-- Start & End -->
+
+          <v-text-field
+            v-if="!eventData.isAllDay"
+            v-model="eventData.start"
+            type="datetime-local"
+            :max="eventData.end"
+            label="Start"
+          ></v-text-field>
+
+          <v-text-field
+            v-if="!eventData.isAllDay"
+            v-model="eventData.end"
+            type="datetime-local"
+            :min="eventData.start"
+            label="End"
+          ></v-text-field>
+
           <div class="d-flex justify-center align-center">
             <v-color-picker
+              dot-size="20"
               v-model="eventData.color"
               hide-inputs
             ></v-color-picker>
@@ -64,19 +90,26 @@
 </template>
 
 <script setup lang="ts">
+import { getISODate } from "~/utilities/dateFunctions";
+
 const dialog = ref<boolean>(false);
-const signalR = useSignalR();
 
 const eventCreateForm = ref<HTMLFormElement>();
 const eventData = ref({
   valid: true,
   name: "",
   description: "",
-  color: "",
+  color: "#EEEEEE",
   isAllDay: false,
   allDay: <Date>null,
-  start: Date.now(),
-  end: Date.now() + 1000 * 60 * 60,
+  start: new Date(new Date().toString().split("GMT")[0] + " UTC")
+    .toISOString()
+    .split(".")[0],
+  end: new Date(
+    new Date(Date.now() + 60 * 60 * 1000).toString().split("GMT")[0] + " UTC"
+  )
+    .toISOString()
+    .split(".")[0],
   nameRules: [
     (v) => !!v || "Event Name is required",
     (v) =>
@@ -85,19 +118,36 @@ const eventData = ref({
   descriptionRules: [
     (v) => v.length <= 500 || "Description can`t have more than 500 characters",
   ],
+  startRules: [(v) => !!v || "Start is required"],
+  endRules: [(v) => !!v || "End is required"],
 });
 
-// id: string;
-//   name: string;
-//   description: string;
-//   color: string;
-//   isAllDay: boolean;
-//   allDay: Date;
-//   start: Date;
-//   end: Date;
+watch(
+  () => eventData.value.start,
+  (currValue, prevValue) => {
+    if (new Date(currValue) > new Date(eventData.value.end)) {
+      currValue = eventData.value.end;
+    }
+  },
+  { deep: true }
+);
+
+const maxStart = computed(() => {
+  console.log("Max Start", eventData.value.end);
+  eventData.value.end;
+});
+const minEnd = computed(() => {
+  console.log("Min End", eventData.value.start);
+  eventData.value.start;
+});
 
 const createEvent = async () => {
   console.log(eventData.value);
+  const { valid } = await eventCreateForm.value?.validate();
+  if (!valid) {
+    console.warn("Form not valid", valid);
+    return;
+  }
   //dialog.value = false;
 };
 </script>
