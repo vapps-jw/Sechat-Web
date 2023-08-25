@@ -18,73 +18,7 @@
           </v-btn>
         </v-toolbar-items>
       </v-toolbar>
-      <v-card-text>
-        <v-form ref="eventCreateForm" @submit.prevent>
-          <v-text-field
-            data-cy="new-event-name-field"
-            class="my-2"
-            v-model="eventData.name"
-            :rules="eventData.nameRules"
-            :counter="50"
-            label="Name"
-            required
-          ></v-text-field>
-          <v-textarea
-            data-cy="new-event-description-field"
-            class="my-2"
-            v-model="eventData.description"
-            :rules="eventData.descriptionRules"
-            :counter="500"
-            label="Description"
-            required
-          ></v-textarea>
-
-          <!-- All Day -->
-
-          <v-checkbox
-            v-model="eventData.isAllDay"
-            label="All Day Event"
-          ></v-checkbox>
-          <v-text-field
-            v-if="eventData.isAllDay"
-            v-model="eventData.day"
-            type="date"
-            :min="getISODate(new Date(Date.now() + 60 * 60 * 24 * 1000))"
-            label="Pick a Day"
-          ></v-text-field>
-
-          <!-- Start & End -->
-
-          <v-text-field
-            v-if="!eventData.isAllDay"
-            v-model="eventData.start"
-            type="datetime-local"
-            :max="eventData.end"
-            label="Start"
-          ></v-text-field>
-
-          <v-text-field
-            v-if="!eventData.isAllDay"
-            v-model="eventData.end"
-            type="datetime-local"
-            :min="eventData.start"
-            label="End"
-          ></v-text-field>
-
-          <div class="d-flex justify-center align-center">
-            <v-color-picker
-              dot-size="20"
-              v-model="eventData.color"
-              hide-inputs
-            ></v-color-picker>
-          </div>
-        </v-form>
-      </v-card-text>
-      <v-card-actions class="justify-center">
-        <v-btn data-cy="create-room-btn" variant="tonal" @click="createEvent">
-          Create
-        </v-btn>
-      </v-card-actions>
+      <calendar-events-edit />
     </v-card>
   </v-dialog>
 </template>
@@ -93,6 +27,8 @@
 import { getISODate } from "~/utilities/dateFunctions";
 
 const dialog = ref<boolean>(false);
+const e2e = useE2Encryption();
+const sechatStore = useSechatAppStore();
 
 const eventCreateForm = ref<HTMLFormElement>();
 const eventData = ref({
@@ -138,6 +74,11 @@ const createEvent = async () => {
   if (!valid) {
     console.warn("Form not valid", valid);
     return;
+  }
+
+  const masterKey = e2e.getMasterKey();
+  if (!masterKey) {
+    sechatStore.showErrorSnackbar("Master Key is missing, check your profile");
   }
 
   // TODO: handle dates conversion - store only UTC
