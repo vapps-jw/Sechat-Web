@@ -18,7 +18,7 @@
           </v-btn>
         </v-toolbar-items>
       </v-toolbar>
-      <calendar-events-edit @update-event="updateEvent" />
+      <calendar-events-edit @update-event="createEvent" />
     </v-card>
   </v-dialog>
 </template>
@@ -30,7 +30,7 @@ const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
 const calendarStore = useCalendarStore();
 
-const updateEvent = async (data: CalendarEvent) => {
+const createEvent = async (data: CalendarEvent) => {
   console.log("Submitting Event", data);
 
   const masterKey = e2e.getMasterKey();

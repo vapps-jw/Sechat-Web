@@ -12,6 +12,13 @@
             v-bind="props"
           ></v-btn>
         </template>
+        <v-list>
+          <v-list-item>
+            <v-btn @click="deleteEvent" class="mx-1" color="error"
+              >Delete</v-btn
+            ></v-list-item
+          >
+        </v-list>
       </v-menu>
     </template>
     <template v-slot:append> </template>
@@ -24,6 +31,10 @@ interface PropsModel {
 }
 
 const props = defineProps<PropsModel>();
+
+const deleteEvent = () => {
+  console.log("Deleting Event", props.calendarEvent.id);
+};
 </script>
 
 <style scoped></style>
