@@ -1,11 +1,15 @@
 <template>
   <v-list flex align-center>
-    <v-list-item> sadasd</v-list-item>
-
-    <v-divider class="mt-5" />
+    <calendar-events-list-item
+      v-for="ce in calendarStore.getEvents"
+      :key="ce.id"
+      :calendar-event="ce"
+    />
   </v-list>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const calendarStore = useCalendarStore();
+</script>
 
 <style scoped></style>

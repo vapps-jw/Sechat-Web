@@ -93,7 +93,9 @@ export const useE2Encryption = () => {
   const encryptMessage = (data: string, key: E2EKey): string => {
     try {
       var result = CryptoES.AES.encrypt(data, key.key).toString();
-      console.log(E2EStatusMessages.ENCRYPTION_ERROR, result);
+      if (!result) {
+        return E2EStatusMessages.ENCRYPTION_ERROR;
+      }
       return result;
     } catch (error) {
       console.error(error);

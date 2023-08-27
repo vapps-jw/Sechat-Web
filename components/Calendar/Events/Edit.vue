@@ -22,10 +22,6 @@
 
       <!-- All Day -->
 
-      <v-checkbox
-        v-model="eventData.isAllDay"
-        label="All Day Event"
-      ></v-checkbox>
       <v-text-field
         v-if="eventData.isAllDay"
         v-model="eventData.day"
@@ -52,6 +48,11 @@
         label="End"
       ></v-text-field>
 
+      <v-checkbox
+        v-model="eventData.isAllDay"
+        label="All Day Event"
+      ></v-checkbox>
+
       <div class="d-flex justify-center align-center">
         <v-color-picker
           dot-size="20"
@@ -70,12 +71,17 @@
 
 <script setup lang="ts">
 import { getISODate } from "~/utilities/dateFunctions";
-const emit = defineEmits(["sendEvent"]);
+
+const e2e = useE2Encryption();
+const sechatStore = useSechatAppStore();
+
+const emit = defineEmits(["updateEvent"]);
 
 const props = defineProps({
   calendarEvent: {
     type: Object as PropType<CalendarEvent>,
     default: {
+      id: "",
       name: "",
       description: "",
       color: "#EEEEEE",
@@ -148,8 +154,38 @@ const submit = async () => {
     return;
   }
 
-  console.log("Submitting changes", eventData.value);
-  emit("sendEvent", eventData.value);
+  const masterKey = e2e.getMasterKey();
+  if (!masterKey) {
+    sechatStore.showErrorSnackbar("Master Key is missing, check your profile");
+  }
+
+  console.log("Event Edit Form", eventData.value);
+
+  const startToSave = new Date(eventData.value.start).toISOString();
+  const endToSave = new Date(eventData.value.end).toISOString();
+  const dayToSave = eventData.value.isAllDay
+    ? new Date(eventData.value.day).toISOString()
+    : null;
+
+  console.log("startToSave", startToSave);
+  console.log("endToSave", endToSave);
+  console.log("dayToSave", dayToSave);
+
+  console.log("startToSave - local converted", new Date(startToSave));
+  console.log("endToSave - local converted", new Date(endToSave));
+  console.log("dayToSave - local converted", new Date(dayToSave));
+
+  const newEvent = <CalendarEvent>{
+    id: eventData.value.id,
+    name: eventData.value.name,
+    description: eventData.value.description,
+    color: eventData.value.color,
+    isAllDay: eventData.value.isAllDay,
+    day: dayToSave,
+    start: startToSave,
+    end: endToSave,
+  };
+  emit("updateEvent", newEvent);
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <v-list-item :border="true" class="my-2 mx-1 pa-1">
     <template v-slot:title>
-      <div class="small-font"></div>
+      <div class="small-font">{{ props.calendarEvent.name }}</div>
     </template>
     <template v-slot:prepend>
       <v-menu>
@@ -19,7 +19,11 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<CalendarEvent>();
+interface PropsModel {
+  calendarEvent: CalendarEvent;
+}
+
+const props = defineProps<PropsModel>();
 </script>
 
 <style scoped></style>

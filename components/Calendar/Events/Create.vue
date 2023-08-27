@@ -18,80 +18,54 @@
           </v-btn>
         </v-toolbar-items>
       </v-toolbar>
-      <calendar-events-edit />
+      <calendar-events-edit @update-event="updateEvent" />
     </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
-import { getISODate } from "~/utilities/dateFunctions";
-
 const dialog = ref<boolean>(false);
 const e2e = useE2Encryption();
 const sechatStore = useSechatAppStore();
+const config = useRuntimeConfig();
+const calendarStore = useCalendarStore();
 
-const eventCreateForm = ref<HTMLFormElement>();
-const eventData = ref({
-  valid: true,
-  name: "",
-  description: "",
-  color: "#EEEEEE",
-  isAllDay: false,
-  day: <Date>null,
-  start: new Date(new Date().toString().split("GMT")[0] + " UTC")
-    .toISOString()
-    .split(".")[0],
-  end: new Date(
-    new Date(Date.now() + 60 * 60 * 1000).toString().split("GMT")[0] + " UTC"
-  )
-    .toISOString()
-    .split(".")[0],
-  nameRules: [
-    (v) => !!v || "Event Name is required",
-    (v) =>
-      (v && v.length <= 50) || "Event Name can`t have more than 50 characters",
-  ],
-  descriptionRules: [
-    (v) => v.length <= 500 || "Description can`t have more than 500 characters",
-  ],
-  startRules: [(v) => !!v || "Start is required"],
-  endRules: [(v) => !!v || "End is required"],
-});
+const updateEvent = async (data: CalendarEvent) => {
+  console.log("Submitting Event", data);
 
-watch(
-  () => eventData.value.start,
-  (currValue, prevValue) => {
-    if (new Date(currValue) > new Date(eventData.value.end)) {
-      currValue = eventData.value.end;
-    }
-  },
-  { deep: true }
-);
+  const masterKey = e2e.getMasterKey();
+  const encrptedData = e2e.encryptMessage(JSON.stringify(data), masterKey);
+  console.log("Encrypted Data", encrptedData);
 
-const createEvent = async () => {
-  console.log(eventData.value);
-  const { valid } = await eventCreateForm.value?.validate();
-  if (!valid) {
-    console.warn("Form not valid", valid);
+  if (!calendarStore.calendarData) {
+    console.error("Calendar is missing");
     return;
   }
 
-  const masterKey = e2e.getMasterKey();
-  if (!masterKey) {
-    sechatStore.showErrorSnackbar("Master Key is missing, check your profile");
+  const { error: apiError, data: res } = await useFetch<CalendarEventDto>(
+    `${config.public.apiBase}/calendar/event`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      credentials: "include",
+      body: {
+        data: encrptedData,
+      },
+    }
+  );
+
+  if (apiError.value) {
+    sechatStore.showErrorSnackbar(apiError.value.data);
+    return;
+  } else {
+    sechatStore.showSuccessSnackbar("Event saved");
   }
 
-  // TODO: handle dates conversion - store only UTC
-  const newEvent = <CalendarEvent>{
-    name: eventData.value.name,
-    description: eventData.value.description,
-    color: eventData.value.color,
-    isAllDay: eventData.value.isAllDay,
-    day: eventData.value.day.toISOString(),
-    start: eventData.value.start,
-    end: eventData.value.end,
-  };
-
-  //dialog.value = false;
+  console.log("API result", res.value);
+  data.id = res.value.id;
+  calendarStore.updateEvent(data);
+  dialog.value = false;
 };
 </script>

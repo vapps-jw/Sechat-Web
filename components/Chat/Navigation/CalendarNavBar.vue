@@ -43,6 +43,60 @@
 <script setup lang="ts">
 import { ChatViews } from "~~/utilities/globalEnums";
 const chatStore = useSechatChatStore();
+const calendarStore = useCalendarStore();
+const config = useRuntimeConfig();
+const e2e = useE2Encryption();
+const sechatStore = useSechatAppStore();
+
+onMounted(async () => {
+  if (calendarStore.calendarData) {
+    return;
+  }
+
+  const masterKey = e2e.getMasterKey();
+  if (!masterKey) {
+    sechatStore.showErrorSnackbar("Master Key is missing, check your profile");
+    return;
+  }
+
+  console.log("Fetching calendar data");
+
+  const data = await getCalendar();
+  const mappedCalendar: Calendar = {
+    calendarEvents: data.calendarEvents.map((ce) => {
+      // TODO: handle decryption error
+      const decryptedData = e2e.decryptMessage(ce.data, masterKey);
+      const eventObject = JSON.parse(decryptedData) as CalendarEvent;
+      eventObject.id = ce.id;
+      eventObject.reminders = ce.reminders;
+      console.log("Mapped Event", eventObject);
+      return eventObject;
+    }),
+  };
+
+  console.log("Calendar Fetched", mappedCalendar);
+  calendarStore.updateCalendar(mappedCalendar);
+});
+
+const getCalendar = async () => {
+  console.log("Getting Calendar from API");
+  const { error: apiError, data: res } = await useFetch<CalendarDto>(
+    `${config.public.apiBase}/calendar`,
+    {
+      method: "GET",
+      credentials: "include",
+    }
+  );
+
+  if (apiError.value) {
+    throw createError({
+      ...apiError.value,
+      statusCode: apiError.value.statusCode,
+      statusMessage: apiError.value.data,
+    });
+  }
+  return res.value;
+};
 </script>
 
 <style scoped></style>
