@@ -12,12 +12,15 @@ export const useCalendarStore = defineStore({
       this.calendar = value;
     },
     updateEvent(value: CalendarEvent) {
-      console.log("Current Raw calendar", this.calendar);
       this.calendar.calendarEvents = [
         ...this.calendar.calendarEvents.filter((ce) => ce.id !== value.id),
         value,
       ];
-      console.log("New Calendar", this.calendar);
+    },
+    removeEvent(value: CalendarEvent) {
+      this.calendar.calendarEvents = [
+        ...this.calendar.calendarEvents.filter((ce) => ce.id !== value.id),
+      ];
     },
   },
   getters: {

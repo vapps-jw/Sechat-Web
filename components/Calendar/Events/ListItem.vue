@@ -26,14 +26,42 @@
 </template>
 
 <script setup lang="ts">
+import { SnackbarMessages } from "~/utilities/globalEnums";
+
+const config = useRuntimeConfig();
+const sechatStore = useSechatAppStore();
+const calendarStore = useCalendarStore();
+
 interface PropsModel {
   calendarEvent: CalendarEvent;
 }
-
 const props = defineProps<PropsModel>();
 
-const deleteEvent = () => {
+const deleteEvent = async () => {
   console.log("Deleting Event", props.calendarEvent.id);
+  try {
+    const { error: apiError } = await useFetch(
+      `${config.public.apiBase}/calendar/event/?eventId=${props.calendarEvent.id}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      console.error("API error", apiError.value);
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    calendarStore.removeEvent(props.calendarEvent);
+    sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
+  } catch (error) {
+    sechatStore.showErrorSnackbar(error.statusMessage);
+  }
 };
 </script>
 

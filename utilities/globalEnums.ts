@@ -8,9 +8,9 @@ export const SnackbarIcons = {
 };
 
 export const SnackbarMessages = {
-  Warning: "Hmm, check it for sure",
-  Success: "Consider it done :)",
-  Error: "Something went wrong :/",
+  Warning: "Something is not entirely correct",
+  Success: "Changes saved",
+  Error: "Something went wrong",
 };
 
 export const CustomCookies = {
