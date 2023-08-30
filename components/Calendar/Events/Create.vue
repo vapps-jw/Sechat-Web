@@ -65,6 +65,7 @@ const createEvent = async (data: CalendarEvent) => {
 
   console.log("API result", res.value);
   data.id = res.value.id;
+  data.reminders = [];
   calendarStore.updateEvent(data);
   dialog.value = false;
 };
