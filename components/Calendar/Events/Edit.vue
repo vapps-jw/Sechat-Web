@@ -120,7 +120,7 @@ const eventData = ref({
   nameRules: [
     (v) => !!v || "Event Name is required",
     (v) =>
-      (v && v.length <= 50) || "Event Name can`t have more than 50 characters",
+      (v && v.length <= 25) || "Event Name can`t have more than 25 characters",
   ],
   descriptionRules: [
     (v) => v.length <= 500 || "Description can`t have more than 500 characters",

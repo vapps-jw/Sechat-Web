@@ -1,6 +1,9 @@
 <template>
   <v-list flex align-center>
-    <div v-for="(ce, index) in calendarStore.getEvents" :key="ce.id">
+    <div
+      v-for="(ce, index) in calendarStore.getEvents"
+      :key="`${ce.id}-${index}`"
+    >
       <v-row
         v-if="
           index === 0 ||
@@ -8,7 +11,7 @@
             placementDate(ce)
         "
         no-gutters
-        class="flex-nowrap align-center my-3"
+        class="flex-nowrap align-center my-2 mx-1 pa-1"
       >
         <v-col cols="5" class="flex-grow-0 flex-shrink-1 ml-2">
           <v-divider color="tertiary"></v-divider>
@@ -45,9 +48,7 @@
 const calendarStore = useCalendarStore();
 const appStore = useSechatAppStore();
 
-onMounted(async () => {
-  const test = calendarStore.getEventsDates;
-});
+onMounted(async () => {});
 
 const placementDate = (ce: CalendarEvent): number => {
   if (ce.isAllDay) {

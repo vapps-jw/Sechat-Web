@@ -1,33 +1,66 @@
 <template>
-  <v-list-item class="my-2 mx-1 pa-1 event-borders" :border="true">
+  <v-list-item class="my-2 mx-1 pa-1 event-borders">
     <template v-slot:title>
-      <div class="small-font">
+      <div>
         {{ props.calendarEvent.name }}
-
-        <div class="tiny-font" v-if="props.calendarEvent.isAllDay">
-          {{
-            new Date(props.calendarEvent.day).toLocaleString(
-              appStore.localLanguage,
-              {
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-              }
-            )
-          }}
-        </div>
-        <div class="tiny-font" v-if="!props.calendarEvent.isAllDay">
-          {{
-            new Date(props.calendarEvent.start).toLocaleString(
-              appStore.localLanguage
-            )
-          }}
-          -
-          {{
-            new Date(props.calendarEvent.end).toLocaleString(
-              appStore.localLanguage
-            )
-          }}
+        <div class="small-font" v-if="!props.calendarEvent.isAllDay">
+          <div
+            v-if="
+              new Date(props.calendarEvent.start).toLocaleDateString(
+                appStore.localLanguage
+              ) ===
+              new Date(props.calendarEvent.end).toLocaleDateString(
+                appStore.localLanguage
+              )
+            "
+          >
+            {{
+              new Date(props.calendarEvent.start).toLocaleTimeString(
+                appStore.localLanguage,
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              )
+            }}
+            -
+            {{
+              new Date(props.calendarEvent.end).toLocaleTimeString(
+                appStore.localLanguage,
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              )
+            }}
+          </div>
+          <div v-else>
+            {{
+              new Date(props.calendarEvent.start).toLocaleString(
+                appStore.localLanguage,
+                {
+                  year: "numeric",
+                  month: "numeric",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              )
+            }}
+            -
+            {{
+              new Date(props.calendarEvent.end).toLocaleString(
+                appStore.localLanguage,
+                {
+                  year: "numeric",
+                  month: "numeric",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              )
+            }}
+          </div>
         </div>
       </div>
     </template>
@@ -58,17 +91,17 @@
         <v-list>
           <v-list-item>
             <v-btn @click="" class="mx-1" color="primary"
+              >Details</v-btn
+            ></v-list-item
+          >
+          <v-list-item>
+            <v-btn @click="" class="mx-1" color="primary"
               >Add Reminder</v-btn
             ></v-list-item
           >
           <v-list-item>
             <v-btn @click="" class="mx-1" color="primary"
               >Edit</v-btn
-            ></v-list-item
-          >
-          <v-list-item>
-            <v-btn @click="" class="mx-1" color="primary"
-              >Details</v-btn
             ></v-list-item
           >
           <v-list-item>
@@ -124,15 +157,7 @@ const deleteEvent = async () => {
 };
 </script>
 <style scoped>
-* {
-  --border-radius: 3%;
-}
 .event-borders {
   border-left: 3px solid v-bind("props.calendarEvent.color");
-  border-top-left-radius: var(--border-radius);
-  border-bottom-left-radius: var(--border-radius);
-  border-right: 3px solid v-bind("props.calendarEvent.color");
-  border-top-right-radius: var(--border-radius);
-  border-bottom-right-radius: var(--border-radius);
 }
 </style>

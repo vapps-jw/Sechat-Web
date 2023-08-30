@@ -76,6 +76,8 @@ onMounted(async () => {
 
   console.log("Calendar Fetched", mappedCalendar);
   calendarStore.updateCalendar(mappedCalendar);
+
+  console.log("Display Batches", calendarStore.getDisplayBatches);
 });
 
 const getCalendar = async () => {
