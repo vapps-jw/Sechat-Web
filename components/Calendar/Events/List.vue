@@ -1,5 +1,5 @@
 <template>
-  <v-list flex align-center>
+  <v-list flex align-center v-if="calendarStore.getDisplayBatches.length > 0">
     <div v-for="(batch, index) in calendarStore.getDisplayBatches" :key="index">
       <v-row no-gutters class="flex-nowrap align-center my-2 mx-1 pa-1">
         <v-col cols="5" class="flex-grow-0 flex-shrink-1 ml-2">

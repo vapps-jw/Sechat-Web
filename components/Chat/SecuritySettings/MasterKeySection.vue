@@ -106,10 +106,22 @@ const e2e = useE2Encryption();
 const appStore = useSechatAppStore();
 const masterKeys = ref<E2EKey[]>([]);
 const refreshHandler = useRefreshHandler();
+const calendarStore = useCalendarStore();
+const calendarApi = useCalendarApi();
 
 onMounted(async () => {
   updateKeysTable();
 });
+
+const clearEncryptedData = () => {
+  try {
+    calendarApi.clearCalendar();
+    calendarStore.$reset();
+    sechatStore.showSuccessSnackbar("Data cleared");
+  } catch (error) {
+    sechatStore.showErrorSnackbar("Data not cleared");
+  }
+};
 
 const updateKeysTable = () => {
   const keys = e2e.getKeys(LocalStoreTypes.E2EMASTER);
@@ -129,6 +141,7 @@ const updateKeysTable = () => {
 const deleteMasterKey = () => {
   e2e.removeKeys(LocalStoreTypes.E2EMASTER);
   updateKeysTable();
+  clearEncryptedData();
   deleteDialog.value = false;
 };
 
@@ -161,6 +174,7 @@ const getNewMasterKey = async () => {
     key: newKey,
   };
 
+  clearEncryptedData();
   e2e.removeKeys(LocalStoreTypes.E2EMASTER);
   e2e.addKey(newKeyData, LocalStoreTypes.E2EMASTER);
   updateKeysTable();

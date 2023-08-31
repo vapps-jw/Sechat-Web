@@ -1,5 +1,6 @@
 type Calendar = {
   calendarEvents: CalendarEvent[];
+  decrypted: boolean;
 };
 
 type CalendarEvent = {

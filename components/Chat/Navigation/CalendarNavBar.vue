@@ -41,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { E2EStatusMessages } from "~/utilities/e2eEnums";
 import { getISODate, readSavedDate } from "~/utilities/dateFunctions";
 import { ChatViews } from "~~/utilities/globalEnums";
 const chatStore = useSechatChatStore();
@@ -60,13 +61,28 @@ onMounted(async () => {
     return;
   }
 
-  console.log("Fetching calendar data");
-
   const data = await getCalendar();
+  console.log("Fetching calendar data", data);
+  let decryptionResult = true;
   const mappedCalendar: Calendar = {
+    decrypted: false,
     calendarEvents: data.calendarEvents.map((ce) => {
       // TODO: handle decryption error
       const decryptedData = e2e.decryptMessage(ce.data, masterKey);
+      if (decryptedData === E2EStatusMessages.DECRYPTION_ERROR) {
+        decryptionResult = false;
+        return {
+          id: ce.id,
+          name: "Decryption Error",
+          description: "Decryption Error",
+          color: "#EEEEEE",
+          isAllDay: false,
+          reminders: [],
+          day: null,
+          start: null,
+          end: null,
+        } as CalendarEvent;
+      }
       const eventObject = JSON.parse(decryptedData) as CalendarEvent;
       console.log("Decrypted Event", eventObject);
       eventObject.id = ce.id;
@@ -83,10 +99,15 @@ onMounted(async () => {
       return eventObject;
     }),
   };
-
+  mappedCalendar.decrypted = decryptionResult;
+  if (!decryptionResult) {
+    sechatStore.showErrorSnackbar(
+      "Calendar decryption failed. Check your master key."
+    );
+    return;
+  }
   console.log("Calendar Fetched", mappedCalendar);
   calendarStore.updateCalendar(mappedCalendar);
-
   console.log("Display Batches", calendarStore.getDisplayBatches);
 });
 

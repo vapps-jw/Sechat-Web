@@ -44,7 +44,7 @@ export const useCalendarStore = defineStore({
     calendarData: (state) => (state.calendar ? true : false),
     getEvents: (state) => state.calendar?.calendarEvents,
     getDisplayBatches: (state): EventsDisplayBatch[] => {
-      if (state.calendar.calendarEvents.length === 0) {
+      if (!state.calendar || state.calendar.calendarEvents.length === 0) {
         return [];
       }
 
