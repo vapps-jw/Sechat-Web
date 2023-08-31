@@ -27,6 +27,18 @@ export const useCalendarStore = defineStore({
         ...this.calendar.calendarEvents.filter((ce) => ce.id !== value.id),
       ];
     },
+    addReminder(eventId: string, data: EventReminder) {
+      const event = this.calendar.calendarEvents.find(
+        (ce) => ce.id === eventId
+      ) as CalendarEvent;
+      event.reminders.push(data);
+    },
+    remioeReminder(eventId: string, reminderId: number) {
+      const event = this.calendar.calendarEvents.find(
+        (ce) => ce.id === eventId
+      ) as CalendarEvent;
+      event.reminders = event.reminders.filter((r) => r.id !== reminderId);
+    },
   },
   getters: {
     calendarData: (state) => (state.calendar ? true : false),

@@ -11,7 +11,7 @@
       no-data-text="You have no friends?"
     >
       <template v-slot:append>
-        <v-icon @click="invite" color="warning">mdi-send</v-icon>
+        <v-icon @click="invite" color="success">mdi-plus-circle-outline</v-icon>
       </template>
     </v-autocomplete>
   </v-container>
