@@ -90,20 +90,14 @@
         </template>
         <v-list>
           <v-list-item>
-            <v-btn @click="" class="mx-1" color="primary"
-              >Details</v-btn
-            ></v-list-item
-          >
+            <calendar-events-details :calendar-event="props.calendarEvent"
+          /></v-list-item>
           <v-list-item>
-            <v-btn @click="" class="mx-1" color="primary"
-              >Add Reminder</v-btn
-            ></v-list-item
-          >
+            <calendar-events-reminders :calendar-event="props.calendarEvent" />
+          </v-list-item>
           <v-list-item>
-            <v-btn @click="" class="mx-1" color="primary"
-              >Edit</v-btn
-            ></v-list-item
-          >
+            <calendar-events-update :calendar-event="props.calendarEvent"
+          /></v-list-item>
           <v-list-item>
             <v-btn @click="deleteEvent" class="mx-1" color="error"
               >Delete</v-btn

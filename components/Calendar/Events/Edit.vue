@@ -55,22 +55,22 @@
 
       <div class="d-flex justify-center align-center">
         <v-color-picker
-          dot-size="20"
-          v-model="eventData.color"
+          dot-size="25"
           hide-inputs
+          v-model="eventData.color"
         ></v-color-picker>
       </div>
     </v-form>
   </v-card-text>
   <v-card-actions class="justify-center">
     <v-btn data-cy="create-room-btn" variant="tonal" @click="submit">
-      Create
+      Save
     </v-btn>
   </v-card-actions>
 </template>
 
 <script setup lang="ts">
-import { getISODate } from "~/utilities/dateFunctions";
+import { createDateToSave, getISODate } from "~/utilities/dateFunctions";
 
 const e2e = useE2Encryption();
 const sechatStore = useSechatAppStore();
@@ -81,6 +81,7 @@ const props = defineProps({
   calendarEvent: {
     type: Object as PropType<CalendarEvent>,
     default: {
+      reminders: <EventReminder[]>[],
       id: "",
       name: "",
       description: "",
@@ -108,6 +109,7 @@ onMounted(async () => {
 
 const eventCreateForm = ref<HTMLFormElement>();
 const eventData = ref({
+  reminders: props.calendarEvent.reminders,
   valid: true,
   id: props.calendarEvent.id,
   name: props.calendarEvent.name,
@@ -134,19 +136,6 @@ const eventData = ref({
   endRules: [(v) => !!v || "End is required"],
 });
 
-watch(
-  () => eventData.value.start,
-  (currValue, prevValue) => {
-    // if (
-    //   new Date(currValue).getTime() > new Date(eventData.value.end).getTime()
-    // ) {
-    //   console.warn("Watcher", currValue, eventData.value.end);
-    //   eventData.value.start = eventData.value.end;
-    // }
-  },
-  { deep: true }
-);
-
 const submit = async () => {
   const { valid } = await eventCreateForm.value?.validate();
   if (!valid) {
@@ -161,19 +150,19 @@ const submit = async () => {
 
   console.log("Event Edit Form", eventData.value);
 
-  const startToSave = new Date(eventData.value.start).toISOString();
-  const endToSave = new Date(eventData.value.end).toISOString();
+  console.warn("Original start", eventData.value.start);
+  console.warn("Original end", eventData.value.end);
+  console.warn("Original day", eventData.value.day);
+
+  const startToSave = createDateToSave(eventData.value.start);
+  const endToSave = createDateToSave(eventData.value.end);
   const dayToSave = eventData.value.isAllDay
-    ? new Date(eventData.value.day).toISOString()
+    ? createDateToSave(eventData.value.day)
     : null;
 
-  console.log("startToSave", startToSave);
-  console.log("endToSave", endToSave);
-  console.log("dayToSave", dayToSave);
-
-  console.log("startToSave - local converted", new Date(startToSave));
-  console.log("endToSave - local converted", new Date(endToSave));
-  console.log("dayToSave - local converted", new Date(dayToSave));
+  console.warn("startToSave", startToSave);
+  console.warn("endToSave", endToSave);
+  console.warn("dayToSave", dayToSave);
 
   const newEvent = <CalendarEvent>{
     id: eventData.value.id,
@@ -184,6 +173,7 @@ const submit = async () => {
     day: dayToSave,
     start: startToSave,
     end: endToSave,
+    reminders: eventData.value.reminders,
   };
   emit("updateEvent", newEvent);
 };

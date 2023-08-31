@@ -1,12 +1,7 @@
 <template>
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ props }">
-      <v-btn
-        data-cy="create-event-dialog-btn"
-        v-bind="props"
-        icon="mdi-calendar-plus"
-        variant="outlined"
-      ></v-btn>
+      <v-btn v-bind="props" class="mx-1" color="primary">Edit</v-btn>
     </template>
 
     <v-card>
@@ -18,31 +13,47 @@
           </v-btn>
         </v-toolbar-items>
       </v-toolbar>
-      <calendar-events-edit @update-event="updateEvent" />
+      <calendar-events-edit
+        @update-event="updateEvent"
+        :calendar-event="props.calendarEvent"
+      />
     </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
+import { readSavedDate } from "~/utilities/dateFunctions";
+
 const dialog = ref<boolean>(false);
 const e2e = useE2Encryption();
 const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
 const calendarStore = useCalendarStore();
 
+interface PropsModel {
+  calendarEvent: CalendarEvent;
+}
+const props = defineProps<PropsModel>();
+
 const updateEvent = async (data: CalendarEvent) => {
+  if (data.isAllDay) {
+    data.day = new Date(data.day).toUTCString();
+  } else {
+    data.start = new Date(data.start).toUTCString();
+    data.end = new Date(data.end).toUTCString();
+  }
+
   console.log("Submitting Event", data);
 
   const masterKey = e2e.getMasterKey();
   const encrptedData = e2e.encryptMessage(JSON.stringify(data), masterKey);
-  console.log("Encrypted Data", encrptedData);
 
   if (!calendarStore.calendarData) {
     console.error("Calendar is missing");
     return;
   }
 
-  const { error: apiError, data: res } = await useFetch<CalendarEventDto>(
+  const { error: apiError, data: res } = await useFetch(
     `${config.public.apiBase}/calendar/event`,
     {
       headers: {
@@ -51,6 +62,7 @@ const updateEvent = async (data: CalendarEvent) => {
       method: "PUT",
       credentials: "include",
       body: {
+        id: data.id,
         data: encrptedData,
       },
     }
@@ -63,8 +75,14 @@ const updateEvent = async (data: CalendarEvent) => {
     sechatStore.showSuccessSnackbar("Event saved");
   }
 
-  console.log("API result", res.value);
-  data.id = res.value.id;
+  if (data.isAllDay && data.day) {
+    data.day = readSavedDate(data.day);
+  } else {
+    data.start = readSavedDate(data.start);
+    data.end = readSavedDate(data.end);
+  }
+  console.log("Updating Event", data);
+
   calendarStore.updateEvent(data);
   dialog.value = false;
 };

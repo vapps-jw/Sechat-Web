@@ -14,8 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { getInitials, stringToColor } from "~/utilities/stringFunctions";
-
 const chatStore = useSechatChatStore();
 const selection = ref<string>("");
 

@@ -41,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { readSavedDate } from "~/utilities/dateFunctions";
 import { ChatViews } from "~~/utilities/globalEnums";
 const chatStore = useSechatChatStore();
 const calendarStore = useCalendarStore();
@@ -67,8 +68,17 @@ onMounted(async () => {
       // TODO: handle decryption error
       const decryptedData = e2e.decryptMessage(ce.data, masterKey);
       const eventObject = JSON.parse(decryptedData) as CalendarEvent;
+      console.log("Decrypted Event", eventObject);
       eventObject.id = ce.id;
       eventObject.reminders = ce.reminders;
+
+      if (eventObject.isAllDay && eventObject.day) {
+        eventObject.day = readSavedDate(eventObject.day);
+      } else {
+        eventObject.start = readSavedDate(eventObject.start);
+        eventObject.end = readSavedDate(eventObject.end);
+      }
+
       console.log("Mapped Event", eventObject);
       return eventObject;
     }),

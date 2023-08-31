@@ -24,6 +24,8 @@
 </template>
 
 <script setup lang="ts">
+import { readSavedDate } from "~/utilities/dateFunctions";
+
 const dialog = ref<boolean>(false);
 const e2e = useE2Encryption();
 const sechatStore = useSechatAppStore();
@@ -35,7 +37,6 @@ const createEvent = async (data: CalendarEvent) => {
 
   const masterKey = e2e.getMasterKey();
   const encrptedData = e2e.encryptMessage(JSON.stringify(data), masterKey);
-  console.log("Encrypted Data", encrptedData);
 
   if (!calendarStore.calendarData) {
     console.error("Calendar is missing");
@@ -66,6 +67,15 @@ const createEvent = async (data: CalendarEvent) => {
   console.log("API result", res.value);
   data.id = res.value.id;
   data.reminders = [];
+
+  if (data.isAllDay && data.day) {
+    data.day = readSavedDate(data.day);
+  } else {
+    data.start = readSavedDate(data.start);
+    data.end = readSavedDate(data.end);
+  }
+  console.log("Updating Event", data);
+
   calendarStore.updateEvent(data);
   dialog.value = false;
 };

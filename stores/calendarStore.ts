@@ -68,24 +68,11 @@ export const useCalendarStore = defineStore({
                 new Date(r).setHours(0, 0, 0, 0)
               );
             } else {
-              console.log("Name", ce.name);
-              console.log(
-                "Start",
-                new Date(ce.start).setHours(0, 0, 0, 0),
-                new Date(ce.start)
-              );
-              console.log(
-                "End",
-                new Date(ce.end).setHours(0, 0, 0, 0),
-                new Date(ce.end)
-              );
-              console.log("R", new Date(r).setHours(0, 0, 0, 0), new Date(r));
               const result =
-                new Date(ce.start).setHours(0, 0, 0, 0) >=
-                  new Date(r).setHours(0, 0, 0, 0) &&
-                new Date(ce.end).setHours(0, 0, 0, 0) <=
-                  new Date(r).setHours(0, 0, 0, 0);
-              console.log("Result", result);
+                new Date(r).setHours(0, 0, 0, 0) >=
+                  new Date(ce.start).setHours(0, 0, 0, 0) &&
+                new Date(r).setHours(0, 0, 0, 0) <=
+                  new Date(ce.end).setHours(0, 0, 0, 0);
               return result;
             }
           });
@@ -97,7 +84,9 @@ export const useCalendarStore = defineStore({
         batches.push(batch);
       });
 
-      return batches;
+      return batches.sort((a, b) => {
+        return Number(b.date) - Number(a.date);
+      });
     },
   },
 });
