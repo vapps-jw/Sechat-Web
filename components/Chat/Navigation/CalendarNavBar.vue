@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { readSavedDate } from "~/utilities/dateFunctions";
+import { getISODate, readSavedDate } from "~/utilities/dateFunctions";
 import { ChatViews } from "~~/utilities/globalEnums";
 const chatStore = useSechatChatStore();
 const calendarStore = useCalendarStore();
@@ -73,7 +73,7 @@ onMounted(async () => {
       eventObject.reminders = ce.reminders;
 
       if (eventObject.isAllDay && eventObject.day) {
-        eventObject.day = readSavedDate(eventObject.day);
+        eventObject.day = getISODate(new Date(eventObject.day));
       } else {
         eventObject.start = readSavedDate(eventObject.start);
         eventObject.end = readSavedDate(eventObject.end);

@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { readSavedDate } from "~/utilities/dateFunctions";
+import { getISODate, readSavedDate } from "~/utilities/dateFunctions";
 
 const dialog = ref<boolean>(false);
 const e2e = useE2Encryption();
@@ -69,7 +69,7 @@ const createEvent = async (data: CalendarEvent) => {
   data.reminders = [];
 
   if (data.isAllDay && data.day) {
-    data.day = readSavedDate(data.day);
+    data.day = getISODate(new Date(data.day));
   } else {
     data.start = readSavedDate(data.start);
     data.end = readSavedDate(data.end);

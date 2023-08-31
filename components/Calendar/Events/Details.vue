@@ -5,22 +5,46 @@
     </template>
     <template v-slot:default="{ isActive }">
       <v-card>
-        <v-toolbar
-          color="primary"
-          :title="props.calendarEvent.name"
-        ></v-toolbar>
+        <template v-slot:subtitle>
+          <div v-if="props.calendarEvent.isAllDay">
+            {{
+              new Date(props.calendarEvent.start).toLocaleString(
+                appStore.localLanguage,
+                {
+                  year: "numeric",
+                  month: "numeric",
+                  day: "numeric",
+                }
+              )
+            }}
+          </div>
+          <div v-else>
+            {{
+              new Date(props.calendarEvent.start).toLocaleString(
+                appStore.localLanguage
+              )
+            }}
+            -
+            {{
+              new Date(props.calendarEvent.end).toLocaleString(
+                appStore.localLanguage
+              )
+            }}
+          </div>
+        </template>
         <v-card-text>
-          <div class="text-h2 pa-12">{{ props.calendarEvent.description }}</div>
+          <p class="text-h4 text--primary">{{ props.calendarEvent.name }}</p>
+          <div class="text--primary" v-if="props.calendarEvent.description">
+            {{ props.calendarEvent.description }}
+          </div>
         </v-card-text>
-        <v-card-actions class="justify-end">
-          <v-btn variant="text" @click="isActive.value = false">Close</v-btn>
-        </v-card-actions>
       </v-card>
     </template>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
+const appStore = useSechatAppStore();
 interface PropsModel {
   calendarEvent: CalendarEvent;
 }

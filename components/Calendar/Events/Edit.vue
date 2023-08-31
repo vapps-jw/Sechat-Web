@@ -87,7 +87,7 @@ const props = defineProps({
       description: "",
       color: "#EEEEEE",
       isAllDay: false,
-      day: <Date>null,
+      day: getISODate(new Date(Date.now() + 60 * 60 * 24 * 1000)),
       start: new Date(new Date().toString().split("GMT")[0] + " UTC")
         .toISOString()
         .split(".")[0]
@@ -157,7 +157,7 @@ const submit = async () => {
   const startToSave = createDateToSave(eventData.value.start);
   const endToSave = createDateToSave(eventData.value.end);
   const dayToSave = eventData.value.isAllDay
-    ? createDateToSave(eventData.value.day)
+    ? getISODate(new Date(eventData.value.day))
     : null;
 
   console.warn("startToSave", startToSave);

@@ -1,6 +1,7 @@
 import { precacheAndRoute } from "workbox-precaching";
 import { clientsClaim } from "workbox-core";
 import { PushNotificationTypes } from "~~/utilities/globalEnums";
+import CryptoES from "crypto-es";
 
 precacheAndRoute(self.__WB_MANIFEST);
 
@@ -36,7 +37,13 @@ self.addEventListener("push", async (event) => {
     };
     await closeNotifications(data);
   } else if (String(data.title) === PushNotificationTypes.EventReminder) {
-    // TODO: handle calendar event notification
+    options = {
+      body: String(decryptMessage(data.options.body)),
+      icon: "icons/icon_64x64.png",
+      badge: "icons/calendar-star.png",
+      tag: "Sechat",
+      vibrate: [500, 500, 500, 500],
+    };
   } else {
     options = {
       body: String(data.options.body),
@@ -108,6 +115,26 @@ const closeNotifications = async (data) => {
     );
     n.close();
   });
+};
+
+const decryptMessage = (data) => {
+  try {
+    console.warn("Service Worker >>> Decrypting", data, self.masterKey);
+    if (!self.masterKey) {
+      return "Calendar Event!";
+    }
+    var result = CryptoES.enc.Utf8.stringify(
+      CryptoES.AES.decrypt(data, self.masterKey.key)
+    );
+    console.warn("Service Worker >>> Decryption Result", JSON.parse(result));
+    if (!result) {
+      return "Calendar Event!";
+    }
+    return JSON.parse(result).name;
+  } catch (error) {
+    console.error(error);
+    return "Calendar Event!";
+  }
 };
 
 function isClientFocused() {

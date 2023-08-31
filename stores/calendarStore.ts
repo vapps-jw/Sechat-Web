@@ -33,7 +33,7 @@ export const useCalendarStore = defineStore({
       ) as CalendarEvent;
       event.reminders.push(data);
     },
-    remioeReminder(eventId: string, reminderId: number) {
+    removeReminder(eventId: string, reminderId: number) {
       const event = this.calendar.calendarEvents.find(
         (ce) => ce.id === eventId
       ) as CalendarEvent;

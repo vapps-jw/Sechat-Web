@@ -70,41 +70,44 @@
       </div>
     </template>
     <template v-slot:prepend>
-      <v-badge
-        class="mr-5"
-        v-if="props.calendarEvent.reminders.length > 0"
-        :content="props.calendarEvent.reminders.length"
-        color="error"
-      >
-        <v-icon>mdi-bell</v-icon>
-      </v-badge>
-      <v-icon class="mx-0 my-0" v-else>mdi-bell-off</v-icon>
-      <v-menu>
-        <template v-slot:activator="{ props }">
-          <v-btn
-            class="mx-1 my-1"
-            icon="mdi-dots-vertical"
-            variant="plain"
-            v-bind="props"
-          ></v-btn>
-        </template>
-        <v-list>
-          <v-list-item>
-            <calendar-events-details :calendar-event="props.calendarEvent"
-          /></v-list-item>
-          <v-list-item>
-            <calendar-events-reminders :calendar-event="props.calendarEvent" />
-          </v-list-item>
-          <v-list-item>
-            <calendar-events-update :calendar-event="props.calendarEvent"
-          /></v-list-item>
-          <v-list-item>
-            <v-btn @click="deleteEvent" class="mx-1" color="error"
-              >Delete</v-btn
-            ></v-list-item
-          >
-        </v-list>
-      </v-menu>
+      <div class="d-flex align-center">
+        <v-badge
+          v-if="props.calendarEvent.reminders.length > 0"
+          :content="props.calendarEvent.reminders.length"
+          color="error"
+        >
+          <v-icon color="primary">mdi-bell</v-icon>
+        </v-badge>
+        <v-icon class="mx-0 my-0" v-else>mdi-bell-off</v-icon>
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn
+              class="mx-1 my-1"
+              icon="mdi-dots-vertical"
+              variant="plain"
+              v-bind="props"
+            ></v-btn>
+          </template>
+          <v-list>
+            <v-list-item>
+              <calendar-events-details :calendar-event="props.calendarEvent"
+            /></v-list-item>
+            <v-list-item>
+              <calendar-events-reminders
+                :calendar-event="props.calendarEvent"
+              />
+            </v-list-item>
+            <v-list-item>
+              <calendar-events-update :calendar-event="props.calendarEvent"
+            /></v-list-item>
+            <v-list-item>
+              <v-btn @click="deleteEvent" class="mx-1" color="error"
+                >Delete</v-btn
+              ></v-list-item
+            >
+          </v-list>
+        </v-menu>
+      </div>
     </template>
     <template v-slot:append> </template>
   </v-list-item>

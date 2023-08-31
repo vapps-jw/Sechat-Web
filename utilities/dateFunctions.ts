@@ -12,3 +12,16 @@ export const readSavedDate = (date: string): string => {
     .split(".")[0]
     .slice(0, -3);
 };
+
+export const getUTCDate = (date: Date): Date => {
+  return new Date(
+    Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      date.getUTCHours(),
+      date.getUTCMinutes(),
+      date.getUTCSeconds()
+    )
+  );
+};

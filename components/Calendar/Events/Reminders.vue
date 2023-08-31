@@ -19,7 +19,7 @@
             density="comfortable"
             type="info"
             title="Push notification reminder"
-            text="TEXT"
+            text="You will receive a notification at this time"
             variant="tonal"
           ></v-alert>
         </v-container>
@@ -47,7 +47,18 @@
               :key="r.id"
               class="mr-1"
             >
-              <v-list-item-title v-text="r.remind"></v-list-item-title>
+              <v-list-item-title>
+                {{
+                  new Date(r.remind).toLocaleString(appStore.localLanguage, {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    weekday: "short",
+                    year: "2-digit",
+                    month: "numeric",
+                    day: "numeric",
+                  })
+                }}</v-list-item-title
+              >
               <template v-slot:append>
                 <v-btn
                   color="error"
@@ -58,7 +69,6 @@
               </template>
             </v-list-item>
           </v-list>
-          <div v-else>No Reminders</div>
         </v-container>
       </v-card-text>
     </v-card>
@@ -66,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+const appStore = useSechatAppStore();
 const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 const calendarStore = useCalendarStore();
@@ -77,15 +88,37 @@ interface PropsModel {
 }
 const props = defineProps<PropsModel>();
 
-const removeReminder = (reminder: EventReminder) => {
+const removeReminder = async (reminder: EventReminder) => {
   console.log("Removing reminder", reminder);
+
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/calendar/event/${props.calendarEvent.id}/${reminder.id}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (apiError.value) {
+    sechatStore.showErrorSnackbar(apiError.value.data);
+    return;
+  }
+  sechatStore.showSuccessSnackbar("Reminder deleted");
+  calendarStore.removeReminder(props.calendarEvent.id, reminder.id);
 };
 
 const createReminder = async () => {
-  console.log("Creating Reminder", new Date(date.value).toISOString());
+  console.log(
+    "Creating Reminder",
+    date.value,
+    new Date(new Date(date.value).toUTCString()).toISOString()
+  );
 
   const { error: apiError, data: res } = await useFetch<EventReminder>(
-    `${config.public.apiBase}/event/${props.calendarEvent.id}/reminder`,
+    `${config.public.apiBase}/calendar/event/reminder`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -93,7 +126,8 @@ const createReminder = async () => {
       method: "POST",
       credentials: "include",
       body: {
-        remind: new Date(date.value).toISOString(),
+        eventId: props.calendarEvent.id,
+        remind: new Date(new Date(date.value).toUTCString()).toISOString(),
       },
     }
   );
@@ -103,6 +137,9 @@ const createReminder = async () => {
     return;
   }
   sechatStore.showSuccessSnackbar("Reminder saved");
+
+  console.log("Reminder saved", res.value);
+
   console.log("Adding Reminder", res.value);
   calendarStore.addReminder(props.calendarEvent.id, res.value);
 };
