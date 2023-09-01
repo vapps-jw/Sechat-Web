@@ -1,21 +1,23 @@
 <template>
   <v-banner lines="one" color="warning">
-    <template v-slot:text> {{ signalRStore.connectionState }} </template>
+    <template v-slot:text>
+      <div class="font-weight-bold text-warning">
+        {{ props.connectionState }}
+      </div>
+    </template>
     <template v-slot:prepend>
       <div class="d-flex align-center">
-        <Icon
-          v-if="signalRStore.connectionState !== SignalRState.Connected"
-          name="svg-spinners:bars-scale"
-        />
-        <v-icon v-else icon="mdi-web-check" color="success"></v-icon>
+        <Icon name="svg-spinners:bars-scale" />
       </div>
     </template>
   </v-banner>
 </template>
 
 <script setup lang="ts">
-import { SignalRState } from "~~/utilities/globalEnums";
-const signalRStore = useSignalRStore();
+interface PropsModel {
+  connectionState: string;
+}
+const props = defineProps<PropsModel>();
 </script>
 
 <style scoped></style>

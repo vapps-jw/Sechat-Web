@@ -3,7 +3,12 @@
     <v-main class="overflow-hidden sechat-layout">
       <chat-status-connection-banner
         class="banner-style"
-        v-if="signalRStore.connectionState !== SignalRState.Connected"
+        :connection-state="signalRStore.connectionState"
+        v-if="
+          !signalRStore.connection ||
+          (signalRStore.connection &&
+            signalRStore.connectionState !== HubConnectionState.Connected)
+        "
       />
       <chat-snackbar />
       <chat-loading-overlay :overlay="sechatAppStore.showLoadingOverlay" />
@@ -14,7 +19,7 @@
 
 <script setup lang="ts">
 import { useTheme } from "vuetify";
-import { SignalRState } from "~~/utilities/globalEnums";
+import { HubConnectionState } from "@microsoft/signalr";
 
 const sechatAppStore = useSechatAppStore();
 const appStore = useSechatAppStore();
@@ -25,6 +30,19 @@ const webRTCStore = useWebRTCStore();
 const I18n = useI18n();
 const theme = useTheme();
 const settings = useSettingsStore();
+
+const { connection } = storeToRefs(signalRStore);
+watch(
+  connection,
+  async (newVal, oldVal) => {
+    signalRStore.updateConnectionState();
+    console.warn("Connection State update", newVal?.state, oldVal?.state);
+    if (signalRStore.connection.state === HubConnectionState.Disconnected) {
+      await refreshHandler.handleOnMountedLoad();
+    }
+  },
+  { deep: true }
+);
 
 const resetSechat = async () => {
   await signalRStore.closeConnection();

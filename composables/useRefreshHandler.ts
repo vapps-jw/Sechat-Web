@@ -3,8 +3,8 @@ import {
   VisibilityStates,
   LocalStoreTypes,
   SignalRHubMethods,
-  SignalRState,
 } from "~/utilities/globalEnums";
+import { HubConnectionState } from "@microsoft/signalr";
 
 export const useRefreshHandler = () => {
   const appStore = useSechatAppStore();
@@ -83,9 +83,7 @@ export const useRefreshHandler = () => {
       return;
     }
 
-    appStore.updateLoadingOverlay(true);
     await visibilityChangeRefresh();
-    appStore.updateLoadingOverlay(false);
   };
 
   const syncWithOtherDevice = () => {
@@ -197,7 +195,10 @@ export const useRefreshHandler = () => {
 
   const visibilityChangeRefresh = async () => {
     console.warn("REFRESH ACTIONS");
-    if (signalRStore.connectionState === SignalRState.Connected) {
+    if (
+      signalRStore.connection &&
+      signalRStore.connection.state === HubConnectionState.Connected
+    ) {
       console.warn("SignalR connected - no updates");
       return;
     }
@@ -414,64 +415,7 @@ export const useRefreshHandler = () => {
       console.error("Update Error", error);
     }
 
-    console.log(
-      "Viewed messages update",
-      chatStore.activeRoomId,
-      chatStore.activeContactId,
-      chatStore.activeChatTab
-    );
-
-    if (
-      chatStore.activeRoomId &&
-      chatStore.getActiveRoom.hasKey &&
-      chatStore.activeChatTab === ChatViews.Messages
-    ) {
-      try {
-        const markMessagesAsVieved =
-          chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length >
-          0;
-
-        console.log(
-          "Nav Update -> Marking Room messages as viewed",
-          markMessagesAsVieved
-        );
-
-        if (markMessagesAsVieved) {
-          console.log("Nav Update -> Marking messages as viewed");
-          await chatApi.markMessagesAsViewed(chatStore.activeRoomId);
-          chatStore.markActiveRoomMessagesAsViewed();
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    if (
-      chatStore.activeContactId &&
-      chatStore.getActiveContact.hasKey &&
-      chatStore.activeChatTab === ChatViews.Messages
-    ) {
-      try {
-        const markMessagesAsVieved =
-          chatStore.getActiveContact.directMessages.filter(
-            (m) =>
-              !m.wasViewed && m.nameSentBy !== userStore.getUserName && !m.error
-          ).length > 0;
-
-        console.log(
-          "Nav Update -> Marking Contact messages as viewed",
-          markMessagesAsVieved
-        );
-
-        if (markMessagesAsVieved) {
-          console.log("Nav Update -> Marking messages as viewed");
-          await chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
-          chatStore.markDirectMessagesAsViewed(chatStore.activeContactId);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
+    await updateViewedMessages();
   };
 
   const signOutCleanup = async () => {

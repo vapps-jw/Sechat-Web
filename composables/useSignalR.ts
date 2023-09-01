@@ -1,10 +1,14 @@
 import * as signalR from "@microsoft/signalr";
-import { LocalStoreTypes, SignalRHubMethods } from "~~/utilities/globalEnums";
+import {
+  ChatViews,
+  LocalStoreTypes,
+  SignalRHubMethods,
+} from "~~/utilities/globalEnums";
 
 export const useSignalR = () => {
-  const sechatStore = useSechatAppStore();
+  const appStore = useSechatAppStore();
   const config = useRuntimeConfig();
-  const sechatChatStore = useSechatChatStore();
+  const chatStore = useSechatChatStore();
   const userStore = useUserStore();
   const signalRStore = useSignalRStore();
   const videoCalls = useVideoCall();
@@ -13,13 +17,19 @@ export const useSignalR = () => {
   const contactHandlers = useContactHandlers();
   const dmHandlers = useDMHandlers();
   const roomHandlers = useRoomHandlers();
+  const chatApi = useChatApi();
 
   const createNewConnection = async () => {
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`${config.public.apiBase}/chat-hub`)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
-          console.warn("Reconnecting SignalR");
+          signalRStore.updateConnectionState();
+          console.warn(
+            "Reconnecting SignalR",
+            signalRStore.connection.state,
+            signalRStore.connectionState
+          );
           return 1000;
         },
       })
@@ -209,22 +219,92 @@ export const useSignalR = () => {
 
     connection.onreconnected(async (connectionId) => {
       try {
-        console.warn("SIGNALR RECONNECTION TRIGGERED", connectionId);
-        const roomIds = sechatChatStore.availableRooms.map((r) => r.id);
-        if (roomIds.length > 0) {
-          console.log("Connecting to rooms", connectionId);
-          connectToRooms(roomIds);
-        }
+        appStore.updateLoadingOverlay(true);
+        console.warn("SIGNALR RECONNECTED", connectionId);
+        await reconnectedActions();
       } catch (error) {
         console.error("SIGNALR RECONNECTION ERROR", error);
       } finally {
-        sechatStore.updateLoadingOverlay(false);
+        appStore.updateLoadingOverlay(false);
+        signalRStore.updateConnectionState();
       }
+    });
+
+    connection.onclose((error) => {
+      console.assert(
+        connection.state === signalR.HubConnectionState.Disconnected
+      );
+      signalRStore.updateConnectionState();
+      connect();
+      console.warn("SignalR Connection Closed", error);
     });
 
     console.log("Starting Connection ...");
     await connection.start();
     signalRStore.updateConnectionValue(connection);
+    signalRStore.updateConnectionState();
+  };
+
+  const reconnectedActions = async () => {
+    console.warn("RECONNECTED ACTIONS");
+    const promises = [];
+
+    // Call Logs
+
+    if (chatStore.callLogs.length > 0) {
+      promises.push(
+        videoCalls
+          .getCallLogs(Math.max(...chatStore.callLogs.map((o) => o.id)))
+          .then((res) => console.log("Call logs", res))
+      );
+    } else {
+      promises.push(
+        videoCalls.getCallLogs().then((res) => chatStore.loadCallLogs(res))
+      );
+    }
+
+    // Contacts
+
+    promises.push(
+      chatApi.getConstacts().then((res) => {
+        res.forEach((cr) => {
+          e2e.tryDecryptContact(cr);
+        });
+        if (
+          chatStore.activeContactId &&
+          !res.some((c) => c.id === chatStore.activeContactId)
+        ) {
+          chatStore.activeContactId = null;
+        }
+        chatStore.loadContacts(res);
+      })
+    );
+
+    // Rooms
+
+    promises.push(
+      chatApi.getRooms().then((res) => {
+        res.forEach((room) => {
+          e2e.tryDecryptRoom(room);
+        });
+        if (
+          chatStore.activeRoomId &&
+          !res.some((r) => r.id === chatStore.activeRoomId)
+        ) {
+          chatStore.activeRoomId = null;
+        }
+        chatStore.loadRooms(res);
+      })
+    );
+
+    try {
+      await Promise.all(promises).then(async (res) => {
+        connectToRooms(chatStore.availableRooms.map((r) => r.id));
+        await updateViewedMessages();
+      });
+    } catch (error) {
+      console.error("Reconnection Refresh Error", error);
+    }
   };
 
   const connect = async () => {
@@ -246,6 +326,67 @@ export const useSignalR = () => {
     }
   };
 
+  const updateViewedMessages = async () => {
+    console.log(
+      "Viewed messages update",
+      chatStore.activeRoomId,
+      chatStore.activeContactId,
+      chatStore.activeChatTab
+    );
+
+    if (
+      chatStore.activeRoomId &&
+      chatStore.getActiveRoom.hasKey &&
+      chatStore.activeChatTab === ChatViews.Messages
+    ) {
+      try {
+        const markMessagesAsVieved =
+          chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length >
+          0;
+
+        console.log(
+          "Nav Update -> Marking Room messages as viewed",
+          markMessagesAsVieved
+        );
+
+        if (markMessagesAsVieved) {
+          console.log("Nav Update -> Marking messages as viewed");
+          await chatApi.markMessagesAsViewed(chatStore.activeRoomId);
+          chatStore.markActiveRoomMessagesAsViewed();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    if (
+      chatStore.activeContactId &&
+      chatStore.getActiveContact.hasKey &&
+      chatStore.activeChatTab === ChatViews.Messages
+    ) {
+      try {
+        const markMessagesAsVieved =
+          chatStore.getActiveContact.directMessages.filter(
+            (m) =>
+              !m.wasViewed && m.nameSentBy !== userStore.getUserName && !m.error
+          ).length > 0;
+
+        console.log(
+          "Nav Update -> Marking Contact messages as viewed",
+          markMessagesAsVieved
+        );
+
+        if (markMessagesAsVieved) {
+          console.log("Nav Update -> Marking messages as viewed");
+          await chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
+          chatStore.markDirectMessagesAsViewed(chatStore.activeContactId);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   // Rooms
 
   const handleUserAddedToRoomActions = (data: IRoom) => {
@@ -255,6 +396,7 @@ export const useSignalR = () => {
 
   const connectToRooms = (roomIds: string[]) => {
     if (
+      !signalRStore.connection ||
       signalRStore.connection.state !== signalR.HubConnectionState.Connected
     ) {
       console.warn("Cant connect to Rooms");
@@ -334,7 +476,7 @@ export const useSignalR = () => {
         console.log("New room created", newRoom);
 
         newRoom.hasKey = true;
-        sechatChatStore.addRoom(newRoom);
+        chatStore.addRoom(newRoom);
         connectToRoom(newRoom.id);
 
         console.log("Calling for new key");
@@ -347,7 +489,7 @@ export const useSignalR = () => {
         const result = e2e.addKey(newKeyData, LocalStoreTypes.E2EROOMS);
         console.log("Updated keys", result);
 
-        sechatStore.showSuccessSnackbar("Room created");
+        appStore.showSuccessSnackbar("Room created");
         return newRoom.id;
       })
       .catch((err) => {

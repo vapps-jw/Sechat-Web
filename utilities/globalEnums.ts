@@ -39,14 +39,6 @@ export const VisibilityStates = {
   HIDDEN: "hidden",
 };
 
-export const SignalRState = {
-  Connected: "Connected",
-  Disconnected: "Disconnected",
-  Connecting: "Connecting",
-  Offline: "Offline",
-  Unknown: "Unknown",
-};
-
 export const ChatViews = {
   Messages: "messages",
   Rooms: "rooms",

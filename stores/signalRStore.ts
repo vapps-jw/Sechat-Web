@@ -1,16 +1,24 @@
 import * as signalR from "@microsoft/signalr";
-import { SignalRState } from "~~/utilities/globalEnums";
+import { HubConnectionState } from "@microsoft/signalr";
 
 export const useSignalRStore = defineStore({
   id: "signalR-store",
   state: () => {
     return {
       connection: <signalR.HubConnection>null,
+      connectionState: <string>HubConnectionState.Disconnected,
     };
   },
   actions: {
     updateConnectionValue(value: signalR.HubConnection) {
       this.connection = value;
+    },
+    updateConnectionState() {
+      if (!this.connection) {
+        this.connectionState = HubConnectionState.Disconnected;
+        return;
+      }
+      this.connectionState = this.connection.state;
     },
     async closeConnection() {
       if (this.connection) {
@@ -28,26 +36,6 @@ export const useSignalRStore = defineStore({
         return true;
       }
       return false;
-    },
-    connectionState: (state) => {
-      if (
-        !state.connection ||
-        state.connection.state === signalR.HubConnectionState.Disconnected ||
-        state.connection.state === signalR.HubConnectionState.Disconnecting
-      ) {
-        return SignalRState.Disconnected;
-      } else if (
-        state.connection.state === signalR.HubConnectionState.Connected
-      ) {
-        return SignalRState.Connected;
-      } else if (
-        state.connection.state === signalR.HubConnectionState.Connecting ||
-        state.connection.state === signalR.HubConnectionState.Reconnecting
-      ) {
-        return SignalRState.Connecting;
-      } else {
-        return SignalRState.Unknown;
-      }
     },
     connectionPresent: (state) => {
       if (state.connection) {
