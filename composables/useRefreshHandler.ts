@@ -202,6 +202,7 @@ export const useRefreshHandler = () => {
       signalRStore.connection.state === HubConnectionState.Connected
     ) {
       console.warn("SignalR connected - no updates");
+      updateViewedMessages();
       return;
     }
     appStore.updateLoadingOverlay(true);
@@ -277,7 +278,10 @@ export const useRefreshHandler = () => {
   };
 
   const updateKeys = new Promise<boolean>((resolve, reject) => {
-    if (signalRStore.isConnected) {
+    if (
+      signalRStore.connection &&
+      signalRStore.connection.state === HubConnectionState.Connected
+    ) {
       console.log("SignalR Connected, processing Refresh");
       askForMissingKeys();
       syncWithOtherDevice();
@@ -405,7 +409,10 @@ export const useRefreshHandler = () => {
 
     try {
       await Promise.all(promises);
-      if (signalRStore.isConnected) {
+      if (
+        signalRStore.connection &&
+        signalRStore.connection.state === HubConnectionState.Connected
+      ) {
         console.log("SignalR Connected, processing Refresh");
         askForMissingKeys();
         syncWithOtherDevice();

@@ -37,6 +37,7 @@
 <script setup lang="ts">
 import { scrollToBottom } from "~/utilities/documentFunctions";
 import { SnackbarIcons, LocalStoreTypes } from "~~/utilities/globalEnums";
+import { HubConnectionState } from "@microsoft/signalr";
 
 const chatStore = useSechatChatStore();
 const signalRstore = useSignalRStore();
@@ -114,7 +115,10 @@ const pushMessage = async () => {
     return;
   }
 
-  if (!signalRstore.isConnected) {
+  if (
+    !signalRstore.connection ||
+    signalRstore.connection.state !== HubConnectionState.Connected
+  ) {
     sechatStore.showSnackbar({
       snackbar: true,
       text: "You are not connected",

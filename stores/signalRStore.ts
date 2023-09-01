@@ -28,15 +28,6 @@ export const useSignalRStore = defineStore({
   },
   getters: {
     getConnection: (state) => state.connection,
-    isConnected: (state) => {
-      if (
-        state.connection &&
-        state.connection.state === signalR.HubConnectionState.Connected
-      ) {
-        return true;
-      }
-      return false;
-    },
     connectionPresent: (state) => {
       if (state.connection) {
         return true;
