@@ -4,4 +4,5 @@ interface IUserProfile {
   lastActivity?: Date;
   created?: Date;
   emailConfirmed?: boolean;
+  invitationsAllowed?: boolean;
 }
