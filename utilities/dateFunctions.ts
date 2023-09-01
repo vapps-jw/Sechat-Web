@@ -25,3 +25,14 @@ export const getUTCDate = (date: Date): Date => {
     )
   );
 };
+
+export const isToday = (dateToCheck: Date): boolean => {
+  const today = new Date();
+
+  const isSameDate =
+    dateToCheck.getDate() === today.getDate() &&
+    dateToCheck.getMonth() === today.getMonth() &&
+    dateToCheck.getFullYear() === today.getFullYear();
+
+  return isSameDate;
+};

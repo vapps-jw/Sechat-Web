@@ -12,7 +12,13 @@
           class="d-flex flex-grow-1 flex-shrink-0 justify-center align-center"
         >
           <v-sheet class="mx-3">
-            <div class="small-font text-primary">
+            <div
+              :class="
+                isToday(batch.date)
+                  ? 'font-weight-bold text-warning'
+                  : 'small-font text-primary'
+              "
+            >
               {{
                 new Date(batch.date).toLocaleString(appStore.localLanguage, {
                   year: "numeric",
@@ -36,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { isToday } from "~/utilities/dateFunctions";
 const calendarStore = useCalendarStore();
 const appStore = useSechatAppStore();
 </script>
