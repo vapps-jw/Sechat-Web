@@ -3,6 +3,7 @@ import {
   VisibilityStates,
   LocalStoreTypes,
   SignalRHubMethods,
+  SignalRState,
 } from "~/utilities/globalEnums";
 
 export const useRefreshHandler = () => {
@@ -83,7 +84,7 @@ export const useRefreshHandler = () => {
     }
 
     appStore.updateLoadingOverlay(true);
-    await refreshActions();
+    await visibilityChangeRefresh();
     appStore.updateLoadingOverlay(false);
   };
 
@@ -192,6 +193,156 @@ export const useRefreshHandler = () => {
 
   const handleOfflineChange = async () => {
     appStore.updateLoadingOverlay(true);
+  };
+
+  const visibilityChangeRefresh = async () => {
+    console.warn("REFRESH ACTIONS");
+    if (signalRStore.connectionState === SignalRState.Connected) {
+      console.warn("SignalR connected - no updates");
+      return;
+    }
+    appStore.updateLoadingOverlay(true);
+
+    await signalRStore.closeConnection();
+    signalRStore.$reset();
+    await signalR.connect();
+    const promises = [];
+
+    // Call Logs
+
+    if (chatStore.callLogs.length > 0) {
+      promises.push(
+        videoCall
+          .getCallLogs(Math.max(...chatStore.callLogs.map((o) => o.id)))
+          .then((res) => console.log("Call logs", res))
+      );
+    } else {
+      promises.push(
+        videoCall.getCallLogs().then((res) => chatStore.loadCallLogs(res))
+      );
+    }
+
+    // Contacts
+
+    promises.push(
+      chatApi.getConstacts().then((res) => {
+        res.forEach((cr) => {
+          e2e.tryDecryptContact(cr);
+        });
+        if (
+          chatStore.activeContactId &&
+          !res.some((c) => c.id === chatStore.activeContactId)
+        ) {
+          chatStore.activeContactId = null;
+        }
+        chatStore.loadContacts(res);
+      })
+    );
+
+    // Rooms
+
+    promises.push(
+      chatApi.getRooms().then((res) => {
+        res.forEach((room) => {
+          e2e.tryDecryptRoom(room);
+        });
+        if (
+          chatStore.activeRoomId &&
+          !res.some((r) => r.id === chatStore.activeRoomId)
+        ) {
+          chatStore.activeRoomId = null;
+        }
+        chatStore.loadRooms(res);
+      })
+    );
+
+    try {
+      Promise.all(promises).then(async (res) => {
+        updateKeys.then(async (res) => {
+          if (!res) {
+            return;
+          }
+          signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
+          await updateViewedMessages();
+        });
+      });
+    } catch (error) {
+      console.error("Visibility Change Refresh Error", error);
+    } finally {
+      appStore.updateLoadingOverlay(false);
+    }
+  };
+
+  const updateKeys = new Promise<boolean>((resolve, reject) => {
+    if (signalRStore.isConnected) {
+      console.log("SignalR Connected, processing Refresh");
+      askForMissingKeys();
+      syncWithOtherDevice();
+      clearUnusedKeys();
+      resolve(true);
+    }
+    resolve(false);
+  });
+
+  const updateViewedMessages = async () => {
+    console.log(
+      "Viewed messages update",
+      chatStore.activeRoomId,
+      chatStore.activeContactId,
+      chatStore.activeChatTab
+    );
+
+    if (
+      chatStore.activeRoomId &&
+      chatStore.getActiveRoom.hasKey &&
+      chatStore.activeChatTab === ChatViews.Messages
+    ) {
+      try {
+        const markMessagesAsVieved =
+          chatStore.getActiveRoom.messages.filter((m) => !m.wasViewed).length >
+          0;
+
+        console.log(
+          "Nav Update -> Marking Room messages as viewed",
+          markMessagesAsVieved
+        );
+
+        if (markMessagesAsVieved) {
+          console.log("Nav Update -> Marking messages as viewed");
+          await chatApi.markMessagesAsViewed(chatStore.activeRoomId);
+          chatStore.markActiveRoomMessagesAsViewed();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    if (
+      chatStore.activeContactId &&
+      chatStore.getActiveContact.hasKey &&
+      chatStore.activeChatTab === ChatViews.Messages
+    ) {
+      try {
+        const markMessagesAsVieved =
+          chatStore.getActiveContact.directMessages.filter(
+            (m) =>
+              !m.wasViewed && m.nameSentBy !== userStore.getUserName && !m.error
+          ).length > 0;
+
+        console.log(
+          "Nav Update -> Marking Contact messages as viewed",
+          markMessagesAsVieved
+        );
+
+        if (markMessagesAsVieved) {
+          console.log("Nav Update -> Marking messages as viewed");
+          await chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
+          chatStore.markDirectMessagesAsViewed(chatStore.activeContactId);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
   };
 
   const refreshActions = async () => {
@@ -344,9 +495,8 @@ export const useRefreshHandler = () => {
     }
   };
 
-  const visibilityChangeRefresh = () => {};
-
   return {
+    visibilityChangeRefresh,
     signOutCleanup,
     clearUnusedKeys,
     syncWithOtherDevice,

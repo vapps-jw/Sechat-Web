@@ -84,7 +84,7 @@ export const useSechatChatStore = defineStore({
       );
       room.messages.forEach((m) => (m.wasViewed = true));
     },
-    addMessagesToRoom(roomId: string, messages: IMessage[]) {
+    addMoreMessagesToRoom(roomId: string, messages: IMessage[]) {
       if (!this.activeRoomId || this.activeRoomId !== roomId) {
         return;
       }
@@ -94,7 +94,7 @@ export const useSechatChatStore = defineStore({
       );
       room.messages.unshift(...messages);
     },
-    addMessagesToContact(contactId: number, messages: IDirectMessage[]) {
+    addMoreMessagesToContact(contactId: number, messages: IDirectMessage[]) {
       if (!this.activeContactId || this.activeContactId !== contactId) {
         return;
       }
@@ -290,7 +290,7 @@ export const useSechatChatStore = defineStore({
         ...this.availableRooms.filter((uc) => uc.id !== value.roomId),
       ];
     },
-    addNewMessage(value: IMessage) {
+    addNewRoomMessage(value: IMessage) {
       const updatedRoom = this.availableRooms.find(
         (r) => r.id === value.roomId
       );
@@ -304,17 +304,49 @@ export const useSechatChatStore = defineStore({
         );
       }
     },
+    addNewRoomMessages(value: IMessage[]) {
+      const room = this.availableRooms.find(
+        (c) => c.id === value[0].roomId
+      ) as IRoom;
+      const toBeAdded = value.filter(
+        (m) => !room.messages.some((nm) => nm.id === m.id)
+      );
+      if (toBeAdded.length === 0) {
+        return;
+      }
+
+      room.messages = [...room.messages, ...toBeAdded];
+      room.messages = room.messages.sort(
+        (a, b) => Number(a.created) - Number(b.created)
+      );
+    },
     addNewDirectMessage(value: IDirectMessage) {
-      const updatedContact = this.availableContacts.find(
+      const contact = this.availableContacts.find(
         (c) => c.id === value.contactId
       );
-      if (!updatedContact.directMessages.some((m) => m.id === value.id)) {
-        updatedContact.directMessages.push(value);
+      if (!contact.directMessages.some((m) => m.id === value.id)) {
+        contact.directMessages.push(value);
 
-        updatedContact.directMessages = updatedContact.directMessages.sort(
+        contact.directMessages = contact.directMessages.sort(
           (a, b) => Number(a.created) - Number(b.created)
         );
       }
+    },
+    addNewDirectMessages(value: IDirectMessage[]) {
+      const contact = this.availableContacts.find(
+        (c) => c.id === value[0].contactId
+      ) as IContactRequest;
+      const toBeAdded = value.filter(
+        (m) => !contact.directMessages.some((nm) => nm.id === m.id)
+      );
+      if (toBeAdded.length === 0) {
+        return;
+      }
+
+      contact.directMessages = [...contact.directMessages, ...toBeAdded];
+      contact.directMessages = contact.directMessages.sort(
+        (a, b) => Number(a.created) - Number(b.created)
+      );
     },
   },
   getters: {

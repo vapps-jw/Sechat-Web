@@ -148,7 +148,7 @@ const loadMoreForRoom = async (): Promise<string> => {
     m.text = e2e.decryptMessage(m.text, key);
   });
 
-  chatStore.addMessagesToRoom(chatStore.activeRoomId, uc.value);
+  chatStore.addMoreMessagesToRoom(chatStore.activeRoomId, uc.value);
   return "ok";
 };
 
@@ -184,7 +184,7 @@ const loadMoreForContact = async (): Promise<string> => {
     m.text = e2e.decryptMessage(m.text, key);
   });
 
-  chatStore.addMessagesToContact(chatStore.activeContactId, uc.value);
+  chatStore.addMoreMessagesToContact(chatStore.activeContactId, uc.value);
   return "ok";
 };
 
