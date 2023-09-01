@@ -1,6 +1,10 @@
 <template>
   <v-app id="chat-view">
     <v-main class="overflow-hidden sechat-layout">
+      <chat-status-connection-banner
+        class="banner-style"
+        v-if="signalRStore.connectionState !== SignalRState.Connected"
+      />
       <chat-snackbar />
       <chat-loading-overlay :overlay="sechatAppStore.showLoadingOverlay" />
       <slot />
@@ -10,6 +14,7 @@
 
 <script setup lang="ts">
 import { useTheme } from "vuetify";
+import { SignalRState } from "~~/utilities/globalEnums";
 
 const sechatAppStore = useSechatAppStore();
 const appStore = useSechatAppStore();
@@ -66,5 +71,9 @@ onBeforeUnmount(async () => {
 <style scoped>
 html {
   font-family: "Ubuntu";
+}
+.banner-style {
+  position: absolute;
+  z-index: 999;
 }
 </style>

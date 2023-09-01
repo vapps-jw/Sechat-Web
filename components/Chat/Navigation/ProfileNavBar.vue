@@ -9,7 +9,7 @@
       :value="ChatViews.Security"
       @click="chatStore.activateView(ChatViews.Security)"
     >
-      <v-icon>mdi-shield-lock</v-icon>
+      <Icon name="material-symbols:shield-lock-outline" />
       <span>Security</span>
     </v-btn>
     <v-btn
@@ -17,7 +17,7 @@
       :value="ChatViews.Settings"
       @click="chatStore.activateView(ChatViews.Settings)"
     >
-      <ChatStatusConnectionIcon />
+      <Icon name="material-symbols:settings-suggest" />
       <span>Settings</span>
     </v-btn>
 

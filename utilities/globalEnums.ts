@@ -44,6 +44,7 @@ export const SignalRState = {
   Disconnected: "Disconnected",
   Connecting: "Connecting",
   Offline: "Offline",
+  Unknown: "Unknown",
 };
 
 export const ChatViews = {

@@ -30,19 +30,24 @@ export const useSignalRStore = defineStore({
       return false;
     },
     connectionState: (state) => {
-      if (!state.connection) {
-        return SignalRState.Disconnected;
-      }
-      if (state.connection.state === signalR.HubConnectionState.Connected) {
-        return SignalRState.Connected;
-      }
       if (
+        !state.connection ||
+        state.connection.state === signalR.HubConnectionState.Disconnected ||
+        state.connection.state === signalR.HubConnectionState.Disconnecting
+      ) {
+        return SignalRState.Disconnected;
+      } else if (
+        state.connection.state === signalR.HubConnectionState.Connected
+      ) {
+        return SignalRState.Connected;
+      } else if (
         state.connection.state === signalR.HubConnectionState.Connecting ||
         state.connection.state === signalR.HubConnectionState.Reconnecting
       ) {
         return SignalRState.Connecting;
+      } else {
+        return SignalRState.Unknown;
       }
-      return SignalRState.Disconnected;
     },
     connectionPresent: (state) => {
       if (state.connection) {

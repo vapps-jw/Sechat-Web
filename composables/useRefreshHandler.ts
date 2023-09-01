@@ -344,6 +344,8 @@ export const useRefreshHandler = () => {
     }
   };
 
+  const visibilityChangeRefresh = () => {};
+
   return {
     signOutCleanup,
     clearUnusedKeys,

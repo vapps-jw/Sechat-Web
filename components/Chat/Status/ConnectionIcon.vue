@@ -24,7 +24,10 @@
     color="error"
   ></v-icon>
   <v-icon
-    v-if="!appStore.getOnlineState"
+    v-if="
+      !appStore.getOnlineState ||
+      signalRStore.connectionState === SignalRState.Unknown
+    "
     icon="mdi-web-off"
     color="error"
   ></v-icon>
