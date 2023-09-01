@@ -37,9 +37,6 @@ watch(
   async (newVal, oldVal) => {
     signalRStore.updateConnectionState();
     console.warn("Connection State update", newVal?.state, oldVal?.state);
-    if (signalRStore.connection.state === HubConnectionState.Disconnected) {
-      await refreshHandler.handleOnMountedLoad();
-    }
   },
   { deep: true }
 );

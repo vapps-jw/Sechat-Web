@@ -47,6 +47,8 @@ export const useRefreshHandler = () => {
 
   const handleOnMountedLoad = async () => {
     appStore.updateLoadingOverlay(true);
+    await signalRStore.closeConnection();
+    signalRStore.$reset();
     chatStore.$reset();
 
     await signalR.connect();
@@ -66,7 +68,7 @@ export const useRefreshHandler = () => {
       }),
     ]);
 
-    if (signalRStore.isConnected) {
+    if (signalRStore.connection?.state === HubConnectionState.Connected) {
       console.log("SignalR Connected, processing Fetch");
       askForMissingKeys();
       syncWithOtherDevice();
