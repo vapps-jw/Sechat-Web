@@ -1,4 +1,5 @@
 import * as signalR from "@microsoft/signalr";
+import { HubConnectionState } from "@microsoft/signalr";
 import {
   ChatViews,
   LocalStoreTypes,
@@ -20,6 +21,8 @@ export const useSignalR = () => {
   const chatApi = useChatApi();
 
   const createNewConnection = async () => {
+    signalRStore.updateConnectionStateWithValue(HubConnectionState.Connecting);
+
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`${config.public.apiBase}/chat-hub`)
       .withAutomaticReconnect({
@@ -219,6 +222,7 @@ export const useSignalR = () => {
 
     connection.onreconnected(async (connectionId) => {
       try {
+        signalRStore.updateConnectionState();
         appStore.updateLoadingOverlay(true);
         console.warn("SIGNALR RECONNECTED", connectionId);
         await reconnectedActions();
@@ -231,11 +235,7 @@ export const useSignalR = () => {
     });
 
     connection.onclose((error) => {
-      console.assert(
-        connection.state === signalR.HubConnectionState.Disconnected
-      );
       signalRStore.updateConnectionState();
-      connect();
       console.warn("SignalR Connection Closed", error);
     });
 
@@ -308,6 +308,7 @@ export const useSignalR = () => {
   };
 
   const connect = async () => {
+    signalRStore.updateConnectionState();
     if (
       signalRStore.connection &&
       signalRStore.connection.state === signalR.HubConnectionState.Connected
@@ -320,9 +321,12 @@ export const useSignalR = () => {
     ) {
       console.log("Starting Current Connection, connecting to Rooms");
       await signalRStore.connection.start();
+      signalRStore.updateConnectionState();
+      return;
     }
     if (!signalRStore.connection) {
       await createNewConnection();
+      signalRStore.updateConnectionState();
     }
   };
 
