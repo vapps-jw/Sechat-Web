@@ -31,6 +31,12 @@ const I18n = useI18n();
 const theme = useTheme();
 const settings = useSettingsStore();
 
+let lockResolve, lockReject;
+const lockPromise = new Promise((res, rej) => {
+  lockResolve = res;
+  lockReject = rej;
+});
+
 const { connection } = storeToRefs(signalRStore);
 watch(
   connection,
@@ -52,6 +58,11 @@ const resetSechat = async () => {
 };
 
 onMounted(async () => {
+  if (navigator && navigator.locks && navigator.locks.request) {
+    navigator.locks.request("sechat_main_app_view", (lock) => lockPromise);
+    console.warn("Creating Web Lock", lockResolve, lockReject);
+  }
+
   console.warn("Chat Layout onMounted", settings.settings.theme);
   if (settings.settings.theme) {
     theme.global.name.value = settings.settings.theme;
@@ -70,6 +81,11 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(async () => {
+  if (navigator && navigator.locks && navigator.locks.request) {
+    lockResolve();
+    console.warn("Releasing Web Lock");
+  }
+
   console.warn("Chat Layout onBeforeUnmount");
   await resetSechat();
 
