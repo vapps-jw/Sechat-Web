@@ -13,6 +13,7 @@
         <v-btn @click="extractKeys" color="success" variant="outlined">
           Save to File
         </v-btn>
+        <a id="downloadAnchorElem" style="display: none"></a>
       </v-card-actions>
     </v-card>
   </div>
@@ -20,19 +21,22 @@
 
 <script setup lang="ts">
 const e2e = useE2Encryption();
+const userStore = useUserStore();
 
 const extractKeys = () => {
   const extract = e2e.extractKeys();
   console.log("Extracted keys", extract);
 
-  const data = JSON.stringify(extract);
-  const blob = new Blob([data], { type: "text/plain" });
-  const e = document.createEvent("MouseEvents"),
-    a = document.createElement("a");
-  a.download = "test.json";
-  a.href = window.URL.createObjectURL(blob);
-  a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
-  a.dispatchEvent(e);
+  let dataStr =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(extract));
+  let dlAnchorElem = document.getElementById("downloadAnchorElem");
+  dlAnchorElem.setAttribute("href", dataStr);
+  dlAnchorElem.setAttribute(
+    "download",
+    `${userStore.getUserName}_sechat_keys.json`
+  );
+  dlAnchorElem.click();
 };
 </script>
 
