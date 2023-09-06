@@ -3,6 +3,12 @@ type E2EKey = {
   key: string;
 };
 
+type E2EExtract = {
+  masterKey: E2EKey;
+  roomKeys: E2EKey[];
+  dmKeys: E2EKey[];
+};
+
 type DMKeyRequest = {
   receipient: string;
   keyHolder: string;

@@ -61,9 +61,19 @@ onMounted(async () => {
   if (navigator && navigator.locks && navigator.locks.request) {
     navigator.locks.request("sechat_main_app_view", (lock) => lockPromise);
     console.warn("Creating Web Lock", lockResolve, lockReject);
+
+    const state = await navigator.locks.query();
+    for (const lock of state.held) {
+      console.warn(`held lock: name ${lock.name}, mode ${lock.mode}`);
+    }
+    for (const request of state.pending) {
+      console.warn(
+        `requested lock: name ${request.name}, mode ${request.mode}`
+      );
+    }
   }
 
-  console.warn("Chat Layout onMounted", settings.settings.theme);
+  console.log("Chat Layout onMounted", settings.settings.theme);
   if (settings.settings.theme) {
     theme.global.name.value = settings.settings.theme;
   }

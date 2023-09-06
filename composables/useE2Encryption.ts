@@ -151,7 +151,7 @@ export const useE2Encryption = () => {
   const getKeys = (type: string): E2EKey[] => {
     if (!process.client) {
       console.error(process);
-      return;
+      return <E2EKey[]>[];
     }
 
     const storedData = localStorage.getItem(type);
@@ -162,7 +162,7 @@ export const useE2Encryption = () => {
     return JSON.parse(storedData) as E2EKey[];
   };
 
-  const getMasterKey = (): E2EKey => {
+  const getMasterKey = (): E2EKey | null => {
     const storedData = localStorage.getItem(LocalStoreTypes.E2EMASTER);
     if (!storedData) {
       return null;
@@ -263,7 +263,54 @@ export const useE2Encryption = () => {
     return addKey(mostRecentKey, LocalStoreTypes.E2EMASTER);
   };
 
+  const extractKeys = (): E2EExtract | null => {
+    const mk = getMasterKey();
+    const rk = getKeys(LocalStoreTypes.E2EROOMS);
+    const dmk = getKeys(LocalStoreTypes.E2EDM);
+
+    const result = {} as E2EExtract;
+    if (mk) {
+      result.masterKey = mk;
+    } else {
+      result.masterKey = null;
+    }
+    if (rk.length > 0) {
+      result.roomKeys = rk;
+    } else {
+      result.roomKeys = [];
+    }
+    if (dmk.length > 0) {
+      result.dmKeys = dmk;
+    } else {
+      result.dmKeys = [];
+    }
+
+    if (
+      result.masterKey === null &&
+      result.roomKeys.length === 0 &&
+      result.dmKeys.length === 0
+    ) {
+      return null;
+    }
+
+    return result;
+  };
+
+  const uploadKeys = (data: E2EExtract) => {
+    if (data.masterKey) {
+      addKey(data.masterKey, LocalStoreTypes.E2EMASTER);
+    }
+    if (data.dmKeys.length > 0) {
+      data.dmKeys.forEach((k) => addKey(k, LocalStoreTypes.E2EDM));
+    }
+    if (data.roomKeys.length > 0) {
+      data.roomKeys.forEach((k) => addKey(k, LocalStoreTypes.E2EROOMS));
+    }
+  };
+
   return {
+    uploadKeys,
+    extractKeys,
     getMasterKey,
     clearOldMasterKeys,
     removeKeys,

@@ -14,9 +14,12 @@
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list flex align-center>
           <v-list-item>
-            <ChatSecuritySettingsDefaultKeySection />
+            <ChatSecuritySettingsUploadKeys />
           </v-list-item>
           <v-divider class="mt-5" />
+          <v-list-item>
+            <ChatSecuritySettingsDownloadKeys />
+          </v-list-item>
           <v-list-item>
             <ChatSecuritySettingsMasterKeySection />
           </v-list-item>
