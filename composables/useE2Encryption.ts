@@ -298,12 +298,15 @@ export const useE2Encryption = () => {
 
   const uploadKeys = (data: E2EExtract) => {
     if (data.masterKey) {
+      removeKeys(LocalStoreTypes.E2EMASTER);
       addKey(data.masterKey, LocalStoreTypes.E2EMASTER);
     }
     if (data.dmKeys.length > 0) {
+      removeKeys(LocalStoreTypes.E2EDM);
       data.dmKeys.forEach((k) => addKey(k, LocalStoreTypes.E2EDM));
     }
     if (data.roomKeys.length > 0) {
+      removeKeys(LocalStoreTypes.E2EROOMS);
       data.roomKeys.forEach((k) => addKey(k, LocalStoreTypes.E2EROOMS));
     }
   };

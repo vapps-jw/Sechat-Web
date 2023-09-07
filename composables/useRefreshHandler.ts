@@ -449,6 +449,7 @@ export const useRefreshHandler = () => {
   };
 
   return {
+    refreshActions,
     visibilityChangeRefresh,
     signOutCleanup,
     clearUnusedKeys,
