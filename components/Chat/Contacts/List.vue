@@ -70,6 +70,7 @@
           <ChatUserAvatar
             :active="false"
             :user-name="uc.displayName"
+            :picture="uc.profileImage"
             size="small"
           />
           <div class="d-flex align-center justify-center">

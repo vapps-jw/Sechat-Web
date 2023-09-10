@@ -168,6 +168,7 @@ interface IContactRequest {
   invitedName?: string;
   contactState?: string;
   approved?: boolean;
+  profileImage?: string;
   displayName?: string;
   verified?: boolean;
   blocked?: boolean;
