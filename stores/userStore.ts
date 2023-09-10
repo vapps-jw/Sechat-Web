@@ -1,3 +1,8 @@
+export const InvitationsPermission = {
+  ALLOWED: "Allowed",
+  FORBIDDEN: "Forbidden",
+};
+
 export const useUserStore = defineStore({
   id: "user-store",
   state: () => {
@@ -15,5 +20,9 @@ export const useUserStore = defineStore({
     getUserName: (state) => state.userProfile?.userName,
     getUserEmail: (state) => state.userProfile?.email,
     isEmailConfirmed: (state) => state.userProfile?.emailConfirmed,
+    invitationsPermission: (state) =>
+      state.userProfile?.invitationsAllowed
+        ? InvitationsPermission.ALLOWED
+        : InvitationsPermission.FORBIDDEN,
   },
 });

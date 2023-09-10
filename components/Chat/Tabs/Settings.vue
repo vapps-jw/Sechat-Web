@@ -24,6 +24,9 @@
             <ChatProfileThemeSection />
           </v-list-item> -->
           <v-list-item>
+            <ChatProfileInvitationsPermissionSection />
+          </v-list-item>
+          <v-list-item>
             <ChatProfileTooltipsSection />
           </v-list-item>
           <v-divider />

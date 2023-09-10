@@ -50,6 +50,7 @@ export default defineNuxtPlugin(async (context) => {
     userStore.$reset();
     const profile = await userApi.getUserData();
     userStore.updateUserProfile(profile);
+    console.warn("Profile", profile);
   } catch (error) {
     console.error(error);
     refreshHandler.signOutCleanup();

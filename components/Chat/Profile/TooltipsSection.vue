@@ -11,6 +11,7 @@
     <v-card>
       <v-card-actions>
         <v-switch
+          color="primary"
           v-model="settingStore.settings.tooltipSetting"
           hide-details
           :true-value="TooltpSetting.VISIBLE"
