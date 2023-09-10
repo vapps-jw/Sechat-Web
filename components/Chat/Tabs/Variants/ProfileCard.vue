@@ -17,6 +17,7 @@
 
       <v-avatar class="ma-3" size="125" rounded="0">
         <ChatUserAvatar
+          :picture="userStore.userProfile.profilePicture"
           size="large"
           :active="false"
           :user-name="userStore.getUserName"

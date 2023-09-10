@@ -14,7 +14,7 @@
           color="primary"
           :disabled="busy"
           :loading="busy ? 'primary' : false"
-          v-model="userProfile.invitationsAllowed"
+          v-model="invitationsAllowed"
           hide-details
           :label="userStore.invitationsPermission"
         ></v-switch>
@@ -29,13 +29,17 @@ const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 
 const busy = ref<boolean>(false);
-
-const { userProfile } = storeToRefs(userStore);
+const invitationsAllowed = ref<boolean>(
+  userStore.userProfile.invitationsAllowed
+);
 watch(
-  userProfile,
+  invitationsAllowed,
   async (newVal, oldVal) => {
-    console.log("Invitations Permission update", newVal.invitationsAllowed);
-    if (newVal.invitationsAllowed && !busy.value) {
+    console.log("Invitations Permission update", newVal, oldVal);
+    if (newVal === oldVal) {
+      return;
+    }
+    if (newVal && !busy.value) {
       console.log("Invitations Permission patch", true);
       await permissisonUpdate(true);
     } else {
@@ -70,6 +74,7 @@ const permissisonUpdate = async (flag: boolean) => {
 
   userStore.userProfile.invitationsAllowed = flag;
   busy.value = false;
+  sechatStore.showSuccessSnackbar("Profile updated");
 };
 </script>
 

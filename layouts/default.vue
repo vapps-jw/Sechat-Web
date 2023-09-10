@@ -10,12 +10,13 @@
           width="300"
           height="150"
         ></NuxtImg>
-        <div class="text-h6">Encrypted chat & video calls</div>
+        <div class="text-h6">E2E Encrypted chat & video calls</div>
         <ChatUserAvatar
           v-if="userStore.isSignedIn"
+          :picture="userStore.userProfile.profilePicture"
           :active="false"
           :user-name="userStore.getUserName"
-          size="small"
+          size="large"
         />
       </v-container>
       <v-divider

@@ -4,6 +4,7 @@
       <v-toolbar>
         <div class="ml-2">
           <ChatUserAvatar
+            :picture="userStore.userProfile.profilePicture"
             :active="false"
             :user-name="userStore.getUserName"
             size="default"

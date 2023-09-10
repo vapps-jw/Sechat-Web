@@ -1,11 +1,16 @@
 <template>
   <v-avatar
-    :color="stringToColor(props.userName)"
+    :color="picture ? 'transparent' : stringToColor(props.userName)"
     :size="props.size"
     :class="props.active ? 'glow' : ''"
   >
-    {{ getInitials(props.userName) }}</v-avatar
-  >
+    <v-img
+      v-if="picture"
+      alt="Avatar"
+      :src="'data:image/png;base64,' + picture"
+    ></v-img>
+    <div v-else>{{ getInitials(props.userName) }}</div>
+  </v-avatar>
 </template>
 
 <script setup lang="ts">
@@ -15,6 +20,7 @@ interface PropsModel {
   userName: string;
   active: boolean;
   size: string;
+  picture?: string;
 }
 
 const props = defineProps<PropsModel>();
