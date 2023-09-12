@@ -361,6 +361,8 @@ export const useSechatChatStore = defineStore({
         (c) => c.contactState === ContactState.Online
       ) as IContactRequest[],
     getActiveRoomId: (state) => state.activeRoomId,
+    getContact: (state) => (name: string) =>
+      state.availableContacts.find((c) => c.displayName === name)?.profileImage,
     getActiveContactId: (state) => state.activeContactId,
     getActiveChatTab: (state) => state.activeChatTab,
     isSettingsViewActive: (state) => state.activeChatTab === ChatViews.Settings,

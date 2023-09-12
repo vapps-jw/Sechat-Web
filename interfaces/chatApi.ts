@@ -19,6 +19,7 @@ interface IStringMessage {
 interface IMessageBase {
   id?: number;
   nameSentBy?: string;
+  imageSentBy?: string;
   text?: string;
   created?: Date;
   wasViewed?: boolean;

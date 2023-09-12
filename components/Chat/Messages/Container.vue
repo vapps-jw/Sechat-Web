@@ -38,9 +38,22 @@
             <v-divider color="tertiary"></v-divider>
           </v-col>
         </v-row>
-        <chat-messages-message :message="m" v-if="chatStore.activeRoomId" />
+        <chat-messages-message
+          :message="m"
+          v-if="chatStore.activeRoomId"
+          :image="
+            m.nameSentBy === userStore.getUserName
+              ? userStore.getProfilePicture
+              : getContact(m.nameSentBy)
+          "
+        />
         <chat-messages-direct-message
           :message="m"
+          :image="
+            m.nameSentBy === userStore.getUserName
+              ? userStore.getProfilePicture
+              : getContact(m.nameSentBy)
+          "
           v-if="chatStore.activeContactId"
         />
       </template>
@@ -63,6 +76,7 @@
 import { LocalStoreTypes } from "~/utilities/globalEnums";
 
 const appStore = useSechatAppStore();
+const userStore = useUserStore();
 const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();
 const e2e = useE2Encryption();
@@ -72,6 +86,8 @@ interface PropsModel {
   messages: IMessageBase[];
 }
 const props = defineProps<PropsModel>();
+
+const { getContact } = storeToRefs(chatStore);
 
 const canLoadMore = computed<boolean>(() => {
   if (chatStore.activeContactId) {

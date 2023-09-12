@@ -22,6 +22,7 @@ export const useUserStore = defineStore({
     getInitials: (state) => getInitials(state.userProfile?.userName),
     isSignedIn: (state) => (state.userProfile ? true : false),
     getUserName: (state) => state.userProfile?.userName,
+    getProfilePicture: (state) => state.userProfile?.profilePicture,
     getUserEmail: (state) => state.userProfile?.email,
     isEmailConfirmed: (state) => state.userProfile?.emailConfirmed,
     invitationsPermission: (state) =>

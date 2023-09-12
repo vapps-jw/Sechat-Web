@@ -36,6 +36,7 @@
         <ChatUserAvatar
           :active="userStore.getUserName === props.message.nameSentBy"
           :user-name="props.message.nameSentBy"
+          :picture="props.image"
           size="default"
         />
       </div>
@@ -55,6 +56,7 @@ const userStore = useUserStore();
 
 interface PropsModel {
   message: IDirectMessage;
+  image?: string;
 }
 
 const props = defineProps<PropsModel>();
