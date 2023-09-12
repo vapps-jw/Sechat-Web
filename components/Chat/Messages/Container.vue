@@ -44,7 +44,7 @@
           :image="
             m.nameSentBy === userStore.getUserName
               ? userStore.getProfilePicture
-              : getContact(m.nameSentBy)
+              : chatStore.profilePictures.get(m.nameSentBy)
           "
         />
         <chat-messages-direct-message
@@ -52,7 +52,7 @@
           :image="
             m.nameSentBy === userStore.getUserName
               ? userStore.getProfilePicture
-              : getContact(m.nameSentBy)
+              : chatStore.profilePictures.get(m.nameSentBy)
           "
           v-if="chatStore.activeContactId"
         />

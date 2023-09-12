@@ -22,7 +22,7 @@ export default defineNuxtConfig({
     public: {
       mainDomain:
         process.env.NODE_ENV === "production" ? ".sechat.app" : "localhost",
-      appVersion: "v1.5.6",
+      appVersion: "v1.5.7",
       vapidKey: process.env.NUXT_PUBLIC_VAPID_KEY ?? "not set",
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? "not set",
     },

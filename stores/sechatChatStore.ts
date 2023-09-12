@@ -16,6 +16,7 @@ export const useSechatChatStore = defineStore({
       newMessage: <string>null,
       activeBottomNav: <string>BottomNavBarSet.ChatNavBar,
       activeChatTab: <string>ChatViews.Messages,
+      profilePictures: new Map<string, string>(),
     };
   },
   actions: {
@@ -41,25 +42,6 @@ export const useSechatChatStore = defineStore({
     },
     clearNewMessage() {
       this.newMessage = "";
-    },
-    addContact(value: IContactRequest) {
-      this.availableContacts = [...this.availableContacts, value].sort((a, b) =>
-        a.displayName.localeCompare(b.displayName)
-      );
-    },
-    updateContactState(name: string, value: string) {
-      const contact = <IContactRequest>(
-        this.availableContacts.find((c) => c.displayName === name)
-      );
-      if (contact) {
-        contact.contactState = value;
-      }
-    },
-    updateContact(value: IContactRequest) {
-      this.availableContacts = [
-        ...this.availableContacts.filter((uc) => uc.id !== value.id),
-        value,
-      ].sort((a, b) => a.displayName.localeCompare(b.displayName));
     },
 
     // Handle Room Messages Views
@@ -123,6 +105,55 @@ export const useSechatChatStore = defineStore({
       message.messageViewers.push(<IMessageViewer>{ user: userName });
     },
 
+    // Contacts
+
+    loadContacts(value: IContactRequest[]) {
+      this.availableContacts = value.sort((a, b) =>
+        a.displayName.localeCompare(b.displayName)
+      );
+      const pp = this.profilePictures as Map<string, string>;
+      pp.clear();
+      this.availableContacts.forEach((el) => {
+        pp.set(el.displayName, el.profileImage);
+      });
+    },
+    addContact(value: IContactRequest) {
+      this.availableContacts = [...this.availableContacts, value].sort((a, b) =>
+        a.displayName.localeCompare(b.displayName)
+      );
+      const pp = this.profilePictures as Map<string, string>;
+      pp.set(value.displayName, value.profileImage);
+    },
+    deleteContact(value: IResourceId) {
+      const toBeDeleted = this.availableContacts.find((c) => c.id === value.id);
+      if (!toBeDeleted) {
+        return;
+      }
+      this.availableContacts = this.availableContacts.filter(
+        (uc) => uc.id !== value.id
+      );
+      const pp = this.profilePictures as Map<string, string>;
+      pp.delete(toBeDeleted.displayName);
+    },
+    updateContactState(name: string, value: string) {
+      const contact = <IContactRequest>(
+        this.availableContacts.find((c) => c.displayName === name)
+      );
+      if (contact) {
+        contact.contactState = value;
+      }
+    },
+    updateContact(value: IContactRequest) {
+      this.availableContacts = [
+        ...this.availableContacts.filter((uc) => uc.id !== value.id),
+        value,
+      ].sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+      const pp = this.profilePictures as Map<string, string>;
+      pp.delete(value.displayName);
+      pp.set(value.displayName, value.profileImage);
+    },
+
     // Handle Direct Message Views
 
     markDirectMessagesAsViewed(contactId: number) {
@@ -146,16 +177,7 @@ export const useSechatChatStore = defineStore({
 
       message.wasViewed = true;
     },
-    loadContacts(value: IContactRequest[]) {
-      this.availableContacts = value.sort((a, b) =>
-        a.displayName.localeCompare(b.displayName)
-      );
-    },
-    deleteContact(value: IResourceId) {
-      this.availableContacts = this.availableContacts.filter(
-        (uc) => uc.id !== value.id
-      );
-    },
+
     loadRooms(value: IRoom[]) {
       this.availableRooms = value.sort((a, b) => a.name.localeCompare(b.name));
       if (this.activeRoomId) {
