@@ -14,7 +14,7 @@
     "@vite-pwa/nuxt": "^0.1.0",
     "cross-env": "^7.0.3",
     "cypress": "^13.1.0",
-    "nuxt": "^3.6.5",
+    "nuxt": "^3.7.2",
     "nuxt-icon": "^0.5.0",
     "nuxt-security": "^0.14.4",
     "workbox-precaching": "^7.0.0"
