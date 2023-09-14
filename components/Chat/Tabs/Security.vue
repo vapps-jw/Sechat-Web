@@ -4,6 +4,7 @@
       <v-toolbar>
         <div class="ml-2">
           <ChatUserAvatar
+            :picture="userStore.userProfile.profilePicture"
             :active="false"
             :user-name="userStore.getUserName"
             size="default"
@@ -16,14 +17,15 @@
           <v-list-item>
             <ChatSecuritySettingsUploadKeys />
           </v-list-item>
-          <v-divider class="mt-5" />
+          <v-divider />
           <v-list-item>
             <ChatSecuritySettingsDownloadKeys />
           </v-list-item>
+          <v-divider />
           <v-list-item>
             <ChatSecuritySettingsMasterKeySection />
           </v-list-item>
-          <v-divider class="mt-5" />
+          <v-divider />
         </v-list>
       </v-card-text>
     </v-card>
