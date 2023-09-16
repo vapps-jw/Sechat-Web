@@ -11,11 +11,6 @@
     striped
     indeterminate
   ></v-progress-linear>
-  <div class="d-flex justify-center">
-    <p class="tiny-font">
-      {{ editor?.storage.characterCount.characters() }} / {{ limit }}
-    </p>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -23,9 +18,9 @@ import { findAll } from "~/utilities/stringFunctions";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
-import CharacterCount from "@tiptap/extension-character-count";
 import Underline from "@tiptap/extension-underline";
 import Image from "@tiptap/extension-image";
+import { ImageTypes } from "~/utilities/globalEnums";
 
 const chatApi = useChatApi();
 
@@ -41,6 +36,22 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "editorStateUpdate"]);
 
+const handleSharedImage = (content: string) => {
+  console.log("Setting Image", content);
+  editorBusy.value = true;
+
+  editor.value?.commands.setImage({
+    src: content,
+  });
+
+  editorBusy.value = false;
+  emit("editorStateUpdate", {
+    busy: false,
+    editable: false,
+    readyToShare: false,
+  });
+};
+
 watch(
   () => props.modelValue,
   async (newValue, oldValue) => {
@@ -49,6 +60,37 @@ watch(
       return;
     }
     let content = newValue;
+    console.log("New value", newValue);
+    console.log("Old value", oldValue);
+    console.log("Model", props.modelValue);
+
+    const imageSources = findAll(/<img.*?src="(.*?)"/g, props.modelValue);
+    console.log("Image sources", imageSources);
+
+    if (imageSources.length > 0) {
+      const duplicate = imageSources.some((element, index) => {
+        return imageSources.indexOf(element) !== index;
+      });
+      console.log("Duplicate image", duplicate);
+      if (duplicate) {
+        return;
+      }
+    }
+
+    if (
+      oldValue &&
+      oldValue.includes(ImageTypes.ChatImage) &&
+      newValue.includes(ImageTypes.ChatImage)
+    ) {
+      return;
+    }
+
+    if (content.includes(ImageTypes.ChatImage)) {
+      handleSharedImage(content);
+      return;
+    }
+
+    console.log("Setting content", props.modelValue);
     editor.value?.commands.setContent(content, false, {
       preserveWhitespace: "full",
     });
@@ -65,6 +107,7 @@ watch(
       return;
     }
 
+    console.log("Checking links");
     const anchors = findAll(/<a[^>]*href=["']([^"']*)["']/g, content);
     if (anchors.length > 0) {
       if (editorBusy.value) {
@@ -153,7 +196,6 @@ watch(
   }
 );
 
-const limit = 3000;
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
@@ -165,12 +207,10 @@ const editor = useEditor({
     }),
     Underline,
     Image.configure({
+      allowBase64: true,
       HTMLAttributes: {
         class: "link-preview-img",
       },
-    }),
-    CharacterCount.configure({
-      limit: limit,
     }),
   ],
   onUpdate: ({ editor }) => {

@@ -7,6 +7,13 @@
     >
       Privacy Policy
     </v-btn>
+    <v-btn
+      class="my-2"
+      size="large"
+      href="https://app.termly.io/document/cookie-policy/889cd4e1-89ca-4200-b30d-dc281efce745"
+    >
+      Cookie Policy
+    </v-btn>
   </v-container>
 </template>
 

@@ -120,7 +120,12 @@
   outline: none;
 }
 
-.link-preview-img {
-  max-height: 100px;
+/* .link-preview-img {
+  max-height: 50dvh;
   width: auto;
+} */
+
+.link-preview-img {
+  max-height: auto;
+  max-width: 50dvh;
 }

@@ -41,7 +41,7 @@
           :active="userStore.getUserName === props.message.nameSentBy"
           :user-name="props.message.nameSentBy"
           :picture="props.image"
-          size="default"
+          size="small"
         />
       </div>
       <chat-messages-message-options

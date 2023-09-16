@@ -2,6 +2,7 @@ import {
   BottomNavBarSet,
   ChatViews,
   ContactState,
+  ImageTypes,
 } from "~~/utilities/globalEnums";
 
 export const useSechatChatStore = defineStore({
@@ -180,9 +181,6 @@ export const useSechatChatStore = defineStore({
 
     loadRooms(value: IRoom[]) {
       this.availableRooms = value.sort((a, b) => a.name.localeCompare(b.name));
-      if (this.activeRoomId) {
-        this.activeRoom = this.availableRooms.find((r) => r.id === value);
-      }
     },
     updateRooms(updates: IRoom[]) {
       const newRooms = updates.filter(
@@ -372,6 +370,8 @@ export const useSechatChatStore = defineStore({
     },
   },
   getters: {
+    messageContainsImage: (state) =>
+      state.newMessage?.includes(ImageTypes.ChatImage),
     getNavColor: (state): string => {
       if (state.activeChatTab === ChatViews.AppsSelection) {
         return "warning";

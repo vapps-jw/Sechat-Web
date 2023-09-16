@@ -6,9 +6,9 @@
     />
   </div>
   <div class="d-flex justify-space-between mx-2 my-1">
-    <div>
+    <div class="d-flex justify-start">
       <v-btn
-        class="mr-5"
+        class="mr-4"
         variant="outlined"
         icon="mdi-close-circle"
         size="small"
@@ -16,12 +16,32 @@
         @click="chatStore.clearNewMessage"
       ></v-btn>
       <v-btn
+        class="mr-4"
         icon="mdi-arrow-down-drop-circle"
         size="small"
         variant="outlined"
         color="tertiary"
         @click="() => scrollToBottom('chatView')"
       ></v-btn>
+      <v-btn
+        v-if="!chatStore.messageContainsImage"
+        class="mr-4"
+        icon="mdi-paperclip"
+        size="small"
+        variant="outlined"
+        color="tertiary"
+        @click="test"
+      ></v-btn>
+      <v-file-input
+        class="hidden"
+        :hide-details="true"
+        ref="imageToUpload"
+        @change="attachImage"
+        type="file"
+        accept="image/png, image/jpeg"
+        v-model="chosenFile"
+      >
+      </v-file-input>
     </div>
     <v-btn
       data-cy="push-message-btn"
@@ -44,6 +64,35 @@ const signalRstore = useSignalRStore();
 const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
 const e2e = useE2Encryption();
+const imageApi = useImageApi();
+
+const chosenFile = ref<File[]>(null);
+const chosenFileLoaidng = ref<boolean>(false);
+const imageToUpload = ref();
+
+const test = () => {
+  console.log("Clicked", imageToUpload?.value);
+  imageToUpload?.value.click();
+};
+
+const attachImage = async (e) => {
+  chosenFileLoaidng.value = true;
+  const files = e.target.files as File[];
+  if (files.length === 0 || !files[0]) {
+    chosenFileLoaidng.value = false;
+    return;
+  }
+  console.log("Chosen File", files);
+  const result = await imageApi.processChatImage(files[0]);
+  if (result.success) {
+    console.log("Image Processed", result.data);
+    chatStore.newMessage = result.data;
+  } else {
+    sechatStore.showErrorSnackbar(`Something went wrong: ${result.error}`);
+  }
+  chosenFileLoaidng.value = false;
+  chosenFile.value = null;
+};
 
 const editorState = ref<IEditorState>({
   busy: false,
@@ -106,7 +155,7 @@ const callDirectMessageApi = async () => {
   );
 
   if (apiError.value) {
-    sechatStore.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar("Message not sent");
   }
 };
 
@@ -141,4 +190,8 @@ const pushMessage = async () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.hidden {
+  display: none;
+}
+</style>

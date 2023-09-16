@@ -7,6 +7,10 @@ export const SnackbarIcons = {
   Disconnected: "broadcast-off",
 };
 
+export const ImageTypes = {
+  ChatImage: "data:image/jepg;base64,",
+};
+
 export const SnackbarMessages = {
   Warning: "Something is not entirely correct",
   Success: "Changes saved",
