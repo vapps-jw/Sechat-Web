@@ -1,14 +1,29 @@
 <template>
-  <v-list-item :key="props.message.id" class="mx-0 px-0">
+  <v-list-item :key="props.message.id">
     <template v-slot:title>
-      <v-card-subtitle class="tiny-font mx-0 px-0">
-        <p class="d-inline text-subtitle-2 font-weight-bold text-white">
-          {{ props.message.nameSentBy }}
-        </p>
-        {{
-          new Date(props.message.created).toLocaleString(appStore.localLanguage)
-        }}
-      </v-card-subtitle>
+      <div class="d-flex align-center">
+        <ChatUserAvatar
+          class="ma-2"
+          :active="userStore.getUserName === props.message.nameSentBy"
+          :user-name="props.message.nameSentBy"
+          :picture="props.image"
+          size="small"
+        />
+        <chat-messages-message-options
+          :message="props.message"
+          :disabled="userStore.getUserName !== props.message.nameSentBy"
+        />
+        <v-card-subtitle class="tiny-font mx-0 px-0">
+          <p class="d-inline text-subtitle-2 font-weight-bold text-white">
+            {{ props.message.nameSentBy }}
+          </p>
+          {{
+            new Date(props.message.created).toLocaleString(
+              appStore.localLanguage
+            )
+          }}
+        </v-card-subtitle>
+      </div>
     </template>
     <template v-slot:subtitle>
       <v-card-text class="px-0 py-0">
@@ -34,20 +49,6 @@
           {{ seenBy.user }}
         </v-chip>
       </v-card-subtitle>
-    </template>
-    <template v-slot:prepend>
-      <div class="ml-2">
-        <ChatUserAvatar
-          :active="userStore.getUserName === props.message.nameSentBy"
-          :user-name="props.message.nameSentBy"
-          :picture="props.image"
-          size="small"
-        />
-      </div>
-      <chat-messages-message-options
-        :message="props.message"
-        :disabled="userStore.getUserName !== props.message.nameSentBy"
-      />
     </template>
   </v-list-item>
 </template>

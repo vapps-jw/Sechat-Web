@@ -88,7 +88,7 @@
         </div>
       </template>
       <template v-slot:append>
-        <v-badge
+        <!-- <v-badge
           v-if="pendingMessagesPresent(uc)"
           class="mr-3"
           :model-value="pendingMessagesPresent(uc)"
@@ -96,7 +96,7 @@
           color="error"
         >
           <v-icon>mdi-email</v-icon>
-        </v-badge>
+        </v-badge> -->
         <v-btn
           class="mr-3"
           v-if="uc.approved && !uc.blocked && uc.hasKey"
@@ -107,15 +107,21 @@
           variant="outlined"
         ></v-btn>
 
-        <v-btn
-          v-if="uc.approved && !uc.blocked && uc.hasKey"
-          @click="directMessage(uc)"
-          size="small"
-          :icon="dmIconType(uc)"
-          :color="dmIconColor(uc)"
-          variant="outlined"
+        <v-badge
+          :model-value="pendingMessagesPresent(uc)"
+          :content="pendingMessagesCount(uc)"
+          color="error"
         >
-        </v-btn>
+          <v-btn
+            v-if="uc.approved && !uc.blocked && uc.hasKey"
+            @click="directMessage(uc)"
+            size="small"
+            :icon="dmIconType(uc)"
+            :color="dmIconColor(uc)"
+            variant="outlined"
+          >
+          </v-btn>
+        </v-badge>
         <v-tooltip
           v-if="uc.approved && !uc.blocked && !uc.hasKey"
           v-model="keySyncTooltip"
