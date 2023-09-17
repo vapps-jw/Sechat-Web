@@ -29,15 +29,13 @@ export const useUserApi = () => {
     return newProfile.value;
   };
 
-  const getGlobalSettings = async () => {
-    const { data: globalSettings, error: apiError } =
-      await useFetch<GlobalSettings>(
-        `${config.public.apiBase}/admin/global-settings`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
+  const getGlobalSettings = async (): Promise<GlobalSetting[]> => {
+    const { data: globalSettings, error: apiError } = await useFetch<
+      GlobalSetting[]
+    >(`${config.public.apiBase}/admin/global-settings`, {
+      method: "GET",
+      credentials: "include",
+    });
 
     if (apiError.value && apiError.value.statusCode === 405) {
       throw createError({

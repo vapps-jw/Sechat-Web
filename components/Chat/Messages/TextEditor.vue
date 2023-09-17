@@ -30,7 +30,7 @@
         size="small"
         variant="outlined"
         color="tertiary"
-        @click="test"
+        @click="attachAction"
       ></v-btn>
       <v-file-input
         class="hidden"
@@ -38,7 +38,7 @@
         ref="imageToUpload"
         @change="attachImage"
         type="file"
-        accept="image/png, image/jpeg"
+        accept="image/png, image/jpeg, image/jpg"
         v-model="chosenFile"
       >
       </v-file-input>
@@ -70,12 +70,15 @@ const chosenFile = ref<File[]>(null);
 const chosenFileLoaidng = ref<boolean>(false);
 const imageToUpload = ref();
 
-const test = () => {
+const attachAction = () => {
   console.log("Clicked", imageToUpload?.value);
   imageToUpload?.value.click();
 };
 
 const attachImage = async (e) => {
+  if (e.target === undefined) {
+    sechatStore.showErrorSnackbar("Bad Image selected");
+  }
   chosenFileLoaidng.value = true;
   const files = e.target.files as File[];
   if (files.length === 0 || !files[0]) {
@@ -88,7 +91,7 @@ const attachImage = async (e) => {
     console.log("Image Processed", result.data);
     chatStore.newMessage = result.data;
   } else {
-    sechatStore.showErrorSnackbar(`Something went wrong: ${result.error}`);
+    sechatStore.showErrorSnackbar("Something went wrong");
   }
   chosenFileLoaidng.value = false;
   chosenFile.value = null;
