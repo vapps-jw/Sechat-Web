@@ -23,6 +23,9 @@
 
       <!-- Profile -->
       <div v-if="chatStore.activeBottomNav === BottomNavBarSet.ProfileNavBar">
+        <v-window-item v-if="userStore.isAdmin" :value="ChatViews.Admin">
+          <ChatTabsAdmin />
+        </v-window-item>
         <v-window-item :value="ChatViews.Security">
           <ChatTabsSecurity />
         </v-window-item>
@@ -42,6 +45,7 @@
 <script setup lang="ts">
 import { ChatViews, BottomNavBarSet } from "~~/utilities/globalEnums";
 const chatStore = useSechatChatStore();
+const userStore = useUserStore();
 </script>
 
 <style scoped></style>

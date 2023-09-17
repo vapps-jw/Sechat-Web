@@ -10,20 +10,12 @@
             size="default"
           />
         </div>
-        <v-toolbar-title>Security</v-toolbar-title>
+        <v-toolbar-title>Admin</v-toolbar-title>
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <v-list flex align-center>
           <v-list-item>
-            <ChatSecuritySettingsUploadKeys />
-          </v-list-item>
-          <v-divider />
-          <v-list-item>
-            <ChatSecuritySettingsDownloadKeys />
-          </v-list-item>
-          <v-divider />
-          <v-list-item>
-            <ChatSecuritySettingsMasterKeySection />
+            <ChatGlobalSettingsRegistration />
           </v-list-item>
         </v-list>
       </v-card-text>

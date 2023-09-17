@@ -9,6 +9,7 @@ export const useUserStore = defineStore({
   id: "user-store",
   state: () => {
     return {
+      globalSettings: <GlobalSetting[]>null,
       userProfile: <IUserProfile>null,
     };
   },
@@ -29,5 +30,6 @@ export const useUserStore = defineStore({
       state.userProfile?.invitationsAllowed
         ? InvitationsPermission.ALLOWED
         : InvitationsPermission.FORBIDDEN,
+    isAdmin: (state) => (state.globalSettings ? true : false),
   },
 });

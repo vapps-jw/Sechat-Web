@@ -51,6 +51,14 @@ export default defineNuxtPlugin(async (context) => {
     const profile = await userApi.getUserData();
     userStore.updateUserProfile(profile);
     console.warn("Profile", profile);
+
+    try {
+      const result = await userApi.getGlobalSettings();
+      console.warn("Updating Hlobal Settings", result);
+      userStore.globalSettings = result;
+    } catch (error) {
+      console.error(error);
+    }
   } catch (error) {
     console.error(error);
     refreshHandler.signOutCleanup();

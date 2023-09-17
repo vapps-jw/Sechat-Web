@@ -75,7 +75,8 @@ const buttonText = ref<string>("Sign In");
 const buttonColor = ref<string>("warning");
 const config = useRuntimeConfig();
 const userStore = useUserStore();
-const sechatStore = useSechatAppStore();
+const appStore = useSechatAppStore();
+const userApi = useUserApi();
 
 const onSubmit = async () => {
   try {
@@ -98,6 +99,15 @@ const onSubmit = async () => {
     if (!apiError.value) {
       console.log("Profile received", userProfile);
       userStore.updateUserProfile(userProfile.value);
+
+      try {
+        const result = await userApi.getGlobalSettings();
+        console.warn("Updating Hlobal Settings", result);
+        userStore.globalSettings = result;
+      } catch (error) {
+        console.error(error);
+      }
+
       console.log("Navigating to Chat");
       navigateTo("/chat");
     }
@@ -113,7 +123,7 @@ const onSubmit = async () => {
     }
   } catch (error) {
     console.error("Login Error", error);
-    sechatStore.showErrorSnackbar(error.statusMessage);
+    appStore.showErrorSnackbar(error.statusMessage);
     buttonText.value = "Try Again";
     buttonColor.value = "error";
     error.value = null;
