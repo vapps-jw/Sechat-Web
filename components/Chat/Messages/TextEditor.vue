@@ -24,6 +24,8 @@
         @click="() => scrollToBottom('chatView')"
       ></v-btn>
       <v-btn
+        :loading="chosenFileLoaidng"
+        :disabled="chosenFileLoaidng"
         v-if="!chatStore.messageContainsImage"
         class="mr-4"
         icon="mdi-paperclip"
