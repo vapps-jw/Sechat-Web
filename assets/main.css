@@ -126,10 +126,9 @@
 } */
 
 .link-preview-img {
-  max-height: auto;
-  max-width: 50dvh;
+  max-width: 90dvw;
 }
 
 .image-overlay-preview {
-  object-fit: cover;
+  max-width: 95dvw;
 }
