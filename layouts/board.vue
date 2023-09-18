@@ -1,6 +1,17 @@
 <template>
   <v-app id="chat-view">
     <v-main class="overflow-hidden sechat-layout">
+      <v-overlay
+        class="d-flex align-center justify-center"
+        v-model="imageOverlay"
+        location-strategy="connected"
+      >
+        <img
+          class="image-overlay-preview"
+          @click="() => (imageOverlay = false)"
+          :src="imageData"
+        />
+      </v-overlay>
       <chat-status-connection-banner
         class="banner-style"
         :connection-state="signalRStore.connectionState"
@@ -32,11 +43,23 @@ const I18n = useI18n();
 const theme = useTheme();
 const settings = useSettingsStore();
 
+const imageOverlay = ref<boolean>();
+const imageData = ref<string>("");
+
 let lockResolve, lockReject;
 const lockPromise = new Promise((res, rej) => {
   lockResolve = res;
   lockReject = rej;
 });
+
+const handleImageZoom = (e) => {
+  console.log("Image clicked", e.target.className);
+  if (e.target.className !== "link-preview-img") {
+    return;
+  }
+  imageData.value = e.target.src;
+  imageOverlay.value = true;
+};
 
 const { connection } = storeToRefs(signalRStore);
 watch(
@@ -74,9 +97,7 @@ onMounted(async () => {
     }
   }
 
-  // listenToEvent(document).on("click", ".link-preview-img", (e) => {
-  //   console.log("Image clicked", e.target.id);
-  // });
+  listenToEvent(document).on("click", ".link-preview-img", handleImageZoom);
 
   console.log("Chat Layout onMounted", settings.settings.theme);
   if (settings.settings.theme) {
@@ -100,6 +121,8 @@ onBeforeUnmount(async () => {
     lockResolve();
     console.warn("Releasing Web Lock");
   }
+
+  document.removeEventListener("click", handleImageZoom);
 
   console.warn("Chat Layout onBeforeUnmount");
   await resetSechat();

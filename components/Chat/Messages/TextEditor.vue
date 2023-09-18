@@ -174,8 +174,6 @@ const pushMessage = async () => {
   //   chatStore.newMessage = addUniqueId(chatStore.newMessage, "<img");
   // }
 
-  console.warn("Message to send", chatStore.newMessage);
-
   if (
     !signalRstore.connection ||
     signalRstore.connection.state !== HubConnectionState.Connected
