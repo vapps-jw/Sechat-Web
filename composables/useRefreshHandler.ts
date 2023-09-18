@@ -75,7 +75,7 @@ export const useRefreshHandler = () => {
       clearUnusedKeys();
     }
 
-    signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
+    await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
     appStore.updateLoadingOverlay(false);
   };
 
@@ -261,12 +261,14 @@ export const useRefreshHandler = () => {
     );
 
     try {
-      Promise.all(promises).then(async (res) => {
+      await Promise.all(promises).then(async (res) => {
         updateKeys.then(async (res) => {
           if (!res) {
             return;
           }
-          signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
+          await signalR.connectToRooms(
+            chatStore.availableRooms.map((r) => r.id)
+          );
           await updateViewedMessages();
         });
       });
@@ -419,7 +421,7 @@ export const useRefreshHandler = () => {
         clearUnusedKeys();
       }
 
-      signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
+      await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
     } catch (error) {
       console.error("Update Error", error);
     }

@@ -398,7 +398,7 @@ export const useSignalR = () => {
     roomHandlers.handleUserAddedToRoom(data);
   };
 
-  const connectToRooms = (roomIds: string[]) => {
+  const connectToRooms = async (roomIds: string[]) => {
     if (
       !signalRStore.connection ||
       signalRStore.connection.state !== signalR.HubConnectionState.Connected
@@ -413,7 +413,7 @@ export const useSignalR = () => {
     }
 
     console.log("Connecting to Rooms", roomIds);
-    signalRStore.connection
+    await signalRStore.connection
       .invoke(SignalRHubMethods.ConnectToRooms, {
         RoomIds: roomIds,
       })
