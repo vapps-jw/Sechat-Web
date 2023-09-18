@@ -20,6 +20,7 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { HubConnectionState } from "@microsoft/signalr";
+import { listenToEvent } from "~/utilities/documentFunctions";
 
 const sechatAppStore = useSechatAppStore();
 const appStore = useSechatAppStore();
@@ -72,6 +73,10 @@ onMounted(async () => {
       );
     }
   }
+
+  // listenToEvent(document).on("click", ".link-preview-img", (e) => {
+  //   console.log("Image clicked", e.target.id);
+  // });
 
   console.log("Chat Layout onMounted", settings.settings.theme);
   if (settings.settings.theme) {

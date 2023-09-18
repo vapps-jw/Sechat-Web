@@ -87,8 +87,6 @@ interface PropsModel {
 }
 const props = defineProps<PropsModel>();
 
-const { getContact } = storeToRefs(chatStore);
-
 const canLoadMore = computed<boolean>(() => {
   if (chatStore.activeContactId) {
     if (chatStore.getActiveContact.directMessages.length >= 20) {

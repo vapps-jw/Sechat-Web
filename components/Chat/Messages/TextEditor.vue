@@ -60,6 +60,7 @@
 import { scrollToBottom } from "~/utilities/documentFunctions";
 import { SnackbarIcons, LocalStoreTypes } from "~~/utilities/globalEnums";
 import { HubConnectionState } from "@microsoft/signalr";
+import { addUniqueId } from "~/utilities/stringFunctions";
 
 const chatStore = useSechatChatStore();
 const signalRstore = useSignalRStore();
@@ -168,6 +169,12 @@ const pushMessage = async () => {
   if (!chatStore.newMessage) {
     return;
   }
+
+  // if (chatStore.newMessage.includes("<img")) {
+  //   chatStore.newMessage = addUniqueId(chatStore.newMessage, "<img");
+  // }
+
+  console.warn("Message to send", chatStore.newMessage);
 
   if (
     !signalRstore.connection ||

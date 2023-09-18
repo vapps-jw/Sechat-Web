@@ -8,7 +8,7 @@ export const scrollToBottom = (elementId: string) => {
   }
 };
 
-export const listen = (doc) => {
+export const listenToEvent = (doc) => {
   return {
     on: (type, selector, callback) => {
       doc.addEventListener(

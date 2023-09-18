@@ -24,6 +24,16 @@ export const getInitials = (fullName: string) => {
   return initials;
 };
 
+export const addUniqueId = (input: string, tag: string) => {
+  const words = input.split(" ");
+  for (let index = 0; index < words.length; index++) {
+    if (index !== 0 && words[index - 1] === tag) {
+      words.splice(index, 0, `id="${uuidv4()}"`);
+    }
+  }
+  return words.join(" ");
+};
+
 export const stringToColor = (value: string) => {
   let hash = 0;
   for (let i = 0; i < value.length; i++) {

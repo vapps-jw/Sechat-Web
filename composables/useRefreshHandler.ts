@@ -196,12 +196,14 @@ export const useRefreshHandler = () => {
   };
 
   const visibilityChangeRefresh = async () => {
-    console.warn("REFRESH ACTIONS");
+    console.warn("Visibility Change Refresh");
     if (
       signalRStore.connection &&
       signalRStore.connection.state === HubConnectionState.Connected
     ) {
       console.warn("SignalR connected - no updates");
+      console.log("Connecting to Rooms");
+      await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
       updateViewedMessages();
       return;
     }
@@ -261,37 +263,24 @@ export const useRefreshHandler = () => {
     );
 
     try {
-      await Promise.all(promises).then(async (res) => {
-        updateKeys.then(async (res) => {
-          if (!res) {
-            return;
-          }
-          await signalR.connectToRooms(
-            chatStore.availableRooms.map((r) => r.id)
-          );
-          await updateViewedMessages();
-        });
-      });
+      await Promise.all(promises);
+
+      if (signalRStore.connection?.state === HubConnectionState.Connected) {
+        console.log("SignalR Connected, processing Fetch");
+        askForMissingKeys();
+        syncWithOtherDevice();
+        clearUnusedKeys();
+
+        console.log("Connecting to Rooms");
+        await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
+        await updateViewedMessages();
+      }
     } catch (error) {
       console.error("Visibility Change Refresh Error", error);
     } finally {
       appStore.updateLoadingOverlay(false);
     }
   };
-
-  const updateKeys = new Promise<boolean>((resolve, reject) => {
-    if (
-      signalRStore.connection &&
-      signalRStore.connection.state === HubConnectionState.Connected
-    ) {
-      console.log("SignalR Connected, processing Refresh");
-      askForMissingKeys();
-      syncWithOtherDevice();
-      clearUnusedKeys();
-      resolve(true);
-    }
-    resolve(false);
-  });
 
   const updateViewedMessages = async () => {
     console.log(
@@ -411,22 +400,20 @@ export const useRefreshHandler = () => {
 
     try {
       await Promise.all(promises);
-      if (
-        signalRStore.connection &&
-        signalRStore.connection.state === HubConnectionState.Connected
-      ) {
-        console.log("SignalR Connected, processing Refresh");
+
+      if (signalRStore.connection?.state === HubConnectionState.Connected) {
+        console.log("SignalR Connected, processing Fetch");
         askForMissingKeys();
         syncWithOtherDevice();
         clearUnusedKeys();
       }
 
+      console.log("Connecting to Rooms");
       await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
+      await updateViewedMessages();
     } catch (error) {
       console.error("Update Error", error);
     }
-
-    await updateViewedMessages();
   };
 
   const signOutCleanup = async () => {
