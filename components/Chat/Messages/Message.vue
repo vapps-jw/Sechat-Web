@@ -7,7 +7,7 @@
           :active="userStore.getUserName === props.message.nameSentBy"
           :user-name="props.message.nameSentBy"
           :picture="props.image"
-          size="small"
+          size="default"
         />
         <chat-messages-message-options
           :message="props.message"
@@ -70,9 +70,5 @@ const userColor = computed(() => stringToColor(userStore.userProfile.userName));
 <style scoped>
 .tiny-font {
   font-size: x-small;
-}
-.glow {
-  box-shadow: 0 0 4px 2px white, 0 0 4px 2px v-bind(userColor),
-    0 0 6px 4px v-bind(userColor), 0 0 4px 2px v-bind(userColor);
 }
 </style>

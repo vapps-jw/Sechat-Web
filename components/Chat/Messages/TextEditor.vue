@@ -60,7 +60,6 @@
 import { scrollToBottom } from "~/utilities/documentFunctions";
 import { SnackbarIcons, LocalStoreTypes } from "~~/utilities/globalEnums";
 import { HubConnectionState } from "@microsoft/signalr";
-import { addUniqueId } from "~/utilities/stringFunctions";
 
 const chatStore = useSechatChatStore();
 const signalRstore = useSignalRStore();
@@ -80,15 +79,26 @@ const attachAction = () => {
 
 const attachImage = async (e) => {
   if (e.target === undefined) {
-    sechatStore.showErrorSnackbar("Bad Image selected");
+    sechatStore.showErrorSnackbar("Bad file selected");
   }
   chosenFileLoaidng.value = true;
   const files = e.target.files as File[];
+
+  const allowedExtensions = ["png", "jpg", "jpeg"];
+  const extension = files[0].name.split(".").pop();
+  console.log("Chosen File", files[0], extension);
+
+  if (!allowedExtensions.some((e) => e === extension)) {
+    sechatStore.showErrorSnackbar("Only .png .jpg .jpeg allowed");
+    chosenFileLoaidng.value = false;
+    return;
+  }
+
   if (files.length === 0 || !files[0]) {
     chosenFileLoaidng.value = false;
     return;
   }
-  console.log("Chosen File", files);
+
   const result = await imageApi.processChatImage(files[0]);
   if (result.success) {
     console.log("Image Processed", result.data);
