@@ -18,15 +18,17 @@ export const useContactHandlers = () => {
   };
 
   const onContactUpdatedEvent = (data: IContactRequest) => {
-    console.log("ContactUpdatedEvent", data);
+    console.warn("ContactUpdatedEvent", data);
+
+    const dmKey = e2e.getKey(data.id, LocalStoreTypes.E2EDM);
+    console.log("DM Key", dmKey);
+    if (dmKey) {
+      data.hasKey = true;
+    }
+
     if (data.invitedName === userStore.getUserName) {
       data.displayName = data.inviterName;
     } else {
-      const dmKey = e2e.getKey(data.id, LocalStoreTypes.E2EDM);
-      console.log("DM Key", dmKey);
-      if (dmKey) {
-        data.hasKey = true;
-      }
       data.displayName = data.invitedName;
     }
     chatStore.updateContact(data);

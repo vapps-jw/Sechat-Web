@@ -40,7 +40,7 @@
               <ChatContactsGetNewKey :contact="uc" />
             </v-list-item>
 
-            <v-list-item>
+            <v-list-item v-if="!uc.blocked">
               <v-btn
                 @click="async () => deleteContact(uc.id)"
                 class="mx-1"
@@ -108,6 +108,7 @@
         ></v-btn>
 
         <v-badge
+          v-if="uc.approved && !uc.blocked && uc.hasKey"
           :model-value="pendingMessagesPresent(uc)"
           :content="pendingMessagesCount(uc)"
           color="error"
