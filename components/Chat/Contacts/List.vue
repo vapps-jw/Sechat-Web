@@ -40,7 +40,7 @@
               <ChatContactsGetNewKey :contact="uc" />
             </v-list-item>
 
-            <v-list-item v-if="!uc.blocked">
+            <v-list-item>
               <v-btn
                 @click="async () => deleteContact(uc.id)"
                 class="mx-1"
@@ -48,16 +48,18 @@
                 >Delete</v-btn
               ></v-list-item
             >
-            <v-list-item>
+            <v-list-item
+              v-if="uc.blocked && uc.blockedByName === userStore.getUserName"
+            >
               <v-btn
-                v-if="uc.blocked && uc.blockedByName === userStore.getUserName"
                 @click="async () => allowContact(uc.id)"
                 class="mx-1"
                 color="success"
                 >Allow</v-btn
               >
+            </v-list-item>
+            <v-list-item v-if="!uc.blocked">
               <v-btn
-                v-else
                 @click="async () => blockContact(uc.id)"
                 class="mx-1"
                 color="error"
