@@ -32,7 +32,7 @@ class Trie {
 
   //find all word with given prefix, call recursion function
   //Time O(n), Space O(n), n is number of nodes involved (include prefix and branches)
-  autocomplete(word) {
+  autocomplete(word: string) {
     var res = new Array();
     var node = this.root;
     for (let ch of word) {
