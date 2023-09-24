@@ -1,4 +1,4 @@
-class TrieNode {
+export class TrieNode {
   data: string;
   root: TrieNode;
   isEnd: boolean;
@@ -12,7 +12,7 @@ class TrieNode {
   }
 }
 
-class Trie {
+export class Trie {
   //Constructor, Time O(1), Space O(1)
   root: TrieNode;
 
