@@ -79,6 +79,28 @@ export const useChatApi = () => {
     return rooms.value;
   };
 
+  const getRoom = async (id: string): Promise<IRoom> => {
+    console.log("Getting Rooms from API");
+    const { error: apiError, data: room } = await useFetch<IRoom>(
+      `${config.public.apiBase}/chat/room-initial-load/${id}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    console.log("Rooms Fetched", room.value);
+    return room.value;
+  };
+
   const getContact = async (contactId: number) => {
     console.log("Getting Cotnact from API");
     const { error: apiError, data: uc } = await useFetch<IContactRequest>(
@@ -294,6 +316,7 @@ export const useChatApi = () => {
   };
 
   return {
+    getRoom,
     clearChat,
     getContact,
     markDirectMessageAsViewed,

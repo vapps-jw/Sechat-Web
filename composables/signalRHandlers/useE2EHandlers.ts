@@ -5,6 +5,7 @@ import {
 } from "~~/utilities/globalEnums";
 
 export const useE2EHandlers = () => {
+  const chatApi = useChatApi();
   const chatStore = useSechatChatStore();
   const signalRStore = useSignalRStore();
   const e2e = useE2Encryption();
@@ -65,7 +66,7 @@ export const useE2EHandlers = () => {
     signalRStore.connection.send(SignalRHubMethods.ShareRoomKey, keyToShare);
   };
 
-  const onRoomKeyIncoming = (message: RoomSharedKey) => {
+  const onRoomKeyIncoming = async (message: RoomSharedKey) => {
     console.warn("onRoomKeyIncoming", message);
 
     const newKey: E2EKey = {
@@ -76,7 +77,14 @@ export const useE2EHandlers = () => {
     const result = e2e.addKey(newKey, LocalStoreTypes.E2EROOMS);
     console.log("Key Updated", result);
 
-    const room = chatStore.availableRooms.find((c) => c.id === message.id);
+    let room = chatStore.availableRooms.find((c) => c.id === message.id);
+    if (room.messages.length === 0) {
+      console.log("Pulling updated room");
+      const res = await chatApi.getRoom(room.id);
+      chatStore.addRoom(res);
+      room = chatStore.availableRooms.find((c) => c.id === message.id);
+    }
+
     e2e.tryDecryptRoom(room);
   };
 

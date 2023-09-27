@@ -7,7 +7,7 @@ export class TrieNode {
   constructor(c: string) {
     this.data = c;
     this.isEnd = false;
-    this.children = new Map(); //map
+    this.children = new Map();
   }
 }
 
