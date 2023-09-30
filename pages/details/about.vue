@@ -10,8 +10,8 @@
           text="Yes it is an it will be, but donations are welcome (there will be a button for that using Stripe in the future)"
         ></v-expansion-panel>
         <v-expansion-panel
-          title="Is my messages encrypted?"
-          text="Messages and calendar data are E2E encrypted. Only you have the keys, so keep it safe and don`t delete it by mistake."
+          title="How about security?"
+          text="Messages and calendar data are E2E encrypted. Only you have the keys, so keep them safe and don`t delete them by mistake."
         ></v-expansion-panel>
         <v-expansion-panel
           title="What about video calls?"

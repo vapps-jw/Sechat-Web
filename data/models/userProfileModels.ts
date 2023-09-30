@@ -5,3 +5,9 @@ type ProcessedImageResponse = {
 type ProfileImageForm = {
   data: string;
 };
+
+type SuggestedContact = {
+  level: number;
+  userName: string;
+  profilePicture: string;
+};
