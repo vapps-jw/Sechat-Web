@@ -11,7 +11,7 @@
         ></v-expansion-panel>
         <v-expansion-panel
           title="Is my messages encrypted?"
-          text="Messages are stored encrypted on the server by default, we use TLS 1.3, we do not store any personal data, when you delete a Room all messages are being purged along with the key used to encrypt them. E2E encryption can be chosen during Room creation. It`s open source so you can check the code."
+          text="Messages and calendar data are E2E encrypted. Only you have the keys, so keep it safe and don`t delete it by mistake."
         ></v-expansion-panel>
         <v-expansion-panel
           title="What about video calls?"
@@ -23,7 +23,7 @@
         ></v-expansion-panel>
         <v-expansion-panel
           title="Where are data being stored?"
-          text="In a data center in the UK (Akamai/Linode)"
+          text="Akamai data center in the UK"
         ></v-expansion-panel>
         <v-expansion-panel
           title="Can I share my opinion about Sechat?"
