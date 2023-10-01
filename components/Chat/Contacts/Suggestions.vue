@@ -50,7 +50,11 @@
           </v-list-item>
         </template>
         <template v-slot:empty>
-          <ChatSechatSeparator message="Thats all" />
+          <ChatSechatSeparator
+            v-if="chatStore.suggestedContacts.length === 0"
+            message="Nothing new"
+          />
+          <ChatSechatSeparator v-else message="Thats all" />
         </template>
         <template v-slot:error> Error </template>
       </v-infinite-scroll>
