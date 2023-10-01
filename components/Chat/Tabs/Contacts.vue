@@ -40,6 +40,8 @@
         ></v-alert>
         <ChatContactsList />
       </v-card-text>
+      <v-divider class="mx-3" />
+      <ChatContactsSuggestions @invite-user="createInvitation" />
     </v-card>
   </v-container>
 </template>
@@ -73,5 +75,8 @@ const createInvitation = async (userName: string) => {
   }
 
   sechatStore.showSuccessSnackbar("Invitation sent");
+  chatStore.suggestedContacts = chatStore.suggestedContacts.filter(
+    (sc) => sc.userName !== userName
+  );
 };
 </script>

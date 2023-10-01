@@ -7,7 +7,6 @@ type ProfileImageForm = {
 };
 
 type SuggestedContact = {
-  level: number;
   userName: string;
   profilePicture: string;
 };
