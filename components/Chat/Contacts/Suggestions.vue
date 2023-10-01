@@ -49,7 +49,9 @@
             </template>
           </v-list-item>
         </template>
-        <template v-slot:empty> Thats all </template>
+        <template v-slot:empty>
+          <ChatSechatSeparator message="Thats all" />
+        </template>
         <template v-slot:error> Error </template>
       </v-infinite-scroll>
     </v-card>
