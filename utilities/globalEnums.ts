@@ -9,6 +9,7 @@ export const SnackbarIcons = {
 
 export const ImageTypes = {
   ChatImage: "data:image/jepg;base64,",
+  ChatViedo: "data:video/mp4;base64,",
 };
 
 export const SnackbarMessages = {

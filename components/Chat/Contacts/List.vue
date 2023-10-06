@@ -125,24 +125,15 @@
           >
           </v-btn>
         </v-badge>
-        <v-tooltip
+        <v-btn
           v-if="uc.approved && !uc.blocked && !uc.hasKey"
-          v-model="keySyncTooltip"
-          location="bottom"
+          @click="keySyncInfo(uc.displayName)"
+          icon="mdi-key-wireless"
+          color="warning"
+          size="small"
+          variant="outlined"
         >
-          <template v-slot:activator="{ props }">
-            <v-btn
-              @click="keySyncInfo(uc.displayName)"
-              v-bind="props"
-              icon="mdi-key-wireless"
-              color="warning"
-              size="small"
-              variant="outlined"
-            >
-            </v-btn>
-          </template>
-          <span>Waiting for other user to sync the key</span>
-        </v-tooltip>
+        </v-btn>
       </template>
     </v-list-item>
   </v-list>

@@ -371,8 +371,9 @@ export const useSechatChatStore = defineStore({
     },
   },
   getters: {
-    messageContainsImage: (state) =>
-      state.newMessage?.includes(ImageTypes.ChatImage),
+    messageContainsGraphic: (state) =>
+      state.newMessage?.includes(ImageTypes.ChatImage) ||
+      state.newMessage?.includes(ImageTypes.ChatViedo),
     getNavColor: (state): string => {
       if (state.activeChatTab === ChatViews.AppsSelection) {
         return "warning";

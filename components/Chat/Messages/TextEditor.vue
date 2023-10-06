@@ -26,7 +26,7 @@
       <v-btn
         :loading="chosenFileLoaidng"
         :disabled="chosenFileLoaidng"
-        v-if="!chatStore.messageContainsImage"
+        v-if="!chatStore.messageContainsGraphic"
         class="mr-4"
         icon="mdi-paperclip"
         size="small"
@@ -67,6 +67,7 @@ const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
 const e2e = useE2Encryption();
 const imageApi = useImageApi();
+const videoApi = useVideoApi();
 
 const chosenFile = ref<File[]>(null);
 const chosenFileLoaidng = ref<boolean>(false);
@@ -84,12 +85,12 @@ const attachImage = async (e) => {
   chosenFileLoaidng.value = true;
   const files = e.target.files as File[];
 
-  const allowedExtensions = ["png", "jpg", "jpeg"];
+  const allowedExtensions = ["png", "jpg", "jpeg, mp4"];
   const extension = files[0].name.split(".").pop();
   console.log("Chosen File", files[0], extension);
 
   if (!allowedExtensions.some((e) => e === extension)) {
-    sechatStore.showErrorSnackbar("Only .png .jpg .jpeg allowed");
+    sechatStore.showErrorSnackbar("Only .png .jpg .jpeg .mp4 are allowed");
     chosenFileLoaidng.value = false;
     return;
   }
@@ -99,13 +100,23 @@ const attachImage = async (e) => {
     return;
   }
 
-  const result = await imageApi.processChatImage(files[0]);
-  if (result.success) {
-    console.log("Image Processed", result.data);
-    chatStore.newMessage = result.data;
-  } else {
-    sechatStore.showErrorSnackbar("Something went wrong");
+  if (["png", "jpg", "jpeg"].some((e) => e === extension)) {
+    const result = await imageApi.processChatImage(files[0]);
+    if (result.success) {
+      console.log("Image Processed", result.data);
+      chatStore.newMessage = result.data;
+    } else {
+      sechatStore.showErrorSnackbar("Something went wrong");
+    }
+  } else if (extension === "mp4") {
+    const result = await videoApi.processChatVideo(files[0]);
+    if (!result.success) {
+      sechatStore.showErrorSnackbar(result.errorMessage);
+    } else {
+      console.log("Video Processed");
+    }
   }
+
   chosenFileLoaidng.value = false;
   chosenFile.value = null;
 };

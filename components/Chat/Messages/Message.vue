@@ -54,8 +54,6 @@
 </template>
 
 <script setup lang="ts">
-import { stringToColor } from "~/utilities/stringFunctions";
-
 const appStore = useSechatAppStore();
 const userStore = useUserStore();
 
@@ -64,7 +62,6 @@ interface PropsModel {
   image?: string;
 }
 const props = defineProps<PropsModel>();
-const userColor = computed(() => stringToColor(userStore.userProfile.userName));
 </script>
 
 <style scoped>
