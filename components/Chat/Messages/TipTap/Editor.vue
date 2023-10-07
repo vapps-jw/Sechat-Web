@@ -54,10 +54,9 @@ const Video = Node.create({
       controls: {
         default: true,
       },
-      // onclick: {
-      //   default:
-      //     "this.paused ? this.play() : this.pause(); arguments[0].preventDefault();",
-      // },
+      class: {
+        default: "message-video",
+      },
     };
   },
 
@@ -70,6 +69,7 @@ const Video = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
+    console.warn("attributes", HTMLAttributes);
     return ["video", mergeAttributes(HTMLAttributes)];
   },
 });
@@ -98,9 +98,10 @@ const handleSharedVideo = (video: string) => {
 
   const splittedData = video.split("###");
 
-  console.warn("videoData", splittedData[0]);
-  console.warn("thumbnailData", splittedData[1]);
+  // console.warn("videoData", splittedData[0]);
+  // console.warn("thumbnailData", splittedData[1]);
 
+  editor.value?.commands.updateAttributes("video", { class: "message-video" });
   editor.value?.commands.insertContent(
     `<video src="${splittedData[0]}" poster="${splittedData[1]}"></video>`
   );

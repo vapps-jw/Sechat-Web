@@ -133,3 +133,7 @@
   max-height: 97dvh;
   max-width: 97dvw;
 }
+
+.message-video {
+  max-width: 83dvw;
+}

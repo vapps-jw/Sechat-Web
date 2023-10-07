@@ -26,7 +26,7 @@ export const useVideoApi = () => {
     if (apiError.value) {
       const result: VideoProcessingResult = {
         success: false,
-        errorMessage: apiError.value.data,
+        errorMessage: apiError.value.data.detail,
       };
       return result;
     }
