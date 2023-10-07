@@ -114,7 +114,7 @@ const attachImage = async (e) => {
     if (!result.success) {
       sechatStore.showErrorSnackbar(result.errorMessage);
     } else {
-      console.log("Video Processed", result.success);
+      chatStore.newMessage = `${result.video}###${result.thumbnail}`;
     }
   }
 
