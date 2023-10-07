@@ -24,7 +24,7 @@
       </template>
       <template v-slot:append>
         <v-badge
-          class="mr-5"
+          inline
           v-if="room.messages.filter((m) => !m.wasViewed).length > 0"
           :content="room.messages.filter((m) => !m.wasViewed).length"
           color="error"

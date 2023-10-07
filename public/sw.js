@@ -21,7 +21,7 @@ self.addEventListener("push", async (event) => {
 
   const clientIsFocused = await isClientFocused();
   if (clientIsFocused) {
-    console.error("Service Worker >>> Window Visible...");
+    console.warn("Service Worker >>> Window Visible...");
     return;
   }
 

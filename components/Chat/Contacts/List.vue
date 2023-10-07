@@ -90,15 +90,6 @@
         </div>
       </template>
       <template v-slot:append>
-        <!-- <v-badge
-          v-if="pendingMessagesPresent(uc)"
-          class="mr-3"
-          :model-value="pendingMessagesPresent(uc)"
-          :content="pendingMessagesCount(uc)"
-          color="error"
-        >
-          <v-icon>mdi-email</v-icon>
-        </v-badge> -->
         <v-btn
           class="mr-3"
           v-if="uc.approved && !uc.blocked && uc.hasKey"
@@ -110,6 +101,8 @@
         ></v-btn>
 
         <v-badge
+          offset-x="8"
+          offset-y="8"
           v-if="uc.approved && !uc.blocked && uc.hasKey"
           :model-value="pendingMessagesPresent(uc)"
           :content="pendingMessagesCount(uc)"
