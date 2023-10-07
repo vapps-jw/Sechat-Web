@@ -12,7 +12,7 @@ export const useVideoApi = () => {
     file: File
   ): Promise<VideoProcessingResult> => {
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("video", file);
     const { error: apiError, data: processedImage } =
       await useFetch<VideoProcessingResult>(
         `${config.public.apiBase}/videos/process-chat-video`,

@@ -40,7 +40,7 @@
         ref="imageToUpload"
         @change="attachImage"
         type="file"
-        accept="image/png, image/jpeg, image/jpg"
+        accept="image/png, image/jpeg, image/jpg, video/mp4"
         v-model="chosenFile"
       >
       </v-file-input>
@@ -85,7 +85,7 @@ const attachImage = async (e) => {
   chosenFileLoaidng.value = true;
   const files = e.target.files as File[];
 
-  const allowedExtensions = ["png", "jpg", "jpeg, mp4"];
+  const allowedExtensions = ["png", "jpg", "jpeg", "mp4"];
   const extension = files[0].name.split(".").pop();
   console.log("Chosen File", files[0], extension);
 
@@ -109,11 +109,12 @@ const attachImage = async (e) => {
       sechatStore.showErrorSnackbar("Something went wrong");
     }
   } else if (extension === "mp4") {
+    console.log("Processing video");
     const result = await videoApi.processChatVideo(files[0]);
     if (!result.success) {
       sechatStore.showErrorSnackbar(result.errorMessage);
     } else {
-      console.log("Video Processed");
+      console.log("Video Processed", result.success);
     }
   }
 
