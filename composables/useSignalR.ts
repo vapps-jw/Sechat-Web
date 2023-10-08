@@ -246,6 +246,7 @@ export const useSignalR = () => {
   };
 
   const reconnectedActions = async () => {
+    appStore.updateLoadingOverlayWithMessage(true, "Updating Messages...");
     console.warn("RECONNECTED ACTIONS");
     const promises = [];
 
@@ -306,6 +307,8 @@ export const useSignalR = () => {
       });
     } catch (error) {
       console.error("Reconnection Refresh Error", error);
+    } finally {
+      appStore.updateLoadingOverlay(false);
     }
   };
 

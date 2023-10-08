@@ -5,6 +5,7 @@ export const useSechatAppStore = defineStore({
   state: () => {
     return {
       loadingOverlayVisible: <boolean>false,
+      loadingOverlayMessage: <string>"",
       localLanguage: <string>null,
       snackbarData: <ISanckbar>{
         snackbar: false,
@@ -24,6 +25,15 @@ export const useSechatAppStore = defineStore({
     },
     updateLoadingOverlay(value: boolean) {
       this.loadingOverlayVisible = value;
+      if (!value) {
+        this.loadingOverlayMessage = "";
+      }
+    },
+    updateLoadingOverlayWithMessage(value: boolean, message: string) {
+      this.loadingOverlayVisible = value;
+      if (value) {
+        this.loadingOverlayMessage = message;
+      }
     },
     updateSnackbar(value: ISanckbar) {
       this.snackbarData = value;

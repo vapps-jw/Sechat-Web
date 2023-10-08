@@ -46,7 +46,7 @@ export const useRefreshHandler = () => {
   };
 
   const handleOnMountedLoad = async () => {
-    appStore.updateLoadingOverlay(true);
+    appStore.updateLoadingOverlayWithMessage(true, "Loading Messages...");
     await signalRStore.closeConnection();
     signalRStore.$reset();
     chatStore.$reset();
@@ -207,7 +207,7 @@ export const useRefreshHandler = () => {
       updateViewedMessages();
       return;
     }
-    appStore.updateLoadingOverlay(true);
+    appStore.updateLoadingOverlayWithMessage(true, "Updating Messages...");
 
     await signalRStore.closeConnection();
     signalRStore.$reset();
