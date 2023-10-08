@@ -14,8 +14,14 @@
       >
         <template v-slot:prepend>
           <ChatUserAvatar
+            class="ma-2"
             :active="false"
             :user-name="u.userName"
+            :picture="
+              u.userName === userStore.getUserName
+                ? userStore.userProfile.profilePicture
+                : chatStore.profilePictures.get(u.userName)
+            "
             size="default"
           />
         </template>
