@@ -15,6 +15,7 @@ describe("access actions", () => {
   });
 
   it("sign out", () => {
+    cy.go("back");
     cy.get("[data-cy='sign-out']").should("be.visible");
     cy.get("[data-cy='sign-out']").click();
     cy.reload();

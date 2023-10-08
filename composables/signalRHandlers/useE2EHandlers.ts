@@ -11,7 +11,7 @@ export const useE2EHandlers = () => {
   const e2e = useE2Encryption();
 
   const onDMKeyRequested = async (message: DMKeyRequest) => {
-    console.warn("DMKeyRequested by", message.receipient);
+    console.log("DMKeyRequested by", message.receipient);
 
     const key = e2e.getKey(message.id, LocalStoreTypes.E2EDM);
     if (!key) {

@@ -266,24 +266,26 @@ export const useSignalR = () => {
     // Contacts
 
     promises.push(
-      chatApi.getConstacts().then((res) => {
-        res.forEach((cr) => {
-          e2e.tryDecryptContact(cr);
-        });
-        if (
-          chatStore.activeContactId &&
-          !res.some((c) => c.id === chatStore.activeContactId)
-        ) {
-          chatStore.activeContactId = null;
-        }
-        chatStore.loadContacts(res);
-      })
+      chatApi
+        .getConstactsUpdate(chatStore.lastMessageInContacts)
+        .then((res) => {
+          res.forEach((cr) => {
+            e2e.tryDecryptContact(cr);
+          });
+          if (
+            chatStore.activeContactId &&
+            !res.some((c) => c.id === chatStore.activeContactId)
+          ) {
+            chatStore.activeContactId = null;
+          }
+          chatStore.updateContacts(res);
+        })
     );
 
     // Rooms
 
     promises.push(
-      chatApi.getRooms().then((res) => {
+      chatApi.getRoomUpdate(chatStore.lastMessageInRooms).then((res) => {
         res.forEach((room) => {
           e2e.tryDecryptRoom(room);
         });
@@ -293,7 +295,7 @@ export const useSignalR = () => {
         ) {
           chatStore.activeRoomId = null;
         }
-        chatStore.loadRooms(res);
+        chatStore.updateRooms(res);
       })
     );
 

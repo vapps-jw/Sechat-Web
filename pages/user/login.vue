@@ -102,7 +102,7 @@ const onSubmit = async () => {
 
       try {
         const result = await userApi.getGlobalSettings();
-        console.warn("Updating Hlobal Settings", result);
+        console.warn("Updating Global Settings", result);
         userStore.globalSettings = result;
       } catch (error) {
         console.error(error);

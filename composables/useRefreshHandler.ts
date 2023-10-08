@@ -64,7 +64,7 @@ export const useRefreshHandler = () => {
         res.forEach((room) => {
           e2e.tryDecryptRoom(room);
         });
-        return chatStore.loadRooms(res);
+        chatStore.loadRooms(res);
       }),
     ]);
 
@@ -85,11 +85,11 @@ export const useRefreshHandler = () => {
       return;
     }
 
-    await visibilityChangeRefresh();
+    await updateRefresh();
   };
 
   const syncWithOtherDevice = () => {
-    console.warn("Synchronizing missing keys with other devices");
+    console.log("Synchronizing missing keys with other devices");
     const missingDmKeys = chatStore.availableContacts.filter(
       (item) => item.approved && !item.hasKey
     );
@@ -101,7 +101,7 @@ export const useRefreshHandler = () => {
         keyHolder: userStore.getUserName,
       };
 
-      console.warn("Synchronizing DM key", missingKey.id);
+      console.log("Synchronizing DM key", missingKey.id);
       signalRStore.connection.send(SignalRHubMethods.RequestDMKey, request);
     });
 
@@ -115,11 +115,11 @@ export const useRefreshHandler = () => {
         receipient: userStore.getUserName,
       };
 
-      console.warn("Synchronizing Room key", missingKey.id);
+      console.log("Synchronizing Room key", missingKey.id);
       signalRStore.connection.send(SignalRHubMethods.RequestRoomKey, request);
     });
 
-    console.warn("Synchronizing Master key");
+    console.log("Synchronizing Master key");
     signalRStore.connection.send(SignalRHubMethods.RequestMasterKey);
   };
 
@@ -187,7 +187,7 @@ export const useRefreshHandler = () => {
   const handleOnlineChange = async () => {
     console.warn("Online status changed");
     appStore.updateOnlineState(true);
-    await refreshActions();
+    await updateRefresh();
     appStore.updateLoadingOverlay(false);
   };
 
@@ -195,8 +195,8 @@ export const useRefreshHandler = () => {
     appStore.updateLoadingOverlay(true);
   };
 
-  const visibilityChangeRefresh = async () => {
-    console.warn("Visibility Change Refresh");
+  const updateRefresh = async () => {
+    console.warn("Update Refresh");
     if (
       signalRStore.connection &&
       signalRStore.connection.state === HubConnectionState.Connected
@@ -241,7 +241,7 @@ export const useRefreshHandler = () => {
         ) {
           chatStore.activeContactId = null;
         }
-        chatStore.loadContacts(res);
+        chatStore.updateContacts(res);
       })
     );
 
@@ -258,7 +258,7 @@ export const useRefreshHandler = () => {
         ) {
           chatStore.activeRoomId = null;
         }
-        chatStore.loadRooms(res);
+        chatStore.updateRooms(res);
       })
     );
 
@@ -343,8 +343,8 @@ export const useRefreshHandler = () => {
     }
   };
 
-  const refreshActions = async () => {
-    console.warn("REFRESH ACTIONS");
+  const fullRefresh = async () => {
+    console.warn("Full Refresh");
     await signalRStore.closeConnection();
     signalRStore.$reset();
     await signalR.connect();
@@ -438,8 +438,8 @@ export const useRefreshHandler = () => {
   };
 
   return {
-    refreshActions,
-    visibilityChangeRefresh,
+    fullRefresh,
+    updateRefresh,
     signOutCleanup,
     clearUnusedKeys,
     syncWithOtherDevice,
