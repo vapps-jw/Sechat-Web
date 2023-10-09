@@ -84,7 +84,6 @@ export const useRefreshHandler = () => {
     if (document.visibilityState !== VisibilityStates.VISIBLE) {
       return;
     }
-
     await updateRefresh();
   };
 
@@ -197,6 +196,9 @@ export const useRefreshHandler = () => {
 
   const updateRefresh = async () => {
     console.warn("Update Refresh");
+    console.log("Stored Contacts", chatStore.availableContacts);
+    console.log("Stored Rooms", chatStore.availableRooms);
+
     if (
       signalRStore.connection &&
       signalRStore.connection.state === HubConnectionState.Connected
@@ -207,7 +209,11 @@ export const useRefreshHandler = () => {
       updateViewedMessages();
       return;
     }
+
     appStore.updateLoadingOverlayWithMessage(true, "Updating Messages...");
+
+    console.warn("Last Room message", chatStore.lastMessageInRooms);
+    console.warn("Last DM message", chatStore.lastMessageInContacts);
 
     await signalRStore.closeConnection();
     signalRStore.$reset();
@@ -229,38 +235,74 @@ export const useRefreshHandler = () => {
     }
 
     // Contacts
-
-    promises.push(
-      chatApi.getConstacts().then((res) => {
-        res.forEach((cr) => {
-          e2e.tryDecryptContact(cr);
-        });
-        if (
-          chatStore.activeContactId &&
-          !res.some((c) => c.id === chatStore.activeContactId)
-        ) {
-          chatStore.activeContactId = null;
-        }
-        chatStore.updateContacts(res);
-      })
-    );
+    const lastDM = chatStore.lastMessageInContacts;
+    if (lastDM != 0) {
+      promises.push(
+        chatApi
+          .getConstactsUpdate(chatStore.lastMessageInContacts)
+          .then((res) => {
+            res.forEach((cr) => {
+              e2e.tryDecryptContact(cr);
+            });
+            if (
+              chatStore.activeContactId &&
+              !res.some((c) => c.id === chatStore.activeContactId)
+            ) {
+              chatStore.activeContactId = null;
+            }
+            chatStore.updateContacts(res);
+          })
+      );
+    } else {
+      promises.push(
+        chatApi.getConstacts().then((res) => {
+          res.forEach((cr) => {
+            e2e.tryDecryptContact(cr);
+          });
+          if (
+            chatStore.activeContactId &&
+            !res.some((c) => c.id === chatStore.activeContactId)
+          ) {
+            chatStore.activeContactId = null;
+          }
+          chatStore.loadContacts(res);
+        })
+      );
+    }
 
     // Rooms
-
-    promises.push(
-      chatApi.getRooms().then((res) => {
-        res.forEach((room) => {
-          e2e.tryDecryptRoom(room);
-        });
-        if (
-          chatStore.activeRoomId &&
-          !res.some((r) => r.id === chatStore.activeRoomId)
-        ) {
-          chatStore.activeRoomId = null;
-        }
-        chatStore.updateRooms(res);
-      })
-    );
+    const lastRM = chatStore.lastMessageInRooms;
+    if (lastRM != 0) {
+      promises.push(
+        chatApi.getRoomsUpdate(chatStore.lastMessageInRooms).then((res) => {
+          res.forEach((room) => {
+            e2e.tryDecryptRoom(room);
+          });
+          if (
+            chatStore.activeRoomId &&
+            !res.some((r) => r.id === chatStore.activeRoomId)
+          ) {
+            chatStore.activeRoomId = null;
+          }
+          chatStore.updateRooms(res);
+        })
+      );
+    } else {
+      promises.push(
+        chatApi.getRooms().then((res) => {
+          res.forEach((room) => {
+            e2e.tryDecryptRoom(room);
+          });
+          if (
+            chatStore.activeRoomId &&
+            !res.some((r) => r.id === chatStore.activeRoomId)
+          ) {
+            chatStore.activeRoomId = null;
+          }
+          chatStore.loadRooms(res);
+        })
+      );
+    }
 
     try {
       await Promise.all(promises);

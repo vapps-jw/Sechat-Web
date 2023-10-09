@@ -265,11 +265,27 @@ export const useSignalR = () => {
     }
 
     // Contacts
-
-    promises.push(
-      chatApi
-        .getConstactsUpdate(chatStore.lastMessageInContacts)
-        .then((res) => {
+    const lastDM = chatStore.lastMessageInContacts;
+    if (lastDM != 0) {
+      promises.push(
+        chatApi
+          .getConstactsUpdate(chatStore.lastMessageInContacts)
+          .then((res) => {
+            res.forEach((cr) => {
+              e2e.tryDecryptContact(cr);
+            });
+            if (
+              chatStore.activeContactId &&
+              !res.some((c) => c.id === chatStore.activeContactId)
+            ) {
+              chatStore.activeContactId = null;
+            }
+            chatStore.updateContacts(res);
+          })
+      );
+    } else {
+      promises.push(
+        chatApi.getConstacts().then((res) => {
           res.forEach((cr) => {
             e2e.tryDecryptContact(cr);
           });
@@ -279,26 +295,44 @@ export const useSignalR = () => {
           ) {
             chatStore.activeContactId = null;
           }
-          chatStore.updateContacts(res);
+          chatStore.loadContacts(res);
         })
-    );
+      );
+    }
 
     // Rooms
-
-    promises.push(
-      chatApi.getRoomUpdate(chatStore.lastMessageInRooms).then((res) => {
-        res.forEach((room) => {
-          e2e.tryDecryptRoom(room);
-        });
-        if (
-          chatStore.activeRoomId &&
-          !res.some((r) => r.id === chatStore.activeRoomId)
-        ) {
-          chatStore.activeRoomId = null;
-        }
-        chatStore.updateRooms(res);
-      })
-    );
+    const lastRM = chatStore.lastMessageInRooms;
+    if (lastRM != 0) {
+      promises.push(
+        chatApi.getRoomsUpdate(chatStore.lastMessageInRooms).then((res) => {
+          res.forEach((room) => {
+            e2e.tryDecryptRoom(room);
+          });
+          if (
+            chatStore.activeRoomId &&
+            !res.some((r) => r.id === chatStore.activeRoomId)
+          ) {
+            chatStore.activeRoomId = null;
+          }
+          chatStore.updateRooms(res);
+        })
+      );
+    } else {
+      promises.push(
+        chatApi.getRooms().then((res) => {
+          res.forEach((room) => {
+            e2e.tryDecryptRoom(room);
+          });
+          if (
+            chatStore.activeRoomId &&
+            !res.some((r) => r.id === chatStore.activeRoomId)
+          ) {
+            chatStore.activeRoomId = null;
+          }
+          chatStore.loadRooms(res);
+        })
+      );
+    }
 
     try {
       await Promise.all(promises).then(async (res) => {

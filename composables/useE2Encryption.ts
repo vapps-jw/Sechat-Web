@@ -48,7 +48,6 @@ export const useE2Encryption = () => {
         }
         dm.decrypted = false;
       });
-      sechatStore.updateContact(cr);
       return;
     }
     console.warn("Decrypting Contact", cr, key);
@@ -64,7 +63,6 @@ export const useE2Encryption = () => {
       dm.text = decrypted;
       dm.decrypted = true;
     });
-    sechatStore.updateContact(cr);
   };
 
   const tryDecryptRoom = (room: IRoom) => {
@@ -74,12 +72,14 @@ export const useE2Encryption = () => {
       console.warn("Room Key not found", room);
       room.hasKey = false;
       room.messages?.forEach((dm) => (dm.decrypted = false));
-      sechatStore.replaceRoom(room);
       return;
     }
     console.warn("Decrypting Room", room, key);
     room.hasKey = true;
     room.messages?.forEach((message) => {
+      if (message.decrypted) {
+        return;
+      }
       const decrypted = decryptMessage(message.text, key);
       if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
         message.error = true;
@@ -87,7 +87,6 @@ export const useE2Encryption = () => {
       message.text = decrypted;
       message.decrypted = true;
     });
-    sechatStore.replaceRoom(room);
   };
 
   const encryptMessage = (data: string, key: E2EKey): string => {

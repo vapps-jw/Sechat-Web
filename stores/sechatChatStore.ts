@@ -166,11 +166,8 @@ export const useSechatChatStore = defineStore({
         pp.set(uc.displayName, uc.profileImage);
       });
 
-      const newContacts = this.availableContacts.filter(
+      const newContacts = updates.filter(
         (nc) => !this.availableContacts.some((ac) => ac.id === nc.id)
-      );
-      const presentContacts = updates.filter((nr) =>
-        this.availableContacts.some((ac) => ac.id === nr.id)
       );
 
       newContacts.forEach((nc) => {
@@ -178,7 +175,7 @@ export const useSechatChatStore = defineStore({
       });
 
       this.availableContacts.forEach((ac) => {
-        const updatedContact = presentContacts.find((pc) => pc.id == ac.id);
+        const updatedContact = updates.find((pc) => pc.id == ac.id);
         if (updatedContact) {
           ac.approved = updatedContact.approved;
           ac.blocked = updatedContact.blocked;
@@ -227,21 +224,18 @@ export const useSechatChatStore = defineStore({
       const newRooms = updates.filter(
         (nr) => !this.availableRooms.some((ar) => ar.id === nr.id)
       );
-      const presentRooms = updates.filter((nr) =>
-        this.availableRooms.some((ar) => ar.id === nr.id)
-      );
 
       newRooms.forEach((newRoom) => {
         this.availableRooms.push(newRoom);
       });
 
-      this.availableRooms.forEach((r) => {
-        const updatedRoom = presentRooms.find((ur) => ur.id == r.id);
+      this.availableRooms.forEach((room) => {
+        const updatedRoom = updates.find((ur) => ur.id == room.id);
         if (updatedRoom) {
           updatedRoom.messages.forEach((msg) => {
-            r.messages.push(msg);
+            room.messages.push(msg);
           });
-          r.members = updatedRoom.members;
+          room.members = updatedRoom.members;
         }
       });
 
@@ -413,16 +407,28 @@ export const useSechatChatStore = defineStore({
   getters: {
     lastMessageInRooms: (state): number => {
       const allMessages = <IMessage[]>[];
+      if (state.availableRooms.length == 0) {
+        return 0;
+      }
       state.availableRooms.forEach((ar) => {
         allMessages.push(...ar.messages);
       });
+      if (allMessages.length == 0) {
+        return 0;
+      }
       return Math.max(...allMessages.map((m) => m.id));
     },
     lastMessageInContacts: (state): number => {
       const allMessages = <IMessage[]>[];
+      if (state.availableContacts.length == 0) {
+        return 0;
+      }
       state.availableContacts.forEach((ac) => {
         allMessages.push(...ac.directMessages);
       });
+      if (allMessages.length == 0) {
+        return 0;
+      }
       return Math.max(...allMessages.map((m) => m.id));
     },
     messageContainsGraphic: (state) =>

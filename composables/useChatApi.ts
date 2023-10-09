@@ -111,7 +111,7 @@ export const useChatApi = () => {
     return rooms.value;
   };
 
-  const getRoomUpdate = async (lastMessage: number): Promise<IRoom[]> => {
+  const getRoomsUpdate = async (lastMessage: number): Promise<IRoom[]> => {
     console.log("Getting Rooms Update from API", lastMessage);
     const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
       `${config.public.apiBase}/chat/rooms-update/${lastMessage}`,
@@ -370,7 +370,7 @@ export const useChatApi = () => {
   };
 
   return {
-    getRoomUpdate,
+    getRoomsUpdate,
     getConstactsUpdate,
     getRoom,
     clearChat,
