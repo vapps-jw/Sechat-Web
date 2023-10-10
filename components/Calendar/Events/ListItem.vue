@@ -1,5 +1,8 @@
 <template>
-  <v-list-item class="my-2 mx-1 pa-1 event-borders">
+  <v-list-item
+    class="my-2 mx-1 pa-1 event-borders"
+    :class="isOld ? 'old-event' : ''"
+  >
     <template v-slot:title>
       <div>
         {{ props.calendarEvent.name }}
@@ -122,6 +125,21 @@ interface PropsModel {
 }
 const props = defineProps<PropsModel>();
 
+const isOld = computed<boolean>(() => {
+  if (
+    props.calendarEvent.isAllDay &&
+    new Date(props.calendarEvent.day) < new Date(Date.now())
+  ) {
+    return true;
+  }
+
+  if (new Date(props.calendarEvent.end) < new Date(Date.now())) {
+    return true;
+  }
+
+  return false;
+});
+
 const reminderBadge = computed<number>(() => {
   console.log("calculating badges", props.calendarEvent.reminders.length);
   if (props.calendarEvent.reminders.length === 0) {
@@ -166,6 +184,9 @@ const deleteEvent = async () => {
 };
 </script>
 <style scoped>
+.old-event {
+  opacity: 0.3;
+}
 .event-borders {
   border-left: 3px solid v-bind("props.calendarEvent.color");
 }
