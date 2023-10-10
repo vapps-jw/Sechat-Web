@@ -223,7 +223,7 @@ export const useSignalR = () => {
     connection.onreconnected(async (connectionId) => {
       try {
         signalRStore.updateConnectionState();
-        appStore.updateLoadingOverlay(true);
+        appStore.updateLoadingOverlayWithMessage(true, "Reconnecting...");
         console.warn("SIGNALR RECONNECTED", connectionId);
         await reconnectedActions();
       } catch (error) {
