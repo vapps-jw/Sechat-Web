@@ -24,6 +24,17 @@ export const getInitials = (fullName: string) => {
   return initials;
 };
 
+export const hasOccurrences = (searchIndex: string, query: string): boolean => {
+  const queryParts = query.toLowerCase().split(" ");
+  if (queryParts.length > 0) {
+    return queryParts
+      .map((x) => searchIndex.indexOf(x) > -1)
+      .reduce((a, b) => a && b);
+  }
+
+  return true;
+};
+
 export const addUniqueId = (input: string, tag: string) => {
   const words = input.split(" ");
   for (let index = 0; index < words.length; index++) {
