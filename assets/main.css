@@ -137,3 +137,8 @@
 .message-video {
   max-width: 83dvw;
 }
+
+.tile-image {
+  max-width: 300px;
+  max-height: 200px;
+}

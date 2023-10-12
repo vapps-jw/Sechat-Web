@@ -14,12 +14,11 @@
       </div>
 
       <v-avatar class="ma-3" size="125" rounded="0">
-        <NuxtImg
+        <v-img
+          :max-height="100"
+          :width="100"
           src="/logos/logo-only-transparent-300x300.png"
-          alt=""
-          width="100"
-          height="100"
-        ></NuxtImg>
+        ></v-img>
       </v-avatar>
     </div>
   </v-card>

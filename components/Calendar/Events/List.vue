@@ -9,8 +9,23 @@
         <v-col
           style="min-width: 150px"
           cols="2"
-          class="d-flex flex-grow-1 flex-shrink-0 justify-center align-center"
+          class="d-flex flex-grow-1 flex-shrink-0 justify-center align-center flex-column"
         >
+          <v-sheet class="mx-3">
+            <div
+              :class="
+                isToday(batch.date)
+                  ? 'font-weight-bold text-warning'
+                  : 'small-font text-primary'
+              "
+            >
+              {{
+                new Date(batch.date).toLocaleString(appStore.localLanguage, {
+                  weekday: "long",
+                })
+              }}
+            </div>
+          </v-sheet>
           <v-sheet class="mx-3">
             <div
               :class="

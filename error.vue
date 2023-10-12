@@ -1,7 +1,11 @@
 <template>
   <v-container class="bg-transparent">
     <div class="d-flex justify-center">
-      <NuxtImg src="/images/error-image.png" alt=""></NuxtImg>
+      <v-img
+        :max-height="300"
+        :width="300"
+        src="/images/error-image.png"
+      ></v-img>
     </div>
     <div class="d-flex justify-center flex-wrap flex-column align-center">
       <div class="text-h6">{{ error?.statusCode }}</div>

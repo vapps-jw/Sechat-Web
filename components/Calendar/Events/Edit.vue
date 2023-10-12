@@ -36,7 +36,7 @@
         v-if="!eventData.isAllDay"
         v-model="eventData.start"
         type="datetime-local"
-        :max="eventData.end"
+        :min="eventData.start"
         label="Start"
       ></v-text-field>
 

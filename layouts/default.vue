@@ -4,12 +4,11 @@
       <v-container
         class="bg-transparent d-flex justify-center align-center flex-column"
       >
-        <NuxtImg
-          src="/logos/logo-only-transparent-300x300.png"
-          alt=""
-          width="300"
-          height="150"
-        ></NuxtImg>
+        <v-img
+          :max-height="300"
+          :width="300"
+          src="/logos/logo-only-transparent-300x300-cropped.png"
+        ></v-img>
         <div class="text-h6">E2E Encrypted chat & video calls</div>
         <ChatUserAvatar
           v-if="userStore.isSignedIn"
