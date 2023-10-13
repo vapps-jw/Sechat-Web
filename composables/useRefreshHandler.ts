@@ -56,6 +56,7 @@ export const useRefreshHandler = () => {
     appStore.updateLoadingOverlayWithMessage(true, "Loading Messages...");
 
     if (chatStore.lazyLoadInProgress) {
+      appStore.updateLoadingOverlay(false);
       return;
     } else {
       chatStore.lazyLoadInProgress = true;
@@ -282,6 +283,7 @@ export const useRefreshHandler = () => {
     console.warn("Last DM message", chatStore.lastMessageInContacts);
 
     if (chatStore.lazyLoadInProgress) {
+      appStore.updateLoadingOverlay(false);
       return;
     } else {
       chatStore.lazyLoadInProgress = true;

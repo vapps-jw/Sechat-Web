@@ -249,6 +249,7 @@ export const useSignalR = () => {
     console.warn("RECONNECTED ACTIONS - LAZY");
 
     if (chatStore.lazyLoadInProgress) {
+      appStore.updateLoadingOverlay(false);
       return;
     } else {
       chatStore.lazyLoadInProgress = true;
