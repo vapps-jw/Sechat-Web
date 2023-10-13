@@ -260,27 +260,27 @@ export const useSignalR = () => {
         ? chatApi
             .getRoomsUpdateMetadata(chatStore.lastMessageInRooms)
             .then((res) => {
-              console.warn("Update load - rooms", res);
+              console.warn("Reconnect load - rooms", res);
               chatStore.updateRooms(res);
             })
         : chatApi.getRoomsMetadata().then((res) => {
-            console.warn("Update load - rooms", res);
+            console.warn("Reconnect load - rooms", res);
             chatStore.loadRooms(res);
           }),
       chatStore.lastMessageInContacts !== 0
         ? chatApi
             .getConstactsUpdateMetadata(chatStore.lastMessageInContacts)
             .then((res) => {
-              console.warn("Update load - contacts", res);
+              console.warn("Reconnect load - contacts", res);
               chatStore.updateContacts(res);
             })
         : chatApi.getConstactsMetadata().then((res) => {
-            console.warn("Update load - contacts", res);
+            console.warn("Reconnect load - contacts", res);
             chatStore.loadContacts(res);
           }),
     ])
       .then(async (res) => {
-        console.warn("Update load - sync keys, connect to rooms");
+        console.warn("Reconnect load - sync keys, connect to rooms");
         e2e.askForMissingKeys();
         e2e.syncWithOtherDevice();
         e2e.clearUnusedKeys();
@@ -290,7 +290,7 @@ export const useSignalR = () => {
         appStore.updateLoadingOverlay(false);
       })
       .then((res) => {
-        console.warn("Update load - loading messages and decrypting");
+        console.warn("Reconnect load - loading messages and decrypting");
         const promises = [];
         chatStore.availableRooms.forEach((r) => {
           r.messages.forEach((m) => {
