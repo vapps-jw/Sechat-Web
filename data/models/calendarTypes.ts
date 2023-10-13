@@ -12,6 +12,7 @@ type CalendarEvent = {
   day?: string;
   start?: string;
   end?: string;
+  isOld?: boolean;
   reminders: EventReminder[];
 };
 

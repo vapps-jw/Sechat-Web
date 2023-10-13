@@ -1,7 +1,7 @@
 <template>
   <v-list-item
     class="my-2 mx-1 pa-1 event-borders"
-    :class="isOld ? 'old-event' : ''"
+    :class="props.calendarEvent.isOld ? 'old-event' : ''"
   >
     <template v-slot:title>
       <div>
@@ -124,21 +124,6 @@ interface PropsModel {
   calendarEvent: CalendarEvent;
 }
 const props = defineProps<PropsModel>();
-
-const isOld = computed<boolean>(() => {
-  if (
-    props.calendarEvent.isAllDay &&
-    new Date(props.calendarEvent.day) < new Date(Date.now())
-  ) {
-    return true;
-  }
-
-  if (new Date(props.calendarEvent.end) < new Date(Date.now())) {
-    return true;
-  }
-
-  return false;
-});
 
 const reminderBadge = computed<number>(() => {
   console.log("calculating badges", props.calendarEvent.reminders.length);

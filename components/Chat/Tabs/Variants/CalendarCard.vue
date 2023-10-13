@@ -40,7 +40,11 @@ import {
   LocalStoreTypes,
 } from "~~/utilities/globalEnums";
 import { E2EStatusMessages } from "~/utilities/e2eEnums";
-import { getISODate, readSavedDate } from "~/utilities/dateFunctions";
+import {
+  getISODate,
+  getUTCDate,
+  readSavedDate,
+} from "~/utilities/dateFunctions";
 const chatStore = useSechatChatStore();
 const e2e = useE2Encryption();
 const appStore = useSechatAppStore();
@@ -103,6 +107,21 @@ const activate = async () => {
       } else {
         eventObject.start = readSavedDate(eventObject.start);
         eventObject.end = readSavedDate(eventObject.end);
+      }
+
+      if (
+        eventObject.isAllDay &&
+        new Date(eventObject.day).setHours(0, 0, 0, 0) <
+          new Date(Date.now()).setHours(0, 0, 0, 0)
+      ) {
+        eventObject.isOld = true;
+      }
+
+      if (
+        new Date(eventObject.end).setHours(0, 0, 0, 0) <
+        new Date(Date.now()).setHours(0, 0, 0, 0)
+      ) {
+        eventObject.isOld = true;
       }
 
       console.log("Mapped Event", eventObject);
