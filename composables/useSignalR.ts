@@ -226,11 +226,10 @@ export const useSignalR = () => {
         signalRStore.updateConnectionState();
         appStore.updateLoadingOverlayWithMessage(true, "Reconnecting...");
         console.warn("SIGNALR RECONNECTED", connectionId);
-        await reconnectedActions();
+        await reconnectedActionsLazy();
       } catch (error) {
         console.error("SIGNALR RECONNECTION ERROR", error);
       } finally {
-        appStore.updateLoadingOverlay(false);
         signalRStore.updateConnectionState();
       }
     });
@@ -246,8 +245,95 @@ export const useSignalR = () => {
     signalRStore.updateConnectionState();
   };
 
+  const reconnectedActionsLazy = async () => {
+    console.warn("RECONNECTED ACTIONS - LAZY");
+    if (
+      signalRStore.connection &&
+      signalRStore.connection.state === HubConnectionState.Connected
+    ) {
+      console.warn("SignalR connected - no updates");
+      console.log("Connecting to Rooms");
+      await connectToRooms(chatStore.availableRooms.map((r) => r.id));
+      updateViewedMessages();
+      return;
+    }
+
+    await signalRStore.closeConnection();
+    signalRStore.$reset();
+    await connect();
+
+    chatStore.activeContactId = null;
+    chatStore.activeRoomId = null;
+
+    Promise.all([
+      videoCalls.getCallLogs().then((res) => chatStore.loadCallLogs(res)),
+      chatStore.lastMessageInRooms !== 0
+        ? chatApi
+            .getRoomsUpdateMetadata(chatStore.lastMessageInRooms)
+            .then((res) => {
+              console.warn("Update load - rooms", res);
+              chatStore.updateRooms(res);
+            })
+        : chatApi.getRoomsMetadata().then((res) => {
+            console.warn("Update load - rooms", res);
+            chatStore.loadRooms(res);
+          }),
+      chatStore.lastMessageInContacts !== 0
+        ? chatApi
+            .getConstactsUpdateMetadata(chatStore.lastMessageInContacts)
+            .then((res) => {
+              console.warn("Update load - contacts", res);
+              chatStore.updateContacts(res);
+            })
+        : chatApi.getConstactsMetadata().then((res) => {
+            console.warn("Update load - contacts", res);
+            chatStore.loadContacts(res);
+          }),
+    ])
+      .then(async (res) => {
+        console.warn("Update load - sync keys, connect to rooms");
+        e2e.askForMissingKeys();
+        e2e.syncWithOtherDevice();
+        e2e.clearUnusedKeys();
+        e2e.updateHasKeyFlag();
+
+        await connectToRooms(chatStore.availableRooms.map((r) => r.id));
+        appStore.updateLoadingOverlay(false);
+      })
+      .then((res) => {
+        console.warn("Update load - loading messages and decrypting");
+        const promises = [];
+        chatStore.availableRooms.forEach((r) => {
+          r.messages.forEach((m) => {
+            if (m.loaded) {
+              return;
+            }
+            promises.push(
+              chatApi.getRoomMessage(r.id, m.id).then((res) => {
+                e2e.tryDecryptRoomMessage(res);
+                chatStore.updateRoomMessage(res);
+              })
+            );
+          });
+        });
+        chatStore.availableContacts.forEach((c) => {
+          c.directMessages.forEach((m) => {
+            if (m.loaded) {
+              return;
+            }
+            promises.push(
+              chatApi.getConstactMessage(c.id, m.id).then((res) => {
+                e2e.tryDecryptContactMessage(res);
+                chatStore.updateContactMessage(res);
+              })
+            );
+          });
+        });
+        Promise.all(promises);
+      });
+  };
+
   const reconnectedActions = async () => {
-    appStore.updateLoadingOverlayWithMessage(true, "Updating Messages...");
     console.warn("RECONNECTED ACTIONS");
     const promises = [];
 

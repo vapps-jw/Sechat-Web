@@ -1,17 +1,140 @@
 import CryptoES from "crypto-es";
 import { E2EStatusMessages } from "~~/utilities/e2eEnums";
-import { LocalStoreTypes } from "~~/utilities/globalEnums";
+import { LocalStoreTypes, SignalRHubMethods } from "~~/utilities/globalEnums";
 
 export const useE2Encryption = () => {
   const config = useRuntimeConfig();
-  const sechatStore = useSechatChatStore();
+  const chatStore = useSechatChatStore();
   const userStore = useUserStore();
+  const signalRStore = useSignalRStore();
+
+  const clearUnusedKeys = () => {
+    const dmKeys = getKeys(LocalStoreTypes.E2EDM);
+    const roomKeys = getKeys(LocalStoreTypes.E2EROOMS);
+
+    const roomIds = chatStore.availableRooms.map((r) => r.id);
+    const contactIds = chatStore.availableContacts.map((c) => c.id);
+
+    if (dmKeys.length > 0) {
+      const unusedDMKeys = dmKeys.filter(
+        (dk) => !contactIds.some((cid) => cid === dk.id)
+      );
+
+      console.log("DM keys to clear", unusedDMKeys);
+      unusedDMKeys.forEach((k) => removeKey(k.id, LocalStoreTypes.E2EDM));
+    }
+
+    if (roomKeys.length > 0) {
+      const unusedRoomKeys = roomKeys.filter(
+        (dk) => !roomIds.some((cid) => cid === dk.id)
+      );
+
+      console.log("Room keys to clear", unusedRoomKeys);
+      unusedRoomKeys.forEach((k) => removeKey(k.id, LocalStoreTypes.E2EROOMS));
+    }
+  };
+
+  const askForMissingKeys = () => {
+    if (chatStore.getOnlineUsers.length === 0) {
+      return;
+    }
+    console.warn("Asking online users for keys", chatStore.getOnlineUsers);
+
+    const missingKeys = getMissingKeys();
+    if (missingKeys.length === 0) {
+      return;
+    }
+    console.warn("Missing keys", missingKeys);
+
+    const keyHolders = missingKeys
+      .map((mk) => mk.keyHolders)
+      .reduce((a, b) => {
+        return a.concat(b);
+      }, []);
+    const uniqueKeyholders = [...new Set(keyHolders)];
+    const availableKeyHolders = chatStore.getOnlineUsers.filter(
+      (ou) => (onlineUser: IContactRequest) =>
+        uniqueKeyholders.find((kh) => kh === onlineUser.displayName)
+    );
+
+    if (availableKeyHolders.length === 0) {
+      return;
+    }
+
+    console.warn("Available keyholders", availableKeyHolders);
+
+    missingKeys.forEach((missingKey) => {
+      missingKey.keyHolders.forEach((keyHolder) => {
+        if (!availableKeyHolders.some((akh) => akh.displayName === keyHolder))
+          return;
+        if (missingKey.type === LocalStoreTypes.E2EDM) {
+          const request: DMKeyRequest = {
+            id: missingKey.id as number,
+            receipient: userStore.getUserName,
+            keyHolder: keyHolder,
+          };
+
+          console.warn("Asking for DM key", request);
+          signalRStore.connection.send(SignalRHubMethods.RequestDMKey, request);
+          return;
+        }
+        if (missingKey.type === LocalStoreTypes.E2EROOMS) {
+          const request: RoomKeyRequest = {
+            id: missingKey.id as string,
+            receipient: userStore.getUserName,
+          };
+
+          console.warn("Asking for Room key", keyHolder);
+          signalRStore.connection.send(
+            SignalRHubMethods.RequestRoomKey,
+            request
+          );
+          return;
+        }
+      });
+    });
+  };
+
+  const syncWithOtherDevice = () => {
+    console.log("Synchronizing missing keys with other devices");
+    const missingDmKeys = chatStore.availableContacts.filter(
+      (item) => item.approved && !item.hasKey
+    );
+    console.log("Missing DM keys to synchronize", missingDmKeys);
+    missingDmKeys.forEach((missingKey) => {
+      const request: DMKeyRequest = {
+        id: missingKey.id as number,
+        receipient: userStore.getUserName,
+        keyHolder: userStore.getUserName,
+      };
+
+      console.log("Synchronizing DM key", missingKey.id);
+      signalRStore.connection.send(SignalRHubMethods.RequestDMKey, request);
+    });
+
+    const missingRoomKeys = chatStore.availableRooms.filter(
+      (item) => !item.hasKey
+    );
+    console.log("Missing Room keys to synchronize", missingRoomKeys);
+    missingRoomKeys.forEach((missingKey) => {
+      const request: RoomKeyRequest = {
+        id: missingKey.id as string,
+        receipient: userStore.getUserName,
+      };
+
+      console.log("Synchronizing Room key", missingKey.id);
+      signalRStore.connection.send(SignalRHubMethods.RequestRoomKey, request);
+    });
+
+    console.log("Synchronizing Master key");
+    signalRStore.connection.send(SignalRHubMethods.RequestMasterKey);
+  };
 
   const getMissingKeys = (): MissingKey[] => {
-    const missingContactKeys = sechatStore.availableContacts.filter(
+    const missingContactKeys = chatStore.availableContacts.filter(
       (c) => !c.hasKey
     );
-    const missingRoomKeys = sechatStore.availableRooms.filter((c) => !c.hasKey);
+    const missingRoomKeys = chatStore.availableRooms.filter((c) => !c.hasKey);
 
     const results: MissingKey[] = [];
     missingContactKeys.forEach((cr) => {
@@ -37,13 +160,13 @@ export const useE2Encryption = () => {
   };
 
   const updateHasKeyFlag = () => {
-    sechatStore.availableContacts.forEach((cr) => {
+    chatStore.availableContacts.forEach((cr) => {
       const key = getKey(cr.id, LocalStoreTypes.E2EDM);
       if (key) {
         cr.hasKey = true;
       }
     });
-    sechatStore.availableRooms.forEach((room) => {
+    chatStore.availableRooms.forEach((room) => {
       const key = getKey(room.id, LocalStoreTypes.E2EROOMS);
       if (key) {
         room.hasKey = true;
@@ -368,6 +491,9 @@ export const useE2Encryption = () => {
   };
 
   return {
+    clearUnusedKeys,
+    askForMissingKeys,
+    syncWithOtherDevice,
     updateHasKeyFlag,
     tryDecryptRoomMessage,
     tryDecryptContactMessage,

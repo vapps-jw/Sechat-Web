@@ -89,6 +89,38 @@ export const useChatApi = () => {
     return contacts.value;
   };
 
+  const getConstactsUpdateMetadata = async (
+    lastMessage: number
+  ): Promise<IContactRequest[]> => {
+    console.log("Getting Contacts Update Metadata from API", lastMessage);
+    const { error: apiError, data: contacts } = await useFetch<
+      IContactRequest[]
+    >(`${config.public.apiBase}/chat/contacts-update-metadata/${lastMessage}`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    console.log("Contacts Update Metadata Fetched", contacts.value);
+
+    contacts.value.forEach((uc) => {
+      if (uc.invitedName === userStore.userProfile.userName) {
+        uc.displayName = uc.inviterName;
+      } else {
+        uc.displayName = uc.invitedName;
+      }
+    });
+
+    return contacts.value;
+  };
+
   const getRooms = async (): Promise<IRoom[]> => {
     console.log("Getting Rooms from API");
     const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
@@ -230,6 +262,30 @@ export const useChatApi = () => {
     }
 
     console.log("Rooms Update Fetched", rooms.value);
+    return rooms.value;
+  };
+
+  const getRoomsUpdateMetadata = async (
+    lastMessage: number
+  ): Promise<IRoom[]> => {
+    console.log("Getting Rooms Update Metadata from API", lastMessage);
+    const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
+      `${config.public.apiBase}/chat/rooms-update-metadata/${lastMessage}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    console.log("Rooms Update Metadata Fetched", rooms.value);
     return rooms.value;
   };
 
@@ -470,6 +526,8 @@ export const useChatApi = () => {
   };
 
   return {
+    getConstactsUpdateMetadata,
+    getRoomsUpdateMetadata,
     getRoomMessage,
     getConstactMessage,
     getConstactsMetadata,
