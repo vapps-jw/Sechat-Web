@@ -290,7 +290,7 @@ export const useSignalR = () => {
         await connectToRooms(chatStore.availableRooms.map((r) => r.id));
         appStore.updateLoadingOverlay(false);
       })
-      .then((res) => {
+      .then(async (res) => {
         console.warn("Reconnect load - loading messages and decrypting");
         const promises = [];
         chatStore.availableRooms.forEach((r) => {
@@ -319,7 +319,7 @@ export const useSignalR = () => {
             );
           });
         });
-        Promise.all(promises);
+        await Promise.all(promises);
       })
       .finally(() => {
         chatStore.lazyLoadInProgress = false;
