@@ -37,25 +37,6 @@ const chatStore = useSechatChatStore();
 const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 
-// watch(getActiveContact, async (newVal, oldVal) => {
-//   console.log("Active contact changed", newVal, oldVal);
-//   if (newVal === undefined) {
-//     return;
-//   }
-//   if (chatStore.getActiveContact.encryptedByUser) {
-//     chatData.value.userEncrypted = true;
-//     chatData.value.chatKey = e2e.getCookie(
-//       chatStore.getActiveContact.id,
-//       CustomCookies.E2EDM
-//     )?.key;
-//   } else {
-//     chatData.value.userEncrypted = false;
-//     chatData.value.chatKey = "";
-//   }
-// });
-
-onMounted(async () => {});
-
 const clearChat = async () => {
   const { error: apiError, data: resData } = await useFetch(
     `${config.public.apiBase}/chat/direct-messages/${chatStore.getActiveContact.id}`,
@@ -77,8 +58,6 @@ const clearChat = async () => {
   sechatStore.showSuccessSnackbar(resData.value as string);
   dialog.value = false;
 };
-
-const applyChanges = async () => {};
 </script>
 
 <style scoped></style>

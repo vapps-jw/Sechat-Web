@@ -17,6 +17,7 @@ interface IStringMessage {
 }
 
 interface IMessageBase {
+  loaded?: boolean;
   id?: number;
   nameSentBy?: string;
   imageSentBy?: string;

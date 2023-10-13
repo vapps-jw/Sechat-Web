@@ -28,10 +28,12 @@
     <template v-slot:subtitle>
       <v-card-text class="px-0 py-0">
         <div
+          v-if="props.message.loaded"
           class="text--primary text-sm mb-3"
           :class="props.message.error ? 'error-font' : ''"
           v-html="props.message.text"
         ></div>
+        <v-skeleton-loader v-else type="paragraph"></v-skeleton-loader>
       </v-card-text>
       <v-card-subtitle class="tiny-font mx-0 px-0">
         <v-chip

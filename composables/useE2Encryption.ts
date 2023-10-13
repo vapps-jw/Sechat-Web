@@ -36,6 +36,21 @@ export const useE2Encryption = () => {
     return results;
   };
 
+  const updateHasKeyFlag = () => {
+    sechatStore.availableContacts.forEach((cr) => {
+      const key = getKey(cr.id, LocalStoreTypes.E2EDM);
+      if (key) {
+        cr.hasKey = true;
+      }
+    });
+    sechatStore.availableRooms.forEach((room) => {
+      const key = getKey(room.id, LocalStoreTypes.E2EROOMS);
+      if (key) {
+        room.hasKey = true;
+      }
+    });
+  };
+
   const tryDecryptContact = (cr: IContactRequest) => {
     const key = getKey(cr.id, LocalStoreTypes.E2EDM);
 
@@ -63,6 +78,48 @@ export const useE2Encryption = () => {
       dm.text = decrypted;
       dm.decrypted = true;
     });
+  };
+
+  const tryDecryptContactMessage = (message: IDirectMessage) => {
+    const key = getKey(message.contactId, LocalStoreTypes.E2EDM);
+
+    if (!key) {
+      console.warn("Contact Key not found", message);
+      message.decrypted = false;
+      return;
+    }
+    console.warn("Decrypting DM", message, key);
+    if (message.decrypted) {
+      return;
+    }
+    const decrypted = decryptMessage(message.text, key);
+    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+      message.error = true;
+    }
+    message.text = decrypted;
+    message.decrypted = true;
+    message.loaded = true;
+  };
+
+  const tryDecryptRoomMessage = (message: IMessage) => {
+    const key = getKey(message.roomId, LocalStoreTypes.E2EROOMS);
+
+    if (!key) {
+      console.warn("Room Key not found", message);
+      message.decrypted = false;
+      return;
+    }
+    console.warn("Decrypting Message", message, key);
+    if (message.decrypted) {
+      return;
+    }
+    const decrypted = decryptMessage(message.text, key);
+    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+      message.error = true;
+    }
+    message.text = decrypted;
+    message.decrypted = true;
+    message.loaded = true;
   };
 
   const tryDecryptRoom = (room: IRoom) => {
@@ -311,6 +368,9 @@ export const useE2Encryption = () => {
   };
 
   return {
+    updateHasKeyFlag,
+    tryDecryptRoomMessage,
+    tryDecryptContactMessage,
     uploadKeys,
     extractKeys,
     getMasterKey,

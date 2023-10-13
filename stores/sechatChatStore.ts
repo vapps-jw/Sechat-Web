@@ -155,6 +155,20 @@ export const useSechatChatStore = defineStore({
       pp.delete(value.displayName);
       pp.set(value.displayName, value.profileImage);
     },
+    updateContactMessage(value: IDirectMessage) {
+      const contact = this.availableContacts.find(
+        (c) => c.id === value.contactId
+      );
+      if (!contact) {
+        return;
+      }
+      const updatedMessage = contact.directMessages.find(
+        (message) => message.id === value.id
+      );
+      updatedMessage.loaded = value.loaded;
+      updatedMessage.decrypted = value.decrypted;
+      updatedMessage.text = value.text;
+    },
     updateContacts(updates: IContactRequest[]) {
       this.availableContacts = this.availableContacts.filter((ac) =>
         updates.some((nc) => nc.id === ac.id)
@@ -189,8 +203,6 @@ export const useSechatChatStore = defineStore({
       });
     },
 
-    // Handle Direct Message Views
-
     markDirectMessagesAsViewed(contactId: number) {
       const contact: IContactRequest = this.availableContacts.find(
         (c: IContactRequest) => c.id === contactId
@@ -213,6 +225,18 @@ export const useSechatChatStore = defineStore({
       message.wasViewed = true;
     },
 
+    updateRoomMessage(value: IMessage) {
+      const room = this.availableRooms.find((c) => c.id === value.roomId);
+      if (!room) {
+        return;
+      }
+      const updatedMessage = room.messages.find(
+        (message) => message.id === value.id
+      );
+      updatedMessage.loaded = value.loaded;
+      updatedMessage.decrypted = value.decrypted;
+      updatedMessage.text = value.text;
+    },
     loadRooms(value: IRoom[]) {
       this.availableRooms = value.sort((a, b) => a.name.localeCompare(b.name));
     },

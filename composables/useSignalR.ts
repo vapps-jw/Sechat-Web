@@ -1,5 +1,6 @@
 import * as signalR from "@microsoft/signalr";
 import { HubConnectionState } from "@microsoft/signalr";
+import { scrollToBottom } from "~/utilities/documentFunctions";
 import {
   ChatViews,
   LocalStoreTypes,
@@ -342,6 +343,7 @@ export const useSignalR = () => {
     } catch (error) {
       console.error("Reconnection Refresh Error", error);
     } finally {
+      scrollToBottom("chatView");
       appStore.updateLoadingOverlay(false);
     }
   };

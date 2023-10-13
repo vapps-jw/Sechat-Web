@@ -103,7 +103,7 @@ onMounted(async () => {
   if (settings.settings.theme) {
     theme.global.name.value = settings.settings.theme;
   }
-  await refreshHandler.handleOnMountedLoad();
+  await refreshHandler.initialLoad();
 
   appStore.updateLocalLanguage(I18n.locale.value);
   console.info("Hooking to window events");

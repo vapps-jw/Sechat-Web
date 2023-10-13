@@ -111,6 +111,106 @@ export const useChatApi = () => {
     return rooms.value;
   };
 
+  const getConstactsMetadata = async (): Promise<IContactRequest[]> => {
+    console.log("Getting Contacts Metadata from API");
+    const { error: apiError, data: contacts } = await useFetch<
+      IContactRequest[]
+    >(`${config.public.apiBase}/chat/contacts-messages-metadata`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    console.log("Contacts Fetched", contacts.value);
+
+    contacts.value.forEach((uc) => {
+      if (uc.invitedName === userStore.userProfile.userName) {
+        uc.displayName = uc.inviterName;
+      } else {
+        uc.displayName = uc.invitedName;
+      }
+    });
+
+    return contacts.value;
+  };
+
+  const getConstactMessage = async (
+    contactId: number,
+    messageId: number
+  ): Promise<IDirectMessage> => {
+    console.log("Getting Contact Message");
+    const { error: apiError, data: result } = await useFetch<IDirectMessage>(
+      `${config.public.apiBase}/chat/contact/${contactId}/${messageId}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    return result.value;
+  };
+
+  const getRoomMessage = async (
+    roomId: string,
+    messageId: number
+  ): Promise<IMessage> => {
+    console.log("Getting Room Message");
+    const { error: apiError, data: result } = await useFetch<IMessage>(
+      `${config.public.apiBase}/chat/room/${roomId}/${messageId}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    return result.value;
+  };
+
+  const getRoomsMetadata = async (): Promise<IRoom[]> => {
+    console.log("Getting Rooms Metadata from API");
+    const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
+      `${config.public.apiBase}/chat/rooms-messages-metadata`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (apiError.value) {
+      throw createError({
+        ...apiError.value,
+        statusCode: apiError.value.statusCode,
+        statusMessage: apiError.value.data,
+      });
+    }
+
+    console.log("Rooms Fetched", rooms.value);
+    return rooms.value;
+  };
+
   const getRoomsUpdate = async (lastMessage: number): Promise<IRoom[]> => {
     console.log("Getting Rooms Update from API", lastMessage);
     const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
@@ -370,6 +470,10 @@ export const useChatApi = () => {
   };
 
   return {
+    getRoomMessage,
+    getConstactMessage,
+    getConstactsMetadata,
+    getRoomsMetadata,
     getRoomsUpdate,
     getConstactsUpdate,
     getRoom,
