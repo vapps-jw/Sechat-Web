@@ -1,5 +1,11 @@
-import { ChatViews, VisibilityStates } from "~/utilities/globalEnums";
+import {
+  ChatViews,
+  VisibilityStates,
+  LocalStoreTypes,
+  SignalRHubMethods,
+} from "~/utilities/globalEnums";
 import { HubConnectionState } from "@microsoft/signalr";
+import { scrollToBottom } from "~/utilities/documentFunctions";
 
 export const useRefreshHandler = () => {
   const appStore = useSechatAppStore();
@@ -48,6 +54,12 @@ export const useRefreshHandler = () => {
 
   const initialLoad = async () => {
     appStore.updateLoadingOverlayWithMessage(true, "Loading Messages...");
+
+    if (chatStore.lazyLoadInProgress) {
+      return;
+    } else {
+      chatStore.lazyLoadInProgress = true;
+    }
 
     await signalRStore.closeConnection();
     signalRStore.$reset();
@@ -105,6 +117,9 @@ export const useRefreshHandler = () => {
           });
         });
         Promise.all(promises);
+      })
+      .finally(() => {
+        chatStore.lazyLoadInProgress = false;
       });
   };
 
@@ -266,6 +281,12 @@ export const useRefreshHandler = () => {
     console.warn("Last Room message", chatStore.lastMessageInRooms);
     console.warn("Last DM message", chatStore.lastMessageInContacts);
 
+    if (chatStore.lazyLoadInProgress) {
+      return;
+    } else {
+      chatStore.lazyLoadInProgress = true;
+    }
+
     if (
       signalRStore.connection &&
       signalRStore.connection.state === HubConnectionState.Connected
@@ -348,6 +369,9 @@ export const useRefreshHandler = () => {
           });
         });
         Promise.all(promises);
+      })
+      .finally(() => {
+        chatStore.lazyLoadInProgress = false;
       });
   };
 

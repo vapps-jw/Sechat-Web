@@ -224,7 +224,7 @@ export const useSignalR = () => {
     connection.onreconnected(async (connectionId) => {
       try {
         signalRStore.updateConnectionState();
-        appStore.updateLoadingOverlayWithMessage(true, "Reconnecting...");
+        appStore.updateLoadingOverlayWithMessage(true, "Synchronizing...");
         console.warn("SIGNALR RECONNECTED", connectionId);
         await reconnectedActionsLazy();
       } catch (error) {
@@ -247,23 +247,12 @@ export const useSignalR = () => {
 
   const reconnectedActionsLazy = async () => {
     console.warn("RECONNECTED ACTIONS - LAZY");
-    if (
-      signalRStore.connection &&
-      signalRStore.connection.state === HubConnectionState.Connected
-    ) {
-      console.warn("SignalR connected - no updates");
-      console.log("Connecting to Rooms");
-      await connectToRooms(chatStore.availableRooms.map((r) => r.id));
-      updateViewedMessages();
+
+    if (chatStore.lazyLoadInProgress) {
       return;
+    } else {
+      chatStore.lazyLoadInProgress = true;
     }
-
-    await signalRStore.closeConnection();
-    signalRStore.$reset();
-    await connect();
-
-    chatStore.activeContactId = null;
-    chatStore.activeRoomId = null;
 
     Promise.all([
       videoCalls.getCallLogs().then((res) => chatStore.loadCallLogs(res)),
@@ -330,6 +319,9 @@ export const useSignalR = () => {
           });
         });
         Promise.all(promises);
+      })
+      .finally(() => {
+        chatStore.lazyLoadInProgress = false;
       });
   };
 

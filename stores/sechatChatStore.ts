@@ -9,6 +9,7 @@ export const useSechatChatStore = defineStore({
   id: "sechat-chat-store",
   state: () => {
     return {
+      lazyLoadInProgress: <boolean>false,
       suggestedContacts: <SuggestedContact[]>[],
       availableRooms: <IRoom[]>[],
       callLogs: <ICallLog[]>[],
