@@ -1,11 +1,5 @@
-import {
-  ChatViews,
-  VisibilityStates,
-  LocalStoreTypes,
-  SignalRHubMethods,
-} from "~/utilities/globalEnums";
+import { ChatViews, VisibilityStates } from "~/utilities/globalEnums";
 import { HubConnectionState } from "@microsoft/signalr";
-import { scrollToBottom } from "~/utilities/documentFunctions";
 
 export const useRefreshHandler = () => {
   const appStore = useSechatAppStore();

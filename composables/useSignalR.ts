@@ -333,106 +333,106 @@ export const useSignalR = () => {
       });
   };
 
-  const reconnectedActions = async () => {
-    console.warn("RECONNECTED ACTIONS");
-    const promises = [];
+  // const reconnectedActions = async () => {
+  //   console.warn("RECONNECTED ACTIONS");
+  //   const promises = [];
 
-    // Call Logs
+  //   // Call Logs
 
-    if (chatStore.callLogs.length > 0) {
-      promises.push(
-        videoCalls
-          .getCallLogs(Math.max(...chatStore.callLogs.map((o) => o.id)))
-          .then((res) => console.log("Call logs", res))
-      );
-    } else {
-      promises.push(
-        videoCalls.getCallLogs().then((res) => chatStore.loadCallLogs(res))
-      );
-    }
+  //   if (chatStore.callLogs.length > 0) {
+  //     promises.push(
+  //       videoCalls
+  //         .getCallLogs(Math.max(...chatStore.callLogs.map((o) => o.id)))
+  //         .then((res) => console.log("Call logs", res))
+  //     );
+  //   } else {
+  //     promises.push(
+  //       videoCalls.getCallLogs().then((res) => chatStore.loadCallLogs(res))
+  //     );
+  //   }
 
-    // Contacts
-    const lastDM = chatStore.lastMessageInContacts;
-    if (lastDM != 0) {
-      promises.push(
-        chatApi
-          .getConstactsUpdate(chatStore.lastMessageInContacts)
-          .then((res) => {
-            res.forEach((cr) => {
-              e2e.tryDecryptContact(cr);
-            });
-            if (
-              chatStore.activeContactId &&
-              !res.some((c) => c.id === chatStore.activeContactId)
-            ) {
-              chatStore.activeContactId = null;
-            }
-            chatStore.updateContacts(res);
-          })
-      );
-    } else {
-      promises.push(
-        chatApi.getConstacts().then((res) => {
-          res.forEach((cr) => {
-            e2e.tryDecryptContact(cr);
-          });
-          if (
-            chatStore.activeContactId &&
-            !res.some((c) => c.id === chatStore.activeContactId)
-          ) {
-            chatStore.activeContactId = null;
-          }
-          chatStore.loadContacts(res);
-        })
-      );
-    }
+  //   // Contacts
+  //   const lastDM = chatStore.lastMessageInContacts;
+  //   if (lastDM != 0) {
+  //     promises.push(
+  //       chatApi
+  //         .getConstactsUpdate(chatStore.lastMessageInContacts)
+  //         .then((res) => {
+  //           res.forEach((cr) => {
+  //             e2e.tryDecryptContact(cr);
+  //           });
+  //           if (
+  //             chatStore.activeContactId &&
+  //             !res.some((c) => c.id === chatStore.activeContactId)
+  //           ) {
+  //             chatStore.activeContactId = null;
+  //           }
+  //           chatStore.updateContacts(res);
+  //         })
+  //     );
+  //   } else {
+  //     promises.push(
+  //       chatApi.getConstacts().then((res) => {
+  //         res.forEach((cr) => {
+  //           e2e.tryDecryptContact(cr);
+  //         });
+  //         if (
+  //           chatStore.activeContactId &&
+  //           !res.some((c) => c.id === chatStore.activeContactId)
+  //         ) {
+  //           chatStore.activeContactId = null;
+  //         }
+  //         chatStore.loadContacts(res);
+  //       })
+  //     );
+  //   }
 
-    // Rooms
-    const lastRM = chatStore.lastMessageInRooms;
-    if (lastRM != 0) {
-      promises.push(
-        chatApi.getRoomsUpdate(chatStore.lastMessageInRooms).then((res) => {
-          res.forEach((room) => {
-            e2e.tryDecryptRoom(room);
-          });
-          if (
-            chatStore.activeRoomId &&
-            !res.some((r) => r.id === chatStore.activeRoomId)
-          ) {
-            chatStore.activeRoomId = null;
-          }
-          chatStore.updateRooms(res);
-        })
-      );
-    } else {
-      promises.push(
-        chatApi.getRooms().then((res) => {
-          res.forEach((room) => {
-            e2e.tryDecryptRoom(room);
-          });
-          if (
-            chatStore.activeRoomId &&
-            !res.some((r) => r.id === chatStore.activeRoomId)
-          ) {
-            chatStore.activeRoomId = null;
-          }
-          chatStore.loadRooms(res);
-        })
-      );
-    }
+  //   // Rooms
+  //   const lastRM = chatStore.lastMessageInRooms;
+  //   if (lastRM != 0) {
+  //     promises.push(
+  //       chatApi.getRoomsUpdate(chatStore.lastMessageInRooms).then((res) => {
+  //         res.forEach((room) => {
+  //           e2e.tryDecryptRoom(room);
+  //         });
+  //         if (
+  //           chatStore.activeRoomId &&
+  //           !res.some((r) => r.id === chatStore.activeRoomId)
+  //         ) {
+  //           chatStore.activeRoomId = null;
+  //         }
+  //         chatStore.updateRooms(res);
+  //       })
+  //     );
+  //   } else {
+  //     promises.push(
+  //       chatApi.getRooms().then((res) => {
+  //         res.forEach((room) => {
+  //           e2e.tryDecryptRoom(room);
+  //         });
+  //         if (
+  //           chatStore.activeRoomId &&
+  //           !res.some((r) => r.id === chatStore.activeRoomId)
+  //         ) {
+  //           chatStore.activeRoomId = null;
+  //         }
+  //         chatStore.loadRooms(res);
+  //       })
+  //     );
+  //   }
 
-    try {
-      await Promise.all(promises).then(async (res) => {
-        connectToRooms(chatStore.availableRooms.map((r) => r.id));
-        await updateViewedMessages();
-      });
-    } catch (error) {
-      console.error("Reconnection Refresh Error", error);
-    } finally {
-      scrollToBottom("chatView");
-      appStore.updateLoadingOverlay(false);
-    }
-  };
+  //   try {
+  //     await Promise.all(promises).then(async (res) => {
+  //       connectToRooms(chatStore.availableRooms.map((r) => r.id));
+  //       await updateViewedMessages();
+  //     });
+  //   } catch (error) {
+  //     console.error("Reconnection Refresh Error", error);
+  //   } finally {
+  //     scrollToBottom("chatView");
+  //     appStore.updateLoadingOverlay(false);
+  //   }
+  // };
 
   const connect = async () => {
     signalRStore.updateConnectionState();
