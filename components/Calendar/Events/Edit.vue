@@ -26,7 +26,6 @@
         v-if="eventData.isAllDay"
         v-model="eventData.day"
         type="date"
-        :min="getISODate(new Date(Date.now() + 60 * 60 * 24 * 1000))"
         label="Pick a Day"
       ></v-text-field>
 
@@ -87,18 +86,9 @@ const props = defineProps({
       description: "",
       color: "#EEEEEE",
       isAllDay: false,
-      day: getISODate(new Date(Date.now() + 60 * 60 * 24 * 1000)),
-      start: new Date(new Date().toString().split("GMT")[0] + " UTC")
-        .toISOString()
-        .split(".")[0]
-        .slice(0, -3),
-      end: new Date(
-        new Date(Date.now() + 60 * 60 * 1000).toString().split("GMT")[0] +
-          " UTC"
-      )
-        .toISOString()
-        .split(".")[0]
-        .slice(0, -3),
+      day: new Date(Date.now()).toISOString().split("T")[0],
+      start: new Date(Date.now()).toISOString(),
+      end: new Date(Date.now()).toISOString(),
     },
   },
 });
@@ -154,11 +144,9 @@ const submit = async () => {
   console.warn("Original end", eventData.value.end);
   console.warn("Original day", eventData.value.day);
 
-  const startToSave = createDateToSave(eventData.value.start);
-  const endToSave = createDateToSave(eventData.value.end);
-  const dayToSave = eventData.value.isAllDay
-    ? getISODate(new Date(eventData.value.day))
-    : null;
+  const startToSave = eventData.value.start;
+  const endToSave = eventData.value.end;
+  const dayToSave = eventData.value.isAllDay ? eventData.value.day : null;
 
   console.warn("startToSave", startToSave);
   console.warn("endToSave", endToSave);

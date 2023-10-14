@@ -439,12 +439,13 @@ export const useSignalR = () => {
       signalRStore.connection &&
       signalRStore.connection.state === signalR.HubConnectionState.Disconnected
     ) {
-      console.log("Starting Current Connection, connecting to Rooms");
+      console.log("Starting Current Connection");
       await signalRStore.connection.start();
       signalRStore.updateConnectionState();
       return;
     }
     if (!signalRStore.connection) {
+      console.log("Starting New Connection");
       await createNewConnection();
       signalRStore.updateConnectionState();
     }

@@ -37,32 +37,37 @@
               )
             }}
           </div>
-          <div v-else>
-            {{
-              new Date(props.calendarEvent.start).toLocaleString(
-                appStore.localLanguage,
-                {
-                  year: "numeric",
-                  month: "numeric",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }
-              )
-            }}
-            -
-            {{
-              new Date(props.calendarEvent.end).toLocaleString(
-                appStore.localLanguage,
-                {
-                  year: "numeric",
-                  month: "numeric",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }
-              )
-            }}
+          <div v-else class="tiny-font d-flex flex-column justify-center">
+            <div>
+              {{
+                new Date(props.calendarEvent.start).toLocaleString(
+                  appStore.localLanguage,
+                  {
+                    year: "numeric",
+                    month: "numeric",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }
+                )
+              }}
+            </div>
+            <v-icon class="ml-12" icon="mdi-menu-down" color="warning">
+            </v-icon>
+            <div>
+              {{
+                new Date(props.calendarEvent.end).toLocaleString(
+                  appStore.localLanguage,
+                  {
+                    year: "numeric",
+                    month: "numeric",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }
+                )
+              }}
+            </div>
           </div>
         </div>
       </div>
