@@ -46,6 +46,8 @@
       </v-file-input>
     </div>
     <v-btn
+      :loading="sendingMessage"
+      :disabled="sendingMessage"
       data-cy="push-message-btn"
       v-if="!editorState.busy"
       variant="outlined"
@@ -71,6 +73,7 @@ const videoApi = useVideoApi();
 
 const chosenFile = ref<File[]>(null);
 const chosenFileLoaidng = ref<boolean>(false);
+const sendingMessage = ref<boolean>(false);
 const imageToUpload = ref();
 
 const attachAction = () => {
@@ -140,7 +143,7 @@ const callRoomMessageApi = async () => {
     return;
   }
   const encryptedMessage = e2e.encryptMessage(chatStore.newMessage, key);
-  const { error: apiError } = await useFetch(
+  const { error: apiError, data } = await useFetch<IMessage>(
     `${config.public.apiBase}/chat/send-message`,
     {
       headers: {
@@ -157,7 +160,13 @@ const callRoomMessageApi = async () => {
 
   if (apiError.value) {
     sechatStore.showErrorSnackbar(apiError.value.data);
+    return;
   }
+
+  data.value.text = chatStore.newMessage;
+  chatStore.addNewRoomMessage(data.value);
+  chatStore.clearNewMessage();
+  scrollToBottom("chatView");
 };
 
 const callDirectMessageApi = async () => {
@@ -167,7 +176,7 @@ const callDirectMessageApi = async () => {
     return;
   }
   const encryptedMessage = e2e.encryptMessage(chatStore.newMessage, key);
-  const { error: apiError } = await useFetch(
+  const { error: apiError, data } = await useFetch<IDirectMessage>(
     `${config.public.apiBase}/chat/send-direct-message`,
     {
       headers: {
@@ -184,18 +193,19 @@ const callDirectMessageApi = async () => {
 
   if (apiError.value) {
     sechatStore.showErrorSnackbar("Message not sent");
+    return;
   }
+
+  data.value.text = chatStore.newMessage;
+  chatStore.addNewDirectMessage(data.value);
+  chatStore.clearNewMessage();
+  scrollToBottom("chatView");
 };
 
 const pushMessage = async () => {
   if (!chatStore.newMessage) {
     return;
   }
-
-  // if (chatStore.newMessage.includes("<img")) {
-  //   chatStore.newMessage = addUniqueId(chatStore.newMessage, "<img");
-  // }
-
   if (
     !signalRstore.connection ||
     signalRstore.connection.state !== HubConnectionState.Connected
@@ -211,14 +221,16 @@ const pushMessage = async () => {
     return;
   }
 
+  sendingMessage.value = true;
+
   if (chatStore.activeRoomId && !chatStore.activeContactId) {
-    callRoomMessageApi();
+    await callRoomMessageApi();
   }
   if (!chatStore.activeRoomId && chatStore.activeContactId) {
-    callDirectMessageApi();
+    await callDirectMessageApi();
   }
 
-  chatStore.clearNewMessage();
+  sendingMessage.value = false;
 };
 </script>
 
