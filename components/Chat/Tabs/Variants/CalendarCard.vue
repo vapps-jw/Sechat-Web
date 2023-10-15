@@ -117,9 +117,7 @@ const activate = async () => {
           new Date(Date.now()).setHours(0, 0, 0, 0)
       ) {
         eventObject.isOld = true;
-      }
-
-      if (
+      } else if (
         new Date(eventObject.end).setHours(0, 0, 0, 0) <
         new Date(Date.now()).setHours(0, 0, 0, 0)
       ) {
