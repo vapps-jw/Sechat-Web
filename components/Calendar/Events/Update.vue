@@ -14,6 +14,7 @@
         </v-toolbar-items>
       </v-toolbar>
       <calendar-events-edit
+        :is-busy="isBusy"
         @update-event="updateEvent"
         :calendar-event="props.calendarEvent"
       />
@@ -25,6 +26,8 @@
 import { getISODate, readSavedDate } from "~/utilities/dateFunctions";
 
 const dialog = ref<boolean>(false);
+const isBusy = ref<boolean>(false);
+
 const e2e = useE2Encryption();
 const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
@@ -36,6 +39,7 @@ interface PropsModel {
 const props = defineProps<PropsModel>();
 
 const updateEvent = async (data: CalendarEvent) => {
+  isBusy.value = true;
   if (data.isAllDay) {
     data.day = new Date(data.day).toUTCString();
   } else {
@@ -50,6 +54,7 @@ const updateEvent = async (data: CalendarEvent) => {
 
   if (!calendarStore.calendarData) {
     console.error("Calendar is missing");
+    isBusy.value = false;
     return;
   }
 
@@ -70,6 +75,7 @@ const updateEvent = async (data: CalendarEvent) => {
 
   if (apiError.value) {
     sechatStore.showErrorSnackbar(apiError.value.data);
+    isBusy.value = false;
     return;
   } else {
     sechatStore.showSuccessSnackbar("Event saved");
@@ -85,5 +91,6 @@ const updateEvent = async (data: CalendarEvent) => {
 
   calendarStore.updateEvent(data);
   dialog.value = false;
+  isBusy.value = false;
 };
 </script>

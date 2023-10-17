@@ -62,21 +62,29 @@
     </v-form>
   </v-card-text>
   <v-card-actions class="justify-center">
-    <v-btn data-cy="create-room-btn" variant="tonal" @click="submit">
+    <v-btn
+      :disabled="props.isBusy"
+      :loading="props.isBusy"
+      data-cy="create-room-btn"
+      variant="tonal"
+      @click="submit"
+    >
       Save
     </v-btn>
   </v-card-actions>
 </template>
 
 <script setup lang="ts">
-import { createDateToSave, getISODate } from "~/utilities/dateFunctions";
-
 const e2e = useE2Encryption();
 const sechatStore = useSechatAppStore();
 
 const emit = defineEmits(["updateEvent"]);
 
 const props = defineProps({
+  isBusy: {
+    type: Boolean,
+    default: false,
+  },
   calendarEvent: {
     type: Object as PropType<CalendarEvent>,
     default: {

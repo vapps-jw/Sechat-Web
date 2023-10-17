@@ -18,7 +18,7 @@
           </v-btn>
         </v-toolbar-items>
       </v-toolbar>
-      <calendar-events-edit @update-event="createEvent" />
+      <calendar-events-edit :is-busy="isBusy" @update-event="createEvent" />
     </v-card>
   </v-dialog>
 </template>
@@ -27,6 +27,8 @@
 import { getISODate, readSavedDate } from "~/utilities/dateFunctions";
 
 const dialog = ref<boolean>(false);
+const isBusy = ref<boolean>(false);
+
 const e2e = useE2Encryption();
 const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
@@ -34,12 +36,14 @@ const calendarStore = useCalendarStore();
 
 const createEvent = async (data: CalendarEvent) => {
   console.log("Submitting Event", data);
+  isBusy.value = true;
 
   const masterKey = e2e.getMasterKey();
   const encrptedData = e2e.encryptMessage(JSON.stringify(data), masterKey);
 
   if (!calendarStore.calendarData) {
     console.error("Calendar is missing");
+    isBusy.value = false;
     return;
   }
 
@@ -59,6 +63,7 @@ const createEvent = async (data: CalendarEvent) => {
 
   if (apiError.value) {
     sechatStore.showErrorSnackbar(apiError.value.data);
+    isBusy.value = false;
     return;
   } else {
     sechatStore.showSuccessSnackbar("Event saved");
@@ -78,5 +83,6 @@ const createEvent = async (data: CalendarEvent) => {
 
   calendarStore.updateEvent(data);
   dialog.value = false;
+  isBusy.value = false;
 };
 </script>
