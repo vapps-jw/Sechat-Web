@@ -1,4 +1,5 @@
 type EventsDisplayBatch = {
+  id: number;
   date: Date;
   events: CalendarEvent[];
 };
@@ -90,6 +91,7 @@ export const useCalendarStore = defineStore({
           });
 
         const batch: EventsDisplayBatch = {
+          id: new Date(r).setHours(0, 0, 0, 0),
           date: new Date(r),
           events: validEvents,
         };

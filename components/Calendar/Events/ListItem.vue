@@ -131,7 +131,6 @@ interface PropsModel {
 const props = defineProps<PropsModel>();
 
 const reminderBadge = computed<number>(() => {
-  console.log("calculating badges", props.calendarEvent.reminders.length);
   if (props.calendarEvent.reminders.length === 0) {
     console.log("reminder badge computed", props.calendarEvent.name, 0);
     return 0;
