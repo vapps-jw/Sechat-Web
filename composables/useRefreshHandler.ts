@@ -1,11 +1,5 @@
-import {
-  ChatViews,
-  VisibilityStates,
-  LocalStoreTypes,
-  SignalRHubMethods,
-} from "~/utilities/globalEnums";
+import { ChatViews, VisibilityStates } from "~/utilities/globalEnums";
 import { HubConnectionState } from "@microsoft/signalr";
-import { scrollToBottom } from "~/utilities/documentFunctions";
 
 export const useRefreshHandler = () => {
   const appStore = useSechatAppStore();
@@ -17,40 +11,7 @@ export const useRefreshHandler = () => {
   const e2e = useE2Encryption();
   const signalRStore = useSignalRStore();
   const webRTCStore = useWebRTCStore();
-
-  // const handleOnMountedLoad = async () => {
-  //   appStore.updateLoadingOverlayWithMessage(true, "Loading Messages...");
-  //   await signalRStore.closeConnection();
-  //   signalRStore.$reset();
-  //   chatStore.$reset();
-
-  //   await signalR.connect();
-  //   await Promise.all([
-  //     chatApi.getConstacts().then((res) => {
-  //       res.forEach((cr) => {
-  //         e2e.tryDecryptContact(cr);
-  //       });
-  //       chatStore.loadContacts(res);
-  //     }),
-  //     videoCall.getCallLogs().then((res) => chatStore.loadCallLogs(res)),
-  //     chatApi.getRooms().then((res) => {
-  //       res.forEach((room) => {
-  //         e2e.tryDecryptRoom(room);
-  //       });
-  //       chatStore.loadRooms(res);
-  //     }),
-  //   ]);
-
-  //   if (signalRStore.connection?.state === HubConnectionState.Connected) {
-  //     console.log("SignalR Connected, processing Fetch");
-  //     e2e.askForMissingKeys();
-  //     e2e.syncWithOtherDevice();
-  //     e2e.clearUnusedKeys();
-  //   }
-
-  //   await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
-  //   appStore.updateLoadingOverlay(false);
-  // };
+  const calendarStore = useCalendarStore();
 
   const initialLoad = async () => {
     appStore.updateLoadingOverlayWithMessage(true, "Loading Messages...");
@@ -130,6 +91,8 @@ export const useRefreshHandler = () => {
       return;
     }
     await updateLoadLazy();
+    calendarStore.recalculateEvents();
+    calendarStore.recalculateBatches();
   };
 
   const handleOnlineChange = async () => {

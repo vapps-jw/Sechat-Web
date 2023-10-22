@@ -18,11 +18,11 @@
 const calendarStore = useCalendarStore();
 
 const scrollToToday = () => {
-  if (calendarStore.getDisplayBatches.length === 0) {
+  if (calendarStore.displayBatches.length === 0) {
     return;
   }
   var today = new Date(Date.now()).setHours(0, 0, 0, 0);
-  const closestBatch = calendarStore.getDisplayBatches.reduce(function (
+  const closestBatch = calendarStore.displayBatches.reduce(function (
     prev,
     curr
   ) {

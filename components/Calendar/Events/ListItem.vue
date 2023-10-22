@@ -166,6 +166,12 @@ const deleteEvent = async () => {
     }
 
     calendarStore.removeEvent(props.calendarEvent);
+    calendarStore.recalculateBatches();
+    console.log(
+      "Events after remove",
+      calendarStore.calendar.calendarEvents,
+      calendarStore.displayBatches
+    );
     sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
   } catch (error) {
     sechatStore.showErrorSnackbar(error.statusMessage);

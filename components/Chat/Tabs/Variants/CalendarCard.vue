@@ -34,17 +34,9 @@
 </template>
 
 <script setup lang="ts">
-import {
-  BottomNavBarSet,
-  ChatViews,
-  LocalStoreTypes,
-} from "~~/utilities/globalEnums";
+import { BottomNavBarSet, LocalStoreTypes } from "~~/utilities/globalEnums";
 import { E2EStatusMessages } from "~/utilities/e2eEnums";
-import {
-  getISODate,
-  getUTCDate,
-  readSavedDate,
-} from "~/utilities/dateFunctions";
+
 const chatStore = useSechatChatStore();
 const e2e = useE2Encryption();
 const appStore = useSechatAppStore();
@@ -140,7 +132,8 @@ const activate = async () => {
 
   console.log("Calendar Fetched", mappedCalendar);
   calendarStore.updateCalendar(mappedCalendar);
-  console.log("Display Batches", calendarStore.getDisplayBatches);
+  calendarStore.recalculateBatches();
+  console.log("Display Batches", calendarStore.displayBatches);
 
   chatStore.activateNavBar(BottomNavBarSet.CalendarNavBar);
   loading.value = false;

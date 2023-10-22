@@ -1,6 +1,9 @@
+import { isToday } from "~/utilities/dateFunctions";
+
 type EventsDisplayBatch = {
   id: number;
   date: Date;
+  today: boolean;
   events: CalendarEvent[];
 };
 
@@ -9,12 +12,88 @@ export const useCalendarStore = defineStore({
   state: () => {
     return {
       calendar: <Calendar>null,
+      displayBatches: <EventsDisplayBatch[]>[],
     };
   },
   actions: {
     updateCalendar(value: Calendar) {
       value.calendarEvents = sortEvents(value.calendarEvents);
       this.calendar = value;
+    },
+    recalculateEvents() {
+      this.calendar.calendarEvents.forEach((eventObject) => {
+        if (
+          eventObject.isAllDay &&
+          new Date(eventObject.day).setHours(0, 0, 0, 0) <
+            new Date(Date.now()).setHours(0, 0, 0, 0)
+        ) {
+          eventObject.isOld = true;
+        } else if (
+          new Date(eventObject.end).setHours(0, 0, 0, 0) <
+          new Date(Date.now()).setHours(0, 0, 0, 0)
+        ) {
+          eventObject.isOld = true;
+        }
+      });
+    },
+    recalculateBatches() {
+      if (!this.calendar || this.calendar.calendarEvents.length === 0) {
+        this.displayBatches = [];
+      }
+
+      const batches = [] as EventsDisplayBatch[];
+      let result = [] as number[];
+      this.calendar.calendarEvents.forEach((ce) => {
+        if (ce.isAllDay) {
+          result.push(new Date(ce.day).setHours(0, 0, 0, 0));
+        } else {
+          result = [
+            ...result,
+            ...getDatesInRange(
+              new Date(ce.start).setHours(0, 0, 0, 0),
+              new Date(ce.end).setHours(0, 0, 0, 0)
+            ),
+          ];
+        }
+      });
+
+      result = result
+        .filter((value, index, array) => array.indexOf(value) === index)
+        .sort((a, b) => {
+          return a - b;
+        });
+
+      console.log("All Dates", result);
+      result.forEach((r) => {
+        const validEvents: CalendarEvent[] =
+          this.calendar.calendarEvents.filter((ce) => {
+            if (ce.isAllDay) {
+              return (
+                new Date(ce.day).setHours(0, 0, 0, 0) ===
+                new Date(r).setHours(0, 0, 0, 0)
+              );
+            } else {
+              const result =
+                new Date(r).setHours(0, 0, 0, 0) >=
+                  new Date(ce.start).setHours(0, 0, 0, 0) &&
+                new Date(r).setHours(0, 0, 0, 0) <=
+                  new Date(ce.end).setHours(0, 0, 0, 0);
+              return result;
+            }
+          });
+
+        const batch: EventsDisplayBatch = {
+          id: new Date(r).setHours(0, 0, 0, 0),
+          date: new Date(r),
+          today: isToday(new Date(r)),
+          events: validEvents,
+        };
+        batches.push(batch);
+      });
+
+      this.displayBatches = batches.sort((a, b) => {
+        return Number(b.date) - Number(a.date);
+      });
     },
     updateEvent(value: CalendarEvent) {
       let newList = [
@@ -44,64 +123,6 @@ export const useCalendarStore = defineStore({
   getters: {
     calendarData: (state) => (state.calendar ? true : false),
     getEvents: (state) => state.calendar?.calendarEvents,
-    getDisplayBatches: (state): EventsDisplayBatch[] => {
-      if (!state.calendar || state.calendar.calendarEvents.length === 0) {
-        return [];
-      }
-
-      const batches = [] as EventsDisplayBatch[];
-      let result = [] as number[];
-      state.calendar.calendarEvents.forEach((ce) => {
-        if (ce.isAllDay) {
-          result.push(new Date(ce.day).setHours(0, 0, 0, 0));
-        } else {
-          result = [
-            ...result,
-            ...getDatesInRange(
-              new Date(ce.start).setHours(0, 0, 0, 0),
-              new Date(ce.end).setHours(0, 0, 0, 0)
-            ),
-          ];
-        }
-      });
-
-      result = result
-        .filter((value, index, array) => array.indexOf(value) === index)
-        .sort((a, b) => {
-          return a - b;
-        });
-
-      console.log("All Dates", result);
-      result.forEach((r) => {
-        const validEvents: CalendarEvent[] =
-          state.calendar.calendarEvents.filter((ce) => {
-            if (ce.isAllDay) {
-              return (
-                new Date(ce.day).setHours(0, 0, 0, 0) ===
-                new Date(r).setHours(0, 0, 0, 0)
-              );
-            } else {
-              const result =
-                new Date(r).setHours(0, 0, 0, 0) >=
-                  new Date(ce.start).setHours(0, 0, 0, 0) &&
-                new Date(r).setHours(0, 0, 0, 0) <=
-                  new Date(ce.end).setHours(0, 0, 0, 0);
-              return result;
-            }
-          });
-
-        const batch: EventsDisplayBatch = {
-          id: new Date(r).setHours(0, 0, 0, 0),
-          date: new Date(r),
-          events: validEvents,
-        };
-        batches.push(batch);
-      });
-
-      return batches.sort((a, b) => {
-        return Number(b.date) - Number(a.date);
-      });
-    },
   },
 });
 

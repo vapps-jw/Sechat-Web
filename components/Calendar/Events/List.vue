@@ -1,8 +1,8 @@
 <template>
-  <v-list flex align-center v-if="calendarStore.getDisplayBatches.length > 0">
+  <v-list flex align-center v-if="calendarStore.displayBatches.length > 0">
     <div
       :id="batch.id.toString()"
-      v-for="(batch, index) in calendarStore.getDisplayBatches"
+      v-for="(batch, index) in calendarStore.displayBatches"
       :key="batch.id"
     >
       <v-row no-gutters class="flex-nowrap align-center my-2 mx-1 pa-1">
@@ -18,7 +18,7 @@
           <v-sheet class="mx-3">
             <div
               :class="
-                isToday(batch.date)
+                batch.today
                   ? 'font-weight-bold text-warning'
                   : 'small-font text-primary'
               "
@@ -33,7 +33,7 @@
           <v-sheet class="mx-3">
             <div
               :class="
-                isToday(batch.date)
+                batch.today
                   ? 'font-weight-bold text-warning'
                   : 'small-font text-primary'
               "
@@ -58,10 +58,19 @@
       </div>
     </div>
   </v-list>
+  <v-container v-else class="d-flex justify-center align-center">
+    <v-alert
+      class="alert-font"
+      density="compact"
+      type="info"
+      variant="tonal"
+      title="Add First Event"
+      text="This is a chronological list of Events. You can add reminders to them, you will reveive push notifications."
+    ></v-alert>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-import { isToday } from "~/utilities/dateFunctions";
 const calendarStore = useCalendarStore();
 const appStore = useSechatAppStore();
 </script>

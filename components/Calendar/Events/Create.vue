@@ -82,6 +82,7 @@ const createEvent = async (data: CalendarEvent) => {
   console.log("Updating Event", data);
 
   calendarStore.updateEvent(data);
+  calendarStore.recalculateBatches();
   dialog.value = false;
   isBusy.value = false;
 };
