@@ -70,6 +70,7 @@ export const PushNotificationTypes = {
   NewContactRequest: "Contact Request",
   VideoCall: "Video Call",
   EventReminder: "Event Reminder",
+  ApplicationEvent: "Application Event",
 };
 
 export const VideoCallStatus = {

@@ -44,6 +44,14 @@ self.addEventListener("push", async (event) => {
       tag: "Sechat",
       vibrate: [500, 500, 500, 500],
     };
+  } else if (String(data.title) === PushNotificationTypes.ApplicationEvent) {
+    options = {
+      body: String(data.options.body),
+      icon: "icons/icon_64x64.png",
+      badge: "icons/alert-circle-badge.png",
+      tag: "Sechat",
+      vibrate: [500, 500, 500, 500],
+    };
   } else {
     options = {
       body: String(data.options.body),
@@ -66,10 +74,10 @@ self.addEventListener("push", async (event) => {
 self.addEventListener("notificationclick", (event) => {
   const clickedNotification = event.notification;
 
-  if (clickedNotification.title === PushNotificationTypes.VideoCall) {
-    clickedNotification.close();
-    return;
-  }
+  // if (clickedNotification.title === PushNotificationTypes.VideoCall) {
+  //   clickedNotification.close();
+  //   return;
+  // }
 
   const promiseChain = clients
     .matchAll({ type: "window", includeUncontrolled: true })

@@ -147,7 +147,7 @@ const deleteMasterKey = () => {
 
 const forceSync = () => {
   console.log("Forcing sync");
-  refreshHandler.syncWithOtherDevice();
+  e2e.syncWithOtherDevice();
   updateKeysTable();
 };
 
