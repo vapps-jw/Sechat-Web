@@ -21,6 +21,9 @@ export const useCalendarStore = defineStore({
       this.calendar = value;
     },
     recalculateEvents() {
+      if (!this.calendar || this.calendar!.calendarEvents.length === 0) {
+        return;
+      }
       this.calendar.calendarEvents.forEach((eventObject) => {
         if (
           eventObject.isAllDay &&
@@ -37,8 +40,9 @@ export const useCalendarStore = defineStore({
       });
     },
     recalculateBatches() {
-      if (!this.calendar || this.calendar.calendarEvents.length === 0) {
+      if (!this.calendar || this.calendar!.calendarEvents.length === 0) {
         this.displayBatches = [];
+        return;
       }
 
       const batches = [] as EventsDisplayBatch[];

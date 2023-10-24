@@ -80,7 +80,7 @@ export const useRefreshHandler = () => {
         });
         await Promise.all(promises);
       })
-      .finally(() => {
+      .finally(async () => {
         chatStore.lazyLoadInProgress = false;
       });
   };
@@ -238,7 +238,7 @@ export const useRefreshHandler = () => {
   // };
 
   const updateLoadLazy = async () => {
-    console.warn("Update Load");
+    console.warn("Update Load", chatStore.lazyLoadInProgress);
     console.log("Stored Contacts", chatStore.availableContacts);
     console.log("Stored Rooms", chatStore.availableRooms);
 
@@ -260,6 +260,7 @@ export const useRefreshHandler = () => {
       console.log("Connecting to Rooms");
       await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
       updateViewedMessages();
+      chatStore.lazyLoadInProgress = false;
       return;
     }
 
@@ -335,7 +336,17 @@ export const useRefreshHandler = () => {
         });
         await Promise.all(promises);
       })
-      .finally(() => {
+      .finally(async () => {
+        try {
+          if (chatStore.activeContactId) {
+            await chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
+          }
+          if (chatStore.activeRoomId) {
+            await chatApi.markMessagesAsViewed(chatStore.activeRoomId);
+          }
+        } catch (error) {
+          console.error("Error on messages viewed update", error);
+        }
         chatStore.lazyLoadInProgress = false;
       });
   };
