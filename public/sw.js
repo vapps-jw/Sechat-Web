@@ -82,6 +82,7 @@ self.addEventListener("notificationclick", (event) => {
   const promiseChain = clients
     .matchAll({ type: "window", includeUncontrolled: true })
     .then((windowClients) => {
+      console.warn("Service Worker >>> Widows", windowClients);
       if (windowClients.length > 0) {
         windowClients[0].focus();
       }
