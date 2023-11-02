@@ -199,16 +199,7 @@ export const useRefreshHandler = () => {
         await Promise.all(promises);
       })
       .finally(async () => {
-        try {
-          if (chatStore.activeContactId) {
-            await chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
-          }
-          if (chatStore.activeRoomId) {
-            await chatApi.markMessagesAsViewed(chatStore.activeRoomId);
-          }
-        } catch (error) {
-          console.error("Error on messages viewed update", error);
-        }
+        await updateViewedMessages();
         chatStore.lazyLoadInProgress = false;
       });
   };
