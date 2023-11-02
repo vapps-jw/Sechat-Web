@@ -53,7 +53,7 @@
           <v-divider color="tertiary"></v-divider>
         </v-col>
       </v-row>
-      <div v-for="(ce, index) in batch.events" :key="`${index}`">
+      <div v-for="(ce, index) in batch.events" :key="index">
         <calendar-events-list-item :calendar-event="ce" />
       </div>
     </div>

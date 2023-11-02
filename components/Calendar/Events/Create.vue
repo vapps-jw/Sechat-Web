@@ -34,6 +34,7 @@ const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
 const calendarStore = useCalendarStore();
 
+// TODO: handle recurring
 const createEvent = async (data: CalendarEvent) => {
   console.log("Submitting Event", data);
   isBusy.value = true;

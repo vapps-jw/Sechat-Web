@@ -16,9 +16,9 @@
     "@vite-pwa/nuxt": "^0.1.1",
     "@vitejs/plugin-vue": "^4.4.0",
     "cross-env": "^7.0.3",
-    "cypress": "^13.3.2",
+    "cypress": "^13.4.0",
     "nuxt": "^3.8.0",
-    "nuxt-icon": "^0.5.0",
+    "nuxt-icon": "^0.6.1",
     "nuxt-security": "^0.14.4",
     "vitest": "^0.34.6",
     "workbox-precaching": "^7.0.0"
@@ -36,12 +36,12 @@
     "@tiptap/starter-kit": "^2.1.12",
     "@tiptap/vue-3": "^2.1.12",
     "base64-js": "^1.5.1",
-    "crypto-es": "^2.0.4",
+    "crypto-es": "^2.1.0",
     "get-urls": "^12.1.0",
     "is-base64": "^1.1.0",
     "request": "^2.88.2",
-    "sass": "^1.69.4",
-    "vuetify": "^3.3.22"
+    "sass": "^1.69.5",
+    "vuetify": "^3.3.23"
   },
   "overrides": {
     "vue": "latest"

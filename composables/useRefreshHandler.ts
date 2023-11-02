@@ -14,10 +14,10 @@ export const useRefreshHandler = () => {
   const calendarStore = useCalendarStore();
 
   const initialLoad = async () => {
-    appStore.updateLoadingOverlayWithMessage(true, "Loading Messages...");
+    //appStore.updateLoadingOverlayWithMessage(true, "Loading Messages...");
 
     if (chatStore.lazyLoadInProgress) {
-      appStore.updateLoadingOverlay(false);
+      //appStore.updateLoadingOverlay(false);
       return;
     } else {
       chatStore.lazyLoadInProgress = true;
@@ -47,7 +47,7 @@ export const useRefreshHandler = () => {
         e2e.clearUnusedKeys();
 
         await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
-        appStore.updateLoadingOverlay(false);
+        //appStore.updateLoadingOverlay(false);
       })
       .then(async (res) => {
         console.warn("Initial load - loading messages and decrypting");
@@ -99,11 +99,11 @@ export const useRefreshHandler = () => {
     console.warn("Online status changed");
     appStore.updateOnlineState(true);
     await updateLoadLazy();
-    appStore.updateLoadingOverlay(false);
+    //appStore.updateLoadingOverlay(false);
   };
 
   const handleOfflineChange = async () => {
-    appStore.updateLoadingOverlay(true);
+    //appStore.updateLoadingOverlay(true);
   };
 
   // const updateRefresh = async () => {
@@ -238,7 +238,7 @@ export const useRefreshHandler = () => {
   // };
 
   const updateLoadLazy = async () => {
-    console.warn("Update Load", chatStore.lazyLoadInProgress);
+    console.warn("Update Load Lazy", chatStore.lazyLoadInProgress);
     console.log("Stored Contacts", chatStore.availableContacts);
     console.log("Stored Rooms", chatStore.availableRooms);
 
@@ -246,7 +246,7 @@ export const useRefreshHandler = () => {
     console.warn("Last DM message", chatStore.lastMessageInContacts);
 
     if (chatStore.lazyLoadInProgress) {
-      appStore.updateLoadingOverlay(false);
+      //appStore.updateLoadingOverlay(false);
       return;
     } else {
       chatStore.lazyLoadInProgress = true;
@@ -254,22 +254,15 @@ export const useRefreshHandler = () => {
 
     if (
       signalRStore.connection &&
-      signalRStore.connection.state === HubConnectionState.Connected
+      signalRStore.connection.state !== HubConnectionState.Connected
     ) {
-      console.warn("SignalR connected - no updates");
-      console.log("Connecting to Rooms");
-      await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
-      updateViewedMessages();
-      chatStore.lazyLoadInProgress = false;
-      return;
+      console.log("Handling SignalR");
+      await signalRStore.closeConnection();
+      signalRStore.$reset();
+      await signalR.connect();
     }
 
-    appStore.updateLoadingOverlayWithMessage(true, "Updating Messages...");
-
-    await signalRStore.closeConnection();
-    signalRStore.$reset();
-    await signalR.connect();
-
+    //appStore.updateLoadingOverlayWithMessage(true, "Updating Messages...");
     Promise.all([
       videoCall.getCallLogs().then((res) => chatStore.loadCallLogs(res)),
       chatStore.lastMessageInRooms !== 0
@@ -303,7 +296,7 @@ export const useRefreshHandler = () => {
         e2e.clearUnusedKeys();
 
         await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
-        appStore.updateLoadingOverlay(false);
+        //appStore.updateLoadingOverlay(false);
       })
       .then(async (res) => {
         console.warn("Update load - loading messages and decrypting");
@@ -340,9 +333,11 @@ export const useRefreshHandler = () => {
         try {
           if (chatStore.activeContactId) {
             await chatApi.markDirectMessagesAsViewed(chatStore.activeContactId);
+            chatStore.markDirectMessagesAsViewed(chatStore.activeContactId);
           }
           if (chatStore.activeRoomId) {
             await chatApi.markMessagesAsViewed(chatStore.activeRoomId);
+            chatStore.markActiveRoomMessagesAsViewed();
           }
         } catch (error) {
           console.error("Error on messages viewed update", error);

@@ -224,7 +224,7 @@ export const useSignalR = () => {
     connection.onreconnected(async (connectionId) => {
       try {
         signalRStore.updateConnectionState();
-        appStore.updateLoadingOverlayWithMessage(true, "Synchronizing...");
+        //appStore.updateLoadingOverlayWithMessage(true, "Synchronizing...");
         console.warn("SIGNALR RECONNECTED", connectionId);
         await reconnectedActionsLazy();
       } catch (error) {
@@ -249,7 +249,7 @@ export const useSignalR = () => {
     console.warn("RECONNECTED ACTIONS - LAZY");
 
     if (chatStore.lazyLoadInProgress) {
-      appStore.updateLoadingOverlay(false);
+      //appStore.updateLoadingOverlay(false);
       return;
     } else {
       chatStore.lazyLoadInProgress = true;
@@ -288,7 +288,7 @@ export const useSignalR = () => {
         e2e.updateHasKeyFlag();
 
         await connectToRooms(chatStore.availableRooms.map((r) => r.id));
-        appStore.updateLoadingOverlay(false);
+        //appStore.updateLoadingOverlay(false);
       })
       .then(async (res) => {
         console.warn("Reconnect load - loading messages and decrypting");

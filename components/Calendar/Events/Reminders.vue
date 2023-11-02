@@ -111,6 +111,8 @@ const removeReminder = async (reminder: EventReminder) => {
 };
 
 const createReminder = async () => {
+  // TODO: add default cases + handle recurring events, 5mins, 15mins, 30mins, 1hr before
+
   console.log(
     "Creating Reminder",
     date.value,

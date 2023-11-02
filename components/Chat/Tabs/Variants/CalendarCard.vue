@@ -94,15 +94,16 @@ const activate = async () => {
       eventObject.id = ce.id;
       eventObject.reminders = ce.reminders;
 
-      // Assign dates
-      if (eventObject.isAllDay && eventObject.day) {
-        eventObject.day = eventObject.day;
-      } else {
-        eventObject.start = eventObject.start;
-        eventObject.end = eventObject.end;
-      }
+      // Assign dates - redundant
+      // if (eventObject.isAllDay && eventObject.day) {
+      //   eventObject.day = eventObject.day;
+      // } else {
+      //   eventObject.start = eventObject.start;
+      //   eventObject.end = eventObject.end;
+      // }
 
       // Check old Events
+      // TODO: handle recurring
       if (
         eventObject.isAllDay &&
         new Date(eventObject.day).setHours(0, 0, 0, 0) <

@@ -14,6 +14,17 @@ type CalendarEvent = {
   end?: string;
   isOld?: boolean;
   reminders: EventReminder[];
+
+  recurring?: boolean;
+  recurringOptions?: EventRecurringOptions;
+};
+
+type EventRecurringOptions = {
+  startDay?: string;
+  startTime?: string;
+  endTime?: string;
+  interval?: number;
+  duration?: number;
 };
 
 type EventReminder = {
