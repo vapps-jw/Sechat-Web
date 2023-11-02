@@ -69,24 +69,27 @@
           </v-list>
         </v-menu>
         <div class="d-flex align-center justify-center mr-2 flex-column">
-          <ChatUserAvatar
-            :active="false"
-            :user-name="uc.displayName"
-            :picture="uc.profileImage"
-            size="small"
-          />
-          <div class="d-flex align-center justify-center">
-            <chat-status-contact-state-icon :contact="uc" />
-            <v-icon v-if="uc.blocked" size="x-small" color="error"
-              >mdi-alert-circle</v-icon
-            >
-            <v-icon v-else-if="uc.approved" size="x-small" color="success"
-              >mdi-check-bold</v-icon
-            >
-            <v-icon v-else size="x-small" color="warning"
-              >mdi-help-circle-outline</v-icon
-            >
-          </div>
+          <v-badge color="transparent">
+            <template v-slot:badge>
+              <v-icon v-if="uc.blocked" size="x-small" color="error"
+                >mdi-alert-circle</v-icon
+              >
+              <v-icon v-else-if="uc.approved" size="x-small" color="success"
+                >mdi-check-bold</v-icon
+              >
+              <v-icon v-else size="x-small" color="warning"
+                >mdi-help-circle-outline</v-icon
+              >
+            </template>
+            <ChatUserAvatar
+              :active="false"
+              :user-name="uc.displayName"
+              :picture="uc.profileImage"
+              size="small"
+            />
+          </v-badge>
+
+          <div class="d-flex align-center justify-center"></div>
         </div>
       </template>
       <template v-slot:append>
