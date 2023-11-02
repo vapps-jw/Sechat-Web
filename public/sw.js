@@ -14,66 +14,61 @@ self.addEventListener("push", async (event) => {
   const data = event.data.json();
   console.warn("Service Worker >>> Push Recieved...", data);
 
-  const pushActions = new Promise(async (resolve, reject) => {
-    if (Notification.permission !== "granted") {
-      console.error("Service Worker >>> Push Denied...");
-      return;
-    }
+  if (Notification.permission !== "granted") {
+    console.error("Service Worker >>> Push Denied...");
+    return;
+  }
 
-    const clientIsFocused = await isClientFocused();
-    if (clientIsFocused) {
-      console.warn("Service Worker >>> Window Visible...");
-      return;
-    }
+  const clientIsFocused = await isClientFocused();
+  if (clientIsFocused) {
+    console.warn("Service Worker >>> Window Visible...");
+    return;
+  }
 
-    console.warn("Service Worker >>> Push notification received", data);
-    let options = {};
-    if (String(data.title) === PushNotificationTypes.VideoCall) {
-      options = {
-        body: String(data.options.body),
-        icon: "icons/icon_64x64.png",
-        badge: "icons/phone-badge.png",
-        tag: "Sechat",
-        vibrate: [1000],
-      };
-      await closeNotifications(data);
-    } else if (String(data.title) === PushNotificationTypes.EventReminder) {
-      options = {
-        body: String(decryptMessage(data.options.body)),
-        icon: "icons/icon_64x64.png",
-        badge: "icons/calendar-star.png",
-        tag: "Sechat",
-        vibrate: [500, 500, 500, 500],
-      };
-    } else if (String(data.title) === PushNotificationTypes.ApplicationEvent) {
-      options = {
-        body: String(data.options.body),
-        icon: "icons/icon_64x64.png",
-        badge: "icons/alert-circle-badge.png",
-        tag: "Sechat",
-        vibrate: [500, 500, 500, 500],
-      };
-    } else {
-      options = {
-        body: String(data.options.body),
-        icon: "icons/icon_64x64.png",
-        badge: "icons/message-badge.png",
-        tag: "Sechat",
-        vibrate: [500, 500, 500],
-      };
-      await closeNotifications(data);
-    }
+  console.warn("Service Worker >>> Push notification received", data);
+  let options = {};
+  if (String(data.title) === PushNotificationTypes.VideoCall) {
+    options = {
+      body: String(data.options.body),
+      icon: "icons/icon_64x64.png",
+      badge: "icons/phone-badge.png",
+      tag: "Sechat",
+      vibrate: [1000],
+    };
+    await closeNotifications(data);
+  } else if (String(data.title) === PushNotificationTypes.EventReminder) {
+    options = {
+      body: String(decryptMessage(data.options.body)),
+      icon: "icons/icon_64x64.png",
+      badge: "icons/calendar-star.png",
+      tag: "Sechat",
+      vibrate: [500, 500, 500, 500],
+    };
+  } else if (String(data.title) === PushNotificationTypes.ApplicationEvent) {
+    options = {
+      body: String(data.options.body),
+      icon: "icons/icon_64x64.png",
+      badge: "icons/alert-circle-badge.png",
+      tag: "Sechat",
+      vibrate: [500, 500, 500, 500],
+    };
+  } else {
+    options = {
+      body: String(data.options.body),
+      icon: "icons/icon_64x64.png",
+      badge: "icons/message-badge.png",
+      tag: "Sechat",
+      vibrate: [500, 500, 500],
+    };
+    await closeNotifications(data);
+  }
 
-    console.warn(
-      "Service Worker >>> Showing Notification...",
-      String(data.title),
-      options
-    );
-
-    return self.registration.showNotification(String(data.title), options);
-  });
-
-  event.waitUntil(pushActions);
+  console.warn(
+    "Service Worker >>> Showing Notification...",
+    String(data.title),
+    options
+  );
+  self.registration.showNotification(String(data.title), options);
 });
 
 self.addEventListener("notificationclick", (event) => {
