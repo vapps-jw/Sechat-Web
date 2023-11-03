@@ -76,6 +76,9 @@ export const useCalendarStore = defineStore({
                 new Date(ce.day).setHours(0, 0, 0, 0) ===
                 new Date(r).setHours(0, 0, 0, 0)
               );
+            } else if (ce.recurring) {
+              // TODO: handle recurring
+              return false;
             } else {
               const result =
                 new Date(r).setHours(0, 0, 0, 0) >=

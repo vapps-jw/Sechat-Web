@@ -55,6 +55,11 @@ export const ChatViews = {
   Admin: "Admin",
 };
 
+export const RecurringIntervalType = {
+  MonthDay: "Month Day",
+  FixedInterval: "Fixed",
+};
+
 export const GeneralViews = {
   Placeholder: "placeholder",
 };

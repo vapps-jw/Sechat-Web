@@ -23,7 +23,9 @@ type EventRecurringOptions = {
   startDay?: string;
   startTime?: string;
   endTime?: string;
-  interval?: number;
+  intervalType?: string;
+  fixedIntervalStep?: number;
+  dayOfTheMonth?: number;
   duration?: number;
 };
 

@@ -2,15 +2,26 @@ export const getISODate = (value: Date) => {
   return value.toISOString().slice(0, 10);
 };
 
-export const createDateToSave = (date: string): string => {
-  return new Date(date).toISOString();
-};
-
 export const readSavedDate = (date: string): string => {
   return new Date(new Date(date).toString().split("GMT")[0] + " UTC")
     .toISOString()
     .split(".")[0]
     .slice(0, -3);
+};
+
+export const getEventDateTime = (date: Date): string => {
+  return new Date(date)
+    .toISOString()
+    .replace(/.\d+Z$/g, "")
+    .substring(0, 16);
+};
+
+export const getTime = (date: Date): string => {
+  return date.toTimeString().substring(0, 5);
+};
+
+export const addHoursToDate = (myDate: Date, hours: number): Date => {
+  return new Date(new Date(myDate).setHours(myDate.getHours() + hours));
 };
 
 export const getUTCDate = (date: Date): Date => {

@@ -1,12 +1,12 @@
 <template>
   <v-card-text>
-    <v-form ref="eventCreateForm" @submit.prevent>
+    <v-form v-model="form" ref="eventCreateForm" @submit.prevent>
       <v-text-field
         data-cy="new-event-name-field"
         class="my-2"
         v-model="eventData.name"
-        :rules="eventData.nameRules"
-        :counter="50"
+        :rules="validationRules.nameRules"
+        :counter="25"
         label="Name"
         required
       ></v-text-field>
@@ -14,7 +14,7 @@
         data-cy="new-event-description-field"
         class="my-2"
         v-model="eventData.description"
-        :rules="eventData.descriptionRules"
+        :rules="validationRules.descriptionRules"
         :counter="500"
         label="Description"
         required
@@ -27,67 +27,120 @@
         label="All Day Event"
       >
       </v-checkbox>
-      <!-- <v-checkbox
+      <v-checkbox
         density="compact"
         hide-details
         v-model="eventData.recurring"
         label="Recurring"
-      ></v-checkbox> -->
+      ></v-checkbox>
       <v-divider class="mb-3" />
 
-      <!-- All Day -->
+      <div v-if="!eventData.recurring">
+        <!-- All Day -->
 
-      <v-text-field
-        v-if="eventData.isAllDay && !eventData.recurring"
-        v-model="eventData.day"
-        type="date"
-        label="All Day Event"
-      ></v-text-field>
+        <v-text-field
+          v-if="eventData.isAllDay"
+          v-model="eventData.day"
+          type="date"
+          label="All Day Event"
+          :rules="[allDayRules.standard.notNull(eventData.day)]"
+        ></v-text-field>
 
-      <!-- Recurring Start Day -->
+        <!-- Start & End -->
 
-      <v-text-field
-        v-if="eventData.recurring"
-        v-model="eventData.recurringOptions.startDay"
-        type="date"
-        label="Recurring Event Start Day"
-      ></v-text-field>
+        <v-text-field
+          v-if="!eventData.isAllDay && !eventData.recurring"
+          v-model="eventData.start"
+          type="datetime-local"
+          label="Start"
+          :rules="[
+            timedEventRules.standard.notNull(eventData.start),
+            timedEventRules.standard.startCheck(eventData, eventData.start),
+          ]"
+        ></v-text-field>
 
-      <!-- Start & End -->
+        <v-text-field
+          v-if="!eventData.isAllDay && !eventData.recurring"
+          v-model="eventData.end"
+          type="datetime-local"
+          :min="eventData.start"
+          label="End"
+          :rules="[
+            timedEventRules.standard.notNull(eventData.start),
+            timedEventRules.standard.endCheck(eventData, eventData.start),
+          ]"
+        ></v-text-field>
+      </div>
+      <div v-else>
+        <!-- Recurring Start Day -->
 
-      <v-text-field
-        v-if="!eventData.isAllDay && !eventData.recurring"
-        v-model="eventData.start"
-        type="datetime-local"
-        :min="eventData.start"
-        label="Start"
-      ></v-text-field>
+        <v-text-field
+          v-if="eventData.recurring"
+          v-model="eventData.recurringOptions.startDay"
+          type="date"
+          label="Recurring Event Start Day"
+          :rules="[
+            allDayRules.recurring.notNull(eventData.recurringOptions.startDay),
+          ]"
+        ></v-text-field>
 
-      <v-text-field
-        v-if="!eventData.isAllDay && !eventData.recurring"
-        v-model="eventData.end"
-        type="datetime-local"
-        :min="eventData.start"
-        label="End"
-      ></v-text-field>
+        <!-- Recurring Start & End -->
 
-      <!-- Recurring Start & End -->
-      <v-text-field
-        v-if="!eventData.isAllDay && eventData.recurring"
-        v-model="eventData.recurringOptions.startTime"
-        type="time"
-        label="Recurring Event Start"
-        :rules="eventData.recurranceStartRules"
-      ></v-text-field>
+        <v-text-field
+          v-if="!eventData.isAllDay"
+          v-model="eventData.recurringOptions.startTime"
+          type="time"
+          label="Recurring Event Start"
+        ></v-text-field>
 
-      <v-text-field
-        v-if="!eventData.isAllDay && eventData.recurring"
-        v-model="eventData.recurringOptions.endTime"
-        :min="eventData.recurringOptions.startTime"
-        :rules="eventData.recurranceEndRules"
-        type="time"
-        label="Recurring Event End"
-      ></v-text-field>
+        <v-text-field
+          v-if="!eventData.isAllDay"
+          v-model="eventData.recurringOptions.endTime"
+          :min="eventData.recurringOptions.startTime"
+          type="time"
+          label="Recurring Event End"
+        ></v-text-field>
+
+        <!-- Recurring Settings -->
+
+        <v-combobox
+          label="Interval"
+          v-model="eventData.recurringOptions.intervalType"
+          :items="Object.values(RecurringIntervalType)"
+        ></v-combobox>
+
+        <v-text-field
+          v-if="
+            eventData.recurringOptions.intervalType ===
+            RecurringIntervalType.MonthDay
+          "
+          v-model="eventData.recurringOptions.dayOfTheMonth"
+          :min="1"
+          :max="31"
+          type="number"
+          label="Repeat every X day of a Month"
+        ></v-text-field>
+
+        <v-text-field
+          v-if="
+            eventData.recurringOptions.intervalType ===
+            RecurringIntervalType.FixedInterval
+          "
+          v-model="eventData.recurringOptions.fixedIntervalStep"
+          :min="1"
+          :max="100"
+          type="number"
+          label="Repeat every X days"
+        ></v-text-field>
+
+        <v-text-field
+          v-model="eventData.recurringOptions.duration"
+          :min="1"
+          :max="100"
+          type="number"
+          label="Repeat every X times"
+        ></v-text-field>
+      </div>
 
       <div class="d-flex justify-center align-center">
         <v-color-picker
@@ -100,7 +153,7 @@
   </v-card-text>
   <v-card-actions class="justify-center">
     <v-btn
-      :disabled="props.isBusy"
+      :disabled="props.isBusy || !form"
       :loading="props.isBusy"
       data-cy="create-room-btn"
       variant="tonal"
@@ -112,12 +165,19 @@
 </template>
 
 <script setup lang="ts">
+import {
+  addHoursToDate,
+  getEventDateTime,
+  getTime,
+} from "~/utilities/dateFunctions";
+import { RecurringIntervalType } from "~/utilities/globalEnums";
+
 const e2e = useE2Encryption();
 const sechatStore = useSechatAppStore();
 
 const emit = defineEmits(["updateEvent"]);
-
-// TODO: add section for recurring
+3;
+const form = ref(false);
 
 const props = defineProps({
   isBusy: {
@@ -135,13 +195,15 @@ const props = defineProps({
       color: "#EEEEEE",
       isAllDay: false,
       day: new Date(Date.now()).toISOString().split("T")[0],
-      start: new Date(Date.now()).toISOString(),
-      end: new Date(Date.now()).toISOString(),
+      start: getEventDateTime(addHoursToDate(new Date(Date.now()), 0)),
+      end: getEventDateTime(addHoursToDate(new Date(Date.now()), 1)),
       recurringOptions: {
         startDay: new Date(Date.now()).toISOString().split("T")[0],
-        startTime: null,
-        endTime: null,
-        interval: 1,
+        startTime: getTime(addHoursToDate(new Date(Date.now()), 1)),
+        endTime: getTime(addHoursToDate(new Date(Date.now()), 2)),
+        intervalType: RecurringIntervalType.MonthDay,
+        dayOfTheMonth: 1,
+        fixedIntervalStep: 1,
         duration: 1,
       },
     },
@@ -149,8 +211,59 @@ const props = defineProps({
 });
 
 onMounted(async () => {
-  console.info("Create event mounted", eventData.value);
+  console.log("Create event mounted", eventData.value);
 });
+
+const allDayRules = {
+  standard: {
+    notNull: (v) => !!v || "Field is required",
+  },
+  recurring: {
+    notNull: (v) => !!v || "Field is required",
+  },
+};
+
+const timedEventRules = {
+  standard: {
+    notNull: (v) => !!v || "Field is required",
+    startCheck: (eventData, v) => {
+      console.log("Standard start check", eventData.start, eventData.end);
+      if (
+        eventData.start &&
+        eventData.end &&
+        new Date(eventData.start).getTime() < new Date(eventData.end).getTime()
+      ) {
+        return true;
+      }
+      return "Incorrect Data";
+    },
+    endCheck: (eventData, v) => {
+      console.log("Standard end check", eventData.start, eventData.end);
+      if (
+        eventData.start &&
+        eventData.end &&
+        new Date(eventData.start).getTime() < new Date(eventData.end).getTime()
+      ) {
+        return true;
+      }
+      return "Incorrect Data";
+    },
+  },
+  recurring: {
+    notNull: (v) => !!v || "Field is required",
+  },
+};
+
+const validationRules = {
+  nameRules: [
+    (v) => !!v || "Event Name is required",
+    (v) =>
+      (v && v.length <= 25) || "Event Name can`t have more than 25 characters",
+  ],
+  descriptionRules: [
+    (v) => v.length <= 500 || "Description can`t have more than 500 characters",
+  ],
+};
 
 const eventCreateForm = ref<HTMLFormElement>();
 const eventData = ref({
@@ -166,41 +279,14 @@ const eventData = ref({
   end: props.calendarEvent.end,
   recurring: false,
   recurringOptions: {
-    startDay: props.calendarEvent.day,
-    startTime: props.calendarEvent.start,
-    endTime: props.calendarEvent.end,
-    interval: 1,
-    duration: 1,
+    startDay: props.calendarEvent.recurringOptions.startDay,
+    startTime: props.calendarEvent.recurringOptions.startTime,
+    endTime: props.calendarEvent.recurringOptions.endTime,
+    intervalType: props.calendarEvent.recurringOptions.intervalType,
+    dayOfTheMonth: props.calendarEvent.recurringOptions.dayOfTheMonth,
+    fixedIntervalStep: props.calendarEvent.recurringOptions.fixedIntervalStep,
+    duration: props.calendarEvent.recurringOptions.duration,
   },
-  nameRules: [
-    (v) => !!v || "Event Name is required",
-    (v) =>
-      (v && v.length <= 25) || "Event Name can`t have more than 25 characters",
-  ],
-  descriptionRules: [
-    (v) => v.length <= 500 || "Description can`t have more than 500 characters",
-  ],
-  startRules: [
-    (v) =>
-      (!!v && eventData.recurring && !eventData.isAllDay) ||
-      "Start is required",
-    (v) =>
-      (new Date(v).getTime() > new Date(eventData.value.end).getTime() &&
-        eventData.recurring &&
-        !eventData.isAllDay) ||
-      "Start must be before End",
-  ],
-  recurranceStartRules: [(v) => !!v || "Start Time is required"],
-  recurranceEndRules: [
-    (v) => !!v || "End Time is required",
-    (v) =>
-      (eventData.recurring &&
-        !eventData.isAllDay &&
-        new Date(v).getTime() <
-          new Date(eventData.recurringOptions.startTime).getTime()) ||
-      "Start must be before End",
-  ],
-  endRules: [(v) => !!v || "End is required"],
 });
 
 const submit = async () => {
@@ -237,10 +323,19 @@ const submit = async () => {
     end: eventData.value.end,
     reminders: eventData.value.reminders,
     recurring: eventData.value.recurring,
+    recurringOptions: {
+      startDay: eventData.value.recurringOptions.startDay,
+      startTime: eventData.value.recurringOptions.startTime,
+      endTime: eventData.value.recurringOptions.endTime,
+      intervalType: eventData.value.recurringOptions.intervalType,
+      dayOfTheMonth: eventData.value.recurringOptions.dayOfTheMonth,
+      fixedIntervalStep: eventData.value.recurringOptions.fixedIntervalStep,
+      duration: eventData.value.recurringOptions.duration,
+    },
   };
 
   console.log("Event Edit Form Result", newEvent);
-  emit("updateEvent", newEvent);
+  //emit("updateEvent", newEvent);
 };
 </script>
 
