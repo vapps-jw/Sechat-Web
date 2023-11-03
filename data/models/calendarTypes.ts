@@ -25,8 +25,8 @@ type EventRecurringOptions = {
   endTime?: string;
   intervalType?: string;
   fixedIntervalStep?: number;
-  dayOfTheMonth?: number;
   duration?: number;
+  recurringDates?: number[];
 };
 
 type EventReminder = {

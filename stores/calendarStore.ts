@@ -1,4 +1,5 @@
 import { isToday } from "~/utilities/dateFunctions";
+import { RecurringIntervalType } from "~/utilities/globalEnums";
 
 type EventsDisplayBatch = {
   id: number;
@@ -48,7 +49,11 @@ export const useCalendarStore = defineStore({
       const batches = [] as EventsDisplayBatch[];
       let result = [] as number[];
       this.calendar.calendarEvents.forEach((ce) => {
-        if (ce.isAllDay) {
+        if (ce.recurring) {
+          const dates = getRecurranceDates(ce.recurringOptions);
+          ce.recurringOptions.recurringDates = dates;
+          result = [...result, ...dates];
+        } else if (ce.isAllDay) {
           result.push(new Date(ce.day).setHours(0, 0, 0, 0));
         } else {
           result = [
@@ -71,14 +76,17 @@ export const useCalendarStore = defineStore({
       result.forEach((r) => {
         const validEvents: CalendarEvent[] =
           this.calendar.calendarEvents.filter((ce) => {
-            if (ce.isAllDay) {
+            if (ce.recurring) {
+              return ce.recurringOptions.recurringDates.some(
+                (rd) =>
+                  new Date(rd).setHours(0, 0, 0, 0) ===
+                  new Date(r).setHours(0, 0, 0, 0)
+              );
+            } else if (ce.isAllDay) {
               return (
                 new Date(ce.day).setHours(0, 0, 0, 0) ===
                 new Date(r).setHours(0, 0, 0, 0)
               );
-            } else if (ce.recurring) {
-              // TODO: handle recurring
-              return false;
             } else {
               const result =
                 new Date(r).setHours(0, 0, 0, 0) >=
@@ -136,13 +144,88 @@ export const useCalendarStore = defineStore({
 const getDatesInRange = (startDate: number, endDate: number): number[] => {
   const start = new Date(startDate);
   const end = new Date(endDate);
-  const dates = [];
+  const dates = <number[]>[];
 
   while (start <= end) {
     dates.push(new Date(start).setHours(0, 0, 0, 0));
     start.setDate(start.getDate() + 1);
   }
 
+  return dates;
+};
+
+const getRecurranceDates = (
+  recurringOptions: EventRecurringOptions
+): number[] => {
+  let startDate = new Date(recurringOptions.startDay);
+  console.log("Recurring start date", recurringOptions.startDay, startDate);
+
+  const startDay = startDate.getDate();
+  console.log("Recurring start Day", startDay);
+
+  console.log("Interval Step", recurringOptions.fixedIntervalStep);
+
+  const dates = <number[]>[];
+  dates.push(startDate.setHours(0, 0, 0, 0));
+
+  if (recurringOptions.intervalType === RecurringIntervalType.MonthDay) {
+    startDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+  }
+
+  for (let index = 1; index <= recurringOptions.duration; index++) {
+    if (recurringOptions.intervalType === RecurringIntervalType.FixedInterval) {
+      var newDate = new Date(startDate);
+      newDate.setDate(
+        newDate.getDate() + recurringOptions.fixedIntervalStep * index
+      );
+      dates.push(newDate.setHours(0, 0, 0, 0));
+      continue;
+    }
+
+    if (recurringOptions.intervalType === RecurringIntervalType.MonthDay) {
+      startDate.setMonth(startDate.getMonth() + 1);
+
+      console.warn(
+        `Start Date: ${startDate} Curent Month: ${startDate.getMonth()}`
+      );
+
+      const dim = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth() + 1,
+        0
+      ).getDate();
+
+      console.warn("DIM", dim);
+      console.warn("Start Day", startDay);
+
+      if (startDay > dim) {
+        const result = new Date(
+          startDate.getFullYear(),
+          startDate.getMonth(),
+          dim
+        ).setHours(0, 0, 0, 0);
+
+        console.warn("---> DIM! Pushing Date", new Date(result));
+        dates.push(result);
+        continue;
+      }
+
+      const result = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDay
+      ).setHours(0, 0, 0, 0);
+
+      console.warn("--->  Pushing Date", new Date(result));
+      dates.push(result);
+      continue;
+    }
+  }
+
+  console.log(
+    "Recurring Dates",
+    dates.map((rd) => new Date(rd))
+  );
   return dates;
 };
 

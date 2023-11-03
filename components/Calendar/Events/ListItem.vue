@@ -7,61 +7,24 @@
       <div>
         {{ props.calendarEvent.name }}
         <div class="small-font" v-if="!props.calendarEvent.isAllDay">
-          <div
-            v-if="
-              new Date(props.calendarEvent.start).toLocaleDateString(
-                appStore.localLanguage
-              ) ===
-              new Date(props.calendarEvent.end).toLocaleDateString(
-                appStore.localLanguage
-              )
-            "
-          >
-            {{
-              new Date(props.calendarEvent.start).toLocaleTimeString(
-                appStore.localLanguage,
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }
-              )
-            }}
-            -
-            {{
-              new Date(props.calendarEvent.end).toLocaleTimeString(
-                appStore.localLanguage,
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }
-              )
-            }}
-          </div>
-          <div v-else class="tiny-font d-flex flex-column justify-center">
+          <div class="tiny-font d-flex justify-start align-center">
             <div>
               {{
                 new Date(props.calendarEvent.start).toLocaleString(
                   appStore.localLanguage,
                   {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
                   }
                 )
               }}
             </div>
-            <v-icon class="ml-12" icon="mdi-menu-down" color="warning">
-            </v-icon>
+            <v-icon icon="mdi-menu-right" color="warning"> </v-icon>
             <div>
               {{
                 new Date(props.calendarEvent.end).toLocaleString(
                   appStore.localLanguage,
                   {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
                   }

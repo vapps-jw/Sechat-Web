@@ -24,7 +24,31 @@
           ></v-alert>
         </v-container>
 
-        <v-container>
+        <v-container
+          v-if="!props.calendarEvent.isAllDay"
+          class="d-flex justify-center flex-wrap ma-0 pa-0"
+        >
+          <v-btn class="ma-1" @click="createDefualtReminder(DefaultReminder[5])"
+            >5 mins before
+          </v-btn>
+          <v-btn
+            class="ma-1"
+            @click="createDefualtReminder(DefaultReminder[15])"
+            >15 mins before
+          </v-btn>
+          <v-btn
+            class="ma-1"
+            @click="createDefualtReminder(DefaultReminder[30])"
+            >30 mins before
+          </v-btn>
+          <v-btn
+            class="ma-1"
+            @click="createDefualtReminder(DefaultReminder[60])"
+            >1 hour before
+          </v-btn>
+        </v-container>
+
+        <v-container class="my-0 py-0">
           <div class="text-caption my-3">Add Reminder</div>
           <v-text-field
             v-model="date"
@@ -40,7 +64,7 @@
           >
         </v-container>
 
-        <v-container>
+        <v-container class="ma-0 pa-0">
           <v-list density="compact" v-if="props.calendarEvent.reminders">
             <v-list-item
               v-for="r in props.calendarEvent.reminders"
@@ -81,6 +105,18 @@ const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 const calendarStore = useCalendarStore();
 
+const DefaultReminder = {
+  5: "5",
+  15: "15",
+  30: "30",
+  60: "60",
+};
+
+type RemiderPostData = {
+  eventId: string;
+  remind: string;
+};
+
 const dialog = ref<boolean>(false);
 
 interface PropsModel {
@@ -110,15 +146,22 @@ const removeReminder = async (reminder: EventReminder) => {
   calendarStore.removeReminder(props.calendarEvent.id, reminder.id);
 };
 
-const createReminder = async () => {
-  // TODO: add default cases + handle recurring events, 5mins, 15mins, 30mins, 1hr before
+const createDefualtReminder = async (reminder: string) => {
+  console.log("Create Default Reminder", reminder);
 
-  console.log(
-    "Creating Reminder",
-    date.value,
-    new Date(new Date(date.value).toUTCString()).toISOString()
-  );
+  if (!props.calendarEvent.recurring) {
+    const reminderDate = new Date(props.calendarEvent.start);
+    reminderDate.setMinutes(reminderDate.getMinutes() + Number(reminder));
 
+    await postReminder({
+      eventId: props.calendarEvent.id,
+      remind: new Date(new Date(reminderDate).toUTCString()).toISOString(),
+    });
+    return;
+  }
+};
+
+const postReminder = async (postData: RemiderPostData) => {
   const { error: apiError, data: res } = await useFetch<EventReminder>(
     `${config.public.apiBase}/calendar/event/reminder`,
     {
@@ -128,8 +171,8 @@ const createReminder = async () => {
       method: "POST",
       credentials: "include",
       body: {
-        eventId: props.calendarEvent.id,
-        remind: new Date(new Date(date.value).toUTCString()).toISOString(),
+        eventId: postData.eventId,
+        remind: postData.remind,
       },
     }
   );
@@ -144,6 +187,45 @@ const createReminder = async () => {
 
   console.log("Adding Reminder", res.value);
   calendarStore.addReminder(props.calendarEvent.id, res.value);
+};
+
+const createReminder = async () => {
+  console.log(
+    "Creating Reminder",
+    date.value,
+    new Date(new Date(date.value).toUTCString()).toISOString()
+  );
+
+  await postReminder({
+    eventId: props.calendarEvent.id,
+    remind: new Date(new Date(date.value).toUTCString()).toISOString(),
+  });
+
+  // const { error: apiError, data: res } = await useFetch<EventReminder>(
+  //   `${config.public.apiBase}/calendar/event/reminder`,
+  //   {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     method: "POST",
+  //     credentials: "include",
+  //     body: {
+  //       eventId: props.calendarEvent.id,
+  //       remind: new Date(new Date(date.value).toUTCString()).toISOString(),
+  //     },
+  //   }
+  // );
+
+  // if (apiError.value) {
+  //   sechatStore.showErrorSnackbar(apiError.value.data);
+  //   return;
+  // }
+  // sechatStore.showSuccessSnackbar("Reminder saved");
+
+  // console.log("Reminder saved", res.value);
+
+  // console.log("Adding Reminder", res.value);
+  // calendarStore.addReminder(props.calendarEvent.id, res.value);
 };
 
 const minReminderDate = computed<string>(() =>

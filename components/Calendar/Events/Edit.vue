@@ -66,8 +66,8 @@
           :min="eventData.start"
           label="End"
           :rules="[
-            timedEventRules.standard.notNull(eventData.start),
-            timedEventRules.standard.endCheck(eventData, eventData.start),
+            timedEventRules.standard.notNull(eventData.end),
+            timedEventRules.standard.endCheck(eventData, eventData.end),
           ]"
         ></v-text-field>
       </div>
@@ -91,14 +91,31 @@
           v-model="eventData.recurringOptions.startTime"
           type="time"
           label="Recurring Event Start"
+          :rules="[
+            timedEventRules.recurring.notNull(
+              eventData.recurringOptions.startTime
+            ),
+            timedEventRules.recurring.startCheck(
+              eventData,
+              eventData.recurringOptions.startTime
+            ),
+          ]"
         ></v-text-field>
 
         <v-text-field
           v-if="!eventData.isAllDay"
           v-model="eventData.recurringOptions.endTime"
-          :min="eventData.recurringOptions.startTime"
           type="time"
           label="Recurring Event End"
+          :rules="[
+            timedEventRules.recurring.notNull(
+              eventData.recurringOptions.endTime
+            ),
+            timedEventRules.recurring.endCheck(
+              eventData,
+              eventData.recurringOptions.endTime
+            ),
+          ]"
         ></v-text-field>
 
         <!-- Recurring Settings -->
@@ -108,18 +125,6 @@
           v-model="eventData.recurringOptions.intervalType"
           :items="Object.values(RecurringIntervalType)"
         ></v-combobox>
-
-        <v-text-field
-          v-if="
-            eventData.recurringOptions.intervalType ===
-            RecurringIntervalType.MonthDay
-          "
-          v-model="eventData.recurringOptions.dayOfTheMonth"
-          :min="1"
-          :max="31"
-          type="number"
-          label="Repeat every X day of a Month"
-        ></v-text-field>
 
         <v-text-field
           v-if="
@@ -138,7 +143,7 @@
           :min="1"
           :max="100"
           type="number"
-          label="Repeat every X times"
+          label="Repeat X times"
         ></v-text-field>
       </div>
 
@@ -199,10 +204,9 @@ const props = defineProps({
       end: getEventDateTime(addHoursToDate(new Date(Date.now()), 1)),
       recurringOptions: {
         startDay: new Date(Date.now()).toISOString().split("T")[0],
-        startTime: getTime(addHoursToDate(new Date(Date.now()), 1)),
-        endTime: getTime(addHoursToDate(new Date(Date.now()), 2)),
+        startTime: addHoursToDate(new Date(Date.now()), 1),
+        endTime: addHoursToDate(new Date(Date.now()), 2),
         intervalType: RecurringIntervalType.MonthDay,
-        dayOfTheMonth: 1,
         fixedIntervalStep: 1,
         duration: 1,
       },
@@ -227,7 +231,12 @@ const timedEventRules = {
   standard: {
     notNull: (v) => !!v || "Field is required",
     startCheck: (eventData, v) => {
-      console.log("Standard start check", eventData.start, eventData.end);
+      console.log(
+        "Standard Start Check",
+        new Date(eventData.start).getTime(),
+        new Date(eventData.end).getTime(),
+        new Date(eventData.start).getTime() < new Date(eventData.end).getTime()
+      );
       if (
         eventData.start &&
         eventData.end &&
@@ -238,7 +247,6 @@ const timedEventRules = {
       return "Incorrect Data";
     },
     endCheck: (eventData, v) => {
-      console.log("Standard end check", eventData.start, eventData.end);
       if (
         eventData.start &&
         eventData.end &&
@@ -251,6 +259,30 @@ const timedEventRules = {
   },
   recurring: {
     notNull: (v) => !!v || "Field is required",
+    startCheck: (eventData, v) => {
+      const start: number = eventData.recurringOptions.startTime.replace(
+        ":",
+        ""
+      );
+      const end: number = eventData.recurringOptions.endTime.replace(":", "");
+
+      if (start < end) {
+        return true;
+      }
+      return "Incorrect Data";
+    },
+    endCheck: (eventData, v) => {
+      const start: number = eventData.recurringOptions.startTime.replace(
+        ":",
+        ""
+      );
+      const end: number = eventData.recurringOptions.endTime.replace(":", "");
+
+      if (start < end) {
+        return true;
+      }
+      return "Incorrect Data";
+    },
   },
 };
 
@@ -277,13 +309,14 @@ const eventData = ref({
   day: props.calendarEvent.day,
   start: props.calendarEvent.start,
   end: props.calendarEvent.end,
-  recurring: false,
+  recurring: props.calendarEvent.recurring,
   recurringOptions: {
     startDay: props.calendarEvent.recurringOptions.startDay,
-    startTime: props.calendarEvent.recurringOptions.startTime,
-    endTime: props.calendarEvent.recurringOptions.endTime,
+    startTime: getTime(
+      new Date(props.calendarEvent.recurringOptions.startTime)
+    ),
+    endTime: getTime(new Date(props.calendarEvent.recurringOptions.endTime)),
     intervalType: props.calendarEvent.recurringOptions.intervalType,
-    dayOfTheMonth: props.calendarEvent.recurringOptions.dayOfTheMonth,
     fixedIntervalStep: props.calendarEvent.recurringOptions.fixedIntervalStep,
     duration: props.calendarEvent.recurringOptions.duration,
   },
@@ -328,14 +361,42 @@ const submit = async () => {
       startTime: eventData.value.recurringOptions.startTime,
       endTime: eventData.value.recurringOptions.endTime,
       intervalType: eventData.value.recurringOptions.intervalType,
-      dayOfTheMonth: eventData.value.recurringOptions.dayOfTheMonth,
       fixedIntervalStep: eventData.value.recurringOptions.fixedIntervalStep,
       duration: eventData.value.recurringOptions.duration,
+      recurringDates: [],
     },
   };
 
-  console.log("Event Edit Form Result", newEvent);
-  //emit("updateEvent", newEvent);
+  if (newEvent.recurringOptions.startTime) {
+    const today = new Date();
+    const h: number = Number(newEvent.recurringOptions.startTime.split(":")[0]);
+    const m: number = Number(newEvent.recurringOptions.startTime.split(":")[1]);
+    newEvent.recurringOptions.startTime = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      h,
+      m,
+      0
+    ).toISOString();
+  }
+
+  if (newEvent.recurringOptions.endTime) {
+    const today = new Date();
+    const h: number = Number(newEvent.recurringOptions.endTime.split(":")[0]);
+    const m: number = Number(newEvent.recurringOptions.endTime.split(":")[1]);
+    newEvent.recurringOptions.endTime = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      h,
+      m,
+      0
+    ).toISOString();
+  }
+
+  console.warn("Event Edit Form Result", newEvent);
+  emit("updateEvent", newEvent);
 };
 </script>
 
