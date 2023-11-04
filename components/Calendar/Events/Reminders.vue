@@ -146,7 +146,7 @@ const createDefualtReminder = async (reminder: string) => {
 
   if (!props.calendarEvent.recurring) {
     const reminderDate = new Date(props.calendarEvent.start);
-    reminderDate.setMinutes(reminderDate.getMinutes() + Number(reminder));
+    reminderDate.setMinutes(reminderDate.getMinutes() - Number(reminder));
 
     await postReminder({
       eventId: props.calendarEvent.id,
