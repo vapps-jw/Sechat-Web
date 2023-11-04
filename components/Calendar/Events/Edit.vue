@@ -386,7 +386,7 @@ const submit = async () => {
   }
 
   console.warn("Event Edit Form Result", newEvent);
-  //emit("updateEvent", newEvent);
+  emit("updateEvent", newEvent);
 };
 </script>
 
