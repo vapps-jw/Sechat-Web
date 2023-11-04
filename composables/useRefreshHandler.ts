@@ -23,6 +23,11 @@ export const useRefreshHandler = () => {
       chatStore.lazyLoadInProgress = true;
     }
 
+    console.warn("Resetting chatStore");
+    chatStore.$reset();
+    console.warn("Resetting webRTCStore");
+    webRTCStore.$reset();
+
     await signalRStore.closeConnection();
     signalRStore.$reset();
     chatStore.$reset();
@@ -267,6 +272,19 @@ export const useRefreshHandler = () => {
 
   const fullRefresh = async () => {
     console.warn("Full Refresh");
+
+    if (chatStore.lazyLoadInProgress) {
+      //appStore.updateLoadingOverlay(false);
+      return;
+    } else {
+      chatStore.lazyLoadInProgress = true;
+    }
+
+    console.warn("Resetting chatStore");
+    chatStore.$reset();
+    console.warn("Resetting webRTCStore");
+    webRTCStore.$reset();
+
     await signalRStore.closeConnection();
     signalRStore.$reset();
     await signalR.connect();

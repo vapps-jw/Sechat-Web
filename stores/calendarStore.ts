@@ -127,6 +127,20 @@ export const useCalendarStore = defineStore({
         (ce) => ce.id === eventId
       ) as CalendarEvent;
       event.reminders.push(data);
+
+      event.reminders = event.reminders.sort((a, b) => {
+        return new Date(a.remind).getTime() - new Date(b.remind).getTime();
+      });
+    },
+    addReminders(eventId: string, data: EventReminder[]) {
+      const event = this.calendar.calendarEvents.find(
+        (ce) => ce.id === eventId
+      ) as CalendarEvent;
+      event.reminders = [...event.reminders, ...data];
+
+      event.reminders = event.reminders.sort((a, b) => {
+        return new Date(a.remind).getTime() - new Date(b.remind).getTime();
+      });
     },
     removeReminder(eventId: string, reminderId: number) {
       const event = this.calendar.calendarEvents.find(
@@ -185,18 +199,11 @@ const getRecurranceDates = (
     if (recurringOptions.intervalType === RecurringIntervalType.MonthDay) {
       startDate.setMonth(startDate.getMonth() + 1);
 
-      console.warn(
-        `Start Date: ${startDate} Curent Month: ${startDate.getMonth()}`
-      );
-
       const dim = new Date(
         startDate.getFullYear(),
         startDate.getMonth() + 1,
         0
       ).getDate();
-
-      console.warn("DIM", dim);
-      console.warn("Start Day", startDay);
 
       if (startDay > dim) {
         const result = new Date(
@@ -205,7 +212,6 @@ const getRecurranceDates = (
           dim
         ).setHours(0, 0, 0, 0);
 
-        console.warn("---> DIM! Pushing Date", new Date(result));
         dates.push(result);
         continue;
       }
@@ -216,16 +222,11 @@ const getRecurranceDates = (
         startDay
       ).setHours(0, 0, 0, 0);
 
-      console.warn("--->  Pushing Date", new Date(result));
       dates.push(result);
       continue;
     }
   }
 
-  console.log(
-    "Recurring Dates",
-    dates.map((rd) => new Date(rd))
-  );
   return dates;
 };
 

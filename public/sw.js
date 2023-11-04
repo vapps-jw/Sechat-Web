@@ -73,12 +73,6 @@ self.addEventListener("push", async (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   const clickedNotification = event.notification;
-
-  // if (clickedNotification.title === PushNotificationTypes.VideoCall) {
-  //   clickedNotification.close();
-  //   return;
-  // }
-
   const promiseChain = clients
     .matchAll({ type: "window", includeUncontrolled: true })
     .then((windowClients) => {

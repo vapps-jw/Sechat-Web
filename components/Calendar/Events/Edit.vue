@@ -371,32 +371,22 @@ const submit = async () => {
     const today = new Date();
     const h: number = Number(newEvent.recurringOptions.startTime.split(":")[0]);
     const m: number = Number(newEvent.recurringOptions.startTime.split(":")[1]);
-    newEvent.recurringOptions.startTime = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      h,
-      m,
-      0
-    ).toISOString();
+    newEvent.recurringOptions.startTime = getEventDateTime(
+      new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, m, 0)
+    );
   }
 
   if (newEvent.recurringOptions.endTime) {
     const today = new Date();
     const h: number = Number(newEvent.recurringOptions.endTime.split(":")[0]);
     const m: number = Number(newEvent.recurringOptions.endTime.split(":")[1]);
-    newEvent.recurringOptions.endTime = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      h,
-      m,
-      0
-    ).toISOString();
+    newEvent.recurringOptions.endTime = getEventDateTime(
+      new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, m, 0)
+    );
   }
 
   console.warn("Event Edit Form Result", newEvent);
-  emit("updateEvent", newEvent);
+  //emit("updateEvent", newEvent);
 };
 </script>
 

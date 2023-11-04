@@ -42,7 +42,7 @@ const importfile = () => {
       const storedKeys = JSON.parse(reader.result as string) as E2EExtract;
       console.log("JSON", storedKeys);
       e2e.uploadKeys(storedKeys);
-      await refreshHandler.fullRefresh();
+      await refreshHandler.initialLoad();
       appStore.showSuccessSnackbar("Keys updated");
     } catch (error) {
       appStore.showSuccessSnackbar("Something went wrong");
