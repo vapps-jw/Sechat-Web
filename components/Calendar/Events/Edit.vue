@@ -27,12 +27,12 @@
         label="All Day Event"
       >
       </v-checkbox>
-      <v-checkbox
+      <!-- <v-checkbox
         density="compact"
         hide-details
         v-model="eventData.recurring"
         label="Recurring"
-      ></v-checkbox>
+      ></v-checkbox> -->
       <v-divider class="mb-3" />
 
       <div v-if="!eventData.recurring">
