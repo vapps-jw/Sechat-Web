@@ -27,12 +27,12 @@
         label="All Day Event"
       >
       </v-checkbox>
-      <!-- <v-checkbox
+      <v-checkbox
         density="compact"
         hide-details
         v-model="eventData.recurring"
         label="Recurring"
-      ></v-checkbox> -->
+      ></v-checkbox>
       <v-divider class="mb-3" />
 
       <div v-if="!eventData.recurring">
@@ -174,6 +174,7 @@ import {
   addHoursToDate,
   getEventDateTime,
   getTime,
+  getTimeFromDate,
 } from "~/utilities/dateFunctions";
 import { RecurringIntervalType } from "~/utilities/globalEnums";
 
@@ -312,10 +313,8 @@ const eventData = ref({
   recurring: props.calendarEvent.recurring,
   recurringOptions: {
     startDay: props.calendarEvent.recurringOptions.startDay,
-    startTime: getTime(
-      new Date(props.calendarEvent.recurringOptions.startTime)
-    ),
-    endTime: getTime(new Date(props.calendarEvent.recurringOptions.endTime)),
+    startTime: getTimeFromDate(props.calendarEvent.recurringOptions.startTime),
+    endTime: getTimeFromDate(props.calendarEvent.recurringOptions.endTime),
     intervalType: props.calendarEvent.recurringOptions.intervalType,
     fixedIntervalStep: props.calendarEvent.recurringOptions.fixedIntervalStep,
     duration: props.calendarEvent.recurringOptions.duration,
@@ -367,22 +366,37 @@ const submit = async () => {
     },
   };
 
-  if (newEvent.recurringOptions.startTime) {
+  if (newEvent.recurring && !newEvent.isAllDay) {
     const today = new Date();
-    const h: number = Number(newEvent.recurringOptions.startTime.split(":")[0]);
-    const m: number = Number(newEvent.recurringOptions.startTime.split(":")[1]);
-    newEvent.recurringOptions.startTime = getEventDateTime(
-      new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, m, 0)
+    const hStart: number = Number(
+      newEvent.recurringOptions.startTime.split(":")[0]
     );
-  }
+    const mStart: number = Number(
+      newEvent.recurringOptions.startTime.split(":")[1]
+    );
+    newEvent.recurringOptions.startTime = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      hStart,
+      mStart,
+      0
+    ).toISOString();
 
-  if (newEvent.recurringOptions.endTime) {
-    const today = new Date();
-    const h: number = Number(newEvent.recurringOptions.endTime.split(":")[0]);
-    const m: number = Number(newEvent.recurringOptions.endTime.split(":")[1]);
-    newEvent.recurringOptions.endTime = getEventDateTime(
-      new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, m, 0)
+    const hEnd: number = Number(
+      newEvent.recurringOptions.endTime.split(":")[0]
     );
+    const mEnd: number = Number(
+      newEvent.recurringOptions.endTime.split(":")[1]
+    );
+    newEvent.recurringOptions.endTime = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      hEnd,
+      mEnd,
+      0
+    ).toISOString();
   }
 
   console.warn("Event Edit Form Result", newEvent);

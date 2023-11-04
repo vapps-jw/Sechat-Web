@@ -6,7 +6,10 @@
     <template v-slot:title>
       <div>
         {{ props.calendarEvent.name }}
-        <div class="small-font" v-if="!props.calendarEvent.isAllDay">
+        <div
+          class="small-font"
+          v-if="!props.calendarEvent.isAllDay && !props.calendarEvent.recurring"
+        >
           <div class="tiny-font d-flex justify-start align-center">
             <div>
               {{
@@ -31,6 +34,34 @@
                 )
               }}
             </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="small-font"
+        v-if="!props.calendarEvent.isAllDay && props.calendarEvent.recurring"
+      >
+        <div class="tiny-font d-flex justify-start align-center">
+          <div>
+            {{
+              new Date(
+                props.calendarEvent.recurringOptions.startTime
+              ).toLocaleString(appStore.localLanguage, {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            }}
+          </div>
+          <v-icon icon="mdi-menu-right" color="warning"> </v-icon>
+          <div>
+            {{
+              new Date(
+                props.calendarEvent.recurringOptions.endTime
+              ).toLocaleString(appStore.localLanguage, {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            }}
           </div>
         </div>
       </div>

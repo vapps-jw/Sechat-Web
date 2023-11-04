@@ -20,6 +20,12 @@ export const getTime = (date: Date): string => {
   return date.toTimeString().substring(0, 5);
 };
 
+export const getTimeFromDate = (date: string): string => {
+  const dt = new Date(date);
+  console.warn("Recurring DateTime", `${dt.getHours()}:${dt.getMinutes()}`);
+  return `${dt.getHours()}:${dt.getMinutes()}`;
+};
+
 export const addHoursToDate = (myDate: Date, hours: number): Date => {
   return new Date(new Date(myDate).setHours(myDate.getHours() + hours));
 };
