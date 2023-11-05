@@ -11,6 +11,8 @@
     <v-card>
       <v-card-text class="pb-0">
         <v-file-input
+          :disabled="isBusy"
+          :loading="isBusy"
           type="file"
           accept="application/json"
           placeholder="Pick a file"
@@ -31,8 +33,14 @@ const chosenFile = ref<File[]>(null);
 const e2e = useE2Encryption();
 const appStore = useSechatAppStore();
 const refreshHandler = useRefreshHandler();
+const isBusy = ref<boolean>(false);
 
 const importfile = () => {
+  if (isBusy.value) {
+    return;
+  } else {
+    isBusy.value = true;
+  }
   console.log("Chosen File", chosenFile.value[0]);
 
   const reader = new FileReader();
@@ -48,6 +56,7 @@ const importfile = () => {
       appStore.showSuccessSnackbar("Something went wrong");
     }
   };
+  isBusy.value = false;
 };
 </script>
 
