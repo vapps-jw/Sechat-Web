@@ -7,6 +7,7 @@
     <v-card>
       <v-toolbar>
         <v-toolbar-title>Reminders</v-toolbar-title>
+
         <v-toolbar-items>
           <v-btn icon dark @click="dialog = false">
             <v-icon>mdi-close</v-icon>
@@ -28,20 +29,38 @@
           v-if="!props.calendarEvent.isAllDay"
           class="d-flex justify-center flex-wrap ma-0 pa-0"
         >
-          <v-btn class="ma-1" @click="createDefualtReminder(DefaultReminder[5])"
+          <v-btn
+            :disabled="postingReminder"
+            :loading="postingReminder"
+            color="primary"
+            size="small"
+            class="ma-1"
+            @click="createDefualtReminder(DefaultReminder[5])"
             >5 mins before
           </v-btn>
           <v-btn
+            :disabled="postingReminder"
+            :loading="postingReminder"
+            color="primary"
+            size="small"
             class="ma-1"
             @click="createDefualtReminder(DefaultReminder[15])"
             >15 mins before
           </v-btn>
           <v-btn
+            :disabled="postingReminder"
+            :loading="postingReminder"
+            color="primary"
+            size="small"
             class="ma-1"
             @click="createDefualtReminder(DefaultReminder[30])"
             >30 mins before
           </v-btn>
           <v-btn
+            :disabled="postingReminder"
+            :loading="postingReminder"
+            color="primary"
+            size="small"
             class="ma-1"
             @click="createDefualtReminder(DefaultReminder[60])"
             >1 hour before
@@ -51,6 +70,8 @@
         <v-container class="my-0 py-0">
           <div class="text-caption my-3">Add Reminder</div>
           <v-text-field
+            :disabled="postingReminder"
+            :loading="postingReminder"
             v-model="date"
             type="datetime-local"
             :min="minReminderDate"
@@ -62,6 +83,20 @@
               >
             </template></v-text-field
           >
+        </v-container>
+        <v-container
+          class="my-0 py-0 d-flex justify-center flex-wrap"
+          v-if="props.calendarEvent.reminders.length > 0"
+        >
+          <v-btn
+            :disabled="deletingReminder"
+            :loading="deletingReminder"
+            color="primary"
+            size="small"
+            @click="removeAllReminders"
+          >
+            Delete All Reminders
+          </v-btn>
         </v-container>
 
         <v-container class="ma-0 pa-0">
@@ -78,6 +113,8 @@
               >
               <template v-slot:append>
                 <v-btn
+                  :disabled="deletingReminder"
+                  :loading="deletingReminder"
                   color="error"
                   icon="mdi-close-circle"
                   variant="text"
@@ -99,6 +136,8 @@ const appStore = useSechatAppStore();
 const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 const calendarStore = useCalendarStore();
+const postingReminder = ref<boolean>(false);
+const deletingReminder = ref<boolean>(false);
 
 const DefaultReminder = {
   5: "5",
@@ -122,6 +161,12 @@ const props = defineProps<PropsModel>();
 const removeReminder = async (reminder: EventReminder) => {
   console.log("Removing reminder", reminder);
 
+  if (deletingReminder.value) {
+    return;
+  } else {
+    deletingReminder.value = true;
+  }
+
   const { error: apiError } = await useFetch(
     `${config.public.apiBase}/calendar/event/${props.calendarEvent.id}/${reminder.id}`,
     {
@@ -139,6 +184,36 @@ const removeReminder = async (reminder: EventReminder) => {
   }
   sechatStore.showSuccessSnackbar("Reminder deleted");
   calendarStore.removeReminder(props.calendarEvent.id, reminder.id);
+  deletingReminder.value = false;
+};
+
+const removeAllReminders = async (eventId: string) => {
+  console.log("Removing All reminders", eventId);
+
+  if (deletingReminder.value) {
+    return;
+  } else {
+    deletingReminder.value = true;
+  }
+
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/calendar/event/${props.calendarEvent.id}/reminders`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (apiError.value) {
+    sechatStore.showErrorSnackbar(apiError.value.data);
+    return;
+  }
+  sechatStore.showSuccessSnackbar("Reminders deleted");
+  calendarStore.removeAllReminders(props.calendarEvent.id);
+  deletingReminder.value = false;
 };
 
 const createDefualtReminder = async (reminder: string) => {
@@ -148,9 +223,14 @@ const createDefualtReminder = async (reminder: string) => {
     const reminderDate = new Date(props.calendarEvent.start);
     reminderDate.setMinutes(reminderDate.getMinutes() - Number(reminder));
 
+    console.warn(
+      "Create Default Reminder",
+      new Date(reminderDate).toISOString()
+    );
+
     await postReminder({
       eventId: props.calendarEvent.id,
-      remind: new Date(new Date(reminderDate).toUTCString()).toISOString(),
+      remind: new Date(reminderDate).toISOString(),
     });
     return;
   }
@@ -165,7 +245,7 @@ const createDefualtReminder = async (reminder: string) => {
       eventId: props.calendarEvent.id,
       remind: new Date(
         new Date(
-          new Date(rd).setMinutes(new Date(rd).getMinutes() + Number(reminder))
+          new Date(rd).setMinutes(new Date(rd).getMinutes() - Number(reminder))
         )
       ).toISOString(),
     });
@@ -211,25 +291,38 @@ const postReminder = async (postData: RemiderPostData) => {
   );
 
   if (apiError.value) {
-    sechatStore.showErrorSnackbar(apiError.value.data);
+    sechatStore.showErrorSnackbar("Failed to create Reminder");
+    console.error(apiError.value.data);
+    postingReminder.value = false;
     return;
   }
   sechatStore.showSuccessSnackbar("Reminder saved");
 
   console.log("Adding Reminder", res.value);
   calendarStore.addReminder(props.calendarEvent.id, res.value);
+  postingReminder.value = false;
 };
 
 const createReminder = async () => {
   console.log(
     "Creating Reminder",
     date.value,
-    new Date(new Date(date.value).toUTCString()).toISOString()
+    new Date(date.value).toISOString()
   );
+
+  if (!date.value) {
+    return;
+  }
+
+  if (postingReminder.value) {
+    return;
+  } else {
+    postingReminder.value = true;
+  }
 
   await postReminder({
     eventId: props.calendarEvent.id,
-    remind: new Date(new Date(date.value).toUTCString()).toISOString(),
+    remind: new Date(date.value).toISOString(),
   });
 };
 
@@ -240,7 +333,7 @@ const minReminderDate = computed<string>(() =>
     .slice(0, -3)
 );
 
-const date = ref<string>(minReminderDate.value);
+const date = ref<string>("");
 </script>
 
 <style scoped></style>

@@ -1,6 +1,5 @@
 import { getRecurranceDates } from "~/utilities/calendarUtilities";
 import { isToday } from "~/utilities/dateFunctions";
-import { RecurringIntervalType } from "~/utilities/globalEnums";
 
 type EventsDisplayBatch = {
   id: number;
@@ -148,6 +147,12 @@ export const useCalendarStore = defineStore({
         (ce) => ce.id === eventId
       ) as CalendarEvent;
       event.reminders = event.reminders.filter((r) => r.id !== reminderId);
+    },
+    removeAllReminders(eventId: string) {
+      const event = this.calendar.calendarEvents.find(
+        (ce) => ce.id === eventId
+      ) as CalendarEvent;
+      event.reminders = [];
     },
   },
   getters: {
