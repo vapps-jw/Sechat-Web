@@ -36,6 +36,7 @@
 <script setup lang="ts">
 import { BottomNavBarSet, LocalStoreTypes } from "~~/utilities/globalEnums";
 import { E2EStatusMessages } from "~/utilities/e2eEnums";
+import { getRecurranceDates } from "~/utilities/calendarUtilities";
 
 const chatStore = useSechatChatStore();
 const e2e = useE2Encryption();
@@ -94,27 +95,26 @@ const activate = async () => {
       eventObject.id = ce.id;
       eventObject.reminders = ce.reminders;
 
-      // Assign dates - redundant
-      // if (eventObject.isAllDay && eventObject.day) {
-      //   eventObject.day = eventObject.day;
-      // } else {
-      //   eventObject.start = eventObject.start;
-      //   eventObject.end = eventObject.end;
-      // }
-
       // Check old Events
-      // TODO: handle recurring
       if (
         eventObject.isAllDay &&
+        !eventObject.recurring &&
         new Date(eventObject.day).setHours(0, 0, 0, 0) <
           new Date(Date.now()).setHours(0, 0, 0, 0)
       ) {
         eventObject.isOld = true;
       } else if (
+        !eventObject.isAllDay &&
+        !eventObject.recurring &&
         new Date(eventObject.end).setHours(0, 0, 0, 0) <
-        new Date(Date.now()).setHours(0, 0, 0, 0)
+          new Date(Date.now()).setHours(0, 0, 0, 0)
       ) {
         eventObject.isOld = true;
+      } else if (eventObject.recurring) {
+        const dates = getRecurranceDates(eventObject.recurringOptions);
+        if (!dates.some((d) => d > new Date(Date.now()).setHours(0, 0, 0, 0))) {
+          eventObject.isOld = true;
+        }
       }
 
       console.log("Mapped Event", eventObject);

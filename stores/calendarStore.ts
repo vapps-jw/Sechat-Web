@@ -1,3 +1,4 @@
+import { getRecurranceDates } from "~/utilities/calendarUtilities";
 import { isToday } from "~/utilities/dateFunctions";
 import { RecurringIntervalType } from "~/utilities/globalEnums";
 
@@ -163,68 +164,6 @@ const getDatesInRange = (startDate: number, endDate: number): number[] => {
   while (start <= end) {
     dates.push(new Date(start).setHours(0, 0, 0, 0));
     start.setDate(start.getDate() + 1);
-  }
-
-  return dates;
-};
-
-const getRecurranceDates = (
-  recurringOptions: EventRecurringOptions
-): number[] => {
-  let startDate = new Date(recurringOptions.startDay);
-  console.log("Recurring start date", recurringOptions.startDay, startDate);
-
-  const startDay = startDate.getDate();
-  console.log("Recurring start Day", startDay);
-
-  console.log("Interval Step", recurringOptions.fixedIntervalStep);
-
-  const dates = <number[]>[];
-  dates.push(startDate.setHours(0, 0, 0, 0));
-
-  if (recurringOptions.intervalType === RecurringIntervalType.MonthDay) {
-    startDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-  }
-
-  for (let index = 1; index <= recurringOptions.duration; index++) {
-    if (recurringOptions.intervalType === RecurringIntervalType.FixedInterval) {
-      var newDate = new Date(startDate);
-      newDate.setDate(
-        newDate.getDate() + recurringOptions.fixedIntervalStep * index
-      );
-      dates.push(newDate.setHours(0, 0, 0, 0));
-      continue;
-    }
-
-    if (recurringOptions.intervalType === RecurringIntervalType.MonthDay) {
-      startDate.setMonth(startDate.getMonth() + 1);
-
-      const dim = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth() + 1,
-        0
-      ).getDate();
-
-      if (startDay > dim) {
-        const result = new Date(
-          startDate.getFullYear(),
-          startDate.getMonth(),
-          dim
-        ).setHours(0, 0, 0, 0);
-
-        dates.push(result);
-        continue;
-      }
-
-      const result = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDay
-      ).setHours(0, 0, 0, 0);
-
-      dates.push(result);
-      continue;
-    }
   }
 
   return dates;
