@@ -57,7 +57,7 @@ const subscribeToPush = async () => {
     });
     console.log("Push Registered...");
   } catch (error) {
-    console.log("Error when registering Push:", error);
+    console.log("Error when registering Push:", error.data.value);
     sechatStore.showSnackbar({
       snackbar: true,
       text: "Error when registering notifications",
@@ -81,40 +81,18 @@ const subscribeToPush = async () => {
       method: "POST",
       credentials: "include",
       body: subscriptionPayload,
-      onResponseError({ response }) {
-        if (response.status === 400) {
-          sechatStore.showSnackbar({
-            snackbar: true,
-            text: response._data,
-            timeout: 2000,
-            color: "warning",
-            icon: SnackbarIcons.Warning,
-            iconColor: "black",
-          });
-        } else {
-          sechatStore.showSnackbar({
-            snackbar: true,
-            text: "Subscription Failed",
-            timeout: 2000,
-            color: "error",
-            icon: SnackbarIcons.Error,
-            iconColor: "black",
-          });
-        }
-      },
     }
   );
 
   if (apiError.value) {
-    console.error("API Error - Subscription", apiError.value);
-    sechatStore.showSnackbar({
-      snackbar: true,
-      text: "Subscription Failed",
-      timeout: 2000,
-      color: "error",
-      icon: SnackbarIcons.Error,
-      iconColor: "black",
-    });
+    console.error("API Error - Subscription", apiError);
+
+    if (apiError.value.statusCode !== 400) {
+      sechatStore.showErrorSnackbar("Subscribe failed");
+    } else {
+      sechatStore.showWarningSnackbar(apiError.value.data);
+    }
+
     isBusy.value = false;
     return;
   }
