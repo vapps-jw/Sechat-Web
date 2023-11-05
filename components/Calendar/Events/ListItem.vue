@@ -5,6 +5,12 @@
   >
     <template v-slot:title>
       <div>
+        <v-icon
+          size="x-small"
+          color="success"
+          v-if="props.calendarEvent.recurring"
+          icon="mdi-repeat"
+        ></v-icon>
         {{ props.calendarEvent.name }}
         <div
           class="small-font"
