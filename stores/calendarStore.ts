@@ -18,6 +18,8 @@ export const useCalendarStore = defineStore({
   },
   actions: {
     updateCalendar(value: Calendar) {
+      3;
+      value.calendarEvents.forEach((ce) => (ce.activeReminders = 0));
       value.calendarEvents = sortEvents(value.calendarEvents);
       this.calendar = value;
     },
@@ -37,6 +39,34 @@ export const useCalendarStore = defineStore({
           new Date(Date.now()).setHours(0, 0, 0, 0)
         ) {
           eventObject.isOld = true;
+        }
+      });
+    },
+    recalculateReminders() {
+      if (!this.calendar || this.calendar!.calendarEvents.length === 0) {
+        return;
+      }
+
+      this.calendar.calendarEvents.forEach((ce) => {
+        ce.showReminderBagde = false;
+        ce.activeReminders = 0;
+
+        if (ce.reminders.length === 0) {
+          return;
+        }
+
+        ce.reminders.forEach((rem) => {
+          if (new Date(rem.remind).getTime() < new Date(Date.now()).getTime()) {
+            rem.isOld = true;
+          } else {
+            ce.activeReminders += 1;
+            rem.isOld = false;
+          }
+        });
+        if (ce.reminders.some((rem) => !rem.isOld)) {
+          ce.showReminderBagde = true;
+        } else {
+          ce.showReminderBagde = false;
         }
       });
     },

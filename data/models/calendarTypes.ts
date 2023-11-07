@@ -14,6 +14,8 @@ type CalendarEvent = {
   end?: string;
   isOld?: boolean;
   reminders: EventReminder[];
+  showReminderBagde: boolean;
+  activeReminders: number;
 
   recurring?: boolean;
   recurringOptions?: EventRecurringOptions;
@@ -33,6 +35,7 @@ type EventReminder = {
   id: number;
   remind: Date;
   reminders: number;
+  isOld: boolean;
 };
 
 // API DTOs

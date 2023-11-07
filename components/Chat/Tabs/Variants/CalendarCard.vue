@@ -134,6 +134,7 @@ const activate = async () => {
   console.log("Calendar Fetched", mappedCalendar);
   calendarStore.updateCalendar(mappedCalendar);
   calendarStore.recalculateBatches();
+  calendarStore.recalculateReminders();
   console.log("Display Batches", calendarStore.displayBatches);
 
   chatStore.activateNavBar(BottomNavBarSet.CalendarNavBar);

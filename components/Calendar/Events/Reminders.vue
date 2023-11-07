@@ -184,6 +184,7 @@ const removeReminder = async (reminder: EventReminder) => {
   }
   sechatStore.showSuccessSnackbar("Reminder deleted");
   calendarStore.removeReminder(props.calendarEvent.id, reminder.id);
+  calendarStore.recalculateReminders();
   deletingReminder.value = false;
 };
 
@@ -213,11 +214,18 @@ const removeAllReminders = async (eventId: string) => {
   }
   sechatStore.showSuccessSnackbar("Reminders deleted");
   calendarStore.removeAllReminders(props.calendarEvent.id);
+  calendarStore.recalculateReminders();
   deletingReminder.value = false;
 };
 
 const createDefualtReminder = async (reminder: string) => {
   console.log("Create Default Reminder", reminder);
+
+  if (postingReminder.value) {
+    return;
+  } else {
+    postingReminder.value = true;
+  }
 
   if (!props.calendarEvent.recurring) {
     const reminderDate = new Date(props.calendarEvent.start);
@@ -232,6 +240,7 @@ const createDefualtReminder = async (reminder: string) => {
       eventId: props.calendarEvent.id,
       remind: new Date(reminderDate).toISOString(),
     });
+    postingReminder.value = false;
     return;
   }
 
@@ -265,6 +274,7 @@ const createDefualtReminder = async (reminder: string) => {
 
   if (apiError.value) {
     sechatStore.showErrorSnackbar(apiError.value.data);
+    postingReminder.value = false;
     return;
   }
   sechatStore.showSuccessSnackbar("Reminders saved");
@@ -272,6 +282,8 @@ const createDefualtReminder = async (reminder: string) => {
   console.log("Adding Reminders", res.value);
 
   calendarStore.addReminders(props.calendarEvent.id, res.value);
+  calendarStore.recalculateReminders();
+  postingReminder.value = false;
 };
 
 const postReminder = async (postData: RemiderPostData) => {
@@ -293,14 +305,13 @@ const postReminder = async (postData: RemiderPostData) => {
   if (apiError.value) {
     sechatStore.showErrorSnackbar("Failed to create Reminder");
     console.error(apiError.value.data);
-    postingReminder.value = false;
     return;
   }
   sechatStore.showSuccessSnackbar("Reminder saved");
 
   console.log("Adding Reminder", res.value);
   calendarStore.addReminder(props.calendarEvent.id, res.value);
-  postingReminder.value = false;
+  calendarStore.recalculateReminders();
 };
 
 const createReminder = async () => {
@@ -324,6 +335,7 @@ const createReminder = async () => {
     eventId: props.calendarEvent.id,
     remind: new Date(date.value).toISOString(),
   });
+  postingReminder.value = false;
 };
 
 const minReminderDate = computed<string>(() =>

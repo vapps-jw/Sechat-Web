@@ -98,6 +98,7 @@ export const useRefreshHandler = () => {
     await updateLoadLazy();
     calendarStore.recalculateEvents();
     calendarStore.recalculateBatches();
+    calendarStore.recalculateReminders();
   };
 
   const handleOnlineChange = async () => {
@@ -287,6 +288,7 @@ export const useRefreshHandler = () => {
 
     await signalRStore.closeConnection();
     signalRStore.$reset();
+    calendarStore.$reset();
     await signalR.connect();
     const promises = [];
 
