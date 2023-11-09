@@ -38,7 +38,6 @@ interface PropsModel {
 }
 const props = defineProps<PropsModel>();
 
-// TODO: handle recurring
 const updateEvent = async (data: CalendarEvent) => {
   isBusy.value = true;
   if (data.isAllDay) {

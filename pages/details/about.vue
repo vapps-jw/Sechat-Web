@@ -15,15 +15,15 @@
         ></v-expansion-panel>
         <v-expansion-panel
           title="What about video calls?"
-          text="We have our own TURN server, communication is encrtpted. There is a screen share feature."
+          text="We have our own TURN server, communication is encrtpted. There is a screen share feature on PCs."
         ></v-expansion-panel>
         <v-expansion-panel
           title="Is it open source?"
-          text="It is and it will be"
+          text="It is and it will be with AGPL"
         ></v-expansion-panel>
         <v-expansion-panel
           title="Where are data being stored?"
-          text="Akamai data center in the UK"
+          text="Akamai data center in Sweden"
         ></v-expansion-panel>
         <v-expansion-panel
           title="Can I share my opinion about Sechat?"
