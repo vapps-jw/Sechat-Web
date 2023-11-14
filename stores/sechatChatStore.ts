@@ -17,6 +17,7 @@ export const useSechatChatStore = defineStore({
       activeRoomId: <string>null,
       activeContactId: <number>null,
       newMessage: <string>null,
+      typingUsers: <string[]>["Areczek", "Mareczek"],
       activeBottomNav: <string>BottomNavBarSet.ChatNavBar,
       activeChatTab: <string>ChatViews.Messages,
       profilePictures: new Map<string, string>(),

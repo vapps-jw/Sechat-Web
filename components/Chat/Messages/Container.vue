@@ -82,10 +82,7 @@
       </template>
     </v-infinite-scroll>
   </v-sheet>
-  <div
-    v-if="props.messages.length > 10"
-    class="d-flex justify-end align-center"
-  ></div>
+  <!-- <chat-messages-typing-users v-if="chatStore.typingUsers.length > 0" /> -->
 </template>
 
 <script setup lang="ts">
