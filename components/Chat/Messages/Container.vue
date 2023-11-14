@@ -52,13 +52,13 @@
           :show-header="
             index === 0
               ? true
-              : props.messages[index - 1].nameSentBy !== m.nameSentBy &&
-                new Date(props.messages[index - 1].created).getTime() <
-                  new Date(m.created).setSeconds(
-                    new Date(m.created).getSeconds() + 8
-                  )
+              : props.messages[index - 1].nameSentBy !== m.nameSentBy
               ? true
-              : false
+              : new Date(props.messages[index - 1].created).setSeconds(
+                  new Date(props.messages[index - 1].created).getSeconds() + 30
+                ) > new Date(m.created).getTime()
+              ? false
+              : true
           "
           :message="m"
           :image="
