@@ -39,6 +39,7 @@
           </v-col>
         </v-row>
         <chat-messages-message
+          :show-header="true"
           :message="m"
           v-if="chatStore.activeRoomId"
           :image="
@@ -48,6 +49,17 @@
           "
         />
         <chat-messages-direct-message
+          :show-header="
+            index === 0
+              ? true
+              : props.messages[index - 1].nameSentBy !== m.nameSentBy &&
+                new Date(props.messages[index - 1].created).getTime() <
+                  new Date(m.created).setSeconds(
+                    new Date(m.created).getSeconds() + 8
+                  )
+              ? true
+              : false
+          "
           :message="m"
           :image="
             m.nameSentBy === userStore.getUserName
@@ -60,7 +72,11 @@
       <template v-slot:empty> No more messages</template>
       <template v-slot:error> Error </template>
       <template v-slot:load-more="{ props }">
-        <v-btn v-if="canLoadMore" variant="outlined" size="small" v-bind="props"
+        <v-btn
+          v-if="chatStore.canLoadMore"
+          variant="outlined"
+          size="small"
+          v-bind="props"
           >Load More Messages</v-btn
         >
       </template>
@@ -87,21 +103,6 @@ interface PropsModel {
 }
 const props = defineProps<PropsModel>();
 
-const canLoadMore = computed<boolean>(() => {
-  if (chatStore.activeContactId) {
-    if (chatStore.getActiveContact.directMessages.length >= 20) {
-      return true;
-    }
-  }
-  if (chatStore.activeRoomId) {
-    if (chatStore.getActiveRoom.messages.length >= 20) {
-      return true;
-    }
-
-    return false;
-  }
-});
-
 const loadMore = async ({ side, done }) => {
   if (fetchingMessages.value) {
     return;
@@ -110,13 +111,13 @@ const loadMore = async ({ side, done }) => {
   console.warn("Load more triggered");
   try {
     if (chatStore.activeContactId) {
-      if (chatStore.getActiveContact.directMessages.length < 20) {
+      if (chatStore.getActiveContact.directMessages.length < 10) {
         return;
       }
       done(await loadMoreForContact());
     }
     if (chatStore.activeRoomId) {
-      if (chatStore.getActiveRoom.messages.length < 20) {
+      if (chatStore.getActiveRoom.messages.length < 10) {
         return;
       }
 
@@ -160,6 +161,7 @@ const loadMoreForRoom = async (): Promise<string> => {
   }
   uc.value.forEach((m) => {
     m.text = e2e.decryptMessage(m.text, key);
+    m.loaded = true;
   });
 
   chatStore.addMoreMessagesToRoom(chatStore.activeRoomId, uc.value);
@@ -196,6 +198,7 @@ const loadMoreForContact = async (): Promise<string> => {
   }
   uc.value.forEach((m) => {
     m.text = e2e.decryptMessage(m.text, key);
+    m.loaded = true;
   });
 
   chatStore.addMoreMessagesToContact(chatStore.activeContactId, uc.value);

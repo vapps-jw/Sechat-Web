@@ -1,6 +1,6 @@
 <template>
   <v-list-item :key="props.message.id">
-    <template v-slot:title>
+    <template v-if="showHeader" v-slot:title>
       <div class="d-flex align-center">
         <ChatUserAvatar
           class="ma-2"
@@ -22,29 +22,34 @@
               appStore.localLanguage
             )
           }}
-          <v-chip
-            variant="text"
-            v-if="
-              props.message.wasViewed &&
-              props.message.nameSentBy === userStore.getUserName
-            "
-            class="ma- 0 pa-1"
-            size="x-small"
-            color="success"
-            append-icon="mdi-eye-check-outline"
-          >
-          </v-chip>
         </v-card-subtitle>
       </div>
     </template>
     <template v-slot:subtitle>
       <v-card-text class="px-0 py-0">
-        <div
+        <v-badge
+          offset-x="5"
+          offset-y="3"
           v-if="props.message.loaded"
-          class="text--primary text-sm mb-3"
-          :class="props.message.error ? 'error-font' : ''"
-          v-html="props.message.text"
-        ></div>
+          location="bottom start"
+          color="transparent"
+        >
+          <template v-slot:badge>
+            <v-icon
+              v-if="
+                props.message.wasViewed &&
+                props.message.nameSentBy === userStore.getUserName
+              "
+              color="success"
+              >mdi-eye-check-outline</v-icon
+            >
+          </template>
+          <div
+            class="text--primary text-sm mb-3"
+            :class="props.message.error ? 'error-font' : ''"
+            v-html="props.message.text"
+          ></div>
+        </v-badge>
         <v-skeleton-loader v-else type="paragraph"></v-skeleton-loader>
       </v-card-text>
     </template>
@@ -52,18 +57,16 @@
 </template>
 
 <script setup lang="ts">
-import { stringToColor } from "~/utilities/stringFunctions";
-
 const appStore = useSechatAppStore();
 const userStore = useUserStore();
 
 interface PropsModel {
   message: IDirectMessage;
   image?: string;
+  showHeader?: boolean;
 }
 
 const props = defineProps<PropsModel>();
-const userColor = computed(() => stringToColor(userStore.userProfile.userName));
 </script>
 
 <style scoped>

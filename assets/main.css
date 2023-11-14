@@ -142,3 +142,7 @@
   max-width: 300px;
   max-height: 200px;
 }
+
+.on-top {
+  z-index: 100;
+}

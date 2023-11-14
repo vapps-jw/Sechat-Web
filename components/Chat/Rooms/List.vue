@@ -25,8 +25,16 @@
       <template v-slot:append>
         <v-badge
           inline
-          v-if="room.messages.filter((m) => !m.wasViewed).length > 0"
-          :content="room.messages.filter((m) => !m.wasViewed).length"
+          v-if="
+            room.messages.filter(
+              (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+            ).length > 0
+          "
+          :content="
+            room.messages.filter(
+              (m) => !m.wasViewed && m.nameSentBy !== userStore.getUserName
+            ).length
+          "
           color="error"
         >
           <v-icon>mdi-email</v-icon>
@@ -66,8 +74,8 @@
 
 <script setup lang="ts">
 const chatStore = useSechatChatStore();
-const appStore = useSechatAppStore();
 const sechatStore = useSechatAppStore();
+const userStore = useUserStore();
 
 const keySyncTooltip = ref<boolean>(false);
 

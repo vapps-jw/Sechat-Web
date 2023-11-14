@@ -465,6 +465,26 @@ export const useSechatChatStore = defineStore({
       }
       return "grey-lighten-1";
     },
+    canLoadMore: (state): boolean => {
+      if (state.activeContactId) {
+        if (
+          state.availableContacts.find((r) => r.id === state.activeContactId)
+            .directMessages.length >= 10
+        ) {
+          return true;
+        }
+      }
+      if (state.activeRoomId) {
+        if (
+          state.availableRooms.find((r) => r.id === state.activeRoomId).messages
+            .length >= 10
+        ) {
+          return true;
+        }
+
+        return false;
+      }
+    },
     getOnlineUsers: (state): IContactRequest[] =>
       state.availableContacts.filter(
         (c) => c.contactState === ContactState.Online
