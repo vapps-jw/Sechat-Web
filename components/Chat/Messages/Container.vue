@@ -82,6 +82,14 @@
       </template>
     </v-infinite-scroll>
   </v-sheet>
+  <v-container class="pa-0">
+    <v-card min-height="30" :elevation="0">
+      <chat-messages-typing-users
+        class="on-top"
+        v-if="chatStore.typingUsers.length > 0"
+      />
+    </v-card>
+  </v-container>
 </template>
 
 <script setup lang="ts">

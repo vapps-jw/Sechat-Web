@@ -8,5 +8,5 @@ export const insertTypingUser = (arr: string[], element: string) => {
     if (index >= 0) {
       arr.splice(index, 1);
     }
-  }, 2000);
+  }, 1000);
 };

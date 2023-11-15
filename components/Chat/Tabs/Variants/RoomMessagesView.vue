@@ -7,10 +7,6 @@
     </v-toolbar>
     <v-divider />
     <chat-messages-container :messages="chatStore.getActiveRoom.messages" />
-    <chat-messages-typing-users
-      class="on-top"
-      v-if="chatStore.typingUsers.length > 0"
-    />
     <v-spacer />
     <chat-messages-text-editor />
   </v-card>
