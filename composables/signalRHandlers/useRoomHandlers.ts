@@ -127,6 +127,7 @@ export const useRoomHandlers = () => {
     if (message.nameSentBy === userStore.getUserName) {
       message.wasViewed = true;
       chatStore.addNewRoomMessage(message);
+      chatStore.removeTypingUser(message.nameSentBy);
       scrollToBottom("chatView");
       return;
     }
@@ -141,11 +142,13 @@ export const useRoomHandlers = () => {
       message.wasViewed = true;
       chatStore.addNewRoomMessage(message);
       chatApi.markMessageAsViewed(message.roomId, message.id);
+      chatStore.removeTypingUser(message.nameSentBy);
       scrollToBottom("chatView");
       return;
     }
 
     chatStore.addNewRoomMessage(message);
+    chatStore.removeTypingUser(message.nameSentBy);
 
     if (
       chatStore.getActiveRoomId &&

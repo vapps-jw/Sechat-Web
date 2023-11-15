@@ -49,12 +49,14 @@ export const useDMHandlers = () => {
         chatApi.markDirectMessageAsViewed(message.contactId, message.id);
       }
 
+      chatStore.removeTypingUser(message.nameSentBy);
       scrollToBottom("chatView");
       return;
     }
 
     console.log("Adding new direct message", message);
     chatStore.addNewDirectMessage(message);
+    chatStore.removeTypingUser(message.nameSentBy);
 
     if (
       chatStore.getActiveContactId &&

@@ -155,14 +155,16 @@ watch(
       // }
     }
 
-    if (chatStore.activeContactId) {
-      signalRStore.connection?.send(SignalRHubMethods.ImTypingDirectMessage, {
-        id: chatStore.activeContactId,
-      });
-    } else if (chatStore.activeRoomId) {
-      signalRStore.connection?.send(SignalRHubMethods.ImTypingRoomMessage, {
-        id: chatStore.activeRoomId,
-      });
+    if (newValue) {
+      if (chatStore.activeContactId) {
+        signalRStore.connection?.send(SignalRHubMethods.ImTypingDirectMessage, {
+          id: chatStore.activeContactId,
+        });
+      } else if (chatStore.activeRoomId) {
+        signalRStore.connection?.send(SignalRHubMethods.ImTypingRoomMessage, {
+          id: chatStore.activeRoomId,
+        });
+      }
     }
 
     if (

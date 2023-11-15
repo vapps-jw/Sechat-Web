@@ -333,6 +333,9 @@ export const useSechatChatStore = defineStore({
     addTypingUser(value: string) {
       insertTypingUser(this.typingUsers, value);
     },
+    removeTypingUser(value: string) {
+      this.typingUsers = this.typingUsers.filter((e) => e !== value);
+    },
     selectRoom(value: string) {
       this.activeContactId = null;
       this.activeRoomId = value;
