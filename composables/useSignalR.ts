@@ -1,6 +1,5 @@
 import * as signalR from "@microsoft/signalr";
 import { HubConnectionState } from "@microsoft/signalr";
-import { scrollToBottom } from "~/utilities/documentFunctions";
 import {
   ChatViews,
   LocalStoreTypes,
@@ -168,7 +167,6 @@ export const useSignalR = () => {
       SignalRHubMethods.RoomKeyIncoming,
       e2eHandlers.onRoomKeyIncoming
     );
-
     connection.on(
       SignalRHubMethods.MasterKeyRequested,
       e2eHandlers.onMasterKeyRequested
@@ -178,8 +176,22 @@ export const useSignalR = () => {
       e2eHandlers.onMasterKeyIncoming
     );
 
+    // Messages General
+
+    connection.on(
+      SignalRHubMethods.UserTypingDirectMessage,
+      dmHandlers.onUserTypingDirectMessage
+    );
+    connection.on(
+      SignalRHubMethods.UserTypingInRoom,
+      roomHandlers.onUserTypingInRoom
+    );
+
     // Disconnect from events on connection close
     connection.onclose(async () => {
+      connection.off(SignalRHubMethods.UserTypingDirectMessage);
+      connection.off(SignalRHubMethods.UserTypingInRoom);
+
       connection.off(SignalRHubMethods.SendScreenShareStateChange);
       connection.off(SignalRHubMethods.VideoCallApproved);
       connection.off(SignalRHubMethods.VideoCallRejected);

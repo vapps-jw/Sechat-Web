@@ -38,11 +38,13 @@
       <v-card-subtitle class="tiny-font mx-0 px-0">
         <v-chip
           variant="text"
-          v-for="seenBy in props.message.messageViewers.filter(
-            (mv) =>
-              mv.user !== userStore.getUserName &&
-              mv.user !== props.message.nameSentBy
-          )"
+          v-for="seenBy in props.message.messageViewers
+            .filter(
+              (mv) =>
+                mv.user !== userStore.getUserName &&
+                mv.user !== props.message.nameSentBy
+            )
+            .sort((a, b) => a.user.localeCompare(b.user))"
           class="ma- 0 pa-1"
           size="x-small"
           color="success"

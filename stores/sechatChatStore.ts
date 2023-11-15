@@ -1,3 +1,4 @@
+import { insertTypingUser } from "~/utilities/arrayFunctions";
 import {
   BottomNavBarSet,
   ChatViews,
@@ -17,7 +18,7 @@ export const useSechatChatStore = defineStore({
       activeRoomId: <string>null,
       activeContactId: <number>null,
       newMessage: <string>null,
-      typingUsers: <string[]>["Areczek", "Mareczek"],
+      typingUsers: <string[]>[],
       activeBottomNav: <string>BottomNavBarSet.ChatNavBar,
       activeChatTab: <string>ChatViews.Messages,
       profilePictures: new Map<string, string>(),
@@ -329,10 +330,14 @@ export const useSechatChatStore = defineStore({
       const updatedRoom = this.availableRooms.find((r) => r.id === value.id);
       updatedRoom.members = value.members;
     },
+    addTypingUser(value: string) {
+      insertTypingUser(this.typingUsers, value);
+    },
     selectRoom(value: string) {
       this.activeContactId = null;
       this.activeRoomId = value;
       this.activeChatTab = ChatViews.Messages;
+      this.typingUsers = [];
     },
     rejectRoomSelection() {
       this.activeRoomId = null;
@@ -342,6 +347,7 @@ export const useSechatChatStore = defineStore({
       this.activeRoomId = null;
       this.activeContactId = value;
       this.activeChatTab = ChatViews.Messages;
+      this.typingUsers = [];
     },
     rejectContactSelection() {
       this.activeContactId = null;

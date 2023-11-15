@@ -178,3 +178,13 @@ interface IContactRequest {
   directMessages?: IDirectMessage[];
   hasKey?: boolean;
 }
+
+interface IDirectMessageTypingUser {
+  contactId: number;
+  username: string;
+}
+
+interface IRoomMessageTypingUser {
+  roomId: string;
+  username: string;
+}

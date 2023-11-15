@@ -171,6 +171,13 @@ export const SignalRHubMethods = {
   ContactDeleted: "ContactDeleted",
   ContactUpdated: "ContactUpdated",
 
+  // Messages General
+  ImTypingDirectMessage: "ImTypingDirectMessage",
+  ImTypingRoomMessage: "ImTypingRoomMessage",
+
+  UserTypingDirectMessage: "UserTypingDirectMessage",
+  UserTypingInRoom: "UserTypingInRoom",
+
   // Room Messages
   MessageWasViewed: "MessageWasViewed",
   MessagesWereViewed: "MessagesWereViewed",

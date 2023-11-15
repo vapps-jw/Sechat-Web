@@ -88,6 +88,14 @@ export const useDMHandlers = () => {
     }
   };
 
+  const onUserTypingDirectMessage = (message: IDirectMessageTypingUser) => {
+    console.warn("Incoming onUserTypingDirectMessage", message);
+    if (chatStore.activeContactId !== message.contactId) {
+      return;
+    }
+    chatStore.addTypingUser(message.username);
+  };
+
   const onDirectMessagesWereViewed = (message: IDirectMessagesViewed) => {
     console.warn("Incoming DirectMessagesWereViewed", message);
     chatStore.markDirectMessagesAsViewed(message.contactId);
@@ -101,6 +109,7 @@ export const useDMHandlers = () => {
   };
 
   return {
+    onUserTypingDirectMessage,
     onIncomingDirectMessage,
     onDirectMessageWasViewed,
     onDirectMessagesWereViewed,

@@ -60,6 +60,14 @@ export const useRoomHandlers = () => {
 
   // Messages
 
+  const onUserTypingInRoom = (message: IRoomMessageTypingUser) => {
+    console.warn("Incoming UserTypingInRoom", message);
+    if (chatStore.activeRoomId !== message.roomId) {
+      return;
+    }
+    chatStore.addTypingUser(message.username);
+  };
+
   const onMessageDeleted = (data: IMessageDeleted) => {
     console.warn("Handling MessageDeleted", data);
     chatStore.deleteMessageFromRoom(data);
@@ -148,6 +156,7 @@ export const useRoomHandlers = () => {
   };
 
   return {
+    onUserTypingInRoom,
     onMessageDeleted,
     onRoomUpdatedEvent,
     onRoomDeletedEvent,

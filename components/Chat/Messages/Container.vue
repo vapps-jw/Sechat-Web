@@ -82,7 +82,10 @@
       </template>
     </v-infinite-scroll>
   </v-sheet>
-  <!-- <chat-messages-typing-users v-if="chatStore.typingUsers.length > 0" /> -->
+  <chat-messages-typing-users
+    class="on-top"
+    v-if="chatStore.typingUsers.length > 0"
+  />
 </template>
 
 <script setup lang="ts">

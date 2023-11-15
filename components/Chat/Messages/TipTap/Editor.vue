@@ -20,11 +20,12 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 import Image from "@tiptap/extension-image";
-import { ImageTypes } from "~/utilities/globalEnums";
+import { ImageTypes, SignalRHubMethods } from "~/utilities/globalEnums";
 import { Node, mergeAttributes } from "@tiptap/core";
 
 const chatApi = useChatApi();
-const useApp = useSechatAppStore();
+const signalRStore = useSignalRStore();
+const chatStore = useSechatChatStore();
 
 const editorBusy = ref<boolean>(false);
 let generatedPreviews = [];
@@ -152,6 +153,16 @@ watch(
       // if (duplicate) {
       //   return;
       // }
+    }
+
+    if (chatStore.activeContactId) {
+      signalRStore.connection?.send(SignalRHubMethods.ImTypingDirectMessage, {
+        id: chatStore.activeContactId,
+      });
+    } else if (chatStore.activeRoomId) {
+      signalRStore.connection?.send(SignalRHubMethods.ImTypingRoomMessage, {
+        id: chatStore.activeRoomId,
+      });
     }
 
     if (
