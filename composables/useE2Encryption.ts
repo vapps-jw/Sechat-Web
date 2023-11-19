@@ -209,19 +209,7 @@ export const useE2Encryption = () => {
     console.warn("Decrypting Contact", cr, key);
     cr.hasKey = true;
     cr.directMessages?.forEach((message) => {
-      if (message.decrypted && !message.error) {
-        return;
-      }
-      const decrypted = decryptMessage(message.text, key);
-      message.text = decrypted;
-      message.decrypted = true;
-      message.loaded = true;
-      message.error = false;
-
-      if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
-        message.decrypted = false;
-        message.error = true;
-      }
+      tryDecryptContactMessage(message);
     });
   };
 
@@ -229,6 +217,10 @@ export const useE2Encryption = () => {
     if (message.decrypted && !message.error) {
       return;
     }
+    if (!message.loaded) {
+      return;
+    }
+
     const key = getKey(message.contactId, LocalStoreTypes.E2EDM);
 
     if (!key) {
@@ -241,21 +233,26 @@ export const useE2Encryption = () => {
       return;
     }
     const decrypted = decryptMessage(message.text, key);
+    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+      message.decrypted = false;
+      message.error = true;
+      return;
+    }
+
     message.text = decrypted;
     message.decrypted = true;
     message.loaded = true;
     message.error = false;
-
-    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
-      message.decrypted = false;
-      message.error = true;
-    }
   };
 
   const tryDecryptRoomMessage = (message: IMessage) => {
     if (message.decrypted && !message.error) {
       return;
     }
+    if (!message.loaded) {
+      return;
+    }
+
     const key = getKey(message.roomId, LocalStoreTypes.E2EROOMS);
 
     if (!key) {
@@ -268,15 +265,16 @@ export const useE2Encryption = () => {
       return;
     }
     const decrypted = decryptMessage(message.text, key);
+    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+      message.decrypted = false;
+      message.error = true;
+      return;
+    }
+
     message.text = decrypted;
     message.decrypted = true;
     message.loaded = true;
     message.error = false;
-
-    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
-      message.decrypted = false;
-      message.error = true;
-    }
   };
 
   const tryDecryptRoom = (room: IRoom) => {
@@ -292,19 +290,7 @@ export const useE2Encryption = () => {
     console.warn("Decrypting Room", room, key);
     room.hasKey = true;
     room.messages?.forEach((message) => {
-      if (message.decrypted && !message.error) {
-        return;
-      }
-      const decrypted = decryptMessage(message.text, key);
-      message.text = decrypted;
-      message.decrypted = true;
-      message.loaded = true;
-      message.error = false;
-
-      if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
-        message.decrypted = false;
-        message.error = true;
-      }
+      tryDecryptRoomMessage(message);
     });
   };
 

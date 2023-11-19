@@ -81,6 +81,13 @@ export const useRefreshHandler = () => {
         });
         await Promise.all(promises);
       })
+      .then(async (res) => {
+        console.warn("Initial load - sync keys, connect to rooms");
+        e2e.askForMissingKeys();
+        e2e.syncWithOtherDevice();
+        e2e.clearUnusedKeys();
+        e2e.updateHasKeyFlag();
+      })
       .finally(async () => {
         chatStore.lazyLoadInProgress = false;
       });
