@@ -14,10 +14,7 @@ export const useRefreshHandler = () => {
   const calendarStore = useCalendarStore();
 
   const initialLoad = async () => {
-    //appStore.updateLoadingOverlayWithMessage(true, "Loading Messages...");
-
     if (chatStore.lazyLoadInProgress) {
-      //appStore.updateLoadingOverlay(false);
       return;
     } else {
       chatStore.lazyLoadInProgress = true;
@@ -52,7 +49,6 @@ export const useRefreshHandler = () => {
         e2e.clearUnusedKeys();
 
         await signalR.connectToRooms(chatStore.availableRooms.map((r) => r.id));
-        //appStore.updateLoadingOverlay(false);
       })
       .then(async (res) => {
         console.warn("Initial load - loading messages and decrypting");
@@ -121,7 +117,6 @@ export const useRefreshHandler = () => {
     console.warn("Last DM message", chatStore.lastMessageInContacts);
 
     if (chatStore.lazyLoadInProgress) {
-      //appStore.updateLoadingOverlay(false);
       return;
     } else {
       chatStore.lazyLoadInProgress = true;

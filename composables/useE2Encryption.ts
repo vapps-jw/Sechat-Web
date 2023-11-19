@@ -174,6 +174,24 @@ export const useE2Encryption = () => {
     });
   };
 
+  const updateDMHasKeyFlag = (id: number) => {
+    const contact = chatStore.availableContacts.find((c) => c.id === id);
+
+    const key = getKey(contact.id, LocalStoreTypes.E2EDM);
+    if (key) {
+      contact.hasKey = true;
+    }
+  };
+
+  const updateRoomHasKeyFlag = (id: string) => {
+    const room = chatStore.availableRooms.find((room) => room.id === id);
+
+    const key = getKey(room.id, LocalStoreTypes.E2EROOMS);
+    if (key) {
+      room.hasKey = true;
+    }
+  };
+
   const tryDecryptContact = (cr: IContactRequest) => {
     const key = getKey(cr.id, LocalStoreTypes.E2EDM);
 
@@ -190,20 +208,27 @@ export const useE2Encryption = () => {
     }
     console.warn("Decrypting Contact", cr, key);
     cr.hasKey = true;
-    cr.directMessages?.forEach((dm) => {
-      if (dm.decrypted) {
+    cr.directMessages?.forEach((message) => {
+      if (message.decrypted && !message.error) {
         return;
       }
-      const decrypted = decryptMessage(dm.text, key);
+      const decrypted = decryptMessage(message.text, key);
+      message.text = decrypted;
+      message.decrypted = true;
+      message.loaded = true;
+      message.error = false;
+
       if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
-        dm.error = true;
+        message.decrypted = false;
+        message.error = true;
       }
-      dm.text = decrypted;
-      dm.decrypted = true;
     });
   };
 
   const tryDecryptContactMessage = (message: IDirectMessage) => {
+    if (message.decrypted && !message.error) {
+      return;
+    }
     const key = getKey(message.contactId, LocalStoreTypes.E2EDM);
 
     if (!key) {
@@ -216,15 +241,21 @@ export const useE2Encryption = () => {
       return;
     }
     const decrypted = decryptMessage(message.text, key);
-    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
-      message.error = true;
-    }
     message.text = decrypted;
     message.decrypted = true;
     message.loaded = true;
+    message.error = false;
+
+    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+      message.decrypted = false;
+      message.error = true;
+    }
   };
 
   const tryDecryptRoomMessage = (message: IMessage) => {
+    if (message.decrypted && !message.error) {
+      return;
+    }
     const key = getKey(message.roomId, LocalStoreTypes.E2EROOMS);
 
     if (!key) {
@@ -237,15 +268,19 @@ export const useE2Encryption = () => {
       return;
     }
     const decrypted = decryptMessage(message.text, key);
-    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
-      message.error = true;
-    }
     message.text = decrypted;
     message.decrypted = true;
     message.loaded = true;
+    message.error = false;
+
+    if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+      message.decrypted = false;
+      message.error = true;
+    }
   };
 
   const tryDecryptRoom = (room: IRoom) => {
+    console.warn("Decrypting room", room);
     const key = getKey(room.id, LocalStoreTypes.E2EROOMS);
 
     if (!key) {
@@ -257,15 +292,19 @@ export const useE2Encryption = () => {
     console.warn("Decrypting Room", room, key);
     room.hasKey = true;
     room.messages?.forEach((message) => {
-      if (message.decrypted) {
+      if (message.decrypted && !message.error) {
         return;
       }
       const decrypted = decryptMessage(message.text, key);
-      if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
-        message.error = true;
-      }
       message.text = decrypted;
       message.decrypted = true;
+      message.loaded = true;
+      message.error = false;
+
+      if (decrypted === E2EStatusMessages.DECRYPTION_ERROR) {
+        message.decrypted = false;
+        message.error = true;
+      }
     });
   };
 
@@ -313,6 +352,7 @@ export const useE2Encryption = () => {
 
     let e2eData = JSON.parse(storedData) as E2EKey[];
     if (e2eData.some((key) => key.id === data.id && key.key === data.key)) {
+      console.error("Key exists", data);
       return;
     }
 
@@ -509,6 +549,8 @@ export const useE2Encryption = () => {
   };
 
   return {
+    updateRoomHasKeyFlag,
+    updateDMHasKeyFlag,
     clearUnusedKeys,
     askForMissingKeys,
     syncWithOtherDevice,
