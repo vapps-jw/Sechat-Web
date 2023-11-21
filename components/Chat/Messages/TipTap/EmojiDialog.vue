@@ -8,7 +8,9 @@
         variant="outlined"
         color="warning"
         v-bind="props"
-      ></v-btn>
+      >
+        <Icon name="twemoji:angry-face"
+      /></v-btn>
     </template>
     <template v-slot:default="{ isActive }">
       <EmojiPicker
