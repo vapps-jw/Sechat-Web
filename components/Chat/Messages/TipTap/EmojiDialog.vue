@@ -33,7 +33,11 @@ const onSelectEmoji = (emoji) => {
     return;
   }
   const chatStore = useSechatChatStore();
-  chatStore.newMessage += emoji.i;
+  if (chatStore.newMessage) {
+    chatStore.newMessage += emoji.i;
+  } else {
+    chatStore.newMessage = emoji.i;
+  }
 };
 </script>
 
