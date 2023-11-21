@@ -133,6 +133,8 @@ watch(
     console.log("Image sources", imageSources.length);
     console.log("Video sources", videoSources.length);
 
+    console.log("New Message", newValue);
+
     if (imageSources.length > 0) {
       return;
       // const duplicate = imageSources.some((element, index) => {

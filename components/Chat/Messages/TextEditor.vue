@@ -24,8 +24,8 @@
         @click="() => scrollToBottom('chatView')"
       ></v-btn>
       <v-btn
-        :loading="chosenFileLoaidng"
-        :disabled="chosenFileLoaidng"
+        :loading="chosenFileLoading"
+        :disabled="chosenFileLoading"
         v-if="!chatStore.messageContainsGraphic"
         class="mr-4"
         icon="mdi-paperclip"
@@ -44,6 +44,9 @@
         v-model="chosenFile"
       >
       </v-file-input>
+      <chat-messages-tip-tap-emoji-dialog
+        v-if="!chatStore.messageContainsGraphic"
+      />
     </div>
     <v-btn
       :loading="sendingMessage"
@@ -72,7 +75,7 @@ const imageApi = useImageApi();
 const videoApi = useVideoApi();
 
 const chosenFile = ref<File[]>(null);
-const chosenFileLoaidng = ref<boolean>(false);
+const chosenFileLoading = ref<boolean>(false);
 const sendingMessage = ref<boolean>(false);
 const imageToUpload = ref();
 
@@ -85,7 +88,7 @@ const attachImage = async (e) => {
   if (e.target === undefined) {
     sechatStore.showErrorSnackbar("Bad file selected");
   }
-  chosenFileLoaidng.value = true;
+  chosenFileLoading.value = true;
   const files = e.target.files as File[];
 
   const allowedExtensions = ["png", "jpg", "jpeg", "mp4"];
@@ -94,12 +97,12 @@ const attachImage = async (e) => {
 
   if (!allowedExtensions.some((e) => e === extension)) {
     sechatStore.showErrorSnackbar("Only .png .jpg .jpeg .mp4 are allowed");
-    chosenFileLoaidng.value = false;
+    chosenFileLoading.value = false;
     return;
   }
 
   if (files.length === 0 || !files[0]) {
-    chosenFileLoaidng.value = false;
+    chosenFileLoading.value = false;
     return;
   }
 
@@ -121,7 +124,7 @@ const attachImage = async (e) => {
     }
   }
 
-  chosenFileLoaidng.value = false;
+  chosenFileLoading.value = false;
   chosenFile.value = null;
 };
 
