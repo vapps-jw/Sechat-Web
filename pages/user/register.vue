@@ -32,7 +32,7 @@
           :rules="credentials.referralRules"
           clearable
           :counter="20"
-          label="Referall Pass"
+          label="Referral Pass"
         ></v-text-field>
         <v-checkbox
           v-model="credentials.policiesAccepted"
