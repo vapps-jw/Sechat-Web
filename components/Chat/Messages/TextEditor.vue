@@ -44,9 +44,6 @@
         v-model="chosenFile"
       >
       </v-file-input>
-      <chat-messages-tip-tap-emoji-dialog
-        v-if="!chatStore.messageContainsGraphic"
-      />
     </div>
     <v-btn
       :loading="sendingMessage"

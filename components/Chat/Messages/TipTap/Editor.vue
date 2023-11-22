@@ -1,5 +1,8 @@
 <template>
-  <chat-messages-tip-tap-options :editor="editor" />
+  <div class="d-flex align-center">
+    <chat-messages-tip-tap-options :editor="editor" />
+    <chat-messages-tip-tap-emoji-dialog :editor="editor" />
+  </div>
   <editor-content
     data-cy="editor-content"
     v-if="!editorBusy"

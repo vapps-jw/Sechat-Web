@@ -2,9 +2,8 @@
   <v-dialog transition="dialog-bottom-transition" class="mb-15" width="auto">
     <template v-slot:activator="{ props }">
       <v-btn
-        class="mr-4"
         icon="mdi-emoticon-neutral-outline"
-        size="small"
+        size="x-small"
         variant="outlined"
         color="warning"
         v-bind="props"
@@ -26,18 +25,28 @@
 <script setup lang="ts">
 import "vue3-emoji-picker/css";
 import EmojiPicker from "vue3-emoji-picker";
+import { Editor } from "@tiptap/vue-3";
+
+const props = defineProps({
+  editor: {
+    type: Editor,
+    default: null,
+  },
+});
 
 const onSelectEmoji = (emoji) => {
   console.log(emoji);
   if (!emoji.i || emoji.i === "null") {
     return;
   }
-  const chatStore = useSechatChatStore();
-  if (chatStore.newMessage) {
-    chatStore.newMessage += emoji.i;
-  } else {
-    chatStore.newMessage = emoji.i;
-  }
+
+  props.editor?.commands.insertContent(emoji.i);
+  // const chatStore = useSechatChatStore();
+  // if (chatStore.newMessage) {
+  //   chatStore.newMessage += emoji.i;
+  // } else {
+  //   chatStore.newMessage = emoji.i;
+  // }
 };
 </script>
 
