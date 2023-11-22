@@ -16,6 +16,7 @@
         <v-list flex align-center>
           <v-list-item>
             <ChatGlobalSettingsRegistration />
+            <ChatGlobalSettingsRemoveUser />
           </v-list-item>
         </v-list>
       </v-card-text>

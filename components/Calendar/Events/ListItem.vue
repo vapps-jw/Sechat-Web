@@ -134,21 +134,6 @@ interface PropsModel {
 }
 const props = defineProps<PropsModel>();
 
-// const reminderBadge = computed<number>(() => {
-//   if (props.calendarEvent.reminders.length === 0) {
-//     console.log("reminder badge computed", props.calendarEvent.name, 0);
-//     return 0;
-//   }
-//   const res = props.calendarEvent.reminders.reduce((sum, item) => {
-//     if (new Date(item.remind) > new Date(Date.now())) {
-//       return (sum += 1);
-//     }
-//     return sum;
-//   }, 0);
-//   console.log("reminder badge computed", props.calendarEvent.name, res);
-//   return res;
-// });
-
 const deleteEvent = async () => {
   console.log("Deleting Event", props.calendarEvent.id);
   try {

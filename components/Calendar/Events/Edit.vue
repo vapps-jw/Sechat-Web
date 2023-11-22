@@ -48,6 +48,13 @@
 
         <!-- Start & End -->
 
+        <!-- <v-checkbox
+          density="compact"
+          hide-details
+          v-model="eventData.useEndDateTime"
+          label="Add End Date Time"
+        ></v-checkbox> -->
+
         <v-text-field
           v-if="!eventData.isAllDay && !eventData.recurring"
           v-model="eventData.start"
@@ -60,7 +67,11 @@
         ></v-text-field>
 
         <v-text-field
-          v-if="!eventData.isAllDay && !eventData.recurring"
+          v-if="
+            !eventData.isAllDay &&
+            !eventData.recurring &&
+            eventData.useEndDateTime
+          "
           v-model="eventData.end"
           type="datetime-local"
           :min="eventData.start"
@@ -173,7 +184,6 @@
 import {
   addHoursToDate,
   getEventDateTime,
-  getTime,
   getTimeFromDate,
 } from "~/utilities/dateFunctions";
 import { RecurringIntervalType } from "~/utilities/globalEnums";
@@ -197,6 +207,7 @@ const props = defineProps({
       id: "",
       name: "",
       description: "",
+      startTimeOnly: true,
       recurring: false,
       color: "#EEEEEE",
       isAllDay: false,
@@ -238,6 +249,9 @@ const timedEventRules = {
         new Date(eventData.end).getTime(),
         new Date(eventData.start).getTime() < new Date(eventData.end).getTime()
       );
+      if (!eventData.useEndDateTime) {
+        return true;
+      }
       if (
         eventData.start &&
         eventData.end &&
@@ -310,6 +324,7 @@ const eventData = ref({
   day: props.calendarEvent.day,
   start: props.calendarEvent.start,
   end: props.calendarEvent.end,
+  useEndDateTime: props.calendarEvent.startTimeOnly,
   recurring: props.calendarEvent.recurring,
   recurringOptions: {
     startDay: props.calendarEvent.recurringOptions.startDay,
@@ -353,6 +368,7 @@ const submit = async () => {
     day: eventData.value.isAllDay ? eventData.value.day : null,
     start: eventData.value.start,
     end: eventData.value.end,
+    startTimeOnly: eventData.value.useEndDateTime,
     reminders: eventData.value.reminders,
     recurring: eventData.value.recurring,
     recurringOptions: {
@@ -398,6 +414,12 @@ const submit = async () => {
       0
     ).toISOString();
   }
+
+  watch(eventData, async (newVal, oldVal) => {
+    console.log("Event updated", newVal);
+    if (newVal.useEndDateTime) {
+    }
+  });
 
   console.warn("Event Edit Form Result", newEvent);
   emit("updateEvent", newEvent);

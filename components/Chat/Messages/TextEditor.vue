@@ -224,6 +224,11 @@ const pushMessage = async () => {
   sendingMessage.value = true;
 
   if (chatStore.activeRoomId && !chatStore.activeContactId) {
+    if (chatStore.getActiveRoom.members.length === 1) {
+      sechatStore.showWarningSnackbar("Only you are in the Room");
+      sendingMessage.value = false;
+      return;
+    }
     await callRoomMessageApi();
   }
   if (!chatStore.activeRoomId && chatStore.activeContactId) {
