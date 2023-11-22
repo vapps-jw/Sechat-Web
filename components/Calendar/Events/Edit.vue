@@ -402,14 +402,14 @@ const submit = async () => {
     },
   };
 
-  if (new Date(newEvent.start).getTime() > new Date(newEvent.end).getTime()) {
-    if (newEvent.useEndDateTime) {
+  if (!newEvent.useEndDateTime) {
+    newEvent.end = getEventDateTime(
+      addMinutesToDate(convertEventDateTimeToUtc(newEvent.start), 1)
+    );
+  } else {
+    if (new Date(newEvent.start).getTime() > new Date(newEvent.end).getTime()) {
       newEvent.end = getEventDateTime(
         addHoursToDate(convertEventDateTimeToUtc(newEvent.start), 1)
-      );
-    } else {
-      newEvent.end = getEventDateTime(
-        addMinutesToDate(convertEventDateTimeToUtc(newEvent.start), 1)
       );
     }
   }
@@ -451,28 +451,6 @@ const submit = async () => {
       0
     ).toISOString();
   }
-
-  // watch(
-  //   eventData.value,
-  //   async (newVal, oldVal) => {
-  //     console.warn("Event updated", newVal);
-  //     if (newVal.useEndDateTime) {
-  //       if (
-  //         new Date(eventData.value.start).getTime() >
-  //         new Date(eventData.value.end).getTime()
-  //       ) {
-  //         eventData.value.end = getEventDateTime(
-  //           addHoursToDate(new Date(eventData.value.start), 1)
-  //         );
-  //       }
-  //     } else {
-  //       eventData.value.end = getEventDateTime(
-  //         addMinutesToDate(new Date(eventData.value.start), 1)
-  //       );
-  //     }
-  //   },
-  //   { deep: true }
-  // );
 
   console.warn("Event Edit Form Result", newEvent);
   emit("updateEvent", newEvent);
