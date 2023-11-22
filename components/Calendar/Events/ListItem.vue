@@ -28,8 +28,13 @@
                 )
               }}
             </div>
-            <v-icon icon="mdi-menu-right" color="warning"> </v-icon>
-            <div>
+            <v-icon
+              v-if="props.calendarEvent.useEndDateTime"
+              icon="mdi-menu-right"
+              color="warning"
+            >
+            </v-icon>
+            <div v-if="props.calendarEvent.useEndDateTime">
               {{
                 new Date(props.calendarEvent.end).toLocaleString(
                   appStore.localLanguage,
@@ -58,8 +63,13 @@
               })
             }}
           </div>
-          <v-icon icon="mdi-menu-right" color="warning"> </v-icon>
-          <div>
+          <v-icon
+            v-if="props.calendarEvent.useEndDateTime"
+            icon="mdi-menu-right"
+            color="warning"
+          >
+          </v-icon>
+          <div v-if="props.calendarEvent.useEndDateTime">
             {{
               new Date(
                 props.calendarEvent.recurringOptions.endTime

@@ -8,7 +8,7 @@
       title="Email"
       text="Add email if you want to reset your password if you forget it"
     ></v-alert>
-    <v-form v-model="form" @submit.prevent="onSubmit">
+    <v-form v-model="form" @submit.prevent="onSubmit" ref="htmlForm">
       <v-text-field
         class="mt-2"
         v-model="emailForm.email"
@@ -41,6 +41,7 @@ const userStore = useUserStore();
 const form = ref(false);
 const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
+const htmlForm = ref<HTMLFormElement>();
 
 interface IEmail {
   valid: boolean;
@@ -57,7 +58,17 @@ const emailForm = ref<IEmail>({
 const onSubmit = async () => {
   console.warn("Updating email...", emailForm.value);
 
-  const { error: apiError, data: response } = await useFetch(
+  const { valid } = await htmlForm.value?.validate();
+  if (!valid) {
+    console.warn("Form not valid", valid);
+    return;
+  }
+
+  if (emailForm.value.email == userStore.getUserEmail) {
+    return;
+  }
+
+  const { error: apiError } = await useFetch(
     `${config.public.apiBase}/account/update-email`,
     {
       headers: {

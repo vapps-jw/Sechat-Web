@@ -48,12 +48,13 @@
 
         <!-- Start & End -->
 
-        <!-- <v-checkbox
+        <v-checkbox
           density="compact"
+          @change="startTimeOnlyChange"
           hide-details
           v-model="eventData.useEndDateTime"
           label="Add End Date Time"
-        ></v-checkbox> -->
+        ></v-checkbox>
 
         <v-text-field
           v-if="!eventData.isAllDay && !eventData.recurring"
@@ -183,8 +184,11 @@
 <script setup lang="ts">
 import {
   addHoursToDate,
+  addMinutesToDate,
+  convertEventDateTimeToUtc,
   getEventDateTime,
   getTimeFromDate,
+  resetMinutes,
 } from "~/utilities/dateFunctions";
 import { RecurringIntervalType } from "~/utilities/globalEnums";
 
@@ -212,8 +216,12 @@ const props = defineProps({
       color: "#EEEEEE",
       isAllDay: false,
       day: new Date(Date.now()).toISOString().split("T")[0],
-      start: getEventDateTime(addHoursToDate(new Date(Date.now()), 0)),
-      end: getEventDateTime(addHoursToDate(new Date(Date.now()), 1)),
+      start: getEventDateTime(
+        resetMinutes(addHoursToDate(new Date(Date.now()), 1))
+      ),
+      end: getEventDateTime(
+        resetMinutes(addHoursToDate(new Date(Date.now()), 2))
+      ),
       recurringOptions: {
         startDay: new Date(Date.now()).toISOString().split("T")[0],
         startTime: addHoursToDate(new Date(Date.now()), 1),
@@ -225,6 +233,18 @@ const props = defineProps({
     },
   },
 });
+
+const startTimeOnlyChange = () => {
+  if (eventData.value.useEndDateTime) {
+    eventData.value.end = getEventDateTime(
+      addHoursToDate(convertEventDateTimeToUtc(eventData.value.start), 1)
+    );
+  } else {
+    eventData.value.end = getEventDateTime(
+      addMinutesToDate(convertEventDateTimeToUtc(eventData.value.start), 1)
+    );
+  }
+};
 
 onMounted(async () => {
   console.log("Create event mounted", eventData.value);
@@ -324,7 +344,7 @@ const eventData = ref({
   day: props.calendarEvent.day,
   start: props.calendarEvent.start,
   end: props.calendarEvent.end,
-  useEndDateTime: props.calendarEvent.startTimeOnly,
+  useEndDateTime: props.calendarEvent.useEndDateTime,
   recurring: props.calendarEvent.recurring,
   recurringOptions: {
     startDay: props.calendarEvent.recurringOptions.startDay,
@@ -368,7 +388,7 @@ const submit = async () => {
     day: eventData.value.isAllDay ? eventData.value.day : null,
     start: eventData.value.start,
     end: eventData.value.end,
-    startTimeOnly: eventData.value.useEndDateTime,
+    useEndDateTime: eventData.value.useEndDateTime,
     reminders: eventData.value.reminders,
     recurring: eventData.value.recurring,
     recurringOptions: {
@@ -381,6 +401,10 @@ const submit = async () => {
       recurringDates: [],
     },
   };
+
+  if (new Date(newEvent.start).getTime() > new Date(newEvent.end).getTime()) {
+    return;
+  }
 
   if (newEvent.recurring && !newEvent.isAllDay) {
     const today = new Date();
@@ -415,11 +439,27 @@ const submit = async () => {
     ).toISOString();
   }
 
-  watch(eventData, async (newVal, oldVal) => {
-    console.log("Event updated", newVal);
-    if (newVal.useEndDateTime) {
-    }
-  });
+  // watch(
+  //   eventData.value,
+  //   async (newVal, oldVal) => {
+  //     console.warn("Event updated", newVal);
+  //     if (newVal.useEndDateTime) {
+  //       if (
+  //         new Date(eventData.value.start).getTime() >
+  //         new Date(eventData.value.end).getTime()
+  //       ) {
+  //         eventData.value.end = getEventDateTime(
+  //           addHoursToDate(new Date(eventData.value.start), 1)
+  //         );
+  //       }
+  //     } else {
+  //       eventData.value.end = getEventDateTime(
+  //         addMinutesToDate(new Date(eventData.value.start), 1)
+  //       );
+  //     }
+  //   },
+  //   { deep: true }
+  // );
 
   console.warn("Event Edit Form Result", newEvent);
   emit("updateEvent", newEvent);

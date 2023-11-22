@@ -27,17 +27,19 @@
           <v-list-item>
             <ChatProfilePictureSection />
           </v-list-item>
-          <v-divider />
           <v-list-item>
             <ChatProfileInvitationsPermissionSection />
           </v-list-item>
           <v-divider />
           <v-list-item>
-            <ChatProfileTooltipsSection />
+            <ChatProfileReferralPass />
+          </v-list-item>
+          <v-list-item>
+            <ChatProfileEmailSection />
           </v-list-item>
           <v-divider />
           <v-list-item>
-            <ChatProfileEmailSection />
+            <ChatProfileTooltipsSection />
           </v-list-item>
           <v-divider />
           <v-list-item>

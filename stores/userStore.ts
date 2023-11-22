@@ -25,6 +25,7 @@ export const useUserStore = defineStore({
     getUserName: (state) => state.userProfile?.userName,
     getProfilePicture: (state) => state.userProfile?.profilePicture,
     getUserEmail: (state) => state.userProfile?.email,
+    getReferralPass: (state) => state.userProfile?.referralPass,
     isEmailConfirmed: (state) => state.userProfile?.emailConfirmed,
     invitationsPermission: (state) =>
       state.userProfile?.invitationsAllowed

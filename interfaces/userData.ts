@@ -6,4 +6,5 @@ interface IUserProfile {
   created?: Date;
   emailConfirmed?: boolean;
   invitationsAllowed?: boolean;
+  referralPass?: string;
 }

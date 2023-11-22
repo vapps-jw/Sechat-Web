@@ -10,7 +10,7 @@ export const useSechatAppStore = defineStore({
       snackbarData: <ISanckbar>{
         snackbar: false,
         text: "",
-        timeout: 2000,
+        timeout: 800,
         color: "",
         icon: "",
         iconColor: "",
@@ -49,7 +49,7 @@ export const useSechatAppStore = defineStore({
       this.updateSnackbar(<ISanckbar>{
         snackbar: true,
         text: message,
-        timeout: 1500,
+        timeout: 800,
         color: "success",
         icon: SnackbarIcons.Success,
         iconColor: "black",
@@ -59,7 +59,7 @@ export const useSechatAppStore = defineStore({
       this.updateSnackbar(<ISanckbar>{
         snackbar: true,
         text: message,
-        timeout: 1500,
+        timeout: 800,
         color: "primary",
         icon: SnackbarIcons.Info,
         iconColor: "white",
@@ -69,7 +69,7 @@ export const useSechatAppStore = defineStore({
       this.updateSnackbar(<ISanckbar>{
         snackbar: true,
         text: message,
-        timeout: 1500,
+        timeout: 800,
         color: "warning",
         icon: SnackbarIcons.Warning,
         iconColor: "black",
@@ -79,7 +79,7 @@ export const useSechatAppStore = defineStore({
       this.updateSnackbar(<ISanckbar>{
         snackbar: true,
         text: message,
-        timeout: 1500,
+        timeout: 800,
         color: "error",
         icon: SnackbarIcons.Offline,
         iconColor: "black",
@@ -89,7 +89,7 @@ export const useSechatAppStore = defineStore({
       this.updateSnackbar(<ISanckbar>{
         snackbar: true,
         text: message,
-        timeout: 1500,
+        timeout: 800,
         color: "error",
         icon: SnackbarIcons.Disconnected,
         iconColor: "black",
@@ -99,7 +99,7 @@ export const useSechatAppStore = defineStore({
       this.updateSnackbar(<ISanckbar>{
         snackbar: true,
         text: message,
-        timeout: 1500,
+        timeout: 800,
         color: "error",
         icon: SnackbarIcons.Error,
         iconColor: "black",

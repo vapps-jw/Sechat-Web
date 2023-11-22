@@ -26,8 +26,28 @@ export const getTimeFromDate = (date: string): string => {
   return `${dt.getHours()}:${dt.getMinutes()}`;
 };
 
+export const convertEventDateTimeToUtc = (date: string): Date => {
+  var d = new Date(date);
+  var utcDate = Date.UTC(
+    d.getFullYear(),
+    d.getMonth(),
+    d.getDate(),
+    d.getHours(),
+    d.getMinutes()
+  );
+  return new Date(utcDate);
+};
+
 export const addHoursToDate = (myDate: Date, hours: number): Date => {
   return new Date(new Date(myDate).setHours(myDate.getHours() + hours));
+};
+
+export const resetMinutes = (myDate: Date): Date => {
+  return new Date(new Date(myDate).setMinutes(0, 0, 0));
+};
+
+export const addMinutesToDate = (myDate: Date, minutes: number): Date => {
+  return new Date(new Date(myDate).setMinutes(myDate.getMinutes() + minutes));
 };
 
 export const getUTCDate = (date: Date): Date => {

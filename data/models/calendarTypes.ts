@@ -11,7 +11,7 @@ type CalendarEvent = {
   isAllDay: boolean;
   day?: string;
   start?: string;
-  startTimeOnly?: boolean;
+  useEndDateTime?: boolean;
   end?: string;
   isOld?: boolean;
   reminders: EventReminder[];
