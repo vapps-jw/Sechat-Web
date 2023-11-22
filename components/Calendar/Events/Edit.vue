@@ -403,6 +403,19 @@ const submit = async () => {
   };
 
   if (new Date(newEvent.start).getTime() > new Date(newEvent.end).getTime()) {
+    if (newEvent.useEndDateTime) {
+      newEvent.end = getEventDateTime(
+        addHoursToDate(convertEventDateTimeToUtc(newEvent.start), 1)
+      );
+    } else {
+      newEvent.end = getEventDateTime(
+        addMinutesToDate(convertEventDateTimeToUtc(newEvent.start), 1)
+      );
+    }
+  }
+
+  if (new Date(newEvent.start).getTime() > new Date(newEvent.end).getTime()) {
+    sechatStore.showErrorSnackbar("Start time is later then end time");
     return;
   }
 
