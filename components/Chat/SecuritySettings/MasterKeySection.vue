@@ -19,75 +19,60 @@
         </v-list>
       </div>
 
-      <v-card-actions>
-        <div class="d-flex flex-column align-center">
-          <v-dialog v-model="resetDialog" persistent width="500">
-            <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" color="error" variant="outlined"
-                >Reset Key</v-btn
-              >
-            </template>
-            <v-card>
-              <v-card-title class="text-h6 text-center">
-                Reset Master Key?
-              </v-card-title>
-              <v-card-text>
-                This cannot be reversed, all data encrypted with the current key
-                will be permanently removed and new Key will be
-                created.</v-card-text
-              >
-              <v-card-actions>
-                <v-btn
-                  color="success"
-                  variant="text"
-                  @click="resetDialog = false"
-                >
-                  Abort
-                </v-btn>
-                <v-spacer></v-spacer>
-                <v-btn @click="getNewMasterKey" color="error">
-                  Get New Key
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+      <v-card-actions class="d-flex flex-column align-center justify-center">
+        <v-dialog v-model="resetDialog" persistent width="500">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" color="primary" variant="flat" class="my-2"
+              >Create New Key</v-btn
+            >
+          </template>
+          <v-card>
+            <v-card-title class="text-h6 text-center">
+              Reset Master Key?
+            </v-card-title>
+            <v-card-text>
+              This cannot be reversed, all data encrypted with the current key
+              will be permanently removed and new Key will be
+              created.</v-card-text
+            >
+            <v-card-actions>
+              <v-btn @click="resetDialog = false" variant="tonal">
+                Abort
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn variant="tonal" @click="getNewMasterKey">
+                Get New Key
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
-          <v-dialog v-model="deleteDialog" persistent width="500">
-            <template v-slot:activator="{ props }">
-              <v-btn
-                v-bind="props"
-                color="error"
-                variant="outlined"
-                class="mt-2"
-                >Delete Key</v-btn
-              >
-            </template>
-            <v-card>
-              <v-card-title class="text-h6 text-center">
-                Delete Master Key?
-              </v-card-title>
-              <v-card-text>
-                This cannot be reversed, all data encrypted with this key will
-                be permanently removed.</v-card-text
-              >
-              <v-card-actions>
-                <v-btn
-                  color="success"
-                  variant="text"
-                  @click="deleteDialog = false"
-                >
-                  Abort
-                </v-btn>
-                <v-spacer></v-spacer>
-                <v-btn @click="deleteMasterKey" color="error">
-                  Delete Key
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </div>
-        <v-spacer />
-        <v-btn @click="forceSync" color="success" variant="outlined">
+        <v-dialog v-model="deleteDialog" persistent width="500">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" color="primary" class="my-2" variant="flat"
+              >Delete Key</v-btn
+            >
+          </template>
+          <v-card>
+            <v-card-title class="text-h6 text-center">
+              Delete Master Key?
+            </v-card-title>
+            <v-card-text>
+              This cannot be reversed, all data encrypted with this key will be
+              permanently removed.</v-card-text
+            >
+            <v-card-actions>
+              <v-btn @click="deleteDialog = false" variant="tonal">
+                Abort
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn variant="tonal" class="my-2" @click="deleteMasterKey">
+                Delete Key
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-btn @click="forceSync" variant="tonal" class="my-2">
           Force Sync
         </v-btn>
       </v-card-actions>

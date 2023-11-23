@@ -3,13 +3,20 @@
     <v-card min-width="350" width="700" class="sechat-v-card-full">
       <v-toolbar>
         <v-toolbar-title>Events</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn @click="scrollToToday" class="mx-1">Show Recent</v-btn>
         <calendar-events-create />
       </v-toolbar>
       <v-card-text class="ma-0 pa-0 overflow-auto">
         <calendar-events-list />
       </v-card-text>
+      <v-card-actions>
+        <v-btn variant="tonal" @click="scrollToToday" class="mx-1"
+          >Show Recent</v-btn
+        >
+        <v-spacer />
+        <v-btn variant="tonal" @click="scrollToToday" class="mx-1"
+          >Show Recent</v-btn
+        >
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
