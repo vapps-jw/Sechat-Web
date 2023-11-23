@@ -1,3 +1,4 @@
+import { forEach } from "cypress/types/lodash";
 import { getRecurranceDates } from "~/utilities/calendarUtilities";
 import { isToday } from "~/utilities/dateFunctions";
 
@@ -18,10 +19,14 @@ export const useCalendarStore = defineStore({
   },
   actions: {
     updateCalendar(value: Calendar) {
-      3;
       value.calendarEvents.forEach((ce) => (ce.activeReminders = 0));
       value.calendarEvents = sortEvents(value.calendarEvents);
       this.calendar = value;
+    },
+    removeEvents(value: string[]) {
+      this.calendar.calendarEvents = this.calendar.calendarEvents.filter(
+        (e) => !value.some((td) => td === e.id)
+      );
     },
     recalculateEvents() {
       if (!this.calendar || this.calendar!.calendarEvents.length === 0) {
@@ -184,10 +189,38 @@ export const useCalendarStore = defineStore({
       ) as CalendarEvent;
       event.reminders = [];
     },
+    markOldEvents() {
+      this.calendar?.calendarEvents.forEach((eventObject) => {
+        if (
+          eventObject.isAllDay &&
+          !eventObject.recurring &&
+          new Date(eventObject.day).setHours(0, 0, 0, 0) <
+            new Date(Date.now()).setHours(0, 0, 0, 0)
+        ) {
+          eventObject.isOld = true;
+        } else if (
+          !eventObject.isAllDay &&
+          !eventObject.recurring &&
+          new Date(eventObject.end).setHours(0, 0, 0, 0) <
+            new Date(Date.now()).setHours(0, 0, 0, 0)
+        ) {
+          eventObject.isOld = true;
+        } else if (eventObject.recurring) {
+          const dates = getRecurranceDates(eventObject.recurringOptions);
+          if (
+            !dates.some((d) => d > new Date(Date.now()).setHours(0, 0, 0, 0))
+          ) {
+            eventObject.isOld = true;
+          }
+        }
+      });
+    },
   },
   getters: {
     calendarData: (state) => (state.calendar ? true : false),
     getEvents: (state) => state.calendar?.calendarEvents,
+    getOldEvents: (state) =>
+      state.calendar?.calendarEvents.filter((e) => e.isOld),
   },
 });
 

@@ -9,11 +9,21 @@
         <calendar-events-list />
       </v-card-text>
       <v-card-actions>
-        <v-btn variant="tonal" @click="scrollToToday" class="mx-1"
-          >Show Recent</v-btn
+        <v-btn
+          :loading="isBusy"
+          :disabled="isBusy"
+          variant="tonal"
+          @click="deleteOld"
+          class="mx-1"
+          >Delete Old</v-btn
         >
         <v-spacer />
-        <v-btn variant="tonal" @click="scrollToToday" class="mx-1"
+        <v-btn
+          :loading="isBusy"
+          :disabled="isBusy"
+          variant="tonal"
+          @click="scrollToToday"
+          class="mx-1"
           >Show Recent</v-btn
         >
       </v-card-actions>
@@ -23,6 +33,45 @@
 
 <script setup lang="ts">
 const calendarStore = useCalendarStore();
+const isBusy = ref<boolean>(false);
+const config = useRuntimeConfig();
+const sechatStore = useSechatAppStore();
+
+const deleteOld = async () => {
+  if (calendarStore.calendar?.calendarEvents?.length == 0) {
+    return;
+  }
+
+  const eventsToDelete = calendarStore.calendar?.calendarEvents
+    .filter((e) => e.isOld)
+    .map((e) => e.id);
+
+  if (eventsToDelete.length === 0) {
+    return;
+  }
+
+  isBusy.value = true;
+  const { error: apiError, data: preview } = await useFetch(
+    `${config.public.apiBase}/calendar/delete-events`,
+    {
+      method: "POST",
+      credentials: "include",
+      body: eventsToDelete,
+    }
+  );
+
+  if (apiError.value) {
+    sechatStore.showErrorSnackbar(apiError.value.data);
+    isBusy.value = false;
+    return;
+  }
+
+  calendarStore.removeEvents(eventsToDelete);
+  calendarStore.recalculateBatches();
+  calendarStore.markOldEvents();
+  sechatStore.showSuccessSnackbar("Old Events Deleted");
+  isBusy.value = false;
+};
 
 const scrollToToday = () => {
   if (calendarStore.displayBatches.length === 0) {
