@@ -9,13 +9,13 @@
     ></v-alert>
     <v-card>
       <v-card-text class="px-0 py-1">
-        <v-combobox
+        <v-select
           class="pb-0"
           v-model="chosenValue"
           :loading="loading"
-          label="Combobox"
+          label="Registered Users"
           :items="comboboxData"
-        ></v-combobox>
+        ></v-select>
       </v-card-text>
       <v-card-actions class="px-0 py-1">
         <v-btn @click="getUserNames">Load Users</v-btn>
