@@ -14,6 +14,11 @@
     >
       Cookie Policy
     </v-btn>
+    <v-btn class="my-2" size="large">
+      <NuxtLink class="sechat-link-clear" :to="`/policies/tos`"
+        >Terms of Service</NuxtLink
+      >
+    </v-btn>
   </v-container>
 </template>
 

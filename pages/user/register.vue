@@ -33,6 +33,8 @@
           clearable
           :counter="20"
           label="Referral Pass"
+          hint="You can get referral from a registered user"
+          persistent-hint
         ></v-text-field>
         <v-checkbox
           v-model="credentials.policiesAccepted"
@@ -118,7 +120,7 @@ const credentials = ref<ICredentials>({
     (v) => (v && /\W/.test(v)) || "At least one special character",
   ],
   referralRules: [
-    (v) => !!v || "Referall is required, ask someone for referral",
+    (v) => !!v || "Referall is required, ask registered user for a referral",
     (v) => (v && v.length <= 20) || "Max 20 characters",
     (v) => (v && v.length > 8) || "Min 8 characters",
   ],

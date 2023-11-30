@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { CustomCookies, LocalStoreTypes } from "~/utilities/globalEnums";
+import { LocalStoreTypes } from "~/utilities/globalEnums";
 
 const config = useRuntimeConfig();
 const userStore = useUserStore();
