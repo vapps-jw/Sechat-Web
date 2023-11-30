@@ -35,6 +35,15 @@
       ></v-checkbox>
       <v-divider class="mb-3" />
 
+      <v-checkbox
+        v-if="!eventData.isAllDay"
+        density="compact"
+        @change="startTimeOnlyChange"
+        hide-details
+        v-model="eventData.useEndDateTime"
+        label="Add End Date Time"
+      ></v-checkbox>
+
       <div v-if="!eventData.recurring">
         <!-- All Day -->
 
@@ -47,14 +56,6 @@
         ></v-text-field>
 
         <!-- Start & End -->
-
-        <v-checkbox
-          density="compact"
-          @change="startTimeOnlyChange"
-          hide-details
-          v-model="eventData.useEndDateTime"
-          label="Add End Date Time"
-        ></v-checkbox>
 
         <v-text-field
           v-if="!eventData.isAllDay && !eventData.recurring"
@@ -115,7 +116,7 @@
         ></v-text-field>
 
         <v-text-field
-          v-if="!eventData.isAllDay"
+          v-if="!eventData.isAllDay && eventData.useEndDateTime"
           v-model="eventData.recurringOptions.endTime"
           type="time"
           label="Recurring Event End"
