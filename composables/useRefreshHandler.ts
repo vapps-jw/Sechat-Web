@@ -99,9 +99,9 @@ export const useRefreshHandler = () => {
       return;
     }
     await updateLoadLazy();
-    calendarStore.recalculateEvents();
     calendarStore.recalculateBatches();
     calendarStore.recalculateReminders();
+    calendarStore.markOldEvents();
   };
 
   const handleOnlineChange = async () => {

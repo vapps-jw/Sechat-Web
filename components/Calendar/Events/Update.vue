@@ -91,6 +91,7 @@ const updateEvent = async (data: CalendarEvent) => {
 
   calendarStore.updateEvent(data);
   calendarStore.recalculateBatches();
+  calendarStore.markOldEvents();
   dialog.value = false;
   isBusy.value = false;
 };

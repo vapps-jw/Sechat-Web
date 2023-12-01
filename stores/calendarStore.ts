@@ -28,25 +28,6 @@ export const useCalendarStore = defineStore({
         (e) => !value.some((td) => td === e.id)
       );
     },
-    recalculateEvents() {
-      if (!this.calendar || this.calendar!.calendarEvents.length === 0) {
-        return;
-      }
-      this.calendar.calendarEvents.forEach((eventObject) => {
-        if (
-          eventObject.isAllDay &&
-          new Date(eventObject.day).setHours(0, 0, 0, 0) <
-            new Date(Date.now()).setHours(0, 0, 0, 0)
-        ) {
-          eventObject.isOld = true;
-        } else if (
-          new Date(eventObject.end).setHours(0, 0, 0, 0) <
-          new Date(Date.now()).setHours(0, 0, 0, 0)
-        ) {
-          eventObject.isOld = true;
-        }
-      });
-    },
     recalculateReminders() {
       if (!this.calendar || this.calendar!.calendarEvents.length === 0) {
         return;
@@ -206,12 +187,24 @@ export const useCalendarStore = defineStore({
         ) {
           eventObject.isOld = true;
         } else if (eventObject.recurring) {
-          const dates = getRecurranceDates(eventObject.recurringOptions);
+          console.log(
+            "Recurring Log, Options:",
+            eventObject.name,
+            eventObject.recurringOptions
+          );
+          console.log(
+            "Recurring Log, CurrentDate:",
+            new Date(Date.now()).setHours(0, 0, 0, 0)
+          );
           if (
-            !dates.some((d) => d > new Date(Date.now()).setHours(0, 0, 0, 0))
+            eventObject.recurringOptions.recurringDates.every(
+              (d) => d < new Date(Date.now()).setHours(0, 0, 0, 0)
+            )
           ) {
             eventObject.isOld = true;
           }
+        } else {
+          eventObject.isOld = false;
         }
       });
     },

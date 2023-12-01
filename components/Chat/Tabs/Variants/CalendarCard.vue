@@ -95,28 +95,6 @@ const activate = async () => {
       eventObject.id = ce.id;
       eventObject.reminders = ce.reminders;
 
-      // Check old Events
-      if (
-        eventObject.isAllDay &&
-        !eventObject.recurring &&
-        new Date(eventObject.day).setHours(0, 0, 0, 0) <
-          new Date(Date.now()).setHours(0, 0, 0, 0)
-      ) {
-        eventObject.isOld = true;
-      } else if (
-        !eventObject.isAllDay &&
-        !eventObject.recurring &&
-        new Date(eventObject.end).setHours(0, 0, 0, 0) <
-          new Date(Date.now()).setHours(0, 0, 0, 0)
-      ) {
-        eventObject.isOld = true;
-      } else if (eventObject.recurring) {
-        const dates = getRecurranceDates(eventObject.recurringOptions);
-        if (!dates.some((d) => d > new Date(Date.now()).setHours(0, 0, 0, 0))) {
-          eventObject.isOld = true;
-        }
-      }
-
       console.log("Mapped Event", eventObject);
       return eventObject;
     }),
@@ -135,6 +113,7 @@ const activate = async () => {
   calendarStore.updateCalendar(mappedCalendar);
   calendarStore.recalculateBatches();
   calendarStore.recalculateReminders();
+  calendarStore.markOldEvents();
   console.log("Display Batches", calendarStore.displayBatches);
 
   chatStore.activateNavBar(BottomNavBarSet.CalendarNavBar);
