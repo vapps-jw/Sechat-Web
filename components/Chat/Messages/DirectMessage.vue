@@ -38,7 +38,7 @@
           <template v-slot:badge>
             <v-icon
               v-if="
-                props.message.lastMessage &&
+                props.messageIndex === lastMessageIndex &&
                 props.message.wasViewed &&
                 props.message.nameSentBy === userStore.getUserName
               "
@@ -63,6 +63,8 @@ const appStore = useSechatAppStore();
 const userStore = useUserStore();
 
 interface PropsModel {
+  lastMessageIndex: number;
+  messageIndex: number;
   message: IDirectMessage;
   image?: string;
   showHeader?: boolean;

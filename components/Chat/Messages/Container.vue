@@ -49,6 +49,8 @@
           "
         />
         <chat-messages-direct-message
+          :message-index="index"
+          :last-message-index="props.messages.length - 1"
           :show-header="
             index === 0
               ? true
