@@ -118,169 +118,178 @@ const handleSharedVideo = (video: string) => {
   });
 };
 
-watch(
-  () => props.modelValue,
-  async (newValue, oldValue) => {
-    const isSame = newValue === oldValue;
-    if (isSame || editorBusy.value) {
+onMounted(async () => {
+  console.warn("Editor Mounted");
+  await handleEditorWatcher(props.modelValue, null);
+});
+
+const handleEditorWatcher = async (newValue, oldValue) => {
+  const isSame = newValue === oldValue;
+  if (isSame || editorBusy.value) {
+    return;
+  }
+  let content = newValue;
+  // console.log("New value", newValue);
+  // console.log("Old value", oldValue);
+  // console.log("Model", props.modelValue);
+
+  const imageSources = findAll(/<img.*?src="(.*?)"/g, props.modelValue);
+  const videoSources = findAll(/<video.*?src="(.*?)"/g, props.modelValue);
+
+  console.log("Image sources", imageSources.length);
+  console.log("Video sources", videoSources.length);
+
+  console.log("New Message", newValue);
+
+  if (imageSources.length > 0) {
+    return;
+  }
+
+  if (videoSources.length > 0) {
+    return;
+  }
+
+  if (newValue) {
+    if (chatStore.activeContactId) {
+      signalRStore.connection?.send(SignalRHubMethods.ImTypingDirectMessage, {
+        id: chatStore.activeContactId,
+      });
+    } else if (chatStore.activeRoomId) {
+      signalRStore.connection?.send(SignalRHubMethods.ImTypingRoomMessage, {
+        id: chatStore.activeRoomId,
+      });
+    }
+  }
+
+  if (
+    oldValue &&
+    oldValue.includes(ImageTypes.ChatImage) &&
+    newValue.includes(ImageTypes.ChatImage)
+  ) {
+    return;
+  }
+
+  if (content.includes(ImageTypes.ChatImage)) {
+    console.log("Handlin image");
+    handleSharedImage(content);
+    return;
+  }
+
+  if (content.includes(ImageTypes.ChatViedo)) {
+    console.log("Handlin video");
+    handleSharedVideo(content);
+    return;
+  }
+
+  console.log("Setting content", props.modelValue);
+  editor.value?.commands.setContent(content, false, {
+    preserveWhitespace: "full",
+  });
+
+  if (!newValue) {
+    console.log("Editor Empty");
+    generatedPreviews = [];
+    editor.value?.setOptions({ editable: true });
+    emit("editorStateUpdate", {
+      busy: false,
+      editable: true,
+      readyToShare: false,
+    });
+    return;
+  }
+
+  console.log("Checking links");
+  const anchors = findAll(/<a[^>]*href=["']([^"']*)["']/g, content);
+  if (anchors.length > 0) {
+    if (editorBusy.value) {
+      console.error("Prev Busy");
       return;
     }
-    let content = newValue;
-    // console.log("New value", newValue);
-    // console.log("Old value", oldValue);
-    // console.log("Model", props.modelValue);
 
-    const imageSources = findAll(/<img.*?src="(.*?)"/g, props.modelValue);
-    const videoSources = findAll(/<video.*?src="(.*?)"/g, props.modelValue);
-
-    console.log("Image sources", imageSources.length);
-    console.log("Video sources", videoSources.length);
-
-    console.log("New Message", newValue);
-
-    if (imageSources.length > 0) {
+    if (generatedPreviews.some((gp) => gp === anchors[0][1])) {
+      console.log("This preview was generated");
       return;
     }
 
-    if (videoSources.length > 0) {
-      return;
-    }
-
-    if (newValue) {
-      if (chatStore.activeContactId) {
-        signalRStore.connection?.send(SignalRHubMethods.ImTypingDirectMessage, {
-          id: chatStore.activeContactId,
-        });
-      } else if (chatStore.activeRoomId) {
-        signalRStore.connection?.send(SignalRHubMethods.ImTypingRoomMessage, {
-          id: chatStore.activeRoomId,
-        });
-      }
-    }
-
-    if (
-      oldValue &&
-      oldValue.includes(ImageTypes.ChatImage) &&
-      newValue.includes(ImageTypes.ChatImage)
-    ) {
-      return;
-    }
-
-    if (content.includes(ImageTypes.ChatImage)) {
-      console.log("Handlin image");
-      handleSharedImage(content);
-      return;
-    }
-
-    if (content.includes(ImageTypes.ChatViedo)) {
-      console.log("Handlin video");
-      handleSharedVideo(content);
-      return;
-    }
-
-    console.log("Setting content", props.modelValue);
-    editor.value?.commands.setContent(content, false, {
-      preserveWhitespace: "full",
+    editorBusy.value = true;
+    editor.value?.setOptions({ editable: false });
+    emit("editorStateUpdate", {
+      busy: true,
+      editable: false,
+      readyToShare: false,
     });
 
-    if (!newValue) {
-      console.log("Editor Empty");
-      generatedPreviews = [];
+    generatedPreviews.push(anchors[0][1]);
+
+    try {
+      console.warn("Generating Preview...", anchors);
+      await chatApi
+        .getLinkPreview(anchors[0][1])
+        .then((prev) => {
+          console.warn("PREV", prev);
+          if (!prev || prev === undefined) {
+            throw new Error("No prev");
+          }
+
+          console.warn("Setting Title", prev.title);
+
+          if (prev.title) {
+            editor.value?.commands.insertContent(`<h4>${prev.title}</h4>`);
+          }
+
+          if (prev.description) {
+            editor.value?.commands.insertContent(
+              `<h5>${prev.description}</h5>`
+            );
+          }
+
+          console.warn("Setting image", prev.img);
+          if (prev.img) {
+            editor.value?.commands.setImage({
+              src: prev.img,
+              alt: prev.domain,
+              title: prev.title,
+            });
+          } else {
+            if (prev.favicon) {
+              editor.value?.commands.setImage({
+                src: prev.favicon,
+              });
+            }
+          }
+
+          emit("editorStateUpdate", {
+            busy: false,
+            editable: false,
+            readyToShare: true,
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          editor.value?.setOptions({ editable: true });
+          emit("editorStateUpdate", {
+            busy: false,
+            editable: true,
+            readyToShare: false,
+          });
+        });
+    } catch (error) {
       editor.value?.setOptions({ editable: true });
       emit("editorStateUpdate", {
-        busy: false,
+        busy: true,
         editable: true,
         readyToShare: false,
       });
-      return;
+    } finally {
+      editorBusy.value = false;
     }
+  }
+};
 
-    console.log("Checking links");
-    const anchors = findAll(/<a[^>]*href=["']([^"']*)["']/g, content);
-    if (anchors.length > 0) {
-      if (editorBusy.value) {
-        console.error("Prev Busy");
-        return;
-      }
-
-      if (generatedPreviews.some((gp) => gp === anchors[0][1])) {
-        console.log("This preview was generated");
-        return;
-      }
-
-      editorBusy.value = true;
-      editor.value?.setOptions({ editable: false });
-      emit("editorStateUpdate", {
-        busy: true,
-        editable: false,
-        readyToShare: false,
-      });
-
-      generatedPreviews.push(anchors[0][1]);
-
-      try {
-        console.warn("Generating Preview...", anchors);
-        await chatApi
-          .getLinkPreview(anchors[0][1])
-          .then((prev) => {
-            console.warn("PREV", prev);
-            if (!prev || prev === undefined) {
-              throw new Error("No prev");
-            }
-
-            console.warn("Setting Title", prev.title);
-
-            if (prev.title) {
-              editor.value?.commands.insertContent(`<h4>${prev.title}</h4>`);
-            }
-
-            if (prev.description) {
-              editor.value?.commands.insertContent(
-                `<h5>${prev.description}</h5>`
-              );
-            }
-
-            console.warn("Setting image", prev.img);
-            if (prev.img) {
-              editor.value?.commands.setImage({
-                src: prev.img,
-                alt: prev.domain,
-                title: prev.title,
-              });
-            } else {
-              if (prev.favicon) {
-                editor.value?.commands.setImage({
-                  src: prev.favicon,
-                });
-              }
-            }
-
-            emit("editorStateUpdate", {
-              busy: false,
-              editable: false,
-              readyToShare: true,
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-            editor.value?.setOptions({ editable: true });
-            emit("editorStateUpdate", {
-              busy: false,
-              editable: true,
-              readyToShare: false,
-            });
-          });
-      } catch (error) {
-        editor.value?.setOptions({ editable: true });
-        emit("editorStateUpdate", {
-          busy: true,
-          editable: true,
-          readyToShare: false,
-        });
-      } finally {
-        editorBusy.value = false;
-      }
-    }
+watch(
+  () => props.modelValue,
+  async (newValue, oldValue) => {
+    await handleEditorWatcher(newValue, oldValue);
   }
 );
 
