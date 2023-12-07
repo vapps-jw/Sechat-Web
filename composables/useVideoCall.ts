@@ -163,8 +163,6 @@ export const useVideoCall = () => {
       message: webRTCStore.getVideoCallContactName,
     });
 
-    webRTCStore.updateSourcePlayerVisible(true);
-
     await createPeerConnection(webRTCStore.getVideoCallContactName);
 
     console.warn("Local Player", webRTCStore.localVideo);
@@ -179,7 +177,7 @@ export const useVideoCall = () => {
       signalRStore.connection.send(SignalRHubMethods.VideoCallRequest, {
         message: webRTCStore.getVideoCallContactName,
       });
-    }, 5000);
+    }, 4000);
   };
 
   const stopCalling = async () => {

@@ -111,8 +111,8 @@ const executeContactShare = () => {
     return;
   }
   chatStore.selectContact(shareData.value.shareId as number);
-  chatStore.newMessage = `${shareData.value.title} ${shareData.value.text} `;
   navigateTo("/chat");
+  chatStore.newMessage = `${shareData.value.title} ${shareData.value.text} `;
 };
 </script>
 

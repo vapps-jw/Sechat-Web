@@ -22,7 +22,7 @@ export const useWebRTCStore = defineStore({
       remoteMicOn: <boolean>true,
       remoteCamOn: <boolean>true,
       // WebRTC
-      callNotificationInterval: <NodeJS.Timer>null,
+      callNotificationInterval: <NodeJS.Timeout>null,
       readyToReceiveCandidates: <boolean>false,
       remoteIceCandidatesBuffer: <RTCIceCandidate[]>[],
       localStream: <MediaStream>null,
@@ -62,9 +62,6 @@ export const useWebRTCStore = defineStore({
     // Sechat
     updateTargetPlayerVisible(value: boolean) {
       this.targetPlayerVisible = value;
-    },
-    updateSourcePlayerVisible(value: boolean) {
-      this.sourcePlayerVisible = value;
     },
     updateVideoCallRequestSent(value: boolean) {
       this.videoCallRequestSent = value;

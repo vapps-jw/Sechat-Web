@@ -118,8 +118,16 @@ export const useSechatChatStore = defineStore({
       );
       const pp = this.profilePictures as Map<string, string>;
       pp.clear();
-      this.availableContacts.forEach((el) => {
-        pp.set(el.displayName, el.profileImage);
+      this.availableContacts.forEach((contact) => {
+        pp.set(contact.displayName, contact.profileImage);
+
+        contact.directMessages.forEach((m, i) => {
+          if (i === contact.directMessages.length - 1) {
+            m.lastMessage = true;
+          } else {
+            m.lastMessage = false;
+          }
+        });
       });
     },
     addContact(value: IContactRequest) {
@@ -420,6 +428,13 @@ export const useSechatChatStore = defineStore({
         contact.directMessages = contact.directMessages.sort(
           (a, b) => Number(a.created) - Number(b.created)
         );
+        contact.directMessages.forEach((m, i) => {
+          if (i === contact.directMessages.length - 1) {
+            m.lastMessage = true;
+          } else {
+            m.lastMessage = false;
+          }
+        });
       }
     },
     addNewDirectMessages(value: IDirectMessage[]) {
@@ -437,6 +452,13 @@ export const useSechatChatStore = defineStore({
       contact.directMessages = contact.directMessages.sort(
         (a, b) => Number(a.created) - Number(b.created)
       );
+      contact.directMessages.forEach((m, i) => {
+        if (i === contact.directMessages.length - 1) {
+          m.lastMessage = true;
+        } else {
+          m.lastMessage = false;
+        }
+      });
     },
   },
   getters: {

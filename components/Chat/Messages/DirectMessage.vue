@@ -26,8 +26,9 @@
       </div>
     </template>
     <template v-slot:subtitle>
-      <v-card-text class="px-0 py-0">
+      <v-card-text class="px-0 py-0 d-flex align-center">
         <v-badge
+          class="align-center d-flex"
           offset-x="5"
           offset-y="3"
           v-if="props.message.loaded"
@@ -37,6 +38,7 @@
           <template v-slot:badge>
             <v-icon
               v-if="
+                props.message.lastMessage &&
                 props.message.wasViewed &&
                 props.message.nameSentBy === userStore.getUserName
               "

@@ -140,24 +140,10 @@ watch(
 
     if (imageSources.length > 0) {
       return;
-      // const duplicate = imageSources.some((element, index) => {
-      //   return imageSources.indexOf(element) !== index;
-      // });
-      // console.log("Duplicate image", duplicate);
-      // if (duplicate) {
-      //   return;
-      // }
     }
 
     if (videoSources.length > 0) {
       return;
-      // const duplicate = videoSources.some((element, index) => {
-      //   return videoSources.indexOf(element) !== index;
-      // });
-      // console.log("Duplicate video", duplicate);
-      // if (duplicate) {
-      //   return;
-      // }
     }
 
     if (newValue) {

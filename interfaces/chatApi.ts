@@ -48,6 +48,7 @@ interface IDirectMessageId {
 interface IDirectMessage extends IMessageBase {
   contactId?: number;
   decrypted?: boolean;
+  lastMessage?: boolean;
 }
 
 interface IDirectMessagesViewed {
