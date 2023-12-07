@@ -241,9 +241,9 @@ const handleAnchors = async (anchors: any[]) => {
             editor.value?.commands.insertContent(`<h4>${prev.title}</h4>`);
           }
 
-          if (prev.url && chatStore.schareApiTriggered) {
-            console.warn("Setting URL", prev.url);
-            editor.value?.commands.insertContent(`<h5>${prev.url}</h4>`);
+          if (prev.link && chatStore.schareApiTriggered) {
+            console.warn("Setting URL", prev.link);
+            editor.value?.commands.insertContent(`<h5>${prev.link}</h4>`);
           }
 
           if (prev.description) {
