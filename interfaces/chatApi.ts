@@ -68,6 +68,7 @@ interface ILinkPreview {
   domain?: string;
   img?: string;
   favicon?: string;
+  url?: string;
 }
 
 // Rooms

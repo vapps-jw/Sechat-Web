@@ -101,7 +101,7 @@ const executeRoomShare = () => {
     return;
   }
   chatStore.selectRoom(shareData.value.shareId as string);
-  chatStore.newMessage = `${shareData.value.title} ${shareData.value.text} `;
+  chatStore.setShareApiData(shareData.value.title, shareData.value.text);
   navigateTo("/chat");
 };
 
@@ -111,8 +111,8 @@ const executeContactShare = () => {
     return;
   }
   chatStore.selectContact(shareData.value.shareId as number);
+  chatStore.setShareApiData(shareData.value.title, shareData.value.text);
   navigateTo("/chat");
-  chatStore.newMessage = `${shareData.value.title} ${shareData.value.text} `;
 };
 </script>
 

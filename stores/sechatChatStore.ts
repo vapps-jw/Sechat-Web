@@ -18,6 +18,8 @@ export const useSechatChatStore = defineStore({
       activeRoomId: <string>null,
       activeContactId: <number>null,
       newMessage: <string>null,
+      schareApiTriggered: <boolean>false,
+      schareApiData: <ShareApiData>null,
       typingUsers: <string[]>[],
       activeBottomNav: <string>BottomNavBarSet.ChatNavBar,
       activeChatTab: <string>ChatViews.Messages,
@@ -25,6 +27,17 @@ export const useSechatChatStore = defineStore({
     };
   },
   actions: {
+    clearShareApiData() {
+      this.schareApiTriggered = false;
+      this.schareApiData = null;
+    },
+    setShareApiData(title: string, text: string) {
+      this.schareApiTriggered = true;
+      this.schareApiData = {
+        title: title,
+        text: text,
+      } as ShareApiData;
+    },
     addNewCallLog(callLog: ICallLog) {
       this.callLogs.push(callLog);
       if (this.callLogs.length == 1) {

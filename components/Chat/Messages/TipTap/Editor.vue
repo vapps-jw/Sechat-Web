@@ -10,8 +10,9 @@
   />
   <v-progress-linear
     v-else
+    class="my-4"
     color="warning"
-    striped
+    height="8"
     indeterminate
   ></v-progress-linear>
 </template>
@@ -31,7 +32,6 @@ const signalRStore = useSignalRStore();
 const chatStore = useSechatChatStore();
 
 const editorBusy = ref<boolean>(false);
-let generatedPreviews = [];
 
 const props = defineProps({
   modelValue: {
@@ -102,9 +102,6 @@ const handleSharedVideo = (video: string) => {
 
   const splittedData = video.split("###");
 
-  // console.warn("videoData", splittedData[0]);
-  // console.warn("thumbnailData", splittedData[1]);
-
   editor.value?.commands.updateAttributes("video", { class: "message-video" });
   editor.value?.commands.insertContent(
     `<video src="${splittedData[0]}" poster="${splittedData[1]}"></video>`
@@ -119,19 +116,28 @@ const handleSharedVideo = (video: string) => {
 };
 
 onMounted(async () => {
-  console.warn("Editor Mounted");
-  await handleEditorWatcher(props.modelValue, null);
+  console.warn("Editor Mounted", props.modelValue);
+  if (chatStore.schareApiTriggered) {
+    try {
+      console.warn("Share triggered", chatStore.schareApiData);
+      await handleAnchors([
+        [chatStore.schareApiData.title, chatStore.schareApiData.text],
+      ]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      chatStore.clearShareApiData();
+    }
+  }
 });
 
 const handleEditorWatcher = async (newValue, oldValue) => {
   const isSame = newValue === oldValue;
-  if (isSame || editorBusy.value) {
+  if (isSame || editorBusy.value || chatStore.schareApiTriggered) {
     return;
   }
+
   let content = newValue;
-  // console.log("New value", newValue);
-  // console.log("Old value", oldValue);
-  // console.log("Model", props.modelValue);
 
   const imageSources = findAll(/<img.*?src="(.*?)"/g, props.modelValue);
   const videoSources = findAll(/<video.*?src="(.*?)"/g, props.modelValue);
@@ -188,7 +194,6 @@ const handleEditorWatcher = async (newValue, oldValue) => {
 
   if (!newValue) {
     console.log("Editor Empty");
-    generatedPreviews = [];
     editor.value?.setOptions({ editable: true });
     emit("editorStateUpdate", {
       busy: false,
@@ -198,28 +203,27 @@ const handleEditorWatcher = async (newValue, oldValue) => {
     return;
   }
 
-  console.log("Checking links");
   const anchors = findAll(/<a[^>]*href=["']([^"']*)["']/g, content);
+  console.log("Checking links", anchors);
+
+  await handleAnchors(anchors);
+};
+
+const handleAnchors = async (anchors: any[]) => {
   if (anchors.length > 0) {
     if (editorBusy.value) {
       console.error("Prev Busy");
       return;
     }
 
-    if (generatedPreviews.some((gp) => gp === anchors[0][1])) {
-      console.log("This preview was generated");
-      return;
-    }
-
     editorBusy.value = true;
+
     editor.value?.setOptions({ editable: false });
     emit("editorStateUpdate", {
       busy: true,
       editable: false,
       readyToShare: false,
     });
-
-    generatedPreviews.push(anchors[0][1]);
 
     try {
       console.warn("Generating Preview...", anchors);
@@ -235,6 +239,11 @@ const handleEditorWatcher = async (newValue, oldValue) => {
 
           if (prev.title) {
             editor.value?.commands.insertContent(`<h4>${prev.title}</h4>`);
+          }
+
+          if (prev.url && chatStore.schareApiTriggered) {
+            console.warn("Setting URL", prev.url);
+            editor.value?.commands.insertContent(`<h5>${prev.url}</h4>`);
           }
 
           if (prev.description) {
