@@ -9,6 +9,15 @@
       <NuxtLink class="sechat-link-clear" :to="`/chat`">SECHAT</NuxtLink>
     </v-btn>
 
+    <v-btn
+      v-if="userStore.isSignedIn"
+      class="my-2"
+      size="large"
+      color="warning"
+    >
+      <NuxtLink class="sechat-link-clear" :to="`/games`">GAMES</NuxtLink>
+    </v-btn>
+
     <v-btn v-if="userStore.isSignedIn" class="my-2" size="large">
       <NuxtLink class="sechat-link-clear" :to="`/user/changePassword`"
         >Change Password</NuxtLink

@@ -10,11 +10,7 @@
 
 <script setup lang="ts">
 import { scrollToBottom } from "~/utilities/documentFunctions";
-import {
-  ChatViews,
-  CustomCookies,
-  BottomNavBarSet,
-} from "~~/utilities/globalEnums";
+import { ChatViews } from "~~/utilities/globalEnums";
 
 definePageMeta({
   layout: "board",
