@@ -12,11 +12,79 @@ export const useCalendarStore = defineStore({
   id: "sechat-calendar-store",
   state: () => {
     return {
+      activeMonth: <Date>new Date(Date.now()),
+      selectedDay: <number>new Date(Date.now()).getDate(),
+      monthArray: [],
+      dayNames: <string[]>[],
       calendar: <Calendar>null,
       displayBatches: <EventsDisplayBatch[]>[],
     };
   },
   actions: {
+    createMonthArray(locals: string) {
+      const firstDay = new Date(
+        this.activeMonth.getFullYear(),
+        this.activeMonth.getMonth(),
+        1
+      );
+
+      const fistDayName = firstDay.toLocaleString(locals, {
+        weekday: "short",
+      });
+      const firstDayPosition = this.dayNames.indexOf(fistDayName);
+      const lastDay = new Date(
+        this.activeMonth.getFullYear(),
+        this.activeMonth.getMonth() + 1,
+        0
+      ).getDate();
+
+      console.log(`Month For Array: ${this.activeMonth}`);
+      console.log(`Day: ${fistDayName} Position: ${firstDayPosition}`);
+      console.log(`Last day: ${lastDay}`);
+
+      const monthArray = [];
+      let dayIndex = 1;
+      for (let week = 0; week < 6; week++) {
+        monthArray.push([]);
+        for (let day = 0; day < 7; day++) {
+          if (week === 0) {
+            if (day >= firstDayPosition) {
+              monthArray[week].push(dayIndex++);
+              continue;
+            }
+          } else {
+            if (dayIndex <= lastDay) {
+              monthArray[week].push(dayIndex++);
+              continue;
+            }
+          }
+
+          monthArray[week].push(0);
+        }
+      }
+      this.monthArray = [];
+      this.monthArray = monthArray;
+    },
+    updateDayNames(locals: string) {
+      var weekDays = [];
+      var d = new Date();
+
+      while (d.getDay() > 0) {
+        d.setDate(d.getDate() + 1);
+      }
+
+      while (weekDays.length < 7) {
+        weekDays.push(
+          d.toLocaleString(locals, {
+            weekday: "short",
+          })
+        );
+        d.setDate(d.getDate() + 1);
+      }
+
+      this.dayNames = weekDays;
+      console.log("Days", this.dayNames);
+    },
     updateCalendar(value: Calendar) {
       value.calendarEvents.forEach((ce) => (ce.activeReminders = 0));
       value.calendarEvents = sortEvents(value.calendarEvents);
@@ -210,6 +278,24 @@ export const useCalendarStore = defineStore({
   },
   getters: {
     calendarData: (state) => (state.calendar ? true : false),
+    getEventsForActiveDay: (state): CalendarEvent[] => {
+      const db = state.displayBatches.find(
+        (db) =>
+          db.date.setHours(0, 0, 0, 0) ===
+          new Date(state.activeMonth.setDate(state.selectedDay)).setHours(
+            0,
+            0,
+            0,
+            0
+          )
+      );
+
+      console.warn("Getting events for active day", db);
+      if (db) {
+        return db.events;
+      }
+      return [];
+    },
     getEvents: (state) => state.calendar?.calendarEvents,
     getOldEvents: (state) =>
       state.calendar?.calendarEvents.filter((e) => e.isOld),

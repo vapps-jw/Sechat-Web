@@ -1,7 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 import { HubConnectionState } from "@microsoft/signalr";
 
-export const useSignalR = () => {
+export const useSignalRForGrames = () => {
   const config = useRuntimeConfig();
   const signalRGamesStore = useSignalRGamesStore();
 

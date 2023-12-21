@@ -19,6 +19,9 @@
         <v-window-item :value="ChatViews.Events">
           <ChatTabsEvents />
         </v-window-item>
+        <v-window-item :value="ChatViews.Calendar">
+          <ChatTabsCalendar />
+        </v-window-item>
       </div>
 
       <!-- Profile -->

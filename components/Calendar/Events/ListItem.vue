@@ -1,6 +1,6 @@
 <template>
   <v-list-item
-    class="my-2 mx-1 pa-1 event-borders"
+    class="mx-1 pa-1 event-borders"
     :class="props.calendarEvent.isOld ? 'old-event' : ''"
   >
     <template v-slot:title>

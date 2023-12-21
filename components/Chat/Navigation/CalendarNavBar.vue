@@ -13,6 +13,14 @@
       <span>Events</span>
     </v-btn>
     <v-btn
+      color="tertiary"
+      :value="ChatViews.Calendar"
+      @click="chatStore.activateView(ChatViews.Calendar)"
+    >
+      <v-icon>mdi-calendar-month</v-icon>
+      <span>Calendar</span>
+    </v-btn>
+    <v-btn
       color="warning"
       :value="ChatViews.AppsSelection"
       @click="chatStore.activateView(ChatViews.AppsSelection)"

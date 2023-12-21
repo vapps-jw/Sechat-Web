@@ -46,6 +46,19 @@ export const resetMinutes = (myDate: Date): Date => {
   return new Date(new Date(myDate).setMinutes(0, 0, 0));
 };
 
+export const monthAdd = (date: Date, month: number): Date => {
+  var temp = date;
+  temp = new Date(date.getFullYear(), date.getMonth(), 1);
+  temp.setMonth(temp.getMonth() + (month + 1));
+  temp.setDate(temp.getDate() - 1);
+
+  if (date.getDate() < temp.getDate()) {
+    temp.setDate(date.getDate());
+  }
+
+  return temp;
+};
+
 export const addMinutesToDate = (myDate: Date, minutes: number): Date => {
   return new Date(new Date(myDate).setMinutes(myDate.getMinutes() + minutes));
 };

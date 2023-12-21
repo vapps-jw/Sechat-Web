@@ -52,6 +52,7 @@ export const ChatViews = {
   Settings: "settings",
   Security: "security",
   Events: "events",
+  Calendar: "calendar",
   Admin: "Admin",
 };
 

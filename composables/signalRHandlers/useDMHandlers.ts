@@ -2,7 +2,6 @@ import { E2EStatusMessages } from "~/utilities/e2eEnums";
 import { scrollToBottom } from "~/utilities/documentFunctions";
 import {
   ChatViews,
-  SignalRHubMethods,
   LocalStoreTypes,
   VisibilityStates,
 } from "~~/utilities/globalEnums";
