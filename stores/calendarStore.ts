@@ -38,6 +38,11 @@ export const useCalendarStore = defineStore({
         0
       ).getDate();
 
+      if (this.selectedDay > lastDay) {
+        this.selectedDay = lastDay;
+        this.activeMonth.setDate(lastDay);
+      }
+
       console.log(`Month For Array: ${this.activeMonth}`);
       console.log(`Day: ${fistDayName} Position: ${firstDayPosition}`);
       console.log(`Last day: ${lastDay}`);

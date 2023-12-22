@@ -125,6 +125,7 @@ const monthForward = () => {
 
 const thisMonth = () => {
   calendarStore.activeMonth = new Date(Date.now());
+  calendarStore.selectedDay = new Date(Date.now()).getDate();
   calendarStore.createMonthArray(appStore.localLanguage);
 };
 </script>
