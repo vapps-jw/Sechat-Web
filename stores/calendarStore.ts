@@ -305,9 +305,6 @@ export const useCalendarStore = defineStore({
       }
       return null;
     },
-    getEvents: (state) => state.calendar?.calendarEvents,
-    getOldEvents: (state) =>
-      state.calendar?.calendarEvents.filter((e) => e.isOld),
   },
 });
 
