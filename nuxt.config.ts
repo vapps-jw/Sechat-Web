@@ -42,7 +42,7 @@ export default defineNuxtConfig({
         microphone: ["self"],
         "display-capture": ["self"],
         fullscreen: ["self"],
-        geolocation: ["()"],
+        geolocation: ["self"],
       },
       crossOriginEmbedderPolicy: false,
       contentSecurityPolicy: {

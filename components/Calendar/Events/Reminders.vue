@@ -78,11 +78,14 @@
             label="End"
           >
             <template v-slot:append>
-              <v-icon @click="createReminder" color="success"
-                >mdi-plus-circle-outline</v-icon
+              <v-btn
+                icon="mdi-bell-plus"
+                variant="outlined"
+                color="success"
+                @click="createReminder"
               >
-            </template></v-text-field
-          >
+              </v-btn> </template
+          ></v-text-field>
         </v-container>
         <v-container
           class="my-0 py-0 d-flex justify-center flex-wrap"
@@ -101,27 +104,26 @@
 
         <v-container class="ma-0 pa-0">
           <v-list density="compact" v-if="props.calendarEvent.reminders">
-            <v-list-item
-              v-for="r in props.calendarEvent.reminders"
-              :key="r.id"
-              class="mr-1"
-            >
-              <v-list-item-title>
-                {{
-                  new Date(r.remind).toLocaleString(appStore.localLanguage)
-                }}</v-list-item-title
-              >
-              <template v-slot:append>
-                <v-btn
-                  :disabled="deletingReminder"
-                  :loading="deletingReminder"
-                  color="error"
-                  icon="mdi-close-circle"
-                  variant="text"
-                  @click="removeReminder(r)"
-                ></v-btn>
-              </template>
-            </v-list-item>
+            <div v-for="r in props.calendarEvent.reminders" :key="r.id">
+              <v-divider class="mx-4" />
+              <v-list-item class="my-2">
+                <v-list-item-title>
+                  {{
+                    new Date(r.remind).toLocaleString(appStore.localLanguage)
+                  }}</v-list-item-title
+                >
+                <template v-slot:append>
+                  <v-btn
+                    :disabled="deletingReminder"
+                    :loading="deletingReminder"
+                    color="error"
+                    icon="mdi-bell-remove"
+                    variant="outlined"
+                    @click="removeReminder(r)"
+                  ></v-btn>
+                </template>
+              </v-list-item>
+            </div>
           </v-list>
         </v-container>
       </v-card-text>
@@ -315,13 +317,22 @@ const postReminder = async (postData: RemiderPostData) => {
 };
 
 const createReminder = async () => {
+  if (!date.value) {
+    return;
+  }
+
   console.log(
     "Creating Reminder",
     date.value,
     new Date(date.value).toISOString()
   );
 
-  if (!date.value) {
+  if (
+    props.calendarEvent.reminders.some(
+      (r) => new Date(r.remind).getTime() === new Date(date.value).getTime()
+    )
+  ) {
+    appStore.showWarningSnackbar("Reminder already exists");
     return;
   }
 
