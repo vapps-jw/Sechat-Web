@@ -5,6 +5,7 @@ type EventsDisplayBatch = {
   id: number;
   date: Date;
   today: boolean;
+  isOld: boolean;
   events: CalendarEvent[];
 };
 
@@ -189,6 +190,9 @@ export const useCalendarStore = defineStore({
           id: new Date(r).setHours(0, 0, 0, 0),
           date: new Date(r),
           today: isToday(new Date(r)),
+          isOld:
+            new Date(r).setHours(0, 0, 0, 0) <
+            new Date(Date.now()).setHours(0, 0, 0, 0),
           events: validEvents,
         };
         batches.push(batch);
@@ -283,7 +287,7 @@ export const useCalendarStore = defineStore({
   },
   getters: {
     calendarData: (state) => (state.calendar ? true : false),
-    getEventsForActiveDay: (state): CalendarEvent[] => {
+    getDisplayBatchForActiveDay: (state): EventsDisplayBatch => {
       const db = state.displayBatches.find(
         (db) =>
           db.date.setHours(0, 0, 0, 0) ===
@@ -297,9 +301,9 @@ export const useCalendarStore = defineStore({
 
       console.warn("Getting events for active day", db);
       if (db) {
-        return db.events;
+        return db;
       }
-      return [];
+      return null;
     },
     getEvents: (state) => state.calendar?.calendarEvents,
     getOldEvents: (state) =>

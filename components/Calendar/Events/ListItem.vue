@@ -1,7 +1,7 @@
 <template>
   <v-list-item
     class="mx-1 pa-1 event-borders"
-    :class="props.calendarEvent.isOld ? 'old-event' : ''"
+    :class="props.isOld ? 'old-event' : ''"
   >
     <template v-slot:title>
       <div>
@@ -141,6 +141,7 @@ const appStore = useSechatAppStore();
 
 interface PropsModel {
   calendarEvent: CalendarEvent;
+  isOld: boolean;
 }
 const props = defineProps<PropsModel>();
 

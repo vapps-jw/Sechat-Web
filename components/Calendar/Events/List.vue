@@ -54,7 +54,7 @@
         </v-col>
       </v-row>
       <div v-for="(ce, index) in batch.events" :key="index">
-        <calendar-events-list-item :calendar-event="ce" />
+        <calendar-events-list-item :calendar-event="ce" :is-old="batch.isOld" />
       </div>
     </div>
   </v-list>

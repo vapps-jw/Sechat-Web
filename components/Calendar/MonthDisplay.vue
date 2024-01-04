@@ -82,7 +82,7 @@
       >
       </v-btn>
     </div>
-    <CalendarDayDisplay v-if="calendarStore.getEventsForActiveDay.length > 0" />
+    <CalendarDayDisplay v-if="calendarStore.getDisplayBatchForActiveDay" />
     <v-container v-else class="d-flex justify-center align-center">
       <v-alert
         class="alert-font"
