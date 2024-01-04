@@ -18,7 +18,7 @@ jobs:
       - name: Inject Secrets
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
-      - name: Install Dependencies
+      - name: Run Build
         run: npm run build
       - name: Push to Linode
         run: |

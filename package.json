@@ -19,7 +19,7 @@
     "cypress": "^13.6.2",
     "nuxt": "^3.9.0",
     "nuxt-icon": "^0.6.8",
-    "nuxt-security": "^1.0.0",
+    "nuxt-security": "^0.14.4",
     "workbox-precaching": "^7.0.0"
   },
   "dependencies": {
