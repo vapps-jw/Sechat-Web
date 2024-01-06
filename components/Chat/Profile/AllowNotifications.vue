@@ -3,7 +3,7 @@
     :loading="isBusy"
     :disabled="isBusy"
     color="success"
-    variant="outlined"
+    variant="flat"
     @click="subscribeToPush"
     >Subscribe</v-btn
   >
@@ -11,10 +11,12 @@
 
 <script setup lang="ts">
 import { SnackbarIcons } from "~/utilities/globalEnums";
+import { urlBase64ToUint8Array } from "~/utilities/stringFunctions";
 
 const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
 const isBusy = ref<boolean>(false);
+const userStore = useUserStore();
 
 const subscribeToPush = async () => {
   console.warn("Requesting Permission");
@@ -25,7 +27,8 @@ const subscribeToPush = async () => {
     isBusy.value = true;
   }
 
-  Notification.requestPermission().then((result) => {
+  let supported = true;
+  await Notification.requestPermission().then((result) => {
     if (result !== "granted") {
       console.error("Permission Denied!");
       sechatStore.showSnackbar({
@@ -36,10 +39,15 @@ const subscribeToPush = async () => {
         icon: SnackbarIcons.Error,
         iconColor: "black",
       });
-      isBusy.value = false;
-      return;
+      supported = false;
     }
   });
+
+  console.warn("PUSH support", supported);
+  if (!supported) {
+    isBusy.value = false;
+    return;
+  }
 
   console.warn("Subscribing to Push");
   let subscription;
@@ -57,7 +65,7 @@ const subscribeToPush = async () => {
     });
     console.log("Push Registered...");
   } catch (error) {
-    console.log("Error when registering Push:", error.data.value);
+    console.log("Error when registering Push:", error.data?.value);
     sechatStore.showSnackbar({
       snackbar: true,
       text: "Error when registering notifications",
@@ -91,6 +99,7 @@ const subscribeToPush = async () => {
       sechatStore.showErrorSnackbar("Subscribe failed");
     } else {
       sechatStore.showWarningSnackbar(apiError.value.data);
+      userStore.subscribedToPush = true;
     }
 
     isBusy.value = false;
@@ -105,23 +114,9 @@ const subscribeToPush = async () => {
     icon: SnackbarIcons.Success,
     iconColor: "black",
   });
+  userStore.subscribedToPush = true;
   isBusy.value = false;
 };
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, "+")
-    .replace(/_/g, "/");
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
 </script>
 
 <style scoped></style>

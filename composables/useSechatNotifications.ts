@@ -1,136 +1,79 @@
-// import { SnackbarIcons } from "~~/utilities/globalEnums";
+import { SnackbarIcons } from "~/utilities/globalEnums";
+import { urlBase64ToUint8Array } from "~/utilities/stringFunctions";
 
-// export const useSechatNotifications = () => {
-//   const config = useRuntimeConfig();
-//   const sechatStore = useSechatAppStore();
+export const useSechatNotifications = () => {
+  const config = useRuntimeConfig();
+  const userStore = useUserStore();
+  const sechatStore = useSechatAppStore();
 
-//   const unsubscribeFromPush = async () => {
-//     const { error: apiError } = await useFetch(
-//       `${config.public.apiBase}/notifications/push-unubscribe`,
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         method: "DELETE",
-//         credentials: "include",
-//       }
-//     );
+  const checkSubscription = async (): Promise<boolean> => {
+    console.warn("Checking subscription to PUSH");
+    let supported = true;
 
-//     if (apiError.value) {
-//       throw createError({
-//         ...apiError.value,
-//         statusMessage: "Failed to unsubscribe",
-//         statusCode: apiError.value.statusCode,
-//       });
-//     }
+    await Notification.requestPermission().then((result) => {
+      if (result !== "granted") {
+        userStore.subscribedToPush = false;
+        supported = false;
+        console.error("PUSH Denied");
+      }
+    });
 
-//     sechatStore.showSnackbar({
-//       snackbar: true,
-//       text: "All subscriptions deleted",
-//       timeout: 2000,
-//       color: "success",
-//       icon: SnackbarIcons.Success,
-//       iconColor: "black",
-//     });
-//   };
+    console.warn("PUSH support", supported);
+    if (!supported) {
+      return;
+    }
 
-//   const subscribeToPush = async () => {
-//     console.warn("Requesting Permission");
+    console.warn("Subscribing to PUSH");
+    let subscription;
+    try {
+      const register = await navigator.serviceWorker.ready;
 
-//     Notification.requestPermission().then((result) => {
-//       if (result !== "granted") {
-//         console.error("Permission Denied!");
-//         return;
-//       }
-//     });
+      console.log(
+        "Registering Push...",
+        config.public.vapidKey,
+        config.public.apiBase
+      );
+      subscription = await register.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(config.public.vapidKey),
+      });
+      console.log("Push Registered...");
+    } catch (error) {
+      console.log("Error when registering Push:", error.data.value);
+      sechatStore.showSnackbar({
+        snackbar: true,
+        text: "Error when registering notifications",
+        timeout: 2000,
+        color: "error",
+        icon: SnackbarIcons.Error,
+        iconColor: "black",
+      });
+      return;
+    }
 
-//     console.warn("Subscribing to Push");
-//     let subscription;
-//     try {
-//       const register = await navigator.serviceWorker.ready;
+    const subscriptionPayload = JSON.stringify(subscription);
+    console.log("Sending Push Subscription:", subscriptionPayload);
+    const { error: apiError, data: checkResult } = await useFetch<boolean>(
+      `${config.public.apiBase}/notifications/is-subscribed`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        credentials: "include",
+        body: subscriptionPayload,
+      }
+    );
 
-//       console.log(
-//         "Registering Push...",
-//         config.public.vapidKey,
-//         config.public.apiBase
-//       );
-//       subscription = await register.pushManager.subscribe({
-//         userVisibleOnly: true,
-//         applicationServerKey: urlBase64ToUint8Array(config.public.vapidKey),
-//       });
-//       console.log("Push Registered...");
-//     } catch (error) {
-//       console.log("Error when registering Push:", error);
-//       return;
-//     }
+    if (apiError.value) {
+      return false;
+    }
 
-//     const subscriptionPayload = JSON.stringify(subscription);
-//     console.log("Sending Push Subscription:", subscriptionPayload);
-//     const { error: apiError } = await useFetch(
-//       `${config.public.apiBase}/notifications/push-subscribe`,
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         method: "POST",
-//         credentials: "include",
-//         body: subscriptionPayload,
-//         onResponseError({ response }) {
-//           if (response.status === 400) {
-//             sechatStore.showSnackbar({
-//               snackbar: true,
-//               text: response._data,
-//               timeout: 2000,
-//               color: "warning",
-//               icon: SnackbarIcons.Warning,
-//               iconColor: "black",
-//             });
-//           } else {
-//             sechatStore.showSnackbar({
-//               snackbar: true,
-//               text: "Subscription Failed",
-//               timeout: 2000,
-//               color: "error",
-//               icon: SnackbarIcons.Error,
-//               iconColor: "black",
-//             });
-//           }
-//         },
-//       }
-//     );
+    console.warn("Push check result", checkResult);
+    return checkResult.value;
+  };
 
-//     if (apiError.value) {
-//       console.error("API Error - Subscription");
-//       return;
-//     }
-
-//     sechatStore.showSnackbar({
-//       snackbar: true,
-//       text: "Subscribed",
-//       timeout: 2000,
-//       color: "success",
-//       icon: SnackbarIcons.Success,
-//       iconColor: "black",
-//     });
-//   };
-
-//   function urlBase64ToUint8Array(base64String) {
-//     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-//     const base64 = (base64String + padding)
-//       .replace(/\-/g, "+")
-//       .replace(/_/g, "/");
-
-//     const rawData = window.atob(base64);
-//     const outputArray = new Uint8Array(rawData.length);
-
-//     for (let i = 0; i < rawData.length; ++i) {
-//       outputArray[i] = rawData.charCodeAt(i);
-//     }
-//     return outputArray;
-//   }
-
-//   return {
-//     subscribeToPush,
-//     unsubscribeFromPush,
-//   };
-// };
+  return {
+    checkSubscription,
+  };
+};

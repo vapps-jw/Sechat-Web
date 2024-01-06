@@ -11,6 +11,7 @@ export const useUserStore = defineStore({
     return {
       globalSettings: <GlobalSetting[]>null,
       userProfile: <IUserProfile>null,
+      subscribedToPush: <boolean>true,
     };
   },
   actions: {

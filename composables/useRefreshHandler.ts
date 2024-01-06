@@ -12,6 +12,7 @@ export const useRefreshHandler = () => {
   const signalRStore = useSignalRStore();
   const webRTCStore = useWebRTCStore();
   const calendarStore = useCalendarStore();
+  const sechatNotifications = useSechatNotifications();
 
   const initialLoad = async () => {
     if (chatStore.lazyLoadInProgress) {
@@ -91,6 +92,10 @@ export const useRefreshHandler = () => {
       .finally(async () => {
         chatStore.lazyLoadInProgress = false;
       });
+
+    sechatNotifications.checkSubscription().then(async (res) => {
+      userStore.subscribedToPush = res;
+    });
   };
 
   const handleVisibilityChange = async () => {

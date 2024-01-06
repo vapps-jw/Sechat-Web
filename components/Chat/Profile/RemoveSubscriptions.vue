@@ -3,7 +3,7 @@
     :loading="isBusy"
     :disabled="isBusy"
     color="error"
-    variant="outlined"
+    variant="flat"
     @click="unsubscribeFromPush"
     >Unsubscribe</v-btn
   >
@@ -15,6 +15,7 @@ import { SnackbarIcons } from "~/utilities/globalEnums";
 const isBusy = ref<boolean>(false);
 const config = useRuntimeConfig();
 const sechatStore = useSechatAppStore();
+const userStore = useUserStore();
 
 const unsubscribeFromPush = async () => {
   if (isBusy.value) {
@@ -56,6 +57,7 @@ const unsubscribeFromPush = async () => {
     icon: SnackbarIcons.Success,
     iconColor: "black",
   });
+  userStore.subscribedToPush = false;
   isBusy.value = false;
 };
 </script>

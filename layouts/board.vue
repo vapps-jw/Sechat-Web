@@ -12,6 +12,10 @@
           :src="imageData"
         />
       </v-overlay>
+      <chat-status-push-subscription-banner
+        v-if="!userStore.subscribedToPush"
+        class="banner-style"
+      />
       <chat-status-connection-banner
         class="banner-style"
         :connection-state="signalRStore.connectionState"
@@ -42,6 +46,7 @@ const webRTCStore = useWebRTCStore();
 const I18n = useI18n();
 const theme = useTheme();
 const settings = useSettingsStore();
+const userStore = useUserStore();
 
 const imageOverlay = ref<boolean>();
 const imageData = ref<string>("");
