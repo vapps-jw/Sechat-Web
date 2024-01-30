@@ -17,7 +17,7 @@
     "@vitejs/plugin-vue": "^5.0.2",
     "cross-env": "^7.0.3",
     "cypress": "^13.6.2",
-    "nuxt": "^3.9.0",
+    "nuxt": "^3.10.0",
     "nuxt-icon": "^0.6.8",
     "nuxt-security": "^0.14.4",
     "workbox-precaching": "^7.0.0"
