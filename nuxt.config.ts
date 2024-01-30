@@ -53,7 +53,6 @@ export default defineNuxtConfig({
   },
   modules: [
     "nuxt-icon",
-    "@nuxt/image-edge",
     "@nuxtjs/i18n",
     "@vite-pwa/nuxt",
     "nuxt-security",
