@@ -25,7 +25,6 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@microsoft/signalr": "^8.0.0",
-    "@nuxt/image-edge": "1.1.0-28404773.c60aac2",
     "@pinia/nuxt": "^0.5.1",
     "@tiptap/extension-character-count": "^2.2.0",
     "@tiptap/extension-image": "^2.2.0",
