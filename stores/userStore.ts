@@ -1,3 +1,4 @@
+import type { UserProfile } from "~/data/classes/userProfile";
 import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 
 export const InvitationsPermission = {
@@ -10,12 +11,12 @@ export const useUserStore = defineStore({
   state: () => {
     return {
       globalSettings: <GlobalSetting[]>null,
-      userProfile: <IUserProfile>null,
+      userProfile: <UserProfile>null,
       subscribedToPush: <boolean>true,
     };
   },
   actions: {
-    updateUserProfile(value: IUserProfile) {
+    updateUserProfile(value: UserProfile) {
       this.userProfile = value;
     },
   },

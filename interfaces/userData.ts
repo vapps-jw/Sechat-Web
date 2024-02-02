@@ -1,10 +1,11 @@
-interface IUserProfile {
-  email?: string;
-  userName?: string;
-  profilePicture?: string;
-  lastActivity?: Date;
-  created?: Date;
-  emailConfirmed?: boolean;
-  invitationsAllowed?: boolean;
-  referralPass?: string;
-}
+// interface IUserProfile {
+//   email?: string;
+//   userName?: string;
+//   profilePicture?: string;
+//   lastActivity?: Date;
+//   created?: Date;
+//   emailConfirmed?: boolean;
+//   invitationsAllowed?: boolean;
+//   referralPass?: string;
+//   claims?: string[];
+// }

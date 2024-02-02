@@ -1,8 +1,10 @@
+import type { UserProfile } from "~/data/classes/userProfile";
+
 export const useUserApi = () => {
   const config = useRuntimeConfig();
 
   const getUserData = async () => {
-    const { data: newProfile, error: apiError } = await useFetch<IUserProfile>(
+    const { data: newProfile, error: apiError } = await useFetch<UserProfile>(
       `${config.public.apiBase}/user/get-profile`,
       {
         method: "GET",
