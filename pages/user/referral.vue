@@ -46,6 +46,8 @@
 </template>
 
 <script setup lang="ts">
+import { UserClaims } from "~/data/classes/userProfile";
+
 const form = ref(false);
 const loading = ref(false);
 
@@ -83,8 +85,7 @@ const onSubmit = async () => {
     );
 
     if (!apiError.value) {
-      console.log("Claims updated", claims);
-      userStore.userProfile.claims = claims.value;
+      userStore.userProfile.claims.push(UserClaims.ChatAccess);
       console.log("Navigating to Chat");
       navigateTo("/chat");
     }
