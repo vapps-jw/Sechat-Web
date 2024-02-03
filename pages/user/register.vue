@@ -23,19 +23,6 @@
           :counter="20"
           label="Password"
         ></v-text-field>
-        <v-text-field
-          @click:append="showReferral = !showReferral"
-          :append-icon="showReferral ? 'mdi-eye' : 'mdi-eye-off'"
-          :type="showReferral ? 'text' : 'password'"
-          v-model="credentials.referralPass"
-          :readonly="loading"
-          :rules="credentials.referralRules"
-          clearable
-          :counter="20"
-          label="Referral Pass"
-          hint="You can get referral from a registered user"
-          persistent-hint
-        ></v-text-field>
         <v-checkbox
           v-model="credentials.policiesAccepted"
           :rules="[(v) => !!v || 'You must agree to continue!']"
@@ -91,14 +78,12 @@ interface ICredentials {
   agreementRoles: any;
   usernameRules: any;
   passwordRules: any;
-  referralRules: any;
 }
 
 const showPassword = ref<boolean>(true);
-const showReferral = ref<boolean>(true);
-
 const buttonText = ref<string>("Sign Up");
 const buttonColor = ref<string>("warning");
+
 const credentials = ref<ICredentials>({
   valid: true,
   policiesAccepted: false,
@@ -119,12 +104,13 @@ const credentials = ref<ICredentials>({
     (v) => (v && /[0-9]/.test(v)) || "At least one number",
     (v) => (v && /\W/.test(v)) || "At least one special character",
   ],
-  referralRules: [
-    (v) => !!v || "Referall is required, ask registered user for a referral",
-    (v) => (v && v.length <= 20) || "Max 20 characters",
-    (v) => (v && v.length > 8) || "Min 8 characters",
-  ],
 });
+
+// referralRules: [
+//   (v) => !!v || "Referall is required, ask registered user for a referral",
+//   (v) => (v && v.length <= 20) || "Max 20 characters",
+//   (v) => (v && v.length > 8) || "Min 8 characters",
+// ],
 
 const onSubmit = async () => {
   try {
@@ -141,7 +127,6 @@ const onSubmit = async () => {
         body: {
           username: credentials.value.username,
           password: credentials.value.password,
-          referralPass: credentials.value.referralPass,
         },
       }
     );

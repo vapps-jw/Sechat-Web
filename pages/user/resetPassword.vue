@@ -51,6 +51,10 @@ const loading = ref(false);
 const sechatStore = useSechatAppStore();
 const config = useRuntimeConfig();
 
+definePageMeta({
+  middleware: ["authenticated"],
+});
+
 interface ICredentials {
   valid: boolean;
   password: string;

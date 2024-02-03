@@ -1,12 +1,15 @@
 <template>
-  <v-dialog v-model="dialog" persistent>
+  <v-dialog width="500" v-model="dialog" persistent>
     <template v-slot:activator="{ props }">
-      <v-btn v-bind="props" color="error" variant="flat">Delete Account</v-btn>
+      <v-btn v-bind="props" class="my-2" size="large">Delete Account</v-btn>
     </template>
     <v-card>
       <v-card-title class="text-h6 text-center">
-        Are you really sure ???
+        Are you really sure?
       </v-card-title>
+      <v-card-text>
+        Your account and all related data will be permanently rememoved
+      </v-card-text>
       <v-card-actions>
         <v-btn color="success" variant="flat" @click="dialog = false">
           No

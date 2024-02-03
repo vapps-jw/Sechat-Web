@@ -4,24 +4,15 @@
       <v-form v-model="form" @submit.prevent="onSubmit">
         <v-text-field
           data-cy="sign-in-username"
-          v-model="credentials.username"
+          v-model="formData.referralPass"
           :readonly="loading"
-          :rules="credentials.nameRules"
+          :rules="formData.referralRules"
           class="mb-2"
           clearable
-          label="Name"
-        ></v-text-field>
-
-        <v-text-field
-          data-cy="sign-in-password"
-          @click:append="showPassword = !showPassword"
-          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          :type="showPassword ? 'text' : 'password'"
-          v-model="credentials.password"
-          :readonly="loading"
-          :rules="credentials.passwordRules"
-          clearable
-          label="Password"
+          :counter="20"
+          label="Referral Pass"
+          hint="You can get referral from a registered user"
+          persistent-hint
         ></v-text-field>
 
         <br />
@@ -59,19 +50,16 @@ const form = ref(false);
 const loading = ref(false);
 
 definePageMeta({
-  middleware: ["login-page-handler"],
+  middleware: ["authenticated", "referral-page-middleware"],
 });
 
-interface ICredentials {
+interface IFormData {
   valid: boolean;
-  username: string;
-  password: string;
-  nameRules: any;
-  passwordRules: any;
+  referralPass: string;
+  referralRules: any;
 }
 
-const showPassword = ref<boolean>(true);
-const buttonText = ref<string>("Sign In");
+const buttonText = ref<string>("Apply Referral");
 const buttonColor = ref<string>("warning");
 const config = useRuntimeConfig();
 const userStore = useUserStore();
@@ -81,8 +69,8 @@ const userApi = useUserApi();
 const onSubmit = async () => {
   try {
     loading.value = true;
-    const { error: apiError, data: userProfile } = await useFetch(
-      `${config.public.apiBase}/account/login`,
+    const { error: apiError, data: claims } = await useFetch<string[]>(
+      `${config.public.apiBase}/account/ask-for-chat`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -90,24 +78,14 @@ const onSubmit = async () => {
         method: "POST",
         credentials: "include",
         body: {
-          username: credentials.value.username.trim(),
-          password: credentials.value.password.trim(),
+          PassPhrase: formData.value.referralPass.trim(),
         },
       }
     );
 
     if (!apiError.value) {
-      console.log("Profile received", userProfile);
-      userStore.updateUserProfile(userProfile.value);
-
-      try {
-        const result = await userApi.getGlobalSettings();
-        console.warn("Updating Global Settings", result);
-        userStore.globalSettings = result;
-      } catch (error) {
-        console.error(error);
-      }
-
+      console.log("Claims updated", claims);
+      userStore.userProfile.claims = claims.value;
       console.log("Navigating to Chat");
       navigateTo("/");
     }
@@ -132,12 +110,14 @@ const onSubmit = async () => {
   }
 };
 
-const credentials = ref<ICredentials>({
+const formData = ref<IFormData>({
   valid: true,
-  username: "",
-  password: "",
-  nameRules: [(v) => !!v || "Name is required"],
-  passwordRules: [(v) => !!v || "Password is required"],
+  referralPass: "",
+  referralRules: [
+    (v) => !!v || "Referall is required, ask registered user for a referral",
+    (v) => (v && v.length <= 20) || "Max 20 characters",
+    (v) => (v && v.length > 8) || "Min 8 characters",
+  ],
 });
 </script>
 

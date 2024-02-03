@@ -1,12 +1,21 @@
 <template>
   <v-container class="d-flex flex-column align-center">
-    <v-btn
+    <!-- <v-btn
       v-if="userStore.isSignedIn"
       class="my-2"
       size="large"
       color="warning"
     >
       <NuxtLink class="sechat-link-clear" :to="`/chat`">SECHAT</NuxtLink>
+    </v-btn> -->
+    <v-btn
+      v-if="userStore.isSignedIn"
+      class="my-2"
+      size="large"
+      color="warning"
+      @click="goToChat"
+    >
+      SECHAT
     </v-btn>
 
     <!-- <v-btn
@@ -31,6 +40,10 @@
       @click="signOut"
       >Sign Out</v-btn
     >
+    <ChatDeleteAccount
+      v-if="userStore.isSignedIn"
+      @account-delete-requested="() => deleteAccount()"
+    />
     <v-btn
       data-cy="sign-in"
       v-if="!userStore.isSignedIn"
@@ -66,18 +79,51 @@
 
 <script setup lang="ts">
 import { LocalStoreTypes } from "~/utilities/globalEnums";
+import { SnackbarMessages } from "~~/utilities/globalEnums";
 
+const referralRequired = ref<boolean>();
 const config = useRuntimeConfig();
 const userStore = useUserStore();
 const appStore = useSechatAppStore();
 const refreshHandler = useRefreshHandler();
 const app = useSechatApp();
+const sechatStore = useSechatAppStore();
 
 const rejectCookies = async () => {
   app.removeLocalStoreItem(LocalStoreTypes.GDPR);
   appStore.GDPR = false;
   await signOut();
   window.location.reload();
+};
+
+const goToChat = () => {
+  if (!userStore.canAccessChat) {
+    return navigateTo("/user/referral");
+  }
+  return navigateTo("/chat");
+};
+
+const deleteAccount = async () => {
+  console.warn("Deleting account");
+  const { error: apiError } = await useFetch(
+    `${config.public.apiBase}/account/delete-account`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (apiError.value) {
+    sechatStore.showErrorSnackbar(SnackbarMessages.Error);
+    return;
+  }
+
+  sechatStore.showSuccessSnackbar(SnackbarMessages.Success);
+  userStore.$reset();
+  return navigateTo("/user/register");
 };
 
 const signOut = async () => {

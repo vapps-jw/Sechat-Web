@@ -46,9 +46,6 @@
             <ChatProfileNotificationsSection />
           </v-list-item>
           <v-divider />
-          <v-list-item>
-            <ChatProfileDangerZoneSection />
-          </v-list-item>
         </v-list>
       </v-card-text>
     </v-card>

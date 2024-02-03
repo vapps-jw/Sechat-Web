@@ -1,4 +1,4 @@
-import type { UserProfile } from "~/data/classes/userProfile";
+import { UserClaims, type UserProfile } from "~/data/classes/userProfile";
 import { getInitials, stringToColor } from "~/utilities/stringFunctions";
 
 export const InvitationsPermission = {
@@ -21,8 +21,20 @@ export const useUserStore = defineStore({
     },
   },
   getters: {
-    getColor: (state) => stringToColor(state.userProfile?.userName),
-    getInitials: (state) => getInitials(state.userProfile?.userName),
+    canAccessChat: (state) =>
+      state.userProfile?.claims?.some((c) => c === UserClaims.ChatAccess),
+    getColor: (state) => {
+      if (!state.userProfile) {
+        return "";
+      }
+      return stringToColor(state.userProfile?.userName);
+    },
+    getInitials: (state) => {
+      if (!state.userProfile) {
+        return "";
+      }
+      return getInitials(state.userProfile?.userName);
+    },
     isSignedIn: (state) => (state.userProfile ? true : false),
     getUserName: (state) => state.userProfile?.userName,
     getProfilePicture: (state) => state.userProfile?.profilePicture,
