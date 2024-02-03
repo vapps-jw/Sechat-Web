@@ -30,6 +30,13 @@ export const useSignalRStore = defineStore({
     },
   },
   getters: {
+    showConnectionBanner: (state) => {
+      return (
+        !state.connection ||
+        (state.connection &&
+          state.connectionState !== HubConnectionState.Connected)
+      );
+    },
     getConnection: (state) => state.connection,
     connectionPresent: (state) => {
       if (state.connection) {

@@ -145,24 +145,17 @@ export const useChatApi = () => {
 
   const getConstactsMetadata = async (): Promise<IContactRequest[]> => {
     console.log("Getting Contacts Metadata from API");
-    const { error: apiError, data: contacts } = await useFetch<
-      IContactRequest[]
-    >(`${config.public.apiBase}/chat/contacts-messages-metadata`, {
-      method: "GET",
-      credentials: "include",
-    });
+    const contacts = await $fetch<IContactRequest[]>(
+      `${config.public.apiBase}/chat/contacts-messages-metadata`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
 
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
+    console.log("Contacts Fetched", contacts);
 
-    console.log("Contacts Fetched", contacts.value);
-
-    contacts.value.forEach((uc) => {
+    contacts.forEach((uc) => {
       if (uc.invitedName === userStore.userProfile.userName) {
         uc.displayName = uc.inviterName;
       } else {
@@ -170,7 +163,7 @@ export const useChatApi = () => {
       }
     });
 
-    return contacts.value;
+    return contacts;
   };
 
   const getConstactMessage = async (
@@ -223,7 +216,7 @@ export const useChatApi = () => {
 
   const getRoomsMetadata = async (): Promise<IRoom[]> => {
     console.log("Getting Rooms Metadata from API");
-    const { error: apiError, data: rooms } = await useFetch<IRoom[]>(
+    const rooms = await $fetch<IRoom[]>(
       `${config.public.apiBase}/chat/rooms-messages-metadata`,
       {
         method: "GET",
@@ -231,16 +224,8 @@ export const useChatApi = () => {
       }
     );
 
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
-
-    console.log("Rooms Fetched", rooms.value);
-    return rooms.value;
+    console.log("Rooms Fetched", rooms);
+    return rooms;
   };
 
   const getRoomsUpdate = async (lastMessage: number): Promise<IRoom[]> => {

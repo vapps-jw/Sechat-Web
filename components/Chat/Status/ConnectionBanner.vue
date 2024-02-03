@@ -2,7 +2,7 @@
   <v-banner lines="one" color="warning">
     <template v-slot:text>
       <div class="font-weight-bold text-warning">
-        {{ props.connectionState }}
+        {{ signalRStore.connectionState }}
       </div>
     </template>
     <template v-slot:prepend>
@@ -14,10 +14,7 @@
 </template>
 
 <script setup lang="ts">
-interface PropsModel {
-  connectionState: string;
-}
-const props = defineProps<PropsModel>();
+const signalRStore = useSignalRStore();
 </script>
 
 <style scoped></style>

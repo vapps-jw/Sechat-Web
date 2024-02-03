@@ -1,6 +1,16 @@
 <template>
   <v-app id="chat-view">
     <v-main class="overflow-hidden sechat-layout">
+      <div>
+        <chat-status-connection-banner
+          class="banner-style"
+          v-if="signalRStore.showConnectionBanner"
+        />
+        <chat-status-push-subscription-banner
+          v-if="!userStore.subscribedToPush"
+          class="banner-style"
+        />
+      </div>
       <v-overlay
         class="d-flex align-center justify-center"
         v-model="imageOverlay"
@@ -12,19 +22,7 @@
           :src="imageData"
         />
       </v-overlay>
-      <chat-status-push-subscription-banner
-        v-if="!userStore.subscribedToPush"
-        class="banner-style"
-      />
-      <chat-status-connection-banner
-        class="banner-style"
-        :connection-state="signalRStore.connectionState"
-        v-if="
-          !signalRStore.connection ||
-          (signalRStore.connection &&
-            signalRStore.connectionState !== HubConnectionState.Connected)
-        "
-      />
+
       <chat-snackbar />
       <chat-loading-overlay :overlay="sechatAppStore.showLoadingOverlay" />
       <slot />
@@ -34,7 +32,6 @@
 
 <script setup lang="ts">
 import { useTheme } from "vuetify";
-import { HubConnectionState } from "@microsoft/signalr";
 import { listenToEvent } from "~/utilities/documentFunctions";
 
 const sechatAppStore = useSechatAppStore();
@@ -77,11 +74,10 @@ watch(
 );
 
 const resetSechat = async () => {
+  console.warn("Resetting signalRStore");
   await signalRStore.closeConnection();
   console.warn("Resetting chatStore");
   chatStore.$reset();
-  console.warn("Resetting signalRStore");
-  signalRStore.$reset();
   console.warn("Resetting webRTCStore");
   webRTCStore.$reset();
 };
@@ -116,6 +112,7 @@ onMounted(async () => {
     "visibilitychange",
     refreshHandler.handleVisibilityChange
   );
+
   window.addEventListener("beforeunload", resetSechat);
   window.addEventListener("online", refreshHandler.handleOnlineChange);
   window.addEventListener("offline", refreshHandler.handleOfflineChange);
@@ -130,7 +127,6 @@ onBeforeUnmount(async () => {
   document.removeEventListener("click", handleImageZoom);
 
   console.warn("Chat Layout onBeforeUnmount");
-  await resetSechat();
 
   console.info("Removing Hook to window events");
   window.removeEventListener(
@@ -140,6 +136,11 @@ onBeforeUnmount(async () => {
   window.removeEventListener("online", refreshHandler.handleOnlineChange);
   window.removeEventListener("offline", refreshHandler.handleOfflineChange);
   window.removeEventListener("beforeunload", resetSechat);
+});
+
+onUnmounted(async () => {
+  console.log("Board Unmounted");
+  await resetSechat();
 });
 </script>
 <style scoped>

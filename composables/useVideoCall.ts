@@ -45,23 +45,12 @@ export const useVideoCall = () => {
     const route = `${config.public.apiBase}/call/logs${
       lastLog ? "/" + lastLog : ""
     }`;
-    const { error: apiError, data: callLogs } = await useFetch<ICallLog[]>(
-      route,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+    const data = await $fetch<ICallLog[]>(route, {
+      method: "GET",
+      credentials: "include",
+    });
 
-    if (apiError.value) {
-      throw createError({
-        ...apiError.value,
-        statusCode: apiError.value.statusCode,
-        statusMessage: apiError.value.data,
-      });
-    }
-
-    return callLogs.value;
+    return data;
   };
 
   const callAnswered = async (calleeName: string) => {

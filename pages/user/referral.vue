@@ -64,7 +64,6 @@ const buttonColor = ref<string>("warning");
 const config = useRuntimeConfig();
 const userStore = useUserStore();
 const appStore = useSechatAppStore();
-const userApi = useUserApi();
 
 const onSubmit = async () => {
   try {
@@ -87,7 +86,7 @@ const onSubmit = async () => {
       console.log("Claims updated", claims);
       userStore.userProfile.claims = claims.value;
       console.log("Navigating to Chat");
-      navigateTo("/");
+      navigateTo("/chat");
     }
 
     if (apiError.value && apiError.value.statusCode !== 405) {
@@ -96,7 +95,7 @@ const onSubmit = async () => {
         statusCode: apiError.value.statusCode,
         statusMessage: apiError.value.data
           ? apiError.value.data
-          : "Login Error, check you browser settings or internet connection",
+          : "Connection Error, check you browser settings or internet connection",
       });
     }
   } catch (error) {

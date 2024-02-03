@@ -53,7 +53,7 @@ export const useSechatNotifications = () => {
 
     const subscriptionPayload = JSON.stringify(subscription);
     console.log("Sending Push Subscription:", subscriptionPayload);
-    const { error: apiError, data: checkResult } = await useFetch<boolean>(
+    const checkResult = await $fetch<boolean>(
       `${config.public.apiBase}/notifications/is-subscribed`,
       {
         headers: {
@@ -65,12 +65,8 @@ export const useSechatNotifications = () => {
       }
     );
 
-    if (apiError.value) {
-      return false;
-    }
-
     console.warn("Push check result", checkResult);
-    return checkResult.value;
+    return checkResult;
   };
 
   return {
