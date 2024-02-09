@@ -6,6 +6,7 @@
           class="banner-style"
           v-if="signalRStore.showConnectionBanner"
         />
+        <!-- TODO: this is causing Cannot read properties of null -->
         <chat-status-push-subscription-banner
           v-if="!userStore.subscribedToPush"
           class="banner-style"
