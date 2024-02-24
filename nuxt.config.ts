@@ -79,6 +79,7 @@ export default defineNuxtConfig({
       },
       name: "Sechat",
       short_name: "Sechat",
+      theme_color: "#000000",
       background_color: "#000000",
       scope: "/",
       start_url: "/",
