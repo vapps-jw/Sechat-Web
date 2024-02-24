@@ -34,7 +34,7 @@ const subscribeToPush = async () => {
       sechatStore.showSnackbar({
         snackbar: true,
         text: "Permission Denied!",
-        timeout: 2000,
+        timeout: 1500,
         color: "error",
         icon: SnackbarIcons.Error,
         iconColor: "black",
@@ -69,7 +69,7 @@ const subscribeToPush = async () => {
     sechatStore.showSnackbar({
       snackbar: true,
       text: "Error when registering notifications",
-      timeout: 2000,
+      timeout: 1500,
       color: "error",
       icon: SnackbarIcons.Error,
       iconColor: "black",
@@ -109,7 +109,7 @@ const subscribeToPush = async () => {
   sechatStore.showSnackbar({
     snackbar: true,
     text: "Subscribed",
-    timeout: 2000,
+    timeout: 1500,
     color: "success",
     icon: SnackbarIcons.Success,
     iconColor: "black",
