@@ -38,10 +38,10 @@
     "get-urls": "^12.1.0",
     "is-base64": "^1.1.0",
     "request": "^2.88.2",
-    "rollup": "^4.12.0",
+    "rollup": "^4.12.1",
     "sass": "^1.71.1",
     "vue3-emoji-picker": "^1.1.8",
-    "vuetify": "^3.5.1"
+    "vuetify": "^3.5.8"
   },
   "overrides": {
     "vue": "latest"
