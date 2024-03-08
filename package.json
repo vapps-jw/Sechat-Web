@@ -13,13 +13,13 @@
   "devDependencies": {
     "@nuxt/test-utils": "^3.9.0",
     "@nuxtjs/i18n": "^8.1.1",
-    "@vite-pwa/nuxt": "^0.6.0",
+    "@vite-pwa/nuxt": "^0.4.0",
     "@vitejs/plugin-vue": "^5.0.2",
     "cross-env": "^7.0.3",
-    "cypress": "^13.6.6",
+    "cypress": "^13.6.2",
     "nuxt": "^3.10.3",
-    "nuxt-icon": "^0.6.9",
-    "nuxt-security": "^1.2.2",
+    "nuxt-icon": "^0.6.8",
+    "nuxt-security": "^0.14.4",
     "workbox-precaching": "^7.0.0"
   },
   "dependencies": {
@@ -38,10 +38,10 @@
     "get-urls": "^12.1.0",
     "is-base64": "^1.1.0",
     "request": "^2.88.2",
-    "rollup": "^4.12.1",
+    "rollup": "^4.12.0",
     "sass": "^1.71.1",
     "vue3-emoji-picker": "^1.1.8",
-    "vuetify": "^3.5.8"
+    "vuetify": "^3.5.1"
   },
   "overrides": {
     "vue": "latest"
