@@ -115,7 +115,11 @@ const attachImage = async (e) => {
     console.log("Processing video");
     const result = await videoApi.processChatVideo(files[0]);
     if (!result.success) {
-      sechatStore.showErrorSnackbar(result.errorMessage);
+      if (result.errorMessage) {
+        sechatStore.showErrorSnackbar(result.errorMessage);
+      } else {
+        sechatStore.showErrorSnackbar("Something went wrong");
+      }
     } else {
       chatStore.newMessage = `${result.video}###${result.thumbnail}`;
     }
